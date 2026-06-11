@@ -24,7 +24,7 @@ const BackBtn   = ({ onClick })  => (
   </button>
 );
 const AuthCta = ({ onClick, children, loading, green, disabled }) => (
-  <motion.button whileHover={{ scale: 1.005 }} whileTap={{ scale: 0.98 }}
+  <motion.button type="button" whileHover={{ scale: 1.005 }} whileTap={{ scale: 0.98 }}
     onClick={onClick} disabled={loading || disabled}
     className={`w-full py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 font-body text-[15px] font-bold text-white mb-4 transition-all duration-150 disabled:opacity-55 ${green ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-primary hover:bg-primary-dark hover:shadow-indigo'}`}>
     {loading
@@ -258,15 +258,16 @@ export default function AuthOverlay() {
       login(r.data.user);
       goTo(5);  // profile setup
     } catch (e) {
-      setOtpDigits(['','','','','','']);
+      setOtpDigits(['','','','','','']);  // clear boxes on any error so the user can retry
       const msg = e.message || 'Something went wrong — please try again';
-      const isDuplicate = e.status === 409 || msg.toLowerCase().includes('already exists');
+      const isDuplicate = e.status === 409 || msg.toLowerCase().includes('already');
       if (isDuplicate) {
+        // Show the reason first, then send them to login so the toast is readable.
         showToast('This email is already registered. Please log in instead.', 'error');
-        goTo('login');
+        setTimeout(() => goTo('login'), 1500);
       } else {
         setOtpError(msg);
-        showToast(msg, 'error');
+        showToast(msg || 'Invalid OTP — please try again', 'error');
         setTimeout(() => otpRefs.current[0]?.focus(), 100);
       }
     } finally {
