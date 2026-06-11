@@ -294,10 +294,19 @@ export default function AuthOverlay() {
       if (r.data.user.role === 'organizer') setRole('organizer');
       goTo(6);
     } catch (e) {
-      const msg = e.message || 'Incorrect email or password.';
-      // 401 → highlight both credential fields inline
-      if (e.status === 401) setFieldErrors({ loginEmail: ' ', loginPw: msg });
-      showToast(msg, 'error');
+      // A 401 (or any stray "session expired" message that slipped through) on a
+      // login attempt means wrong credentials — never a real session expiry.
+      const isCredentialError =
+        e.status === 401 ||
+        e.message?.toLowerCase().includes('session') ||
+        e.message?.toLowerCase().includes('expired');
+      if (isCredentialError) {
+        const msg = 'Incorrect email or password.';
+        setFieldErrors({ loginEmail: ' ', loginPw: msg }); // highlight both fields inline
+        showToast(msg, 'error');
+      } else {
+        showToast(e.message || 'Login failed. Please try again.', 'error');
+      }
     } finally {
       setLoading(false);
     }

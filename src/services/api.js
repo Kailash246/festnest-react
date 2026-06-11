@@ -41,6 +41,14 @@ async function request(path, options = {}) {
   }
 
   if (res.status === 401 && !options._retry) {
+    // A 401 from the login endpoints means bad credentials, NOT an expired
+    // session — do not trigger the refresh/logout flow. Throw as-is so the
+    // login handler can show the correct "incorrect email or password" message.
+    if (path.includes('/auth/login') || path.includes('/auth/login-otp')) {
+      let message = 'Incorrect email or password.';
+      try { const j = await res.json(); if (j?.message) message = j.message; } catch { /* keep default */ }
+      throw Object.assign(new Error(message), { status: 401 });
+    }
     if (_refreshing) {
       await new Promise((resolve, reject) => _queue.push({ resolve, reject }));
       return request(path, { ...options, _retry: true });
