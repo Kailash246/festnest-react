@@ -335,12 +335,14 @@ export default function HostEvent() {
   const upd = (k, v) => { setF(prev => ({ ...prev, [k]: v })); if (errors[k]) setErrors(e => ({ ...e, [k]: '' })); };
 
   /* ── Validation per step ── */
+  // Returns the errors object (empty == valid). Keys are inserted top-to-bottom
+  // so the first key is always the topmost field on screen.
   const validate = (s) => {
     const errs = {};
     if (s === 1) {
+      if (!f.category)           errs.category    = 'Please select a category';
       if (!f.title.trim())       errs.title       = 'Event title is required';
       if (!f.description.trim()) errs.description = 'Description is required';
-      if (!f.category)           errs.category    = 'Please select a category';
     }
     if (s === 2) {
       if (!f.startDate)          errs.startDate = 'Start date is required';
@@ -353,11 +355,27 @@ export default function HostEvent() {
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) errs.email = 'Invalid email address';
     }
     setErrors(errs);
-    return Object.keys(errs).length === 0;
+    return errs;
+  };
+
+  // Maps an error key to the DOM id of its field, then scrolls/focuses it.
+  const scrollToFirstError = (errs) => {
+    const firstKey = Object.keys(errs)[0];
+    if (!firstKey) return;
+    const el = document.getElementById(`host-${firstKey}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (typeof el.focus === 'function') setTimeout(() => el.focus({ preventScroll: true }), 300);
+    }
   };
 
   const goNext = () => {
-    if (!validate(step)) { showToast('Please fill in the required fields', 'error'); return; }
+    const errs = validate(step);
+    if (Object.keys(errs).length) {
+      showToast('Please fill in the required fields', 'error');
+      scrollToFirstError(errs);
+      return;
+    }
     setStep(s => s + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -365,7 +383,12 @@ export default function HostEvent() {
 
   /* ── Submit ── */
   const submit = async () => {
-    if (!validate(step)) { showToast('Please fill in all required fields', 'error'); return; }
+    const errs = validate(step);
+    if (Object.keys(errs).length) {
+      showToast('Please fill in all required fields', 'error');
+      scrollToFirstError(errs);
+      return;
+    }
     if (!requireAuth()) return;
     setSubmitting(true);
     try {
@@ -557,7 +580,7 @@ export default function HostEvent() {
               <SectionCard icon={<ClipboardList size={16} strokeWidth={1.8} className="text-primary" />} title="Basic Information" sub="Tell us about your event">
 
                 {/* Category tiles */}
-                <div>
+                <div id="host-category" style={{ scrollMarginTop: '90px' }}>
                   <label className="flex items-center gap-1 text-[13px] font-semibold text-text-1 mb-2">
                     Category <span className="text-red text-[14px] leading-none">*</span>
                   </label>
@@ -581,10 +604,10 @@ export default function HostEvent() {
                   {errors.category && <p className="text-[12px] text-red mt-1">{errors.category}</p>}
                 </div>
 
-                <Input label="Event Title" required placeholder="e.g. TechFest 2025"
+                <Input id="host-title" label="Event Title" required placeholder="e.g. TechFest 2025"
                   value={f.title} onChange={e => upd('title', e.target.value)} error={errors.title} />
 
-                <Textarea label="Description" required
+                <Textarea id="host-description" label="Description" required
                   placeholder="Describe your event — what will participants do, learn, or win?"
                   rows={4} value={f.description} onChange={e => upd('description', e.target.value)}
                   error={errors.description} />
@@ -639,14 +662,14 @@ export default function HostEvent() {
 
               <SectionCard icon={<CalendarDays size={16} strokeWidth={1.8} className="text-primary" />} title="Date and Location" sub="When and where is it happening?">
                 <div className="grid grid-cols-2 gap-3">
-                  <Input label="Start Date" required type="date"
+                  <Input id="host-startDate" label="Start Date" required type="date"
                     value={f.startDate} onChange={e => upd('startDate', e.target.value)}
                     error={errors.startDate} />
                   <Input label="End Date" type="date"
                     value={f.endDate} onChange={e => upd('endDate', e.target.value)} />
                 </div>
 
-                <Input label="College / Organization" required
+                <Input id="host-college" label="College / Organization" required
                   placeholder="e.g. IIT Bombay"
                   value={f.college} onChange={e => upd('college', e.target.value)}
                   error={errors.college} />
@@ -730,17 +753,17 @@ export default function HostEvent() {
               className="space-y-4">
 
               <SectionCard icon={<Phone size={16} strokeWidth={1.8} className="text-primary" />} title="Contact Information" sub="Students will reach out to you">
-                <Input label="POC Name" required
+                <Input id="host-pocName" label="POC Name" required
                   placeholder="Contact person name"
                   value={f.pocName} onChange={e => upd('pocName', e.target.value)}
                   error={errors.pocName} />
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Input label="Phone" required type="tel"
+                  <Input id="host-phone" label="Phone" required type="tel"
                     placeholder="+91 XXXXX XXXXX"
                     value={f.phone} onChange={e => upd('phone', e.target.value)}
                     error={errors.phone} />
-                  <Input label="Email" required type="email"
+                  <Input id="host-email" label="Email" required type="email"
                     placeholder="poc@college.edu"
                     value={f.email} onChange={e => upd('email', e.target.value)}
                     error={errors.email} />

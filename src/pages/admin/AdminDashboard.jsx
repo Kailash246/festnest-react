@@ -94,13 +94,16 @@ const TABS = [
 /* ═══════════════════════════════════════════════════════
    OVERVIEW TAB
 ═══════════════════════════════════════════════════════ */
-function OverviewTab() {
+function OverviewTab({ showToast }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    admin.stats().then(r => setStats(r.data)).catch(console.error).finally(() => setLoading(false));
-  }, []);
+    admin.stats()
+      .then(r => setStats(r.data))
+      .catch(e => showToast?.(e.message, 'error'))
+      .finally(() => setLoading(false));
+  }, [showToast]);
 
   if (loading) return <Spinner />;
   if (!stats) return <EmptyState icon="⚠️" title="Could not load stats" />;
@@ -364,7 +367,7 @@ function SubmissionsTab({ showToast }) {
     setLoading(true);
     admin.submissions({ status, limit: 50 })
       .then(r => setItems(r.data.submissions || []))
-      .catch(console.error)
+      .catch(e => showToast(e.message, 'error'))
       .finally(() => setLoading(false));
   }, [filter]);
 
@@ -544,7 +547,7 @@ function EventsTab({ showToast }) {
     setLoading(true);
     admin.listEvents({ limit: 50, search: search || undefined })
       .then(r => setItems(r.data.events || []))
-      .catch(console.error)
+      .catch(e => showToast(e.message, 'error'))
       .finally(() => setLoading(false));
   }, [search]);
 
@@ -696,7 +699,7 @@ function UsersTab({ showToast }) {
     setLoading(true);
     admin.listUsers({ limit: 50, search: search || undefined, role: roleFilter || undefined })
       .then(r => setItems(r.data.users || []))
-      .catch(console.error)
+      .catch(e => showToast(e.message, 'error'))
       .finally(() => setLoading(false));
   }, [search, roleFilter]);
 
@@ -796,7 +799,7 @@ function TicketsTab({ showToast }) {
     setLoading(true);
     admin.tickets({ status, limit: 50 })
       .then(r => setItems(r.data.tickets || []))
-      .catch(console.error)
+      .catch(e => showToast(e.message, 'error'))
       .finally(() => setLoading(false));
   }, [filter]);
 
@@ -1048,7 +1051,7 @@ function FeaturedTab({ showToast }) {
         evs.sort((a, b) => a.featuredOrder - b.featuredOrder);
         setItems(evs);
       })
-      .catch(console.error)
+      .catch(e => showToast(e.message, 'error'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -1228,7 +1231,7 @@ export default function AdminDashboard() {
       <div className="p-4 md:p-6 max-w-5xl">
         <AnimatePresence mode="wait">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-            {activeTab === 'overview'    && <OverviewTab />}
+            {activeTab === 'overview'    && <OverviewTab       {...tabProps} />}
             {activeTab === 'submissions' && <SubmissionsTab    {...tabProps} />}
             {activeTab === 'events'      && <EventsTab         {...tabProps} />}
             {activeTab === 'users'       && <UsersTab          {...tabProps} />}

@@ -32,7 +32,13 @@ async function request(path, options = {}) {
   const access = tokens.getAccess();
   if (access) headers['Authorization'] = `Bearer ${access}`;
 
-  const res = await fetch(`${BASE}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, { ...options, headers });
+  } catch {
+    // fetch only rejects on network failure (offline, DNS, CORS, server down)
+    throw Object.assign(new Error('Connection error. Check your internet.'), { status: 0, network: true });
+  }
 
   if (res.status === 401 && !options._retry) {
     if (_refreshing) {
@@ -54,7 +60,7 @@ async function request(path, options = {}) {
       tokens.clear();
       _queue.forEach(p => p.reject());
       window.dispatchEvent(new CustomEvent('festnest:logout'));
-      throw new Error('Session expired. Please log in again.');
+      throw Object.assign(new Error('Your session has expired. Please log in again.'), { status: 401 });
     } finally {
       _queue = [];
       _refreshing = false;
@@ -62,9 +68,36 @@ async function request(path, options = {}) {
     return request(path, { ...options, _retry: true });
   }
 
-  const json = await res.json();
-  if (!json.success) throw Object.assign(new Error(json.message || 'Request failed'), { status: res.status, errors: json.errors });
+  // Some errors (proxy 502/504, rate-limit edge cases) may not return JSON.
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    throw Object.assign(new Error(statusFallback(res.status)), { status: res.status });
+  }
+
+  if (!json.success) {
+    const message = json.message || statusFallback(res.status);
+    throw Object.assign(new Error(message), { status: res.status, errors: json.errors });
+  }
   return json;
+}
+
+/* Human-readable fallback when the server gives us a bare/non-JSON error. */
+function statusFallback(status) {
+  switch (status) {
+    case 400: return 'Please check the information you entered and try again.';
+    case 401: return 'Your session has expired. Please log in again.';
+    case 403: return "You don't have permission to do that.";
+    case 404: return "We couldn't find what you were looking for.";
+    case 409: return 'That conflicts with something that already exists.';
+    case 413: return 'That file is too large. Please upload a smaller file.';
+    case 422: return 'Some of the information you entered is invalid.';
+    case 429: return 'Too many attempts. Please wait a few minutes and try again.';
+    default:  return status >= 500
+      ? 'Something went wrong. Please try again.'
+      : 'Request failed. Please try again.';
+  }
 }
 
 const get   = (path, opts)       => request(path, { method: 'GET', ...opts });

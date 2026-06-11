@@ -54,12 +54,26 @@ export function AppProvider({ children }) {
     notifApi.list().then(r => setUnreadNotifCount(r.data.unreadCount ?? 0)).catch(() => {});
   }, []);
 
-  /* ── Toast ── */
-  const showToast = useCallback((msg, type = 'default') => {
-    const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, msg, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 2800);
+  /* ── Toast ──
+     Types: 'error' | 'success' | 'info' | 'warning' | 'default'
+     Auto-dismiss after 3.5s; stack capped at 4 (oldest dropped first). */
+  const TOAST_DURATION = 3500;
+  const TOAST_MAX      = 4;
+
+  const dismissToast = useCallback((id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
+
+  const showToast = useCallback((msg, type = 'default') => {
+    if (!msg) return;
+    const id = Date.now() + Math.random();
+    setToasts(prev => {
+      const next = [...prev, { id, msg, type, duration: TOAST_DURATION }];
+      // Cap the stack — drop the oldest toast(s) once over the limit
+      return next.length > TOAST_MAX ? next.slice(next.length - TOAST_MAX) : next;
+    });
+    setTimeout(() => dismissToast(id), TOAST_DURATION);
+  }, [dismissToast]);
 
   /* ── Auth actions ── */
   const login = useCallback((user) => {
@@ -146,7 +160,7 @@ export function AppProvider({ children }) {
       /* Saved */
       savedEvents, toggleSave, savedCount,
       /* UI */
-      toasts, showToast,
+      toasts, showToast, dismissToast,
       drawerOpen, setDrawerOpen,
       notifBannerVisible, setNotifBannerVisible,
       /* Auth */
