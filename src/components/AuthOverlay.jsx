@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { auth as authApi } from '../services/api';
+import { GraduationCap, Building2 } from 'lucide-react';
 
 /* ─── Small shared UI pieces ─────────────────────────── */
 const ProgressDots = ({ total, current }) => (
@@ -629,13 +630,15 @@ export default function AuthOverlay() {
                   <AuthSub>Personalise your FestNest experience from day one.</AuthSub>
                   <div className="grid grid-cols-2 gap-3 mb-5">
                     {[
-                      { r:'student',   em:'👤', title:'Student',   sub:'Discover & register for events across India' },
-                      { r:'organizer', em:'🏫', title:'Organizer', sub:"Host and manage your college's events" },
-                    ].map(({ r, em, title, sub }) => (
+                      { r:'student',   Icon:GraduationCap, title:'Student',   sub:'Discover & register for events across India' },
+                      { r:'organizer', Icon:Building2,      title:'Organizer', sub:"Host and manage your college's events" },
+                    ].map(({ r, Icon, title, sub }) => (
                       <motion.button key={r} whileHover={{ y:-2 }} whileTap={{ scale:0.97 }}
                         onClick={() => setRole(r)}
                         className={`border-2 rounded-md p-4 text-center transition-all duration-150 ${role===r ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.12)]' : 'border-[#E4E4E0] bg-white hover:border-primary-mid'}`}>
-                        <div className="text-[32px] mb-2">{em}</div>
+                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center mb-3 mx-auto transition-colors duration-150 ${role===r ? 'bg-primary text-white' : 'bg-primary-light text-primary'}`}>
+                          <Icon className="w-7 h-7" strokeWidth={1.5} />
+                        </div>
                         <div className={`font-display font-bold text-[14px] mb-1 ${role===r?'text-primary':'text-[#111110]'}`}>{title}</div>
                         <div className="text-[11px] text-[#8A8A85] leading-relaxed">{sub}</div>
                       </motion.button>

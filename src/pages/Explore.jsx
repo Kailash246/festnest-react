@@ -5,14 +5,15 @@ import EventCard from '../components/EventCard';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { useApp } from '../context/AppContext';
+import { Code2, Music, Wrench, Trophy, Mic2, Volleyball, Palette, Rocket } from 'lucide-react';
 
 const EXPLORE_CATEGORIES = [
-  { emoji: '💻', name: 'Hackathons',     value: 'Hackathon' },
-  { emoji: '🎭', name: 'Cultural Fests', value: 'Cultural Fest' },
-  { emoji: '🛠️', name: 'Workshops',      value: 'Workshop' },
-  { emoji: '🏆', name: 'Competitions',   value: 'Competition' },
-  { emoji: '🎙️', name: 'Tech Talks',     value: 'Tech Talk' },
-  { emoji: '⚽', name: 'Sports Meets',   value: 'Sports' },
+  { icon: Code2,     name: 'Hackathons',     value: 'Hackathon',     color: 'text-indigo-600 bg-indigo-50' },
+  { icon: Music,     name: 'Cultural Fests', value: 'Cultural Fest', color: 'text-fuchsia-600 bg-fuchsia-50' },
+  { icon: Wrench,    name: 'Workshops',      value: 'Workshop',      color: 'text-teal-600 bg-teal-50' },
+  { icon: Trophy,    name: 'Competitions',   value: 'Competition',   color: 'text-amber-600 bg-amber-50' },
+  { icon: Mic2,      name: 'Tech Talks',     value: 'Tech Talk',     color: 'text-blue-600 bg-blue-50' },
+  { icon: Volleyball,name: 'Sports Meets',   value: 'Sports',        color: 'text-green-600 bg-green-50' },
 ];
 
 /* ── Skeleton ── */
@@ -113,13 +114,15 @@ export default function Explore() {
         <h2 className="font-display font-bold text-[15px] md:text-[17px] text-text-1 px-4 md:px-0 mb-3">Categories</h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 px-4 md:px-12 mb-5 md:max-w-[1140px] md:mx-auto">
-        {EXPLORE_CATEGORIES.map(({ emoji, name, value }) => {
+        {EXPLORE_CATEGORIES.map(({ icon: Icon, name, value, color }) => {
           const count = catCounts[value] || 0;
           return (
             <motion.button key={value} whileHover={{ y: -2, borderColor: '#4F46E5' }} whileTap={{ scale: 0.98 }}
               onClick={() => setActiveCat(activeCat === value ? 'all' : value)}
               className={`flex flex-col gap-2 p-4 md:p-5 rounded-md border cursor-pointer transition-all duration-fast text-left shadow-sm ${activeCat === value ? 'border-primary bg-[#EEF2FF] shadow-[0_0_0_3px_rgba(79,70,229,0.08)]' : 'border-[#E4E4E0] bg-white hover:border-primary hover:bg-[#F5F3FF]'}`}>
-              <div className="text-[26px] md:text-[30px] leading-none">{emoji}</div>
+              <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${color}`}>
+                <Icon className="w-6 h-6" strokeWidth={1.75} />
+              </div>
               <div className={`font-display font-bold text-[14px] md:text-[15px] ${activeCat === value ? 'text-primary' : 'text-text-1'} transition-colors`}>{name}</div>
               <div className="text-[12px] text-text-3">
                 {loading ? '…' : `${count} event${count !== 1 ? 's' : ''}`}
