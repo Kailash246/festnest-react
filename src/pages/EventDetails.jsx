@@ -392,11 +392,11 @@ export default function EventDetails() {
                   showToast('Link copied! 📋', 'success');
                 }
               }}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all text-text-2" aria-label="Share">
+              className="w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all text-text-2" aria-label="Share">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </motion.button>
             <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.08 }} onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
-              className={`w-8 h-8 md:w-10 md:h-10 rounded-full backdrop-blur-sm flex items-center justify-center border shadow-[0_1px_4px_rgba(0,0,0,0.1)] transition-all
+              className={`w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center border shadow-[0_1px_4px_rgba(0,0,0,0.1)] transition-all
                 ${isSaved ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-white/80 text-text-2 border-white/60 hover:bg-white'}`}
               aria-label={isSaved ? 'Remove from saved' : 'Save event'}>
               <svg viewBox="0 0 24 24" fill={isSaved?'currentColor':'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
@@ -404,8 +404,8 @@ export default function EventDetails() {
           </div>
         </div>
 
-        {/* Hero bottom — desktop only (mobile shows title block below the image) */}
-        <div className="hidden md:block absolute bottom-0 left-0 right-0 px-4 pb-5 md:px-10 md:pb-7 z-10">
+        {/* Hero bottom */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 md:px-10 md:pb-7 z-10">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <div className={`inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-md border backdrop-blur-sm ${cfg.pill}`}>
               {ev.badgeText}
@@ -425,26 +425,8 @@ export default function EventDetails() {
         </div>
       </div>
 
-      {/* ══ MOBILE TITLE BLOCK (below image) ══ */}
-      <div className="md:hidden px-4 pt-4 pb-2">
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <div className={`inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-md border ${cfg.pill}`}>
-            {ev.badgeText}
-          </div>
-          {mode && (
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-md bg-surface-2 text-text-2 border border-border">
-              {mode === 'Online' ? <Monitor size={11} strokeWidth={2} /> : mode === 'Hybrid' ? <Globe size={11} strokeWidth={2} /> : <Building2 size={11} strokeWidth={2} />} {mode}
-            </div>
-          )}
-        </div>
-        <h1 className="font-display font-bold text-[22px] text-text-1 leading-tight tracking-tight mb-1">
-          {ev.name}
-        </h1>
-        <p className="text-[14px] text-text-3">{ev.college} · {ev.city}</p>
-      </div>
-
       {/* ══ QUICK STATS ══ */}
-      <div className="px-4 md:px-10 mt-2 md:-mt-4 mb-6 relative z-10 md:max-w-[900px] md:mx-auto">
+      <div className="px-4 md:px-10 -mt-4 mb-6 relative z-10 md:max-w-[900px] md:mx-auto">
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
           {ev.deadlineDays > 0 && ev.deadlineDays <= 12 && (
             <StatPill icon={ev.deadlineDays<=3 ? <AlertTriangle size={18} strokeWidth={1.8} className="text-red" /> : ev.deadlineDays<=6 ? <Clock size={18} strokeWidth={1.8} className="text-amber" /> : <Clock size={18} strokeWidth={1.8} className="text-[#16A34A]" />} value={`${ev.deadlineDays}d`} label="Days left" />
