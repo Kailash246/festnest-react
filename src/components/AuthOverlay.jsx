@@ -650,18 +650,11 @@ export default function AuthOverlay() {
                     {emailError && (
                       <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-xl">
                         <p className="text-[13px] font-semibold text-red-600 mb-2">⚠️ {emailError}</p>
-                        <div className="flex gap-2">
-                          <button type="button"
-                            onClick={() => { setEmailError(''); setLoginEmail(email.trim()); goTo('login'); }}
-                            className="flex-1 py-2 bg-primary text-white text-[12px] font-bold rounded-lg">
-                            Log in instead
-                          </button>
-                          <button type="button"
-                            onClick={() => { setEmailError(''); setResetEmail(email.trim()); goTo('forgot'); }}
-                            className="flex-1 py-2 border border-[#E4E4E0] text-[12px] font-semibold text-[#4B4B47] rounded-lg">
-                            Reset password
-                          </button>
-                        </div>
+                        <button type="button"
+                          onClick={() => { setEmailError(''); setLoginEmail(email.trim()); goTo('login'); }}
+                          className="w-full py-2 bg-primary text-white text-[12px] font-bold rounded-lg">
+                          Log in instead
+                        </button>
                       </div>
                     )}
                   </div>
