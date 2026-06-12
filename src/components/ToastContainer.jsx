@@ -58,7 +58,7 @@ function Toast({ id, msg, type, duration, onClose }) {
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 80, scale: 0.96, transition: { duration: 0.2 } }}
       transition={{ type: 'spring', stiffness: 360, damping: 30 }}
-      className="pointer-events-auto relative w-full overflow-hidden rounded-xl"
+      className="pointer-events-auto relative w-full overflow-hidden rounded-lg"
       style={{ background: cfg.bg, boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
       role="alert"
     >
@@ -88,7 +88,7 @@ function Toast({ id, msg, type, duration, onClose }) {
         <button
           onClick={() => onClose(id)}
           aria-label="Dismiss notification"
-          className="flex-shrink-0 -mr-0.5 w-6 h-6 rounded-md flex items-center justify-center
+          className="flex-shrink-0 -mr-0.5 w-6 h-6 rounded flex items-center justify-center
                      text-[#9CA3AF] hover:text-[#374151] hover:bg-black/[0.04] transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"

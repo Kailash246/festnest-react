@@ -23,7 +23,7 @@ const Div = () => <div className="h-px bg-[#F1F0ED] mx-3 my-1" />;
 const Btn = ({ Icon: BtnIcon, label, badge, badgeStyle, onClick, accent }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-xl
+    className={`flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-lg
                 text-[14px] font-medium transition-colors duration-150
                 ${accent
                   ? 'text-primary bg-primary-xlight'
@@ -34,7 +34,7 @@ const Btn = ({ Icon: BtnIcon, label, badge, badgeStyle, onClick, accent }) => (
     </span>
     <span className="flex-1">{label}</span>
     {badge !== undefined && (
-      <span className={`text-[10px] font-bold px-2 py-[2px] rounded-full flex-shrink-0
+      <span className={`text-[10px] font-bold px-2 py-[2px] rounded-md flex-shrink-0
                         ${badgeStyle || 'bg-primary-light text-primary border border-[#C7D2FE]'}`}>
         {badge}
       </span>
@@ -100,7 +100,7 @@ export default function MobileDrawer() {
                 <button
                   onClick={() => setDrawerOpen(false)}
                   aria-label="Close menu"
-                  className="ml-auto w-8 h-8 rounded-lg flex items-center justify-center
+                  className="ml-auto w-8 h-8 rounded-md flex items-center justify-center
                              bg-[#F1F0ED] text-[#8A8A85] hover:bg-[#E4E4E0] transition-colors"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -136,7 +136,7 @@ export default function MobileDrawer() {
                   <div className="flex-1 text-[13px] text-[#8A8A85]">Sign in to save & track events</div>
                   <button
                     onClick={() => { setDrawerOpen(false); setTimeout(() => requireAuth(), 80); }}
-                    className="px-4 py-2 bg-primary text-white rounded-lg text-[13px]
+                    className="px-4 py-2 bg-primary text-white rounded-md text-[13px]
                                font-semibold hover:bg-primary-dark transition-colors flex-shrink-0"
                   >
                     Log in
@@ -204,7 +204,7 @@ export default function MobileDrawer() {
                 <button
                   onClick={() => { setDrawerOpen(false); logout(); }}
                   className="w-full py-3 border-[1.5px] border-[#FECACA]
-                             rounded-xl text-[14px] font-semibold
+                             rounded-lg text-[14px] font-semibold
                              text-[#DC2626] bg-[#FEF2F2]
                              hover:bg-[#FEE2E2] transition-colors
                              flex items-center justify-center gap-2">
@@ -213,7 +213,7 @@ export default function MobileDrawer() {
               ) : (
                 <button
                   onClick={() => { setDrawerOpen(false); setTimeout(() => requireAuth(), 80); }}
-                  className="w-full py-3 bg-primary text-white rounded-xl
+                  className="w-full py-3 bg-primary text-white rounded-lg
                              text-[14px] font-bold hover:bg-primary-dark transition-colors"
                 >
                   Create Account — It's Free

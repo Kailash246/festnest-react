@@ -38,7 +38,7 @@ const STEPS = [
 ];
 
 /* ─── Reusable field components ─────────────────────── */
-const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-lg font-body text-[14px] text-text-1 bg-white placeholder:text-text-4
+const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-md font-body text-[14px] text-text-1 bg-white placeholder:text-text-4
   focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all duration-150 outline-none`;
 
 function Field({ label, required, hint, error, prefix, children }) {
@@ -96,9 +96,9 @@ function Select({ label, required, hint, error, children, ...props }) {
 /* ─── Section card wrapper ───────────────────────────── */
 function SectionCard({ icon, title, sub, children }) {
   return (
-    <div className="bg-white border border-[#E4E4E0] rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+    <div className="bg-white border border-[#E4E4E0] rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-[#F1F0ED] bg-[#FAFAF9]">
-        <div className="w-8 h-8 rounded-lg bg-primary-light flex items-center justify-center text-base flex-shrink-0">
+        <div className="w-8 h-8 rounded-md bg-primary-light flex items-center justify-center text-base flex-shrink-0">
           {icon}
         </div>
         <div>
@@ -157,8 +157,8 @@ function UploadZone({ label, hint, accept, Icon: UpIcon, file, onFile, onRemove 
         {file ? (
           <motion.div key="filled"
             initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }}
-            className="flex items-center gap-3 px-4 py-3 bg-green-bg border border-green-border rounded-lg">
-            <div className="w-8 h-8 rounded-lg bg-[#BBF7D0] flex items-center justify-center flex-shrink-0">
+            className="flex items-center gap-3 px-4 py-3 bg-green-bg border border-green-border rounded-md">
+            <div className="w-8 h-8 rounded-md bg-[#BBF7D0] flex items-center justify-center flex-shrink-0">
               <UpIcon size={16} strokeWidth={1.8} className="text-[#16A34A]" />
             </div>
             <div className="flex-1 min-w-0">
@@ -173,9 +173,9 @@ function UploadZone({ label, hint, accept, Icon: UpIcon, file, onFile, onRemove 
         ) : (
           <motion.label key="empty"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex flex-col items-center gap-2.5 border-2 border-dashed border-[#CBCBC6] rounded-lg py-7 px-4 cursor-pointer
+            className="flex flex-col items-center gap-2.5 border-2 border-dashed border-[#CBCBC6] rounded-md py-7 px-4 cursor-pointer
               hover:border-primary hover:bg-primary-xlight transition-all duration-150 group">
-            <div className="w-11 h-11 rounded-xl bg-surface-3 group-hover:bg-primary-light flex items-center justify-center transition-all">
+            <div className="w-11 h-11 rounded-lg bg-surface-3 group-hover:bg-primary-light flex items-center justify-center transition-all">
               <UpIcon size={22} strokeWidth={1.8} className="text-text-3 group-hover:text-primary" />
             </div>
             <div className="text-center">
@@ -199,7 +199,7 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
     <div className="flex gap-3 pt-2">
       {step > 1 && (
         <button onClick={onBack}
-          className="flex items-center gap-2 px-5 py-[13px] border-[1.5px] border-[#CBCBC6] rounded-lg
+          className="flex items-center gap-2 px-5 py-[13px] border-[1.5px] border-[#CBCBC6] rounded-md
             text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all duration-150">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
           Back
@@ -207,14 +207,14 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
       )}
       {step < totalSteps ? (
         <motion.button whileTap={{ scale: 0.98 }} onClick={onNext}
-          className="flex-1 py-[13px] bg-primary text-white rounded-lg text-[14px] font-bold
+          className="flex-1 py-[13px] bg-primary text-white rounded-md text-[14px] font-bold
             flex items-center justify-center gap-2 hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.30)] transition-all duration-150">
           {nextLabel || 'Continue'}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
         </motion.button>
       ) : (
         <motion.button whileTap={{ scale: 0.98 }} onClick={onSubmit} disabled={submitting}
-          className="flex-1 py-[13px] bg-[#16A34A] text-white rounded-lg text-[14px] font-bold
+          className="flex-1 py-[13px] bg-[#16A34A] text-white rounded-md text-[14px] font-bold
             flex items-center justify-center gap-2 hover:bg-[#15803D] hover:shadow-[0_4px_14px_rgba(22,163,74,0.30)]
             transition-all duration-150 disabled:opacity-60">
           {submitting
@@ -444,7 +444,7 @@ export default function HostEvent() {
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-        <div className="inline-flex items-center gap-1.5 bg-green-bg border border-green-border text-[#16A34A] text-[12px] font-bold px-3 py-1 rounded-full mb-4">
+        <div className="inline-flex items-center gap-1.5 bg-green-bg border border-green-border text-[#16A34A] text-[12px] font-bold px-3 py-1 rounded-md mb-4">
           <CheckCircle2 size={12} strokeWidth={2} /> Submitted successfully
         </div>
         <h2 className="font-display font-bold text-[26px] md:text-[30px] text-text-1 tracking-tight mb-3">
@@ -458,11 +458,11 @@ export default function HostEvent() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button onClick={() => navigate('/')}
-            className="px-8 py-3.5 bg-primary text-white rounded-lg text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
+            className="px-8 py-3.5 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
             Back to Home
           </button>
           <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
-            className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-lg text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
+            className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-md text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
             Post Another Event
           </button>
         </div>
@@ -472,7 +472,7 @@ export default function HostEvent() {
 
   /* ── Header banner ── */
   const HeaderBanner = () => (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-[#7C3AED] px-6 py-6 mb-8">
+    <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary to-[#7C3AED] px-6 py-6 mb-8">
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10 pointer-events-none" />
       <div className="absolute -bottom-6 -left-4 w-24 h-24 rounded-full bg-white/08 pointer-events-none" />
       <div className="relative z-10">
@@ -523,8 +523,8 @@ export default function HostEvent() {
                 key="draft-banner"
                 initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-center gap-3 px-4 py-3.5 mb-5 bg-amber-bg border border-amber-border rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
-                <div className="w-9 h-9 rounded-xl bg-amber/10 flex items-center justify-center flex-shrink-0">
+                className="flex items-center gap-3 px-4 py-3.5 mb-5 bg-amber-bg border border-amber-border rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+                <div className="w-9 h-9 rounded-lg bg-amber/10 flex items-center justify-center flex-shrink-0">
                   <Clock size={17} strokeWidth={1.8} className="text-amber" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -542,12 +542,12 @@ export default function HostEvent() {
                     setDraftBanner(null);
                     showToast('Draft restored ✓', 'success');
                   }}
-                  className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[12px] font-bold text-primary bg-primary-light border border-[#C7D2FE] hover:bg-primary hover:text-white transition-all duration-fast">
+                  className="flex-shrink-0 px-3 py-1.5 rounded-md text-[12px] font-bold text-primary bg-primary-light border border-[#C7D2FE] hover:bg-primary hover:text-white transition-all duration-fast">
                   Resume →
                 </button>
                 <button
                   onClick={() => { purgeDraft(); setDraftBanner(null); }}
-                  className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-text-3 bg-white border border-border hover:text-red hover:border-red transition-all duration-fast">
+                  className="flex-shrink-0 px-3 py-1.5 rounded-md text-[12px] font-semibold text-text-3 bg-white border border-border hover:text-red hover:border-red transition-all duration-fast">
                   Discard
                 </button>
               </motion.div>
@@ -588,11 +588,11 @@ export default function HostEvent() {
                     {EVENT_TYPES.map(({ Icon: ETypeIcon, name, color }) => (
                       <motion.button key={name} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
                         onClick={() => upd('category', name)}
-                        className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg border-[1.5px] transition-all duration-150
+                        className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-md border-[1.5px] transition-all duration-150
                           ${f.category === name
                             ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.10)]'
                             : 'border-[#E4E4E0] bg-white hover:border-primary-mid hover:bg-[#F5F3FF]'}`}>
-                        <div className={`w-9 h-9 rounded-lg ${color} flex items-center justify-center`}>
+                        <div className={`w-9 h-9 rounded-md ${color} flex items-center justify-center`}>
                           <ETypeIcon size={18} strokeWidth={1.8} />
                         </div>
                         <span className={`text-[11px] font-semibold leading-snug text-center ${f.category === name ? 'text-primary' : 'text-text-2'}`}>
@@ -620,12 +620,12 @@ export default function HostEvent() {
                       const active = f.mode === id;
                       return (
                         <button key={id} onClick={() => upd('mode', id)}
-                          className={`flex flex-col items-center gap-2.5 py-4 px-3 rounded-lg border-[1.5px]
+                          className={`flex flex-col items-center gap-2.5 py-4 px-3 rounded-md border-[1.5px]
                                       transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/40
                                       ${active
                                         ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.09)]'
                                         : 'border-[#E4E4E0] bg-white hover:border-[#CBCBC6] hover:bg-[#FAFAF9] hover:shadow-[0_1px_4px_rgba(0,0,0,0.06)]'}`}>
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
                                            transition-all duration-200
                                            ${active
                                              ? 'bg-primary text-white shadow-[0_3px_10px_rgba(79,70,229,0.32)]'
@@ -801,7 +801,7 @@ export default function HostEvent() {
                 <AnimatePresence>
                   {posterPreview && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                      <div className="relative rounded-xl overflow-hidden border border-border" style={{ paddingTop: '56.25%' }}>
+                      <div className="relative rounded-lg overflow-hidden border border-border" style={{ paddingTop: '56.25%' }}>
                         <img src={posterPreview} alt="poster preview"
                           className="absolute inset-0 w-full h-full object-cover" />
                         <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/50 rounded text-[10px] text-white font-semibold">
@@ -824,7 +824,7 @@ export default function HostEvent() {
               </SectionCard>
 
               {/* Pre-submit checklist */}
-              <div className="bg-white border border-[#E4E4E0] rounded-xl p-5 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+              <div className="bg-white border border-[#E4E4E0] rounded-lg p-5 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-6 h-6 rounded-full bg-[#F0FDF4] flex items-center justify-center">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -849,11 +849,11 @@ export default function HostEvent() {
               </div>
 
               {/* Event summary card */}
-              <div className="bg-primary-light border border-[#C7D2FE] rounded-xl p-5">
+              <div className="bg-primary-light border border-[#C7D2FE] rounded-lg p-5">
                 <div className="text-[11px] font-bold tracking-wider uppercase text-primary mb-3">Submitting</div>
                 <div className="flex items-center gap-3">
                   {(() => { const T = EVENT_TYPES.find(t => t.name === f.category); const EIcon = T?.Icon || PartyPopper; return (
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${T?.color || 'bg1'}`}>
+                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${T?.color || 'bg1'}`}>
                     <EIcon size={24} strokeWidth={1.8} />
                   </div>); })()}
                   <div className="flex-1 min-w-0">
@@ -865,7 +865,7 @@ export default function HostEvent() {
               </div>
 
               {!isLoggedIn && (
-                <div className="bg-amber-bg border border-amber-border rounded-xl p-4 flex items-start gap-3">
+                <div className="bg-amber-bg border border-amber-border rounded-lg p-4 flex items-start gap-3">
                   <AlertTriangle size={20} strokeWidth={1.8} className="text-amber flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="text-[13px] font-semibold text-amber mb-0.5">Sign in required</div>

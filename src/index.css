@@ -179,7 +179,7 @@ input:focus:required {
 .otp-box {
   width: 52px; height: 60px;
   border: 2px solid #CBCBC6;
-  border-radius: 8px;
+  border-radius: 6px;
   text-align: center;
   font-family: 'Syne', sans-serif;
   font-size: 22px; font-weight: 700;
@@ -202,7 +202,7 @@ input:focus:required {
 /* ── Settings toggle ── */
 .toggle-track {
   width: 40px; height: 22px;
-  border-radius: 9999px;
+  border-radius: 6px;
   background: #E9E9E5;
   position: relative;
   transition: background 200ms ease-out;

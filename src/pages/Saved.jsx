@@ -6,15 +6,15 @@ import { events as eventsApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 
 const SkeletonRow = () => (
-  <div className="bg-surface border border-border rounded-xl overflow-hidden flex mb-3 animate-pulse">
+  <div className="bg-surface border border-border rounded-lg overflow-hidden flex mb-3 animate-pulse">
     <div className="w-[88px] bg-surface-3 flex-shrink-0" style={{ minHeight: 96 }} />
     <div className="p-4 flex-1 space-y-2">
       <div className="h-3 w-16 bg-surface-3 rounded-full" />
       <div className="h-4 w-2/3 bg-surface-3 rounded-full" />
       <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
       <div className="flex gap-2 mt-2">
-        <div className="h-7 w-20 bg-surface-3 rounded-md" />
-        <div className="h-7 w-16 bg-surface-3 rounded-md" />
+        <div className="h-7 w-20 bg-surface-3 rounded" />
+        <div className="h-7 w-16 bg-surface-3 rounded" />
       </div>
     </div>
   </div>
@@ -71,7 +71,7 @@ export default function Saved() {
           <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load saved events</div>
           <div className="text-[13px] text-text-3 mb-4">{error}</div>
           <button onClick={() => window.location.reload()}
-            className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">
+            className="px-5 py-2.5 bg-primary text-white rounded text-[14px] font-semibold hover:bg-primary-dark transition-colors">
             Retry
           </button>
         </div>
@@ -94,7 +94,7 @@ export default function Saved() {
               <div className="font-display font-bold text-[18px] text-text-1 mb-2">No saved events yet</div>
               <div className="text-[14px] text-text-3 mb-6">Bookmark events using the 🔖 icon on any card.</div>
               <button onClick={() => navigate('/explore')}
-                className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-semibold
+                className="px-6 py-3 bg-primary text-white rounded text-[14px] font-semibold
                            hover:bg-primary-dark transition-colors">
                 Browse Events
               </button>
@@ -105,7 +105,7 @@ export default function Saved() {
                 <motion.div key={ev.id}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.18, delay: i * 0.04 }}
-                  className="bg-surface border border-border rounded-xl overflow-hidden
+                  className="bg-surface border border-border rounded-lg overflow-hidden
                              flex mb-3 md:mb-0 hover:shadow-1 transition-all duration-base
                              hover:-translate-y-[2px] cursor-pointer"
                   onClick={() => navigate(`/event/${ev.id}`)}>
@@ -120,12 +120,12 @@ export default function Saved() {
                     <div className="text-[12px] text-text-3 mb-3">{ev.college} · {ev.startDate}</div>
                     <div className="flex gap-2">
                       <button onClick={e => { e.stopPropagation(); navigate(`/event/${ev.id}`); }}
-                        className="px-3 py-[5px] bg-primary text-white rounded-md text-[12px] font-semibold
+                        className="px-3 py-[5px] bg-primary text-white rounded text-[12px] font-semibold
                                    hover:bg-primary-dark transition-colors">
                         View Details
                       </button>
                       <button onClick={e => { e.stopPropagation(); handleRemove(ev); }}
-                        className="px-3 py-[5px] border border-border-strong rounded-md text-[12px] font-medium
+                        className="px-3 py-[5px] border border-border-strong rounded text-[12px] font-medium
                                    text-text-2 hover:border-red hover:text-red transition-all">
                         Remove
                       </button>

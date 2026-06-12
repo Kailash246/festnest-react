@@ -34,7 +34,7 @@ const DetailSkeleton = () => (
   <div className="min-h-screen bg-white animate-pulse">
     <div className="h-[320px] bg-surface-3 w-full" />
     <div className="px-4 mt-4 space-y-4">
-      <div className="flex gap-3">{[1,2,3].map(i => <div key={i} className="h-[72px] w-[80px] bg-surface-3 rounded-xl flex-shrink-0" />)}</div>
+      <div className="flex gap-3">{[1,2,3].map(i => <div key={i} className="h-[72px] w-[80px] bg-surface-3 rounded-lg flex-shrink-0" />)}</div>
       <div className="h-5 w-2/3 bg-surface-3 rounded-full" />
       <div className="h-4 w-full bg-surface-3 rounded-full" />
       <div className="h-4 w-5/6 bg-surface-3 rounded-full" />
@@ -44,7 +44,7 @@ const DetailSkeleton = () => (
 
 /* ── StatPill ── */
 const StatPill = ({ icon, value, label }) => (
-  <div className="flex flex-col items-center gap-1 px-4 py-3 bg-white/85 backdrop-blur-sm rounded-xl border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.07)] flex-shrink-0">
+  <div className="flex flex-col items-center gap-1 px-4 py-3 bg-white/85 backdrop-blur-sm rounded-lg border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.07)] flex-shrink-0">
     <div className="flex items-center justify-center w-[22px] h-[22px]">{icon}</div>
     <div className="font-display font-bold text-[16px] text-text-1 leading-none">{value}</div>
     <div className="text-[11px] text-text-3 font-medium">{label}</div>
@@ -53,7 +53,7 @@ const StatPill = ({ icon, value, label }) => (
 
 /* ── InfoCell ── */
 const InfoCell = ({ icon, label, value, accent }) => (
-  <div className={`rounded-lg p-4 flex flex-col gap-1.5 border ${accent ? 'bg-primary-light border-[#C7D2FE]' : 'bg-surface border-border'}`}>
+  <div className={`rounded-md p-4 flex flex-col gap-1.5 border ${accent ? 'bg-primary-light border-[#C7D2FE]' : 'bg-surface border-border'}`}>
     <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider uppercase text-text-4">
       <span className="flex-shrink-0">{icon}</span>{label}
     </div>
@@ -82,7 +82,7 @@ const PrizePodium = ({ prizes }) => {
       {podium.length > 0 && (
         <div className={`grid gap-3 mb-3 ${podium.length === 1 ? 'grid-cols-1' : podium.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
           {podium.map(({ rankLabel, label, value, bg, text }) => (
-            <div key={label} className={`border rounded-xl p-4 text-center ${bg}`}>
+            <div key={label} className={`border rounded-lg p-4 text-center ${bg}`}>
               <div className={`text-[14px] font-bold mb-1 ${text}`}>{rankLabel}</div>
               <div className={`font-display font-bold text-[16px] ${text}`}>₹{Number(value.replace(/,/g,'')).toLocaleString('en-IN')}</div>
               <div className="text-[11px] text-text-3 mt-0.5">{label}</div>
@@ -91,7 +91,7 @@ const PrizePodium = ({ prizes }) => {
         </div>
       )}
       {(total || pool) && (
-        <div className="flex items-center justify-between px-4 py-3 bg-primary-light border border-[#C7D2FE] rounded-xl">
+        <div className="flex items-center justify-between px-4 py-3 bg-primary-light border border-[#C7D2FE] rounded-lg">
           <div className="flex items-center gap-2">
             <IndianRupee size={18} strokeWidth={1.8} className="text-primary" />
             <span className="text-[13px] font-semibold text-primary">Total Prize Pool</span>
@@ -107,7 +107,7 @@ const PrizePodium = ({ prizes }) => {
 const RelatedCard = ({ ev, onClick }) => (
   <motion.button whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.10)' }} whileTap={{ scale: 0.97 }}
     onClick={onClick}
-    className="flex-shrink-0 w-[180px] bg-surface border border-border rounded-lg overflow-hidden text-left cursor-pointer transition-all duration-base">
+    className="flex-shrink-0 w-[180px] bg-surface border border-border rounded-md overflow-hidden text-left cursor-pointer transition-all duration-base">
     <div className={`w-full h-[90px] flex items-center justify-center text-[40px] ${ev.bg}`}>
       {ev.imageUrl ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" /> : ev.emoji}
     </div>
@@ -124,7 +124,7 @@ const RelatedCard = ({ ev, onClick }) => (
 function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, handleRegister, showToast }) {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}
-      className="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
+      className="bg-surface border border-border rounded-lg overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
       {/* Price header */}
       <div className={`px-6 pt-6 pb-5 border-b border-border
         ${ev.entryType==='free'  ? 'bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]'
@@ -141,7 +141,7 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
       {/* Quick info */}
       <div className="px-6 py-4 flex flex-col gap-3">
         {ev.deadlineDays > 0 && ev.deadlineDays <= 12 && (
-          <div className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-[13px] font-semibold
+          <div className={`flex items-center gap-2 px-3 py-2.5 rounded-md text-[13px] font-semibold
             ${ev.deadlineDays<=3 ? 'bg-red-bg text-red border border-red-border'
             : ev.deadlineDays<=6 ? 'bg-amber-bg text-amber border border-amber-border'
                                   : 'bg-green-bg text-[#16A34A] border border-green-border'}`}>
@@ -165,7 +165,7 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
       <div className="px-6 pb-6 flex flex-col gap-2.5">
         <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
           onClick={handleRegister} disabled={registering || registered}
-          className={`w-full py-[14px] rounded-lg font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
+          className={`w-full py-[14px] rounded-md font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
             ${registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`}`}>
           <AnimatePresence mode="wait">
             {registering ? (
@@ -188,7 +188,7 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
 
         <div className="flex gap-2">
           <motion.button whileTap={{scale:0.94}} onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
-            className={`flex-1 py-3 rounded-lg border-[1.5px] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all duration-fast
+            className={`flex-1 py-3 rounded-md border-[1.5px] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all duration-fast
               ${isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:border-primary hover:text-primary hover:bg-primary-xlight'}`}>
             <svg viewBox="0 0 24 24" fill={isSaved?'currentColor':'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
             {isSaved ? 'Saved' : 'Save'}
@@ -201,7 +201,7 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
                 showToast('Link copied! 📋', 'success');
               }
             }}
-            className="flex-1 py-3 rounded-lg border-[1.5px] border-border text-[13px] font-semibold text-text-2 flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary hover:bg-primary-xlight transition-all">
+            className="flex-1 py-3 rounded-md border-[1.5px] border-border text-[13px] font-semibold text-text-2 flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary hover:bg-primary-xlight transition-all">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             Share
           </motion.button>
@@ -330,8 +330,8 @@ export default function EventDetails() {
       </h2>
       <p className="text-[14px] text-text-3 mb-6">{error || 'This event may have ended or been removed.'}</p>
       <div className="flex gap-3">
-        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-lg text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
-        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-lg text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
+        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
+        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-md text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
       </div>
     </div>
   );
@@ -380,7 +380,7 @@ export default function EventDetails() {
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 md:px-10 md:pt-6 z-10">
           <motion.button whileTap={{ scale: 0.92 }} onClick={() => navigate(-1)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/80 backdrop-blur-sm text-[13px] font-medium text-text-1 border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-white/80 backdrop-blur-sm text-[13px] font-medium text-text-1 border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
             Back
           </motion.button>
@@ -408,11 +408,11 @@ export default function EventDetails() {
         {/* Hero bottom */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 md:px-10 md:pb-7 z-10">
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <div className={`inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full border backdrop-blur-sm ${cfg.pill}`}>
+            <div className={`inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-md border backdrop-blur-sm ${cfg.pill}`}>
               {ev.badgeText}
             </div>
             {mode && (
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full bg-black/30 text-white border border-white/20 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-md bg-black/30 text-white border border-white/20 backdrop-blur-sm">
                 {mode === 'Online' ? <Monitor size={11} strokeWidth={2} /> : mode === 'Hybrid' ? <Globe size={11} strokeWidth={2} /> : <Building2 size={11} strokeWidth={2} />} {mode}
               </div>
             )}
@@ -448,7 +448,7 @@ export default function EventDetails() {
           {ev.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-6">
               {ev.tags.map(tag => (
-                <span key={tag} className="px-3 py-1.5 text-[12px] font-semibold bg-surface border border-border rounded-full text-text-2 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                <span key={tag} className="px-3 py-1.5 text-[12px] font-semibold bg-surface border border-border rounded-md text-text-2 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
                   {tag}
                 </span>
               ))}
@@ -490,7 +490,7 @@ export default function EventDetails() {
                 {ev.highlights.map((h, i) => (
                   <motion.div key={h} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.16, delay: i * 0.04 }}
-                    className="flex items-center gap-3 px-4 py-3 bg-surface rounded-xl border border-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:border-primary-mid hover:shadow-[0_2px_8px_rgba(79,70,229,0.09)] transition-all duration-fast">
+                    className="flex items-center gap-3 px-4 py-3 bg-surface rounded-lg border border-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:border-primary-mid hover:shadow-[0_2px_8px_rgba(79,70,229,0.09)] transition-all duration-fast">
                     <span className="text-[20px] flex-shrink-0">{h.slice(0, 2)}</span>
                     <span className="text-[13px] font-medium text-text-1 leading-snug">{h.slice(2).trim()}</span>
                   </motion.div>
@@ -506,7 +506,7 @@ export default function EventDetails() {
               <div className="flex flex-wrap gap-2">
                 {perks.split(',').map(p => p.trim()).filter(Boolean).map(perk => (
                   <span key={perk}
-                    className="px-3 py-1.5 text-[13px] font-medium bg-surface-2 border border-border rounded-full text-text-2">
+                    className="px-3 py-1.5 text-[13px] font-medium bg-surface-2 border border-border rounded-md text-text-2">
                     {perk}
                   </span>
                 ))}
@@ -538,13 +538,13 @@ export default function EventDetails() {
                     className="overflow-hidden">
                     <div className="space-y-4 pb-4">
                       {eligibility && (
-                        <div className="bg-surface rounded-xl p-4 border border-border">
+                        <div className="bg-surface rounded-lg p-4 border border-border">
                           <div className="text-[11px] font-bold tracking-wider uppercase text-text-4 mb-2">Who can participate</div>
                           <p className="text-[14px] text-text-2 leading-relaxed">{eligibility}</p>
                         </div>
                       )}
                       {rules && (
-                        <div className="bg-surface rounded-xl p-4 border border-border">
+                        <div className="bg-surface rounded-lg p-4 border border-border">
                           <div className="text-[11px] font-bold tracking-wider uppercase text-text-4 mb-2">Rules</div>
                           <p className="text-[14px] text-text-2 leading-relaxed whitespace-pre-line">{rules}</p>
                         </div>
@@ -560,8 +560,8 @@ export default function EventDetails() {
           {ev.orgName && (
             <div className="mb-6">
               <SectionHeading>Organiser</SectionHeading>
-              <div className="flex items-center gap-4 p-4 bg-surface rounded-xl border border-border shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-                <div className="w-12 h-12 rounded-xl bg-surface-2 flex items-center justify-center text-[24px] flex-shrink-0 border border-border">
+              <div className="flex items-center gap-4 p-4 bg-surface rounded-lg border border-border shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                <div className="w-12 h-12 rounded-lg bg-surface-2 flex items-center justify-center text-[24px] flex-shrink-0 border border-border">
                   {ev.orgLogo}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -571,7 +571,7 @@ export default function EventDetails() {
                 </div>
                 <motion.button whileTap={{ scale: 0.94 }}
                   onClick={() => { setFollowed(f => !f); showToast(followed ? 'Unfollowed' : `Following ${ev.orgName} ✓`, 'success'); }}
-                  className={`flex-shrink-0 px-4 py-2 rounded-lg text-[13px] font-semibold border transition-all duration-fast
+                  className={`flex-shrink-0 px-4 py-2 rounded-md text-[13px] font-semibold border transition-all duration-fast
                     ${followed ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-primary-light text-primary border-[#C7D2FE] hover:bg-primary hover:text-white'}`}>
                   {followed ? '✓ Following' : '+ Follow'}
                 </motion.button>
@@ -584,8 +584,8 @@ export default function EventDetails() {
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.22 }}
               className="mb-6">
-              <div className="flex items-center gap-4 px-4 py-4 bg-[#FFF7ED] border border-[#FED7AA] rounded-xl shadow-[0_1px_6px_rgba(180,83,9,0.07)]">
-                <div className="w-12 h-12 rounded-xl bg-[#B45309]/10 flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center gap-4 px-4 py-4 bg-[#FFF7ED] border border-[#FED7AA] rounded-lg shadow-[0_1px_6px_rgba(180,83,9,0.07)]">
+                <div className="w-12 h-12 rounded-lg bg-[#B45309]/10 flex items-center justify-center flex-shrink-0">
                   <FileText size={24} strokeWidth={1.6} className="text-[#B45309]" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -594,7 +594,7 @@ export default function EventDetails() {
                 </div>
                 <div className="flex items-center flex-shrink-0">
                   <button onClick={handleDownloadBrochure}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold text-[#B45309] bg-white border border-[#FED7AA] hover:bg-[#B45309] hover:text-white transition-all duration-fast">
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[12px] font-semibold text-[#B45309] bg-white border border-[#FED7AA] hover:bg-[#B45309] hover:text-white transition-all duration-fast">
                     <Download size={13} strokeWidth={2.2} />
                     <span>Download</span>
                   </button>
@@ -607,10 +607,10 @@ export default function EventDetails() {
           {(pocName || pocPhone || pocEmail || website) && (
             <div className="mb-6">
               <SectionHeading><span className="flex items-center gap-2"><Phone size={17} strokeWidth={1.8} className="text-text-2" /> Contact Information</span></SectionHeading>
-              <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="bg-white border border-border rounded-md overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                 {pocName && (
                   <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border last:border-b-0">
-                    <div className="w-8 h-8 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-md bg-primary-light flex items-center justify-center flex-shrink-0">
                       <svg viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                     <div>
@@ -622,7 +622,7 @@ export default function EventDetails() {
                 {pocPhone && (
                   <a href={`tel:${pocPhone}`}
                     className="flex items-center gap-3 px-4 py-3.5 border-b border-border last:border-b-0 hover:bg-surface-2 transition-colors group">
-                    <div className="w-8 h-8 rounded-lg bg-green-bg flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-md bg-green-bg flex items-center justify-center flex-shrink-0">
                       <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.29 2 2 0 0 1 3.63 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                     </div>
                     <div className="flex-1">
@@ -635,7 +635,7 @@ export default function EventDetails() {
                 {pocEmail && (
                   <a href={`mailto:${pocEmail}`}
                     className="flex items-center gap-3 px-4 py-3.5 border-b border-border last:border-b-0 hover:bg-surface-2 transition-colors group">
-                    <div className="w-8 h-8 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-md bg-primary-light flex items-center justify-center flex-shrink-0">
                       <svg viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -648,7 +648,7 @@ export default function EventDetails() {
                 {website && website !== '#' && (
                   <a href={website} target="_blank" rel="noreferrer"
                     className="flex items-center gap-3 px-4 py-3.5 last:border-b-0 hover:bg-surface-2 transition-colors group">
-                    <div className="w-8 h-8 rounded-lg bg-[#FFF7ED] flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-md bg-[#FFF7ED] flex items-center justify-center flex-shrink-0">
                       <svg viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -730,14 +730,14 @@ export default function EventDetails() {
             <div className="text-[11px] text-text-3 mt-0.5">{ev.priceNote}</div>
           </div>
           {ev.deadlineDays > 0 && ev.deadlineDays <= 6 && (
-            <div className={`flex-shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold
+            <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold
               ${ev.deadlineDays<=3 ? 'bg-red-bg text-red border border-red-border' : 'bg-amber-bg text-amber border border-amber-border'}`}>
               {ev.deadlineDays}d left
             </div>
           )}
           <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
             onClick={handleRegister} disabled={registering || registered}
-            className={`flex-1 py-[14px] rounded-lg font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
+            className={`flex-1 py-[14px] rounded-md font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
               ${registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`}`}>
             <AnimatePresence mode="wait">
               {registering ? (

@@ -27,7 +27,7 @@ const Badge = ({ children, color = 'indigo' }) => {
     gray:   'bg-surface-3 text-text-3 border-border',
   };
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${styles[color]}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold border ${styles[color]}`}>
       {children}
     </span>
   );
@@ -36,8 +36,8 @@ const Badge = ({ children, color = 'indigo' }) => {
 const StatCard = ({ icon, label, value, sub, color = 'indigo' }) => {
   const bg = { indigo: 'bg-primary-light text-primary', green: 'bg-green-bg text-[#16A34A]', amber: 'bg-amber-bg text-amber', red: 'bg-red-bg text-red' };
   return (
-    <div className="bg-white border border-border rounded-xl p-4 shadow-1 flex items-start gap-3">
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0 ${bg[color]}`}>{icon}</div>
+    <div className="bg-white border border-border rounded-lg p-4 shadow-1 flex items-start gap-3">
+      <div className={`w-10 h-10 rounded-md flex items-center justify-center text-xl flex-shrink-0 ${bg[color]}`}>{icon}</div>
       <div>
         <div className="text-[22px] font-display font-bold text-text-1 leading-none">{value ?? '—'}</div>
         <div className="text-[12px] text-text-2 font-medium mt-0.5">{label}</div>
@@ -63,7 +63,7 @@ const EmptyState = ({ icon, title, sub }) => (
 );
 
 const Btn = ({ onClick, children, variant = 'primary', size = 'sm', disabled, loading }) => {
-  const base = "inline-flex items-center gap-1.5 font-semibold rounded-lg transition-all duration-150 disabled:opacity-50";
+  const base = "inline-flex items-center gap-1.5 font-semibold rounded-md transition-all duration-150 disabled:opacity-50";
   const sizes = { sm: 'px-3 py-1.5 text-[12px]', md: 'px-4 py-2 text-[13px]', lg: 'px-5 py-2.5 text-[14px]' };
   const variants = {
     primary: 'bg-primary text-white hover:bg-primary-dark',
@@ -123,7 +123,7 @@ function OverviewTab({ showToast }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category breakdown */}
-        <div className="bg-white border border-border rounded-xl p-5 shadow-1">
+        <div className="bg-white border border-border rounded-lg p-5 shadow-1">
           <SectionHeader title="Events by Category" />
           <div className="space-y-2">
             {categoryBreakdown.map(({ _id, count }) => {
@@ -145,7 +145,7 @@ function OverviewTab({ showToast }) {
         </div>
 
         {/* Registrations trend */}
-        <div className="bg-white border border-border rounded-xl p-5 shadow-1">
+        <div className="bg-white border border-border rounded-lg p-5 shadow-1">
           <SectionHeader title="Registrations (Last 7 Days)" />
           <div className="flex items-end gap-2 h-28">
             {registrationsTrend.length === 0
@@ -157,7 +157,7 @@ function OverviewTab({ showToast }) {
                   <div key={_id} className="flex-1 flex flex-col items-center gap-1">
                     <div className="text-[10px] font-bold text-text-3">{count}</div>
                     <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ duration: 0.5 }}
-                      className="w-full bg-primary rounded-t-md min-h-[8px]" style={{ height: `${h}%` }} />
+                      className="w-full bg-primary rounded-t min-h-[8px]" style={{ height: `${h}%` }} />
                     <div className="text-[9px] text-text-4 truncate w-full text-center">{_id.slice(5)}</div>
                   </div>
                 );
@@ -168,7 +168,7 @@ function OverviewTab({ showToast }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent users */}
-        <div className="bg-white border border-border rounded-xl p-5 shadow-1">
+        <div className="bg-white border border-border rounded-lg p-5 shadow-1">
           <SectionHeader title="Recent Signups" />
           <div className="space-y-3">
             {recentUsers.map(u => (
@@ -188,11 +188,11 @@ function OverviewTab({ showToast }) {
         </div>
 
         {/* Recent pending submissions */}
-        <div className="bg-white border border-border rounded-xl p-5 shadow-1">
+        <div className="bg-white border border-border rounded-lg p-5 shadow-1">
           <SectionHeader title="Pending Submissions" sub="Awaiting review" />
           <div className="space-y-3">
             {recentSubmissions.map(s => (
-              <div key={s._id} className="flex items-start gap-3 p-3 bg-amber-bg border border-amber-border rounded-lg">
+              <div key={s._id} className="flex items-start gap-3 p-3 bg-amber-bg border border-amber-border rounded-md">
                 <div className="text-lg flex-shrink-0">📋</div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[13px] font-semibold text-text-1 truncate">{s.eventName}</div>
@@ -239,7 +239,7 @@ function SubmissionPreviewModal({ sub, onClose }) {
             onClick={onClose}
           >
             <div
-              className="bg-white rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.22)] w-full max-w-lg my-8 overflow-hidden"
+              className="bg-white rounded-lg shadow-[0_24px_64px_rgba(0,0,0,0.22)] w-full max-w-lg my-8 overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               {/* Banner */}
@@ -248,7 +248,7 @@ function SubmissionPreviewModal({ sub, onClose }) {
                   ? <img src={sub.bannerImage.url} alt={sub.eventName} className="w-full h-full object-cover" />
                   : <span className="text-[64px]">📋</span>
                 }
-                <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/50 text-white text-[10px] font-bold rounded-full tracking-wide uppercase">
+                <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/50 text-white text-[10px] font-bold rounded-md tracking-wide uppercase">
                   Admin Preview · {sub.status}
                 </span>
                 <button
@@ -268,7 +268,7 @@ function SubmissionPreviewModal({ sub, onClose }) {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[11px] font-bold text-primary tracking-wider uppercase">{sub.eventType}</span>
                   <span className="text-text-4">·</span>
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full" style={entryStyle}>
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md" style={entryStyle}>
                     {entryLabel}
                   </span>
                 </div>
@@ -333,7 +333,7 @@ function SubmissionPreviewModal({ sub, onClose }) {
 
                 <button
                   onClick={onClose}
-                  className="w-full py-2.5 border-[1.5px] border-border rounded-xl text-[13px] font-semibold text-text-2 hover:bg-surface-2 transition-colors"
+                  className="w-full py-2.5 border-[1.5px] border-border rounded-lg text-[13px] font-semibold text-text-2 hover:bg-surface-2 transition-colors"
                 >
                   Close Preview
                 </button>
@@ -419,7 +419,7 @@ function SubmissionsTab({ showToast }) {
       <div className="flex gap-2 flex-wrap">
         {['pending','approved','rejected','all'].map(s => (
           <button key={s} onClick={() => setFilter(s)}
-            className={`px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${filter === s ? 'bg-primary text-white border-primary' : 'bg-white text-text-2 border-border hover:border-primary-mid'}`}>
+            className={`px-3 py-1.5 rounded-md text-[12px] font-semibold border transition-all ${filter === s ? 'bg-primary text-white border-primary' : 'bg-white text-text-2 border-border hover:border-primary-mid'}`}>
             {s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
         ))}
@@ -431,11 +431,11 @@ function SubmissionsTab({ showToast }) {
           <div className="space-y-3">
             {items.map(s => (
               <motion.div key={s._id} layout
-                className="bg-white border border-border rounded-xl p-4 shadow-1 cursor-pointer hover:border-primary-mid transition-colors"
+                className="bg-white border border-border rounded-lg p-4 shadow-1 cursor-pointer hover:border-primary-mid transition-colors"
                 onClick={() => setSelected(selected?._id === s._id ? null : s)}>
                 <div className="flex items-start gap-3">
                   {/* Banner thumbnail or placeholder */}
-                  <div className="w-12 h-12 rounded-lg bg-primary-light flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
+                  <div className="w-12 h-12 rounded-md bg-primary-light flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
                     {s.bannerImage?.url
                       ? <img src={s.bannerImage.url} alt="" className="w-full h-full object-cover" />
                       : '📋'}
@@ -485,7 +485,7 @@ function SubmissionsTab({ showToast }) {
                           <div className="flex flex-col gap-2">
                             {isSuperAdmin && (
                               <label
-                                className="flex items-center gap-2.5 px-3 py-2.5 bg-[#FFFBEB] border border-[#FDE68A] rounded-lg cursor-pointer"
+                                className="flex items-center gap-2.5 px-3 py-2.5 bg-[#FFFBEB] border border-[#FDE68A] rounded-md cursor-pointer"
                                 onClick={e => e.stopPropagation()}
                               >
                                 <input
@@ -508,7 +508,7 @@ function SubmissionsTab({ showToast }) {
                                 onChange={e => setRejectReason(e.target.value)}
                                 onClick={e => e.stopPropagation()}
                                 placeholder="Rejection reason (required)"
-                                className="flex-1 text-[12px] px-3 py-2 border border-border rounded-lg bg-white focus:border-primary outline-none"
+                                className="flex-1 text-[12px] px-3 py-2 border border-border rounded-md bg-white focus:border-primary outline-none"
                               />
                               <Btn variant="danger" onClick={(e) => { e.stopPropagation(); reject(s._id); }} loading={actionLoading === s._id + '-reject'}>
                                 Reject
@@ -595,7 +595,7 @@ function EventsTab({ showToast }) {
         <div className="relative flex-1">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search events…"
-            className="w-full pl-9 pr-3 py-2 text-[13px] border border-border rounded-lg bg-white focus:border-primary outline-none" />
+            className="w-full pl-9 pr-3 py-2 text-[13px] border border-border rounded-md bg-white focus:border-primary outline-none" />
         </div>
       </div>
 
@@ -608,7 +608,7 @@ function EventsTab({ showToast }) {
             <motion.div key="modal" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.92 }}
               transition={{ duration: 0.18 }}
               className="fixed inset-0 z-[301] flex items-center justify-center p-4">
-              <div className="bg-white rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.20)] max-w-sm w-full p-6">
+              <div className="bg-white rounded-lg shadow-[0_20px_60px_rgba(0,0,0,0.20)] max-w-sm w-full p-6">
                 <div className="text-3xl mb-3">🗑️</div>
                 <div className="font-display font-bold text-[16px] text-text-1 mb-2">Permanently delete event?</div>
                 <div className="text-[13px] text-text-3 mb-1">
@@ -632,10 +632,10 @@ function EventsTab({ showToast }) {
         : (
           <div className="space-y-2">
             {items.map(ev => (
-              <div key={ev._id} className={`bg-white border rounded-xl p-4 shadow-1 ${!ev.isActive ? 'opacity-60 border-border' : 'border-border'}`}>
+              <div key={ev._id} className={`bg-white border rounded-lg p-4 shadow-1 ${!ev.isActive ? 'opacity-60 border-border' : 'border-border'}`}>
                 {/* Identity row */}
                 <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0 mt-0.5 ${ev.bgClass || 'bg1'}`}>{ev.emoji}</div>
+                  <div className={`w-10 h-10 rounded-md flex items-center justify-center text-xl flex-shrink-0 mt-0.5 ${ev.bgClass || 'bg1'}`}>{ev.emoji}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
                       <span className="font-semibold text-[14px] text-text-1 truncate">{ev.name}</span>
@@ -724,14 +724,14 @@ function UsersTab({ showToast }) {
       <div className="relative">
         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or email…"
-          className="w-full pl-9 pr-3 py-2 text-[13px] border border-border rounded-lg bg-white focus:border-primary outline-none" />
+          className="w-full pl-9 pr-3 py-2 text-[13px] border border-border rounded-md bg-white focus:border-primary outline-none" />
       </div>
 
       {/* Filter chips */}
       <div className="flex gap-2">
         {USER_ROLE_FILTERS.map(f => (
           <button key={f.value} onClick={() => setRoleFilter(f.value)}
-            className={`px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-colors
+            className={`px-3 py-1.5 rounded-md text-[12px] font-semibold border transition-colors
                         ${roleFilter === f.value
                           ? 'bg-primary text-white border-primary'
                           : 'bg-white text-text-2 border-border hover:border-primary/40 hover:text-primary'}`}>
@@ -745,7 +745,7 @@ function UsersTab({ showToast }) {
         : (
           <div className="space-y-2">
             {items.map(u => (
-              <div key={u._id} className={`bg-white border border-border rounded-xl p-4 shadow-1 ${u.isBanned ? 'opacity-60' : ''}`}>
+              <div key={u._id} className={`bg-white border border-border rounded-lg p-4 shadow-1 ${u.isBanned ? 'opacity-60' : ''}`}>
                 {/* Identity row */}
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-primary-light flex items-center justify-center text-[12px] font-bold text-primary flex-shrink-0">
@@ -829,7 +829,7 @@ function TicketsTab({ showToast }) {
       <div className="flex gap-2 flex-wrap">
         {['open','in_progress','resolved'].map(s => (
           <button key={s} onClick={() => setFilter(s)}
-            className={`px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${filter === s ? 'bg-primary text-white border-primary' : 'bg-white text-text-2 border-border hover:border-primary-mid'}`}>
+            className={`px-3 py-1.5 rounded-md text-[12px] font-semibold border transition-all ${filter === s ? 'bg-primary text-white border-primary' : 'bg-white text-text-2 border-border hover:border-primary-mid'}`}>
             {s.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())}
           </button>
         ))}
@@ -841,10 +841,10 @@ function TicketsTab({ showToast }) {
           <div className="space-y-2">
             {items.map(t => (
               <motion.div key={t._id} layout
-                className="bg-white border border-border rounded-xl p-4 shadow-1 cursor-pointer hover:border-primary-mid transition-colors"
+                className="bg-white border border-border rounded-lg p-4 shadow-1 cursor-pointer hover:border-primary-mid transition-colors"
                 onClick={() => setSelected(selected?._id === t._id ? null : t)}>
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-surface-2 flex items-center justify-center text-lg flex-shrink-0 mt-0.5">🎫</div>
+                  <div className="w-9 h-9 rounded-md bg-surface-2 flex items-center justify-center text-lg flex-shrink-0 mt-0.5">🎫</div>
                   <div className="flex-1 min-w-0">
                     {/* ID + status */}
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
@@ -881,7 +881,7 @@ function TicketsTab({ showToast }) {
                         {/* User message */}
                         <div>
                           <div className="text-[10px] font-bold text-text-4 uppercase tracking-wide mb-1.5">User Message</div>
-                          <div className="text-[13px] text-text-2 bg-surface-2 rounded-lg p-3 leading-relaxed">{t.message}</div>
+                          <div className="text-[13px] text-text-2 bg-surface-2 rounded-md p-3 leading-relaxed">{t.message}</div>
                         </div>
 
                         {/* Existing reply thread */}
@@ -890,7 +890,7 @@ function TicketsTab({ showToast }) {
                             <div className="text-[10px] font-bold text-text-4 uppercase tracking-wide mb-1.5">Conversation</div>
                             <div className="space-y-2">
                               {t.replies.map((r, i) => (
-                                <div key={i} className="bg-primary-light border border-[#C7D2FE] rounded-lg p-3">
+                                <div key={i} className="bg-primary-light border border-[#C7D2FE] rounded-md p-3">
                                   <div className="flex items-center gap-1.5 mb-1">
                                     <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0">FN</div>
                                     <span className="text-[11px] font-bold text-primary">{r.name || 'FestNest Team'}</span>
@@ -915,7 +915,7 @@ function TicketsTab({ showToast }) {
                             value={adminNote}
                             onChange={e => setAdminNote(e.target.value)}
                             placeholder="Write your response to the user…"
-                            className="w-full text-[12px] px-3 py-2 border border-border rounded-lg bg-white focus:border-primary outline-none resize-none"
+                            className="w-full text-[12px] px-3 py-2 border border-border rounded-md bg-white focus:border-primary outline-none resize-none"
                             rows={3}
                           />
                         </div>
@@ -961,7 +961,7 @@ function BroadcastTab({ showToast }) {
 
   return (
     <div className="max-w-lg space-y-4">
-      <div className="bg-white border border-border rounded-xl p-5 shadow-1 space-y-4">
+      <div className="bg-white border border-border rounded-lg p-5 shadow-1 space-y-4">
         <SectionHeader title="Broadcast Notification" sub="Send a push notification to all users" />
 
         {/* Icon picker */}
@@ -970,7 +970,7 @@ function BroadcastTab({ showToast }) {
           <div className="flex gap-2 flex-wrap">
             {ICONS.map(ic => (
               <button key={ic} onClick={() => setForm(f => ({ ...f, icon: ic }))}
-                className={`w-9 h-9 rounded-lg text-xl flex items-center justify-center border transition-all ${form.icon === ic ? 'border-primary bg-primary-light scale-110' : 'border-border bg-surface-2 hover:border-primary-mid'}`}>
+                className={`w-9 h-9 rounded-md text-xl flex items-center justify-center border transition-all ${form.icon === ic ? 'border-primary bg-primary-light scale-110' : 'border-border bg-surface-2 hover:border-primary-mid'}`}>
                 {ic}
               </button>
             ))}
@@ -983,7 +983,7 @@ function BroadcastTab({ showToast }) {
           <div className="flex gap-2">
             {['system','updates','deadlines'].map(t => (
               <button key={t} onClick={() => setForm(f => ({ ...f, type: t }))}
-                className={`px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${form.type === t ? 'bg-primary text-white border-primary' : 'bg-white text-text-2 border-border'}`}>
+                className={`px-3 py-1.5 rounded-md text-[12px] font-semibold border transition-all ${form.type === t ? 'bg-primary text-white border-primary' : 'bg-white text-text-2 border-border'}`}>
                 {t}
               </button>
             ))}
@@ -995,7 +995,7 @@ function BroadcastTab({ showToast }) {
           <label className="text-[11px] font-bold text-text-3 uppercase tracking-wide block mb-1.5">Title *</label>
           <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
             placeholder="e.g. New hackathons added this week!"
-            className="w-full px-3 py-2.5 text-[13px] border border-border rounded-lg bg-white focus:border-primary outline-none" />
+            className="w-full px-3 py-2.5 text-[13px] border border-border rounded-md bg-white focus:border-primary outline-none" />
         </div>
 
         {/* Sub */}
@@ -1003,12 +1003,12 @@ function BroadcastTab({ showToast }) {
           <label className="text-[11px] font-bold text-text-3 uppercase tracking-wide block mb-1.5">Subtitle</label>
           <input value={form.sub} onChange={e => setForm(f => ({ ...f, sub: e.target.value }))}
             placeholder="Optional supporting text…"
-            className="w-full px-3 py-2.5 text-[13px] border border-border rounded-lg bg-white focus:border-primary outline-none" />
+            className="w-full px-3 py-2.5 text-[13px] border border-border rounded-md bg-white focus:border-primary outline-none" />
         </div>
 
         {/* Preview */}
-        <div className="bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl p-4 flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-xl flex-shrink-0 shadow-sm">{form.icon}</div>
+        <div className="bg-[#EEF2FF] border border-[#C7D2FE] rounded-lg p-4 flex items-start gap-3">
+          <div className="w-9 h-9 rounded-md bg-white flex items-center justify-center text-xl flex-shrink-0 shadow-sm">{form.icon}</div>
           <div>
             <div className="font-semibold text-[13px] text-text-1">{form.title || 'Your title here'}</div>
             <div className="text-[12px] text-text-3 mt-0.5">{form.sub || 'Optional subtitle…'}</div>
@@ -1105,13 +1105,13 @@ function FeaturedTab({ showToast }) {
             const rank = idx + 1;
             const isActing = actionId.startsWith(ev._id);
             return (
-              <div key={ev._id} className="bg-white border border-border rounded-xl p-4 shadow-1">
+              <div key={ev._id} className="bg-white border border-border rounded-lg p-4 shadow-1">
                 {/* Identity row */}
                 <div className="flex items-center gap-3">
                   <div className="text-[20px] flex-shrink-0 w-7 text-center leading-none select-none">
                     {RANK_ICONS[idx] ?? `${rank}.`}
                   </div>
-                  <div className={`w-10 h-10 rounded-xl ${ev.bg || 'bg1'} flex items-center justify-center text-[18px] flex-shrink-0 overflow-hidden`}>
+                  <div className={`w-10 h-10 rounded-lg ${ev.bg || 'bg1'} flex items-center justify-center text-[18px] flex-shrink-0 overflow-hidden`}>
                     {ev.imageUrl
                       ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" />
                       : (ev.emoji || '🎉')}
@@ -1132,7 +1132,7 @@ function FeaturedTab({ showToast }) {
                     value={rank}
                     disabled={isActing || items.length === 1}
                     onChange={e => changePosition(ev._id, Number(e.target.value))}
-                    className="flex-1 min-w-0 px-2 py-1.5 text-[12px] border border-border rounded-lg bg-white text-text-2 font-semibold focus:border-primary outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 min-w-0 px-2 py-1.5 text-[12px] border border-border rounded-md bg-white text-text-2 font-semibold focus:border-primary outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Change priority position"
                   >
                     {items.map((_, i) => (
@@ -1199,7 +1199,7 @@ export default function AdminDashboard() {
       {/* ── Admin header bar ── */}
       <div className="bg-white border-b border-border sticky top-0 z-10 shadow-1">
         <div className="px-4 py-3 md:px-6 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>

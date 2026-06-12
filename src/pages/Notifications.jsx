@@ -37,9 +37,9 @@ const groupLabel = (dateStr) => {
 
 /* ─── Skeleton ────────────────────────────────────────── */
 const SkeletonCard = () => (
-  <div className="mx-3 mb-2 rounded-xl bg-white border border-border p-4 animate-pulse">
+  <div className="mx-3 mb-2 rounded-lg bg-white border border-border p-4 animate-pulse">
     <div className="flex items-start gap-3">
-      <div className="w-10 h-10 rounded-xl bg-surface-3 flex-shrink-0" />
+      <div className="w-10 h-10 rounded-lg bg-surface-3 flex-shrink-0" />
       <div className="flex-1 space-y-2.5 pt-0.5">
         <div className="h-3.5 w-3/5 bg-surface-3 rounded-full" />
         <div className="h-3 w-full bg-surface-3 rounded-full" />
@@ -60,7 +60,7 @@ const NotifCard = ({ n, onRead, onDelete }) => {
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.15 }}
       onClick={() => onRead(n)}
-      className={`relative mx-3 mb-2 rounded-xl border overflow-hidden cursor-pointer
+      className={`relative mx-3 mb-2 rounded-lg border overflow-hidden cursor-pointer
                   active:scale-[0.99] transition-all duration-100
                   ${unread ? 'bg-[#F5F3FF] border-[#C4B5FD]' : 'bg-white border-border'}`}
     >
@@ -73,7 +73,7 @@ const NotifCard = ({ n, onRead, onDelete }) => {
         <div className="flex items-start gap-3">
 
           {/* Icon bubble */}
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-[20px]
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-[20px]
                            flex-shrink-0 mt-0.5 ${n.bg || 'bg-[#EEF2FF]'}`}>
             {n.icon || '🔔'}
           </div>
@@ -92,7 +92,7 @@ const NotifCard = ({ n, onRead, onDelete }) => {
                 <button
                   onClick={e => e.stopPropagation()}
                   className="text-[11px] font-bold text-primary bg-primary-light border border-[#C7D2FE]
-                             rounded-lg px-2.5 py-1 hover:bg-primary hover:text-white transition-all"
+                             rounded-md px-2.5 py-1 hover:bg-primary hover:text-white transition-all"
                 >
                   {n.cta} →
                 </button>
@@ -199,7 +199,7 @@ export default function Notifications() {
   /* ── Not logged in ── */
   if (!isLoggedIn) return (
     <div className="flex flex-col items-center py-24 px-6 text-center min-h-screen bg-surface-2">
-      <div className="w-16 h-16 rounded-xl bg-primary-light flex items-center justify-center mb-5">
+      <div className="w-16 h-16 rounded-lg bg-primary-light flex items-center justify-center mb-5">
         <Bell size={30} strokeWidth={1.5} className="text-primary" />
       </div>
       <h2 className="font-display font-bold text-[20px] text-text-1 mb-2">Activity Center</h2>
@@ -207,7 +207,7 @@ export default function Notifications() {
         Sign in to receive deadline reminders, event updates, and announcements.
       </p>
       <button onClick={() => requireAuth()}
-        className="px-6 py-3 bg-primary text-white rounded-xl text-[14px] font-bold
+        className="px-6 py-3 bg-primary text-white rounded-lg text-[14px] font-bold
                    hover:bg-primary-dark transition-colors">
         Sign In
       </button>
@@ -228,7 +228,7 @@ export default function Notifications() {
                 Activity
               </h1>
               {unreadNotifCount > 0 && (
-                <span className="bg-primary text-white text-[11px] font-bold px-2 py-0.5 rounded-full leading-none">
+                <span className="bg-primary text-white text-[11px] font-bold px-2 py-0.5 rounded-md leading-none">
                   {unreadNotifCount}
                 </span>
               )}
@@ -239,7 +239,7 @@ export default function Notifications() {
           {unreadNotifCount > 0 && (
             <button onClick={handleMarkAll}
               className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-semibold
-                         text-primary bg-primary-light border border-[#C7D2FE] rounded-xl
+                         text-primary bg-primary-light border border-[#C7D2FE] rounded-lg
                          hover:bg-primary hover:text-white transition-all flex-shrink-0 mt-0.5">
               <CheckCheck size={13} strokeWidth={2.5} />
               <span className="hidden sm:inline">Mark all read</span>
@@ -252,7 +252,7 @@ export default function Notifications() {
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3">
           {TABS.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold
+              className={`flex-shrink-0 px-4 py-1.5 rounded-md text-[13px] font-semibold
                           border transition-all duration-fast
                           ${activeTab === t.id
                             ? 'bg-primary text-white border-primary'
@@ -268,12 +268,12 @@ export default function Notifications() {
 
         {/* Error */}
         {error && (
-          <div className="mx-4 mt-4 p-5 bg-white border border-border rounded-xl text-center">
+          <div className="mx-4 mt-4 p-5 bg-white border border-border rounded-lg text-center">
             <AlertTriangle size={32} strokeWidth={1.3} className="text-amber mx-auto mb-2" />
             <div className="font-semibold text-text-1 mb-1">Couldn't load notifications</div>
             <div className="text-[13px] text-text-3 mb-4">{error}</div>
             <button onClick={() => load()}
-              className="px-4 py-2 bg-primary text-white rounded-xl text-[13px] font-semibold">
+              className="px-4 py-2 bg-primary text-white rounded-lg text-[13px] font-semibold">
               Try again
             </button>
           </div>
@@ -290,7 +290,7 @@ export default function Notifications() {
         {/* Empty state */}
         {!loading && !error && notifs.length === 0 && (
           <div className="flex flex-col items-center py-20 text-center px-6">
-            <div className="w-16 h-16 rounded-xl bg-surface-3 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-lg bg-surface-3 flex items-center justify-center mb-4">
               <BellOff size={28} strokeWidth={1.3} className="text-text-3" />
             </div>
             <div className="font-display font-bold text-[18px] text-text-1 mb-2">
@@ -303,7 +303,7 @@ export default function Notifications() {
             </p>
             {activeTab !== 'all' && (
               <button onClick={() => setActiveTab('all')}
-                className="mt-5 px-5 py-2.5 bg-primary text-white rounded-xl text-[13px] font-bold
+                className="mt-5 px-5 py-2.5 bg-primary text-white rounded-lg text-[13px] font-bold
                            hover:bg-primary-dark transition-colors">
                 View all notifications
               </button>

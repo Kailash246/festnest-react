@@ -52,7 +52,7 @@ const SkeletonCard = () => (
       <div className="h-3 w-16 bg-surface-3 rounded-full" />
       <div className="h-5 w-3/4 bg-surface-3 rounded-full" />
       <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
-      <div className="h-10 bg-surface-3 rounded-lg mt-4" />
+      <div className="h-10 bg-surface-3 rounded-md mt-4" />
     </div>
   </div>
 );
@@ -60,7 +60,7 @@ const SkeletonCard = () => (
 const SkeletonHScroll = ({ count = 4, wide }) => (
   <div className="flex gap-3 px-4 overflow-x-auto no-scrollbar pb-2">
     {Array.from({ length: count }).map((_, i) => (
-      <div key={i} className={`flex-shrink-0 ${wide ? 'w-[236px]' : 'w-[196px]'} bg-white border border-border rounded-lg overflow-hidden animate-pulse`}>
+      <div key={i} className={`flex-shrink-0 ${wide ? 'w-[236px]' : 'w-[196px]'} bg-white border border-border rounded-md overflow-hidden animate-pulse`}>
         <div className={`${wide ? 'h-[78px] w-[78px]' : 'h-[116px] w-full'} bg-surface-3`} />
         <div className="p-3 space-y-2">
           <div className="h-3 w-2/3 bg-surface-3 rounded-full" />
@@ -91,14 +91,14 @@ function FilterSheet({ open, onClose, filters, setFilters, onApply, onReset, act
             transition={{ duration: 0.22 }} className="fixed inset-0 bg-black/40 z-[200]" onClick={onClose} />
           <motion.div key="sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-[201] bg-white rounded-t-xl max-w-[640px] mx-auto shadow-[0_-8px_40px_rgba(0,0,0,0.15)] max-h-[85vh] flex flex-col">
+            className="fixed bottom-0 left-0 right-0 z-[201] bg-white rounded-t-lg max-w-[640px] mx-auto shadow-[0_-8px_40px_rgba(0,0,0,0.15)] max-h-[85vh] flex flex-col">
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
               <div className="w-10 h-1 bg-[#E4E4E0] rounded-full" />
             </div>
             <div className="flex items-center justify-between px-5 py-3 border-b border-[#E4E4E0] flex-shrink-0">
               <h3 className="font-display font-bold text-[18px] text-[#111110]">
                 Filters
-                {activeCount > 0 && <span className="ml-2 text-[12px] font-bold bg-primary text-white px-2 py-0.5 rounded-full">{activeCount}</span>}
+                {activeCount > 0 && <span className="ml-2 text-[12px] font-bold bg-primary text-white px-2 py-0.5 rounded-md">{activeCount}</span>}
               </h3>
               <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F1F0ED] text-[#8A8A85] hover:bg-[#E4E4E0] transition-colors">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -131,8 +131,8 @@ function FilterSheet({ open, onClose, filters, setFilters, onApply, onReset, act
               </FilterSection>
             </div>
             <div className="flex gap-3 px-5 pt-3 pb-[calc(16px+env(safe-area-inset-bottom,0px))] border-t border-[#E4E4E0] flex-shrink-0">
-              <button onClick={handleReset} className="flex-1 py-3 border-[1.5px] border-[#E4E4E0] rounded-lg text-[14px] font-semibold text-[#8A8A85] hover:border-[#4F46E5] hover:text-[#4F46E5] transition-all">Reset All</button>
-              <button onClick={handleApply} className="flex-[2] py-3 bg-[#4F46E5] text-white rounded-lg text-[14px] font-bold hover:bg-[#3730A3] hover:shadow-[0_4px_14px_rgba(79,70,229,0.35)] transition-all">Show Events</button>
+              <button onClick={handleReset} className="flex-1 py-3 border-[1.5px] border-[#E4E4E0] rounded-md text-[14px] font-semibold text-[#8A8A85] hover:border-[#4F46E5] hover:text-[#4F46E5] transition-all">Reset All</button>
+              <button onClick={handleApply} className="flex-[2] py-3 bg-[#4F46E5] text-white rounded-md text-[14px] font-bold hover:bg-[#3730A3] hover:shadow-[0_4px_14px_rgba(79,70,229,0.35)] transition-all">Show Events</button>
             </div>
           </motion.div>
         </>
@@ -149,7 +149,7 @@ const FilterSection = ({ title, children, noBorder }) => (
 );
 
 const Chip = ({ label, active, onClick }) => (
-  <button onClick={onClick} className={`px-4 py-2 rounded-full border text-[13px] font-medium transition-all duration-150 ${active ? 'bg-[#4F46E5] border-[#4F46E5] text-white shadow-sm' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-[#4F46E5] hover:text-[#4F46E5]'}`}>
+  <button onClick={onClick} className={`px-4 py-2 rounded-md border text-[13px] font-medium transition-all duration-150 ${active ? 'bg-[#4F46E5] border-[#4F46E5] text-white shadow-sm' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-[#4F46E5] hover:text-[#4F46E5]'}`}>
     {label}
   </button>
 );
@@ -170,7 +170,7 @@ function SortDropdown({ value, onChange }) {
           <>
             <div className="fixed inset-0 z-[50]" onClick={() => setOpen(false)} />
             <motion.div initial={{ opacity: 0, y: -6, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.96 }} transition={{ duration: 0.15 }}
-              className="absolute right-0 top-7 z-[51] bg-white border border-[#E4E4E0] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.10)] overflow-hidden min-w-[160px]">
+              className="absolute right-0 top-7 z-[51] bg-white border border-[#E4E4E0] rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.10)] overflow-hidden min-w-[160px]">
               {SORT_OPT.map(opt => (
                 <button key={opt} onClick={() => { onChange(opt); setOpen(false); }}
                   className={`flex items-center justify-between w-full px-4 py-3 text-[13px] font-medium transition-colors text-left ${value === opt ? 'bg-primary-light text-primary' : 'text-[#4B4B47] hover:bg-[#F5F3FF] hover:text-primary'}`}>
@@ -315,8 +315,8 @@ export default function Home() {
         {notifBannerVisible && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }}
-            className="mx-4 mt-4 bg-[#EEF2FF] border border-[#C7D2FE] rounded-lg p-4 flex items-center gap-3 md:mx-auto md:max-w-[1140px]">
-            <div className="w-[38px] h-[38px] rounded-md bg-primary flex items-center justify-center flex-shrink-0 text-white">
+            className="mx-4 mt-4 bg-[#EEF2FF] border border-[#C7D2FE] rounded-md p-4 flex items-center gap-3 md:mx-auto md:max-w-[1140px]">
+            <div className="w-[38px] h-[38px] rounded bg-primary flex items-center justify-center flex-shrink-0 text-white">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             </div>
             <div className="flex-1 min-w-0">
@@ -342,7 +342,7 @@ export default function Home() {
 
         {/* Search + Filter */}
         <div className="relative hidden md:block">
-          <div className={`flex items-center gap-3 bg-white border-[1.5px] rounded-lg px-4 py-[11px] transition-all duration-fast ${showSuggestions ? 'border-primary shadow-[0_0_0_3px_rgba(79,70,229,0.10)]' : 'border-[#CBCBC6]'}`} role="search">
+          <div className={`flex items-center gap-3 bg-white border-[1.5px] rounded-md px-4 py-[11px] transition-all duration-fast ${showSuggestions ? 'border-primary shadow-[0_0_0_3px_rgba(79,70,229,0.10)]' : 'border-[#CBCBC6]'}`} role="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-fast ${showSuggestions ? 'text-primary' : 'text-[#8A8A85]'}`}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input ref={searchRef} value={searchVal} onChange={e => setSearchVal(e.target.value)}
               onFocus={() => setShowSuggestions(true)} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -360,7 +360,7 @@ export default function Home() {
             </AnimatePresence>
             <div className="w-px h-5 bg-[#E4E4E0] flex-shrink-0" />
             <button onClick={() => setFilterOpen(true)}
-              className={`flex items-center gap-[5px] rounded-md px-[11px] py-1.5 text-[12px] font-semibold flex-shrink-0 active:scale-95 transition-all duration-fast relative ${activeSheetCount > 0 ? 'bg-primary text-white' : 'bg-primary text-white hover:bg-primary-dark'}`}>
+              className={`flex items-center gap-[5px] rounded px-[11px] py-1.5 text-[12px] font-semibold flex-shrink-0 active:scale-95 transition-all duration-fast relative ${activeSheetCount > 0 ? 'bg-primary text-white' : 'bg-primary text-white hover:bg-primary-dark'}`}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
               Filter
               {activeSheetCount > 0 && (
@@ -371,12 +371,12 @@ export default function Home() {
           <AnimatePresence>
             {showSuggestions && !searchVal && (
               <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
-                className="absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-[#E4E4E0] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.10)] z-[50] overflow-hidden" role="listbox">
+                className="absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-[#E4E4E0] rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.10)] z-[50] overflow-hidden" role="listbox">
                 <div className="px-4 pt-2.5 pb-1.5 text-[10px] font-bold tracking-wider text-[#AEAEAD] uppercase">Recent Searches</div>
                 {suggestions.map(({ text, sub, bg, Icon: SugIcon }) => (
                   <button key={text} className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[#F5F3FF] transition-colors border-t border-[#E4E4E0] text-left"
                     onMouseDown={() => { setSearchVal(text); setShowSuggestions(false); }} role="option">
-                    <div className={`w-[34px] h-[34px] rounded-md ${bg} flex items-center justify-center flex-shrink-0`}><SugIcon size={18} strokeWidth={1.8} /></div>
+                    <div className={`w-[34px] h-[34px] rounded ${bg} flex items-center justify-center flex-shrink-0`}><SugIcon size={18} strokeWidth={1.8} /></div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[14px] font-medium text-[#111110]">{text}</div>
                       <div className="text-[12px] text-[#8A8A85]">{sub}</div>
@@ -394,7 +394,7 @@ export default function Home() {
       <div className="flex gap-2 px-4 pt-4 overflow-x-auto no-scrollbar md:filter-row-desktop md:flex-wrap md:overflow-x-visible">
         {CHIP_FILTERS.map(({ label, value, Icon: CfIcon }) => (
           <button key={value} onClick={() => setChipCategory(prev => prev === value ? 'all' : value)}
-            className={`flex items-center gap-[6px] px-[14px] py-[7px] rounded-full border text-[13px] font-medium whitespace-nowrap flex-shrink-0 transition-all duration-150 active:scale-95 select-none ${chipCategory === value ? 'bg-primary border-primary text-white shadow-sm' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-primary hover:text-primary hover:bg-[#F5F3FF] shadow-sm'}`}>
+            className={`flex items-center gap-[6px] px-[14px] py-[7px] rounded-md border text-[13px] font-medium whitespace-nowrap flex-shrink-0 transition-all duration-150 active:scale-95 select-none ${chipCategory === value ? 'bg-primary border-primary text-white shadow-sm' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-primary hover:text-primary hover:bg-[#F5F3FF] shadow-sm'}`}>
             <CfIcon size={13} strokeWidth={1.8} />{label}
           </button>
         ))}
@@ -418,7 +418,7 @@ export default function Home() {
       <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
         <div className="flex items-center gap-2">
           <h2 className="font-display font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Flame size={16} strokeWidth={1.8} className="text-red" /> Trending Now</h2>
-          <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-full">Live</span>
+          <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">Live</span>
         </div>
         <button onClick={() => navigate('/explore')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">See all</button>
       </div>
@@ -428,13 +428,13 @@ export default function Home() {
           {trending.map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
               onClick={() => navigate(`/event/${ev.id}`)}
-              className="flex-shrink-0 w-[196px] md:w-[224px] bg-white border border-[#E4E4E0] rounded-lg overflow-hidden cursor-pointer scroll-snap-start transition-all duration-base"
+              className="flex-shrink-0 w-[196px] md:w-[224px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start transition-all duration-base"
               tabIndex={0} role="listitem" onKeyDown={e => { if (e.key === 'Enter') navigate(`/event/${ev.id}`); }}>
               <div className={`relative w-full h-[116px] md:h-[136px] flex items-center justify-center text-[36px] ${ev.bg}`}>
                 {ev.imageUrl
                   ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" />
                   : <span aria-hidden>{ev.emoji}</span>}
-                <span className="absolute top-2 left-2 text-[10px] font-bold bg-black/55 text-white px-[7px] py-[2px] rounded-full tracking-wide z-[1]">#{ev.trendRank}</span>
+                <span className="absolute top-2 left-2 text-[10px] font-bold bg-black/55 text-white px-[7px] py-[2px] rounded-md tracking-wide z-[1]">#{ev.trendRank}</span>
               </div>
               <div className="p-3">
                 <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-[3px]">{ev.category}</div>
@@ -461,13 +461,13 @@ export default function Home() {
           {urgent.map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
               onClick={() => navigate(`/event/${ev.id}`)}
-              className="flex-shrink-0 w-[236px] md:w-[270px] bg-white border border-[#E4E4E0] rounded-lg overflow-hidden cursor-pointer scroll-snap-start flex transition-all duration-base"
+              className="flex-shrink-0 w-[236px] md:w-[270px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start flex transition-all duration-base"
               tabIndex={0} role="listitem" onKeyDown={e => { if (e.key === 'Enter') navigate(`/event/${ev.id}`); }}>
               <div className={`w-[78px] min-h-[78px] flex items-center justify-center text-[28px] flex-shrink-0 ${ev.bg}`}>
                 {ev.imageUrl ? <img src={ev.imageUrl} alt="" className="w-full h-full object-cover" /> : ev.emoji}
               </div>
               <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
-                <div className="flex items-center gap-[5px] text-[10px] font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-full w-fit mb-[5px] tracking-normal">
+                <div className="flex items-center gap-[5px] text-[10px] font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-md w-fit mb-[5px] tracking-normal">
                   <span className="w-[5px] h-[5px] bg-red rounded-full animate-pulse-fast flex-shrink-0" />
                   {ev.deadlineDays} days left
                 </div>
@@ -483,7 +483,7 @@ export default function Home() {
       <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
         <div className="flex items-center gap-2">
           <h2 className="font-display font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">For You</h2>
-          {!feedLoading && <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-full">{displayedEvents.length}</span>}
+          {!feedLoading && <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{displayedEvents.length}</span>}
           {totalActiveFilters > 0 && <span className="text-[11px] text-[#8A8A85]">· filtered</span>}
         </div>
         <SortDropdown value={sheetFilters.sort} onChange={v => setSheetFilters(f => ({ ...f, sort: v }))} />
@@ -495,7 +495,7 @@ export default function Home() {
           <AlertTriangle size={56} strokeWidth={1.5} className="text-amber mb-4" />
           <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">{error}</div>
-          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-lg text-[14px] font-bold hover:bg-primary-dark transition-all">Retry</button>
+          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark transition-all">Retry</button>
         </motion.div>
       )}
 
@@ -512,7 +512,7 @@ export default function Home() {
           <Search size={56} strokeWidth={1.5} className="text-text-3 mb-4" />
           <div className="font-display font-bold text-[18px] text-text-1 mb-2">No events found</div>
           <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">Try adjusting your search or removing some filters.</div>
-          <button onClick={clearAll} className="px-6 py-3 bg-primary text-white rounded-lg text-[14px] font-bold hover:bg-primary-dark hover:shadow-indigo transition-all">Clear All Filters</button>
+          <button onClick={clearAll} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-indigo transition-all">Clear All Filters</button>
         </motion.div>
       )}
 
@@ -535,7 +535,7 @@ export default function Home() {
 
 function ActivePill({ label, onRemove }) {
   return (
-    <span className="flex items-center gap-1.5 px-3 py-1 bg-primary-light border border-[#C7D2FE] text-primary rounded-full text-[12px] font-semibold flex-shrink-0">
+    <span className="flex items-center gap-1.5 px-3 py-1 bg-primary-light border border-[#C7D2FE] text-primary rounded-md text-[12px] font-semibold flex-shrink-0">
       {label}
       <button onClick={onRemove} className="hover:opacity-70 transition-opacity" aria-label={`Remove ${label} filter`}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M18 6 6 18M6 6l12 12"/></svg>

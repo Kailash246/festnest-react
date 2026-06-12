@@ -54,7 +54,7 @@ const TYPE_ICON_STYLE = {
 /* ══════════════════════════════════════════════════
    SKELETON SHIMMER
 ══════════════════════════════════════════════════ */
-const Sk = ({ h = 'h-4', w = 'w-full', r = 'rounded-lg' }) => (
+const Sk = ({ h = 'h-4', w = 'w-full', r = 'rounded-md' }) => (
   <div className={`skeleton ${h} ${w} ${r}`} />
 );
 
@@ -65,20 +65,20 @@ function RoleBadge({ role, large }) {
   const base = large ? 'text-[12px] px-3.5 py-1.5 gap-2' : 'text-[11px] px-2.5 py-1 gap-1.5';
   if (role === 'organizer')
     return (
-      <span className={`inline-flex items-center font-bold rounded-full border ${base}
+      <span className={`inline-flex items-center font-bold rounded-md border ${base}
                         bg-[#F5F3FF] border-[#DDD6FE] text-[#7C3AED]`}>
         <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" /> Organizer
       </span>
     );
   if (role === 'admin' || role === 'superadmin')
     return (
-      <span className={`inline-flex items-center font-bold rounded-full border ${base}
+      <span className={`inline-flex items-center font-bold rounded-md border ${base}
                         bg-[#FEF2F2] border-[#FECACA] text-[#DC2626]`}>
         <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" /> Admin
       </span>
     );
   return (
-    <span className={`inline-flex items-center font-bold rounded-full border ${base}
+    <span className={`inline-flex items-center font-bold rounded-md border ${base}
                       bg-[#F0FDF4] border-[#BBF7D0] text-[#16A34A]`}>
       <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" /> Student
     </span>
@@ -90,7 +90,7 @@ function RoleBadge({ role, large }) {
 ══════════════════════════════════════════════════ */
 const InfoChip = ({ Icon, children }) => (
   <span className="inline-flex items-center gap-1.5 bg-surface-2 border border-border
-                   text-[12px] text-text-2 px-2.5 py-1 rounded-full">
+                   text-[12px] text-text-2 px-2.5 py-1 rounded-md">
     <Icon size={12} strokeWidth={1.8} className="text-text-3 flex-shrink-0" />
     {children}
   </span>
@@ -110,7 +110,7 @@ function HeroSection({ user, role, loading, onEdit }) {
     || '??';
 
   return (
-    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+    <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
       <div className={`relative h-[160px] bg-gradient-to-br ${gradient} overflow-hidden`}>
         <div className="absolute inset-0 opacity-20"
           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
@@ -121,7 +121,7 @@ function HeroSection({ user, role, loading, onEdit }) {
             onClick={onEdit}
             className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30
                        backdrop-blur-sm text-white text-[11px] font-semibold
-                       px-3 py-1.5 rounded-xl border border-white/25 transition-all">
+                       px-3 py-1.5 rounded-lg border border-white/25 transition-all">
             <PenLine size={11} strokeWidth={2} />
             Edit Profile
           </motion.button>
@@ -135,7 +135,7 @@ function HeroSection({ user, role, loading, onEdit }) {
               <img src={user.avatar.url} alt={user.name}
                 className="w-[88px] h-[88px] rounded-full object-cover border-4 border-white shadow-lg" />
             ) : (
-              <div className="w-[88px] h-[88px] rounded-full border-4 border-white shadow-lg
+              <div className="w-[88px] h-[88px] rounded-md border-4 border-white shadow-lg
                               flex items-center justify-center font-display font-bold text-[26px]
                               text-primary bg-primary-light">
                 {loading ? '' : initials}
@@ -149,7 +149,7 @@ function HeroSection({ user, role, loading, onEdit }) {
               transition={{ delay: 0.3 }}
               className="flex items-center gap-1.5 bg-gradient-to-r from-primary-light to-[#EDE9FE]
                          border border-[#C7D2FE] text-primary text-[12px] font-bold
-                         px-3 py-1.5 rounded-full shadow-sm mb-0.5">
+                         px-3 py-1.5 rounded-md shadow-sm mb-0.5">
               <Star size={12} strokeWidth={2} className="text-amber-500" />
               {user.points.toLocaleString('en-IN')} pts
             </motion.div>
@@ -158,7 +158,7 @@ function HeroSection({ user, role, loading, onEdit }) {
 
         {loading ? (
           <div className="space-y-2 mb-4">
-            <Sk h="h-8" w="w-48" r="rounded-xl" />
+            <Sk h="h-8" w="w-48" r="rounded-lg" />
             <Sk h="h-5" w="w-32" r="rounded-full" />
           </div>
         ) : (
@@ -220,17 +220,17 @@ function StudentStats({ stats, completedCount, unlockedCount, loading }) {
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.07 }}
           whileHover={{ y: -4, boxShadow: '0 12px 28px rgba(0,0,0,0.10)' }}
-          className={`relative bg-gradient-to-br ${grad} border border-border rounded-xl p-3
+          className={`relative bg-gradient-to-br ${grad} border border-border rounded-lg p-3
                       text-center shadow-[0_1px_4px_rgba(0,0,0,0.05)] overflow-hidden cursor-default`}>
           <div className="absolute -top-4 -right-4 w-14 h-14 rounded-full bg-white/40 pointer-events-none" />
           {loading ? (
             <div className="space-y-2">
-              <Sk h="h-6" w="w-8" r="rounded-lg mx-auto" />
+              <Sk h="h-6" w="w-8" r="rounded-md mx-auto" />
               <Sk h="h-3" w="w-full" r="rounded" />
             </div>
           ) : (
             <>
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-2 ${ic}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 ${ic}`}>
                 <Icon size={16} strokeWidth={1.8} />
               </div>
               <div className="font-display font-bold text-[22px] text-text-1 leading-none mb-0.5">
@@ -265,7 +265,7 @@ function AchievementBadge({ ach, unlocked, index }) {
           <div className="absolute inset-0 rounded-full blur-xl opacity-40 scale-110"
             style={{ background: `radial-gradient(circle, rgba(${t.glow},0.8), transparent 70%)` }} />
         )}
-        <div className={`relative w-[68px] h-[68px] rounded-full bg-gradient-to-br ${t.ring} p-[3px] shadow-lg`}>
+        <div className={`relative w-[68px] h-[68px] rounded-md bg-gradient-to-br ${t.ring} p-[3px] shadow-lg`}>
           <div className={`w-full h-full rounded-full bg-gradient-to-br ${t.inner}
                            flex items-center justify-center`}>
             {unlocked
@@ -298,7 +298,7 @@ function AchievementsSection({ stats, completedCount, loading }) {
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
-    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <div>
           <div className="font-display font-bold text-[15px] text-text-1">Achievements</div>
@@ -308,7 +308,7 @@ function AchievementsSection({ stats, completedCount, loading }) {
         </div>
         <div className="w-24">
           <div className="h-1.5 bg-surface-3 rounded-full overflow-hidden">
-            <motion.div className="h-full bg-gradient-to-r from-primary to-[#7C3AED] rounded-full"
+            <motion.div className="h-full bg-gradient-to-r from-primary to-[#7C3AED] rounded-md"
               initial={{ width: 0 }}
               animate={{ width: `${(unlockedCount / achievements.length) * 100}%` }}
               transition={{ duration: 0.8, delay: 0.3 }} />
@@ -354,18 +354,18 @@ function AchievementsSection({ stats, completedCount, loading }) {
 ══════════════════════════════════════════════════ */
 function CertificatesSection() {
   return (
-    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
         <div className="font-display font-bold text-[15px] text-text-1">Certificates</div>
         <div className="text-[11px] text-text-3 mt-0.5">Earned from events you've attended</div>
       </div>
       <div className="p-5">
-        <div className="relative rounded-xl overflow-hidden border-2 border-dashed border-[#C7D2FE]
+        <div className="relative rounded-lg overflow-hidden border-2 border-dashed border-[#C7D2FE]
                         bg-gradient-to-br from-[#EEF2FF] to-[#F5F3FF] p-5 mb-4 opacity-60">
           <div className="absolute top-3 right-3 text-[8px] font-bold text-primary bg-white
-                          px-2 py-0.5 rounded-full border border-[#C7D2FE]">PREVIEW</div>
+                          px-2 py-0.5 rounded-md border border-[#C7D2FE]">PREVIEW</div>
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-light border border-[#C7D2FE]
+            <div className="w-10 h-10 rounded-lg bg-primary-light border border-[#C7D2FE]
                             flex items-center justify-center">
               <Award size={20} strokeWidth={1.8} className="text-primary" />
             </div>
@@ -376,14 +376,14 @@ function CertificatesSection() {
           </div>
           <div className="flex items-center justify-between">
             <div className="text-[10px] text-text-4">Issued Jan 2025</div>
-            <div className="px-3 py-1.5 bg-primary text-white text-[10px] font-bold rounded-lg opacity-50">
+            <div className="px-3 py-1.5 bg-primary text-white text-[10px] font-bold rounded-md opacity-50">
               View Certificate
             </div>
           </div>
         </div>
 
         <div className="text-center py-3">
-          <div className="w-12 h-12 bg-[#FFFBEB] border border-[#FDE68A] rounded-xl flex items-center
+          <div className="w-12 h-12 bg-[#FFFBEB] border border-[#FDE68A] rounded-lg flex items-center
                           justify-center mx-auto mb-3">
             <Award size={24} strokeWidth={1.8} className="text-[#B45309]" />
           </div>
@@ -392,7 +392,7 @@ function CertificatesSection() {
             Attend events to earn participation certificates and competition awards.
           </div>
           <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            className="px-5 py-2.5 bg-primary text-white rounded-xl text-[12px] font-bold
+            className="px-5 py-2.5 bg-primary text-white rounded-lg text-[12px] font-bold
                        hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all"
             onClick={() => window.location.href = '/'}>
             Discover Events
@@ -410,7 +410,7 @@ function EventMiniCard({ ev, status, onClick }) {
   return (
     <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
       whileTap={{ scale: 0.98 }} onClick={onClick}
-      className="bg-white border border-border rounded-xl overflow-hidden cursor-pointer
+      className="bg-white border border-border rounded-lg overflow-hidden cursor-pointer
                  shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all flex-shrink-0 w-[180px]">
       <div className={`h-[90px] flex items-center justify-center relative overflow-hidden ${ev.bg || 'bg1'}`}>
         {ev.imageUrl
@@ -419,7 +419,7 @@ function EventMiniCard({ ev, status, onClick }) {
         }
         {status && (
           <span className={`absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5
-                            rounded-full border ${STATUS_STYLE[status] || STATUS_STYLE.pending}`}>
+                            rounded-md border ${STATUS_STYLE[status] || STATUS_STYLE.pending}`}>
             {status}
           </span>
         )}
@@ -461,7 +461,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
 
   const EmptyState = ({ Icon: EIcon, title, sub, action, onAction }) => (
     <div className="flex flex-col items-center py-10 text-center">
-      <div className="w-12 h-12 bg-surface-2 border border-border rounded-xl flex items-center
+      <div className="w-12 h-12 bg-surface-2 border border-border rounded-lg flex items-center
                       justify-center mx-auto mb-3">
         <EIcon size={22} strokeWidth={1.8} className="text-text-3" />
       </div>
@@ -470,7 +470,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
       {action && (
         <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
           onClick={onAction}
-          className="px-5 py-2 bg-primary text-white rounded-xl text-[12px] font-bold
+          className="px-5 py-2 bg-primary text-white rounded-lg text-[12px] font-bold
                      hover:bg-primary-dark transition-all">
           {action}
         </motion.button>
@@ -479,7 +479,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
   );
 
   return (
-    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 pt-4 pb-0">
         <div className="font-display font-bold text-[15px] text-text-1 mb-3">My Events</div>
         <div className="flex gap-0 border-b border-border -mx-5 px-5">
@@ -492,7 +492,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
                             : 'border-transparent text-text-3 hover:text-text-1'}`}>
               {t.label}
               {counts[t.id] > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold min-w-[18px] text-center
                                   ${tab === t.id ? 'bg-primary-light text-primary' : 'bg-surface-3 text-text-3'}`}>
                   {counts[t.id]}
                 </span>
@@ -512,7 +512,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
               <div className="p-5">
                 <div className="flex gap-3 overflow-hidden">
                   {[0, 1, 2].map(i => (
-                    <div key={i} className="w-[180px] flex-shrink-0 rounded-xl overflow-hidden border border-border">
+                    <div key={i} className="w-[180px] flex-shrink-0 rounded-lg overflow-hidden border border-border">
                       <div className="skeleton h-[90px]" />
                       <div className="p-3 space-y-2"><Sk h="h-3.5" w="w-4/5" /><Sk h="h-3" w="w-3/5" /></div>
                     </div>
@@ -544,7 +544,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
               <div className="p-5">
                 <div className="flex gap-3 overflow-hidden">
                   {[0, 1, 2].map(i => (
-                    <div key={i} className="w-[180px] flex-shrink-0 rounded-xl overflow-hidden border border-border">
+                    <div key={i} className="w-[180px] flex-shrink-0 rounded-lg overflow-hidden border border-border">
                       <div className="skeleton h-[90px]" />
                       <div className="p-3 space-y-2"><Sk h="h-3.5" w="w-4/5" /><Sk h="h-3" w="w-3/5" /></div>
                     </div>
@@ -581,7 +581,7 @@ function OrganizerCTA({ navigate }) {
   return (
     <motion.button whileHover={{ y: -2, boxShadow: '0 12px 32px rgba(79,70,229,0.35)' }}
       whileTap={{ scale: 0.98 }} onClick={() => navigate('/organizer')}
-      className="w-full relative overflow-hidden rounded-2xl
+      className="w-full relative overflow-hidden rounded-lg
                  bg-gradient-to-r from-[#4F46E5] via-[#6D28D9] to-[#7C3AED]
                  p-5 text-left shadow-[0_4px_20px_rgba(79,70,229,0.28)] transition-all">
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10 pointer-events-none" />
@@ -589,7 +589,7 @@ function OrganizerCTA({ navigate }) {
       <div className="relative z-10 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
               <BarChart3 size={16} strokeWidth={1.8} className="text-white" />
             </div>
             <span className="text-white/70 text-[11px] font-bold tracking-widest uppercase">
@@ -619,13 +619,13 @@ function OrganizerCTA({ navigate }) {
 ══════════════════════════════════════════════════ */
 function AboutOrgSection({ user }) {
   return (
-    <div className="bg-white border border-border rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
         <div className="font-display font-bold text-[15px] text-text-1">About Organization</div>
       </div>
       <div className="p-5">
         <div className="flex items-center gap-3.5 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE]
+          <div className="w-12 h-12 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE]
                           flex items-center justify-center flex-shrink-0">
             <Building2 size={22} strokeWidth={1.8} className="text-[#7C3AED]" />
           </div>
@@ -644,8 +644,8 @@ function AboutOrgSection({ user }) {
             : 'Add your organization description to help students know more about you.'}
         </p>
         {user?.email && (
-          <div className="flex items-center gap-2.5 p-3 bg-surface-2 rounded-xl border border-border">
-            <div className="w-7 h-7 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
+          <div className="flex items-center gap-2.5 p-3 bg-surface-2 rounded-lg border border-border">
+            <div className="w-7 h-7 rounded-md bg-primary-light flex items-center justify-center flex-shrink-0">
               <Mail size={13} strokeWidth={1.8} className="text-primary" />
             </div>
             <div>
@@ -677,7 +677,7 @@ function HostedEventCard({ ev, navigate }) {
     <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.09)' }}
       whileTap={{ scale: 0.98 }}
       onClick={() => ev.status === 'approved' && ev.linkedEvent && navigate(`/event/${ev.linkedEvent}`)}
-      className={`bg-white border border-border rounded-xl overflow-hidden
+      className={`bg-white border border-border rounded-lg overflow-hidden
                   shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all flex-shrink-0 w-[200px]
                   ${ev.status === 'approved' && ev.linkedEvent ? 'cursor-pointer' : 'cursor-default'}`}>
       <div className={`h-[100px] flex items-center justify-center relative ${typeStyle.cls}`}>
@@ -685,7 +685,7 @@ function HostedEventCard({ ev, navigate }) {
           ? <img src={ev.bannerImage.url} alt={ev.eventName} className="w-full h-full object-cover" />
           : <TypeIcon size={36} strokeWidth={1.8} />
         }
-        <span className={`absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-full border ${status.cls}`}>
+        <span className={`absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-md border ${status.cls}`}>
           {status.label}
         </span>
       </div>
@@ -704,7 +704,7 @@ function HostedEventCard({ ev, navigate }) {
 
 function HostedEventsSection({ events, loading, navigate }) {
   return (
-    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <div>
           <div className="font-display font-bold text-[15px] text-text-1">Hosted Events</div>
@@ -724,7 +724,7 @@ function HostedEventsSection({ events, loading, navigate }) {
         {loading ? (
           <div className="flex gap-3">
             {[0, 1, 2].map(i => (
-              <div key={i} className="w-[200px] flex-shrink-0 rounded-xl overflow-hidden border border-border">
+              <div key={i} className="w-[200px] flex-shrink-0 rounded-lg overflow-hidden border border-border">
                 <div className="skeleton h-[100px]" />
                 <div className="p-3 space-y-2"><Sk h="h-3.5" w="w-4/5" /><Sk h="h-3" w="w-3/5" /></div>
               </div>
@@ -732,7 +732,7 @@ function HostedEventsSection({ events, loading, navigate }) {
           </div>
         ) : events.length === 0 ? (
           <div className="flex flex-col items-center py-8 text-center">
-            <div className="w-12 h-12 bg-surface-2 border border-border rounded-xl flex items-center
+            <div className="w-12 h-12 bg-surface-2 border border-border rounded-lg flex items-center
                             justify-center mx-auto mb-3">
               <CalendarDays size={22} strokeWidth={1.8} className="text-text-3" />
             </div>
@@ -742,7 +742,7 @@ function HostedEventsSection({ events, loading, navigate }) {
             </div>
             <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate('/host')}
-              className="px-5 py-2.5 bg-primary text-white rounded-xl text-[12px] font-bold
+              className="px-5 py-2.5 bg-primary text-white rounded-lg text-[12px] font-bold
                          hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
               Post an Event
             </motion.button>
@@ -766,7 +766,7 @@ function ActivityCard({ Icon: IconCmp, iconBg, title, desc, onClick }) {
   return (
     <motion.button whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.09)' }}
       whileTap={{ scale: 0.97 }} onClick={onClick}
-      className="relative flex flex-col items-start gap-2 p-4 rounded-xl border
+      className="relative flex flex-col items-start gap-2 p-4 rounded-lg border
                  text-left transition-all bg-white overflow-hidden w-full
                  shadow-[0_1px_4px_rgba(0,0,0,0.05)] border-border hover:border-primary/25">
       <div className="absolute top-3 right-3">
@@ -775,7 +775,7 @@ function ActivityCard({ Icon: IconCmp, iconBg, title, desc, onClick }) {
           <path d="m9 18 6-6-6-6"/>
         </svg>
       </div>
-      <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${iconBg}`}>
         <IconCmp size={16} strokeWidth={1.8} />
       </div>
       <div className="pr-4">
@@ -807,7 +807,7 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
   const items = isOrg ? orgItems : studentItems;
 
   return (
-    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
         <div className="font-display font-bold text-[15px] text-text-1">Activity Center</div>
         <div className="text-[11px] text-text-3 mt-0.5">Manage your account and preferences</div>
@@ -824,10 +824,10 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
         </div>
         <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}
           onClick={onLogout}
-          className="w-full flex items-center gap-3 p-4 rounded-lg border border-[#FECACA]
+          className="w-full flex items-center gap-3 p-4 rounded-md border border-[#FECACA]
                      bg-white hover:bg-[#FEF2F2] transition-all text-left
                      shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
-          <div className="w-9 h-9 rounded-xl bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">
             <LogOut size={16} strokeWidth={1.8} className="text-[#DC2626]" />
           </div>
           <div className="flex-1">

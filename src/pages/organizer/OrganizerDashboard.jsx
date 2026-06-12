@@ -41,7 +41,7 @@ const Spinner = () => (
 const Empty = ({ Icon: EIcon, title, sub, action, onAction }) => (
   <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
     className="flex flex-col items-center py-16 text-center px-4">
-    <div className="w-16 h-16 rounded-xl bg-primary-light flex items-center justify-center mb-4
+    <div className="w-16 h-16 rounded-lg bg-primary-light flex items-center justify-center mb-4
                     shadow-[0_0_0_6px_rgba(79,70,229,0.08)]">
       <EIcon size={32} strokeWidth={1.8} className="text-primary" />
     </div>
@@ -49,7 +49,7 @@ const Empty = ({ Icon: EIcon, title, sub, action, onAction }) => (
     {sub && <div className="text-[13px] text-text-3 mb-6 max-w-[260px] leading-relaxed">{sub}</div>}
     {action && (
       <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} onClick={onAction}
-        className="px-6 py-2.5 bg-primary text-white rounded-xl text-[13px] font-bold
+        className="px-6 py-2.5 bg-primary text-white rounded-lg text-[13px] font-bold
                    hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
         {action}
       </motion.button>
@@ -65,7 +65,7 @@ const StatusBadge = ({ status }) => {
   };
   const { cls, Icon: BadgeIcon, label } = map[status] || map.pending;
   return (
-    <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border flex-shrink-0 ${cls}`}>
+    <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md border flex-shrink-0 ${cls}`}>
       <BadgeIcon size={11} strokeWidth={2} />
       {label}
     </span>
@@ -82,9 +82,9 @@ const StatCard = ({ Icon: CardIcon, label, value, color = 'indigo', sub }) => {
   };
   return (
     <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }}
-      className="bg-white border border-border rounded-xl p-4 shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+      className="bg-white border border-border rounded-lg p-4 shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="mb-3">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${bg[color]}`}>
+        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${bg[color]}`}>
           <CardIcon size={17} strokeWidth={1.8} />
         </div>
       </div>
@@ -120,7 +120,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
 
   return (
     <motion.div layout
-      className="bg-white border border-border rounded-xl overflow-hidden
+      className="bg-white border border-border rounded-lg overflow-hidden
                  shadow-[0_1px_4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]
                  hover:border-primary/20 transition-all duration-200">
 
@@ -128,9 +128,9 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
       <div className="flex items-start gap-3 p-4 cursor-pointer select-none" onClick={onToggle}>
         {ev.bannerImage?.url ? (
           <img src={ev.bannerImage.url} alt={ev.eventName}
-            className="w-[52px] h-[52px] rounded-xl object-cover flex-shrink-0 border border-border" />
+            className="w-[52px] h-[52px] rounded-lg object-cover flex-shrink-0 border border-border" />
         ) : (
-          <div className={`w-[52px] h-[52px] rounded-xl flex items-center justify-center flex-shrink-0 ${typeStyle.cls}`}>
+          <div className={`w-[52px] h-[52px] rounded-lg flex items-center justify-center flex-shrink-0 ${typeStyle.cls}`}>
             <TypeIcon size={26} strokeWidth={1.8} />
           </div>
         )}
@@ -172,7 +172,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
 
               {/* Status alerts */}
               {ev.status === 'pending' && (
-                <div className="flex items-start gap-2.5 bg-amber-bg border border-amber-border rounded-xl p-3">
+                <div className="flex items-start gap-2.5 bg-amber-bg border border-amber-border rounded-lg p-3">
                   <Clock size={18} strokeWidth={1.8} className="text-amber flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="text-[12px] font-bold text-amber">Under Review</div>
@@ -183,7 +183,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
                 </div>
               )}
               {ev.status === 'approved' && (
-                <div className="flex items-start gap-2.5 bg-green-bg border border-green-border rounded-xl p-3">
+                <div className="flex items-start gap-2.5 bg-green-bg border border-green-border rounded-lg p-3">
                   <PartyPopper size={18} strokeWidth={1.8} className="text-[#16A34A] flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="text-[12px] font-bold text-[#16A34A]">Live on FestNest</div>
@@ -194,7 +194,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
                 </div>
               )}
               {ev.status === 'rejected' && (
-                <div className="flex items-start gap-2.5 bg-red-bg border border-red-border rounded-xl p-3">
+                <div className="flex items-start gap-2.5 bg-red-bg border border-red-border rounded-lg p-3">
                   <XCircle size={18} strokeWidth={1.8} className="text-red flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="text-[12px] font-bold text-red">Not Approved</div>
@@ -236,7 +236,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
                     { label: '3rd', amt: ev.prize3, cls: 'text-[#9A3412]', bg: 'bg-[#FFF7ED] border-[#FED7AA]' },
                   ].map(({ label, amt, cls, bg }) =>
                     amt ? (
-                      <div key={label} className={`border rounded-xl p-2.5 text-center ${bg}`}>
+                      <div key={label} className={`border rounded-lg p-2.5 text-center ${bg}`}>
                         <div className={`text-[12px] font-bold ${cls}`}>{label}</div>
                         <div className={`text-[12px] font-bold mt-0.5 ${cls}`}>₹{amt}</div>
                       </div>
@@ -247,7 +247,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
 
               {/* About snippet */}
               {ev.about && (
-                <div className="bg-surface-2 rounded-xl p-3">
+                <div className="bg-surface-2 rounded-lg p-3">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-text-4 mb-1.5">About</div>
                   <p className="text-[12px] text-text-2 leading-relaxed line-clamp-3">{ev.about}</p>
                 </div>
@@ -258,7 +258,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
                 {ev.status === 'approved' && ev.linkedEvent && (
                   <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
                     onClick={() => onView(ev.linkedEvent)}
-                    className="flex-1 py-2.5 bg-primary text-white rounded-xl text-[12px] font-bold
+                    className="flex-1 py-2.5 bg-primary text-white rounded-lg text-[12px] font-bold
                                hover:bg-primary-dark transition-all flex items-center justify-center gap-1.5">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
                       strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
@@ -272,7 +272,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
                   <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
                     onClick={() => navigate('/host')}
                     className="flex-1 py-2.5 bg-amber-bg border border-amber-border text-amber
-                               rounded-xl text-[12px] font-bold transition-all
+                               rounded-lg text-[12px] font-bold transition-all
                                flex items-center justify-center gap-1.5 hover:bg-[#FEF3C7]">
                     <PenLine size={13} strokeWidth={2} />
                     Resubmit
@@ -280,7 +280,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
                 )}
                 <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
                   onClick={copyLink}
-                  className="px-3.5 py-2.5 border border-border rounded-xl text-[12px] font-semibold
+                  className="px-3.5 py-2.5 border border-border rounded-lg text-[12px] font-semibold
                              text-text-2 hover:border-primary hover:text-primary transition-all
                              flex items-center justify-center gap-1.5">
                   <Link2 size={13} strokeWidth={2} />
@@ -325,7 +325,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
     <div className="space-y-5">
 
       {/* Welcome banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4F46E5] via-[#6D28D9] to-[#7C3AED] px-6 py-6 shadow-[0_4px_24px_rgba(79,70,229,0.25)]">
+      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-[#4F46E5] via-[#6D28D9] to-[#7C3AED] px-6 py-6 shadow-[0_4px_24px_rgba(79,70,229,0.25)]">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 pointer-events-none" />
         <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full bg-white/08 pointer-events-none" />
         <div className="absolute top-3 right-3 opacity-20 pointer-events-none">
@@ -336,7 +336,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
 
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-3">
-            <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded-full px-3 py-1">
+            <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm rounded-md px-3 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] animate-pulse" />
               <span className="text-white text-[10px] font-bold tracking-widest uppercase">Organizer</span>
             </div>
@@ -394,11 +394,11 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
                 <motion.div key={ev._id}
                   initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="flex items-center gap-3 p-3 bg-white border border-border rounded-xl
+                  className="flex items-center gap-3 p-3 bg-white border border-border rounded-lg
                              hover:border-primary/30 hover:shadow-sm transition-all">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${ts.cls}`}>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${ts.cls}`}>
                     {ev.bannerImage?.url
-                      ? <img src={ev.bannerImage.url} alt="" className="w-full h-full rounded-xl object-cover" />
+                      ? <img src={ev.bannerImage.url} alt="" className="w-full h-full rounded-lg object-cover" />
                       : <TIcon size={20} strokeWidth={1.8} />
                     }
                   </div>
@@ -418,8 +418,8 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
       {user?.points > 0 && (
         <motion.div whileHover={{ y: -1 }}
           className="bg-gradient-to-r from-primary-light to-[#EDE9FE] border border-[#C7D2FE]
-                     rounded-xl p-4 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white border border-[#C7D2FE] shadow-sm
+                     rounded-lg p-4 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-white border border-[#C7D2FE] shadow-sm
                           flex items-center justify-center flex-shrink-0">
             <Star size={22} strokeWidth={1.8} className="text-amber-500" />
           </div>
@@ -429,7 +429,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
             </div>
             <div className="text-[12px] text-primary/70 mt-0.5">FestNest points earned</div>
           </div>
-          <div className="text-[11px] font-semibold text-primary bg-white rounded-xl px-3 py-2 border border-[#C7D2FE] text-center leading-tight flex-shrink-0">
+          <div className="text-[11px] font-semibold text-primary bg-white rounded-lg px-3 py-2 border border-[#C7D2FE] text-center leading-tight flex-shrink-0">
             +300 per<br/>event
           </div>
         </motion.div>
@@ -459,7 +459,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
           ].map(({ Icon: ActionIcon, label, sub, to, cls, subCls }) => (
             <motion.button key={label} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate(to)}
-              className={`flex items-center gap-3 p-4 rounded-lg text-left transition-all ${cls}`}>
+              className={`flex items-center gap-3 p-4 rounded-md text-left transition-all ${cls}`}>
               <ActionIcon size={22} strokeWidth={1.8} />
               <div>
                 <div className="font-semibold text-[13px] leading-tight">{label}</div>
@@ -522,7 +522,7 @@ function MyEventsTab({ events, loading, navigate, showToast }) {
         </svg>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search events by name or college…"
-          className="w-full pl-10 pr-4 py-2.5 text-[13px] border border-border rounded-xl bg-white
+          className="w-full pl-10 pr-4 py-2.5 text-[13px] border border-border rounded-lg bg-white
                      focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.08)]
                      outline-none transition-all placeholder:text-text-4" />
         {search && (
@@ -541,14 +541,14 @@ function MyEventsTab({ events, loading, navigate, showToast }) {
       <div className="flex gap-2 overflow-x-auto no-scrollbar pb-0.5">
         {FILTER_OPTS.map(({ key, Icon: FIcon, label }) => (
           <button key={key} onClick={() => setFilter(key)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-semibold
                         border whitespace-nowrap flex-shrink-0 transition-all duration-150
                         ${filter === key
                           ? 'bg-primary text-white border-primary shadow-sm'
                           : 'bg-white text-text-2 border-border hover:border-primary/40'}`}>
             <FIcon size={12} strokeWidth={1.8} />
             {label}
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold min-w-[18px] text-center
                               ${filter === key ? 'bg-white/25 text-white' : 'bg-surface-3 text-text-3'}`}>
               {counts[key]}
             </span>
@@ -593,7 +593,7 @@ function MyEventsTab({ events, loading, navigate, showToast }) {
       {!loading && events.length > 0 && (
         <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}
           onClick={() => navigate('/host')}
-          className="w-full py-3.5 border-2 border-dashed border-[#C7D2FE] rounded-lg
+          className="w-full py-3.5 border-2 border-dashed border-[#C7D2FE] rounded-md
                      text-[13px] font-semibold text-primary hover:bg-primary-light
                      hover:border-primary/40 transition-all flex items-center justify-center gap-2">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
@@ -644,11 +644,11 @@ function TipsTab({ navigate }) {
     <div className="space-y-6">
 
       {/* Header card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4F46E5] via-[#6D28D9] to-[#7C3AED] px-6 py-5 shadow-[0_4px_20px_rgba(79,70,229,0.22)]">
+      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-[#4F46E5] via-[#6D28D9] to-[#7C3AED] px-6 py-5 shadow-[0_4px_20px_rgba(79,70,229,0.22)]">
         <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10 pointer-events-none" />
         <div className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full bg-white/08 pointer-events-none" />
         <div className="relative z-10">
-          <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center mb-3">
+          <div className="w-12 h-12 rounded-lg bg-white/15 flex items-center justify-center mb-3">
             <Lightbulb size={24} strokeWidth={1.8} className="text-white" />
           </div>
           <div className="font-display font-bold text-[18px] text-white mb-1">
@@ -674,12 +674,12 @@ function TipsTab({ navigate }) {
               <motion.div key={tip.title}
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.15, delay: si * 0.08 + i * 0.04 }}
-                className="bg-white border border-border rounded-xl p-4
+                className="bg-white border border-border rounded-lg p-4
                            shadow-[0_1px_4px_rgba(0,0,0,0.05)]
                            hover:border-primary/30 hover:shadow-[0_3px_12px_rgba(79,70,229,0.08)]
                            transition-all duration-200">
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-primary-light flex items-center justify-center
+                  <div className="w-9 h-9 rounded-lg bg-primary-light flex items-center justify-center
                                   flex-shrink-0 shadow-[0_0_0_4px_rgba(79,70,229,0.08)]">
                     <tip.Icon size={18} strokeWidth={1.8} className="text-primary" />
                   </div>
@@ -697,7 +697,7 @@ function TipsTab({ navigate }) {
       {/* CTA */}
       <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
         onClick={() => navigate('/host')}
-        className="w-full py-3.5 bg-primary text-white rounded-xl text-[14px] font-bold
+        className="w-full py-3.5 bg-primary text-white rounded-lg text-[14px] font-bold
                    hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all
                    flex items-center justify-center gap-2">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
@@ -743,7 +743,7 @@ function DashboardSidebar({ navigate, featuredEvents, featuredLoading }) {
           </div>
         ) : (
           <div className="bg-surface border border-border rounded-[18px] p-5 text-center">
-            <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center mx-auto mb-2">
+            <div className="w-10 h-10 rounded-lg bg-primary-light flex items-center justify-center mx-auto mb-2">
               <Star size={22} strokeWidth={1.8} className="text-primary" />
             </div>
             <div className="text-[12px] font-semibold text-text-2 mb-0.5">No featured events yet</div>
@@ -826,7 +826,7 @@ export default function OrganizerDashboard() {
         {/* Top bar */}
         <div className="px-4 py-3 md:px-6 flex items-center gap-3">
           <button onClick={() => navigate(-1)}
-            className="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center
+            className="w-8 h-8 rounded-md bg-surface-2 flex items-center justify-center
                        text-text-3 hover:bg-surface-3 hover:text-text-1 transition-all flex-shrink-0">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
               strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -846,7 +846,7 @@ export default function OrganizerDashboard() {
               </div>
             )}
             <div className="hidden sm:flex items-center gap-1 bg-primary-light border border-[#C7D2FE]
-                            rounded-full px-2.5 py-1">
+                            rounded-md px-2.5 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-primary"/>
               <span className="text-[10px] font-bold text-primary tracking-wide">ORGANIZER</span>
             </div>
@@ -865,7 +865,7 @@ export default function OrganizerDashboard() {
           {/* CTA */}
           <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.96 }}
             onClick={() => navigate('/host')}
-            className="flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl
+            className="flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-lg
                        text-[12px] font-bold hover:bg-primary-dark
                        hover:shadow-[0_4px_12px_rgba(79,70,229,0.3)] transition-all flex-shrink-0">
             <Plus size={13} strokeWidth={2.5} />
@@ -885,7 +885,7 @@ export default function OrganizerDashboard() {
               <t.Icon size={14} strokeWidth={1.8} />
               {t.label}
               {t.id === 'events' && events.length > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold min-w-[18px] text-center
                                   ${activeTab === t.id ? 'bg-primary-light text-primary' : 'bg-surface-3 text-text-3'}`}>
                   {events.length}
                 </span>
