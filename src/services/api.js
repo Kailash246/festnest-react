@@ -2,7 +2,11 @@
 // Real backend client for FestNest
 // Set VITE_API_URL=http://localhost:5000/api in your .env
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// The backend mounts every route under `/api`. Normalise VITE_API_URL so the
+// base always ends in exactly one `/api`, whether the env var includes it or not
+// (e.g. "https://host.com" and "https://host.com/api" both resolve correctly).
+const RAW_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE = RAW_BASE.replace(/\/+$/, '').replace(/\/api$/, '') + '/api';
 
 /* ─── Token storage ─────────────────────────────────────── */
 export const tokens = {
