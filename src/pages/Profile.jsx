@@ -917,8 +917,8 @@ export default function Profile() {
   ).length;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
       className="bg-[#F5F5F9] min-h-screen w-full overflow-x-hidden">
 
       <div className="max-w-[720px] mx-auto px-4 pt-6 pb-28 md:px-6 space-y-5">

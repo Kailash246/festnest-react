@@ -7,6 +7,7 @@ import MobileDrawer  from './components/MobileDrawer';
 import BottomNav     from './components/BottomNav';
 import ToastContainer from './components/ToastContainer';
 import AuthOverlay   from './components/AuthOverlay';
+import ScrollToTop   from './components/ScrollToTop';
 import Home          from './pages/Home';
 import Explore       from './pages/Explore';
 import Saved         from './pages/Saved';
@@ -37,6 +38,7 @@ export default function App() {
 
   return (
     <>
+      <ScrollToTop />
       <AuthOverlay />
 
       <div className="

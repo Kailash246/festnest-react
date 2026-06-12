@@ -49,8 +49,8 @@ export default function Saved() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
       className="bg-white min-h-screen w-full overflow-x-hidden">
 
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
