@@ -105,6 +105,9 @@ export default function AuthOverlay() {
   const [fieldErrors, setFieldErrors] = useState({});
   const clearFieldError = (k) => setFieldErrors(prev => (prev[k] ? { ...prev, [k]: '' } : prev));
 
+  /* ── "Email already registered" error shown inline on the signup step (step 3) ── */
+  const [emailError, setEmailError] = useState('');
+
   /* ── OTP ── */
   const [otpDigits, setOtpDigits]   = useState(['','','','','','']);
   const [otpTimer,  setOtpTimer]    = useState(120);
@@ -219,6 +222,7 @@ export default function AuthOverlay() {
       return showToast('Please fix the highlighted fields', 'error');
     }
     setFieldErrors({});
+    setEmailError('');
 
     setLoading(true);
     try {
@@ -232,7 +236,14 @@ export default function AuthOverlay() {
       goTo(4);
       setTimeout(() => { setOtpTimer(120); setTimerActive(true); otpRefs.current[0]?.focus(); }, 350);
     } catch (e) {
-      showToast(e.message || 'Failed to send OTP — please try again', 'error');
+      // Email already registered — surface it inline on the email field and offer
+      // log-in / reset shortcuts, instead of sending an OTP to a dead end.
+      const isDuplicate = e.status === 409 || e.message?.toLowerCase().includes('already');
+      if (isDuplicate) {
+        setEmailError('An account with this email already exists.');
+      } else {
+        showToast(e.message || 'Failed to send OTP — please try again', 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -262,9 +273,12 @@ export default function AuthOverlay() {
       const msg = e.message || 'Something went wrong — please try again';
       const isDuplicate = e.status === 409 || msg.toLowerCase().includes('already');
       if (isDuplicate) {
-        // Show the reason first, then send them to login so the toast is readable.
-        showToast('This email is already registered. Please log in instead.', 'error');
-        setTimeout(() => goTo('login'), 1500);
+        // Shouldn't normally reach here (we check before sending the OTP), but if a
+        // 409 still slips through, send the user back to step 3 where the inline
+        // "email exists" error and its log-in / reset shortcuts are shown.
+        showToast('This email is already registered.', 'error');
+        setEmailError('An account with this email already exists.');
+        goTo(3);
       } else {
         setOtpError(msg);
         showToast(msg || 'Invalid OTP — please try again', 'error');
@@ -628,11 +642,28 @@ export default function AuthOverlay() {
                   <div className="mb-4">
                     <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Email Address</label>
                     <input id="reg-email" type="email" value={email}
-                      onChange={e => { setEmail(e.target.value); clearFieldError('email'); }}
+                      onChange={e => { setEmail(e.target.value); clearFieldError('email'); setEmailError(''); }}
                       placeholder="arjun@nsit.ac.in" autoComplete="email"
-                      className={`${inputCls} ${fieldErrors.email ? inputErrCls : ''}`}
+                      className={`${inputCls} ${(fieldErrors.email || emailError) ? inputErrCls : ''}`}
                       onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-pw')?.focus()} />
                     <FieldError>{fieldErrors.email}</FieldError>
+                    {emailError && (
+                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+                        <p className="text-[13px] font-semibold text-red-600 mb-2">⚠️ {emailError}</p>
+                        <div className="flex gap-2">
+                          <button type="button"
+                            onClick={() => { setEmailError(''); setLoginEmail(email.trim()); goTo('login'); }}
+                            className="flex-1 py-2 bg-primary text-white text-[12px] font-bold rounded-lg">
+                            Log in instead
+                          </button>
+                          <button type="button"
+                            onClick={() => { setEmailError(''); setResetEmail(email.trim()); goTo('forgot'); }}
+                            className="flex-1 py-2 border border-[#E4E4E0] text-[12px] font-semibold text-[#4B4B47] rounded-lg">
+                            Reset password
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Password</label>
