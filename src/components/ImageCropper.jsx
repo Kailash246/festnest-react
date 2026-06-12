@@ -344,7 +344,7 @@ export default function ImageCropper({ file, onApply, onCancel }) {
         initial={{ scale: 0.96, opacity: 0, y: 16 }}
         animate={{ scale: 1,    opacity: 1, y: 0  }}
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-col overflow-hidden rounded-2xl w-full"
+        className="flex flex-col overflow-hidden rounded-xl w-full"
         style={{
           maxWidth: 960, maxHeight: '95dvh',
           background: '#181818',

@@ -52,7 +52,7 @@ const SkeletonCard = () => (
       <div className="h-3 w-16 bg-surface-3 rounded-full" />
       <div className="h-5 w-3/4 bg-surface-3 rounded-full" />
       <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
-      <div className="h-10 bg-surface-3 rounded-xl mt-4" />
+      <div className="h-10 bg-surface-3 rounded-lg mt-4" />
     </div>
   </div>
 );
@@ -91,7 +91,7 @@ function FilterSheet({ open, onClose, filters, setFilters, onApply, onReset, act
             transition={{ duration: 0.22 }} className="fixed inset-0 bg-black/40 z-[200]" onClick={onClose} />
           <motion.div key="sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-[201] bg-white rounded-t-2xl max-w-[640px] mx-auto shadow-[0_-8px_40px_rgba(0,0,0,0.15)] max-h-[85vh] flex flex-col">
+            className="fixed bottom-0 left-0 right-0 z-[201] bg-white rounded-t-xl max-w-[640px] mx-auto shadow-[0_-8px_40px_rgba(0,0,0,0.15)] max-h-[85vh] flex flex-col">
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
               <div className="w-10 h-1 bg-[#E4E4E0] rounded-full" />
             </div>
@@ -170,7 +170,7 @@ function SortDropdown({ value, onChange }) {
           <>
             <div className="fixed inset-0 z-[50]" onClick={() => setOpen(false)} />
             <motion.div initial={{ opacity: 0, y: -6, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.96 }} transition={{ duration: 0.15 }}
-              className="absolute right-0 top-7 z-[51] bg-white border border-[#E4E4E0] rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.10)] overflow-hidden min-w-[160px]">
+              className="absolute right-0 top-7 z-[51] bg-white border border-[#E4E4E0] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.10)] overflow-hidden min-w-[160px]">
               {SORT_OPT.map(opt => (
                 <button key={opt} onClick={() => { onChange(opt); setOpen(false); }}
                   className={`flex items-center justify-between w-full px-4 py-3 text-[13px] font-medium transition-colors text-left ${value === opt ? 'bg-primary-light text-primary' : 'text-[#4B4B47] hover:bg-[#F5F3FF] hover:text-primary'}`}>
@@ -342,7 +342,7 @@ export default function Home() {
 
         {/* Search + Filter */}
         <div className="relative hidden md:block">
-          <div className={`flex items-center gap-3 bg-white border-[1.5px] rounded-xl px-4 py-[11px] transition-all duration-fast ${showSuggestions ? 'border-primary shadow-[0_0_0_3px_rgba(79,70,229,0.10)]' : 'border-[#CBCBC6]'}`} role="search">
+          <div className={`flex items-center gap-3 bg-white border-[1.5px] rounded-lg px-4 py-[11px] transition-all duration-fast ${showSuggestions ? 'border-primary shadow-[0_0_0_3px_rgba(79,70,229,0.10)]' : 'border-[#CBCBC6]'}`} role="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-fast ${showSuggestions ? 'text-primary' : 'text-[#8A8A85]'}`}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input ref={searchRef} value={searchVal} onChange={e => setSearchVal(e.target.value)}
               onFocus={() => setShowSuggestions(true)} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -371,7 +371,7 @@ export default function Home() {
           <AnimatePresence>
             {showSuggestions && !searchVal && (
               <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
-                className="absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-[#E4E4E0] rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.10)] z-[50] overflow-hidden" role="listbox">
+                className="absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-[#E4E4E0] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.10)] z-[50] overflow-hidden" role="listbox">
                 <div className="px-4 pt-2.5 pb-1.5 text-[10px] font-bold tracking-wider text-[#AEAEAD] uppercase">Recent Searches</div>
                 {suggestions.map(({ text, sub, bg, Icon: SugIcon }) => (
                   <button key={text} className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[#F5F3FF] transition-colors border-t border-[#E4E4E0] text-left"

@@ -239,7 +239,7 @@ function SubmissionPreviewModal({ sub, onClose }) {
             onClick={onClose}
           >
             <div
-              className="bg-white rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.22)] w-full max-w-lg my-8 overflow-hidden"
+              className="bg-white rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.22)] w-full max-w-lg my-8 overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               {/* Banner */}
@@ -608,7 +608,7 @@ function EventsTab({ showToast }) {
             <motion.div key="modal" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.92 }}
               transition={{ duration: 0.18 }}
               className="fixed inset-0 z-[301] flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.20)] max-w-sm w-full p-6">
+              <div className="bg-white rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.20)] max-w-sm w-full p-6">
                 <div className="text-3xl mb-3">🗑️</div>
                 <div className="font-display font-bold text-[16px] text-text-1 mb-2">Permanently delete event?</div>
                 <div className="text-[13px] text-text-3 mb-1">

@@ -37,7 +37,7 @@ const groupLabel = (dateStr) => {
 
 /* ─── Skeleton ────────────────────────────────────────── */
 const SkeletonCard = () => (
-  <div className="mx-3 mb-2 rounded-2xl bg-white border border-border p-4 animate-pulse">
+  <div className="mx-3 mb-2 rounded-xl bg-white border border-border p-4 animate-pulse">
     <div className="flex items-start gap-3">
       <div className="w-10 h-10 rounded-xl bg-surface-3 flex-shrink-0" />
       <div className="flex-1 space-y-2.5 pt-0.5">
@@ -60,7 +60,7 @@ const NotifCard = ({ n, onRead, onDelete }) => {
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.15 }}
       onClick={() => onRead(n)}
-      className={`relative mx-3 mb-2 rounded-2xl border overflow-hidden cursor-pointer
+      className={`relative mx-3 mb-2 rounded-xl border overflow-hidden cursor-pointer
                   active:scale-[0.99] transition-all duration-100
                   ${unread ? 'bg-[#F5F3FF] border-[#C4B5FD]' : 'bg-white border-border'}`}
     >
@@ -199,7 +199,7 @@ export default function Notifications() {
   /* ── Not logged in ── */
   if (!isLoggedIn) return (
     <div className="flex flex-col items-center py-24 px-6 text-center min-h-screen bg-surface-2">
-      <div className="w-16 h-16 rounded-2xl bg-primary-light flex items-center justify-center mb-5">
+      <div className="w-16 h-16 rounded-xl bg-primary-light flex items-center justify-center mb-5">
         <Bell size={30} strokeWidth={1.5} className="text-primary" />
       </div>
       <h2 className="font-display font-bold text-[20px] text-text-1 mb-2">Activity Center</h2>
@@ -268,7 +268,7 @@ export default function Notifications() {
 
         {/* Error */}
         {error && (
-          <div className="mx-4 mt-4 p-5 bg-white border border-border rounded-2xl text-center">
+          <div className="mx-4 mt-4 p-5 bg-white border border-border rounded-xl text-center">
             <AlertTriangle size={32} strokeWidth={1.3} className="text-amber mx-auto mb-2" />
             <div className="font-semibold text-text-1 mb-1">Couldn't load notifications</div>
             <div className="text-[13px] text-text-3 mb-4">{error}</div>
@@ -290,7 +290,7 @@ export default function Notifications() {
         {/* Empty state */}
         {!loading && !error && notifs.length === 0 && (
           <div className="flex flex-col items-center py-20 text-center px-6">
-            <div className="w-16 h-16 rounded-2xl bg-surface-3 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-xl bg-surface-3 flex items-center justify-center mb-4">
               <BellOff size={28} strokeWidth={1.3} className="text-text-3" />
             </div>
             <div className="font-display font-bold text-[18px] text-text-1 mb-2">

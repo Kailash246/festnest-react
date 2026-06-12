@@ -40,7 +40,7 @@ const Divider = ({ text }) => (
   </div>
 );
 
-const inputCls = `w-full px-4 py-3 border-[1.5px] border-[#CBCBC6] rounded-xl font-body text-[15px] text-[#111110] bg-white placeholder:text-[#AEAEAD] focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all duration-150 outline-none`;
+const inputCls = `w-full px-4 py-3 border-[1.5px] border-[#CBCBC6] rounded-lg font-body text-[15px] text-[#111110] bg-white placeholder:text-[#AEAEAD] focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all duration-150 outline-none`;
 // Applied on top of inputCls when a field has a validation error.
 const inputErrCls = `border-red-500 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.10)]`;
 
@@ -648,7 +648,7 @@ export default function AuthOverlay() {
                       onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-pw')?.focus()} />
                     <FieldError>{fieldErrors.email}</FieldError>
                     {emailError && (
-                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                         <p className="text-[13px] font-semibold text-red-600 mb-2">⚠️ {emailError}</p>
                         <button type="button"
                           onClick={() => { setEmailError(''); setLoginEmail(email.trim()); goTo('login'); }}

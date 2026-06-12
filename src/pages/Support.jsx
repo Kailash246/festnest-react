@@ -440,7 +440,7 @@ export default function Support() {
               </div>
 
               {/* Office hours */}
-              <div className="bg-surface border border-border rounded-2xl p-5 mb-6">
+              <div className="bg-surface border border-border rounded-xl p-5 mb-6">
                 <div className="font-display font-bold text-[16px] text-text-1 mb-4 flex items-center gap-2">
                   <Clock size={16} strokeWidth={1.8} className="text-text-2" /> Support hours
                 </div>
@@ -468,7 +468,7 @@ export default function Support() {
               </div>
 
               {/* Quick action */}
-              <div className="bg-primary-light border border-[#C7D2FE] rounded-2xl p-5 flex items-start gap-4">
+              <div className="bg-primary-light border border-[#C7D2FE] rounded-xl p-5 flex items-start gap-4">
                 <Lightbulb size={32} strokeWidth={1.5} className="text-amber-400 flex-shrink-0" />
                 <div className="flex-1">
                   <div className="font-display font-bold text-[15px] text-primary mb-1">
@@ -607,7 +607,7 @@ export default function Support() {
                       </div>
 
                       {/* Ticket card */}
-                      <div className="bg-white border-2 border-border rounded-2xl overflow-hidden shadow-sm">
+                      <div className="bg-white border-2 border-border rounded-xl overflow-hidden shadow-sm">
                         <div className="bg-surface-2 px-4 py-2.5 border-b border-border flex items-center gap-2">
                           <span className="text-sm">🎫</span>
                           <span className="text-[11px] font-bold text-text-3 uppercase tracking-wide">Support Ticket</span>
@@ -634,7 +634,7 @@ export default function Support() {
                       </div>
 
                       {/* Tracking info */}
-                      <div className="bg-primary-light border border-[#C7D2FE] rounded-2xl p-4 space-y-1">
+                      <div className="bg-primary-light border border-[#C7D2FE] rounded-xl p-4 space-y-1">
                         <div className="text-[12px] font-bold text-primary">📍 Track your ticket inside FestNest</div>
                         <div className="text-[13px] text-primary/80 font-mono font-medium">
                           Profile → Help & Support → My Tickets
@@ -901,7 +901,7 @@ export default function Support() {
                             <motion.div key={t._id}
                               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.18, delay: i * 0.04 }}
-                              className="bg-white border border-border rounded-2xl overflow-hidden shadow-sm">
+                              className="bg-white border border-border rounded-xl overflow-hidden shadow-sm">
 
                               {/* Card header */}
                               <div className={`px-4 pt-4 pb-3 ${isResolved ? 'bg-[#F0FDF4]' : t.status === 'in_progress' ? 'bg-[#FFFBEB]' : 'bg-white'}`}>

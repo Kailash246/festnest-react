@@ -110,7 +110,7 @@ function HeroSection({ user, role, loading, onEdit }) {
     || '??';
 
   return (
-    <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
       <div className={`relative h-[160px] bg-gradient-to-br ${gradient} overflow-hidden`}>
         <div className="absolute inset-0 opacity-20"
           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
@@ -220,7 +220,7 @@ function StudentStats({ stats, completedCount, unlockedCount, loading }) {
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.07 }}
           whileHover={{ y: -4, boxShadow: '0 12px 28px rgba(0,0,0,0.10)' }}
-          className={`relative bg-gradient-to-br ${grad} border border-border rounded-2xl p-3
+          className={`relative bg-gradient-to-br ${grad} border border-border rounded-xl p-3
                       text-center shadow-[0_1px_4px_rgba(0,0,0,0.05)] overflow-hidden cursor-default`}>
           <div className="absolute -top-4 -right-4 w-14 h-14 rounded-full bg-white/40 pointer-events-none" />
           {loading ? (
@@ -298,7 +298,7 @@ function AchievementsSection({ stats, completedCount, loading }) {
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
-    <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <div>
           <div className="font-display font-bold text-[15px] text-text-1">Achievements</div>
@@ -354,13 +354,13 @@ function AchievementsSection({ stats, completedCount, loading }) {
 ══════════════════════════════════════════════════ */
 function CertificatesSection() {
   return (
-    <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
         <div className="font-display font-bold text-[15px] text-text-1">Certificates</div>
         <div className="text-[11px] text-text-3 mt-0.5">Earned from events you've attended</div>
       </div>
       <div className="p-5">
-        <div className="relative rounded-2xl overflow-hidden border-2 border-dashed border-[#C7D2FE]
+        <div className="relative rounded-xl overflow-hidden border-2 border-dashed border-[#C7D2FE]
                         bg-gradient-to-br from-[#EEF2FF] to-[#F5F3FF] p-5 mb-4 opacity-60">
           <div className="absolute top-3 right-3 text-[8px] font-bold text-primary bg-white
                           px-2 py-0.5 rounded-full border border-[#C7D2FE]">PREVIEW</div>
@@ -383,7 +383,7 @@ function CertificatesSection() {
         </div>
 
         <div className="text-center py-3">
-          <div className="w-12 h-12 bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl flex items-center
+          <div className="w-12 h-12 bg-[#FFFBEB] border border-[#FDE68A] rounded-xl flex items-center
                           justify-center mx-auto mb-3">
             <Award size={24} strokeWidth={1.8} className="text-[#B45309]" />
           </div>
@@ -410,7 +410,7 @@ function EventMiniCard({ ev, status, onClick }) {
   return (
     <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
       whileTap={{ scale: 0.98 }} onClick={onClick}
-      className="bg-white border border-border rounded-2xl overflow-hidden cursor-pointer
+      className="bg-white border border-border rounded-xl overflow-hidden cursor-pointer
                  shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all flex-shrink-0 w-[180px]">
       <div className={`h-[90px] flex items-center justify-center relative overflow-hidden ${ev.bg || 'bg1'}`}>
         {ev.imageUrl
@@ -461,7 +461,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
 
   const EmptyState = ({ Icon: EIcon, title, sub, action, onAction }) => (
     <div className="flex flex-col items-center py-10 text-center">
-      <div className="w-12 h-12 bg-surface-2 border border-border rounded-2xl flex items-center
+      <div className="w-12 h-12 bg-surface-2 border border-border rounded-xl flex items-center
                       justify-center mx-auto mb-3">
         <EIcon size={22} strokeWidth={1.8} className="text-text-3" />
       </div>
@@ -479,7 +479,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
   );
 
   return (
-    <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 pt-4 pb-0">
         <div className="font-display font-bold text-[15px] text-text-1 mb-3">My Events</div>
         <div className="flex gap-0 border-b border-border -mx-5 px-5">
@@ -512,7 +512,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
               <div className="p-5">
                 <div className="flex gap-3 overflow-hidden">
                   {[0, 1, 2].map(i => (
-                    <div key={i} className="w-[180px] flex-shrink-0 rounded-2xl overflow-hidden border border-border">
+                    <div key={i} className="w-[180px] flex-shrink-0 rounded-xl overflow-hidden border border-border">
                       <div className="skeleton h-[90px]" />
                       <div className="p-3 space-y-2"><Sk h="h-3.5" w="w-4/5" /><Sk h="h-3" w="w-3/5" /></div>
                     </div>
@@ -544,7 +544,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
               <div className="p-5">
                 <div className="flex gap-3 overflow-hidden">
                   {[0, 1, 2].map(i => (
-                    <div key={i} className="w-[180px] flex-shrink-0 rounded-2xl overflow-hidden border border-border">
+                    <div key={i} className="w-[180px] flex-shrink-0 rounded-xl overflow-hidden border border-border">
                       <div className="skeleton h-[90px]" />
                       <div className="p-3 space-y-2"><Sk h="h-3.5" w="w-4/5" /><Sk h="h-3" w="w-3/5" /></div>
                     </div>
@@ -619,13 +619,13 @@ function OrganizerCTA({ navigate }) {
 ══════════════════════════════════════════════════ */
 function AboutOrgSection({ user }) {
   return (
-    <div className="bg-white border border-border rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
         <div className="font-display font-bold text-[15px] text-text-1">About Organization</div>
       </div>
       <div className="p-5">
         <div className="flex items-center gap-3.5 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#F5F3FF] border border-[#DDD6FE]
+          <div className="w-12 h-12 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE]
                           flex items-center justify-center flex-shrink-0">
             <Building2 size={22} strokeWidth={1.8} className="text-[#7C3AED]" />
           </div>
@@ -677,7 +677,7 @@ function HostedEventCard({ ev, navigate }) {
     <motion.div whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.09)' }}
       whileTap={{ scale: 0.98 }}
       onClick={() => ev.status === 'approved' && ev.linkedEvent && navigate(`/event/${ev.linkedEvent}`)}
-      className={`bg-white border border-border rounded-2xl overflow-hidden
+      className={`bg-white border border-border rounded-xl overflow-hidden
                   shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all flex-shrink-0 w-[200px]
                   ${ev.status === 'approved' && ev.linkedEvent ? 'cursor-pointer' : 'cursor-default'}`}>
       <div className={`h-[100px] flex items-center justify-center relative ${typeStyle.cls}`}>
@@ -704,7 +704,7 @@ function HostedEventCard({ ev, navigate }) {
 
 function HostedEventsSection({ events, loading, navigate }) {
   return (
-    <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <div>
           <div className="font-display font-bold text-[15px] text-text-1">Hosted Events</div>
@@ -724,7 +724,7 @@ function HostedEventsSection({ events, loading, navigate }) {
         {loading ? (
           <div className="flex gap-3">
             {[0, 1, 2].map(i => (
-              <div key={i} className="w-[200px] flex-shrink-0 rounded-2xl overflow-hidden border border-border">
+              <div key={i} className="w-[200px] flex-shrink-0 rounded-xl overflow-hidden border border-border">
                 <div className="skeleton h-[100px]" />
                 <div className="p-3 space-y-2"><Sk h="h-3.5" w="w-4/5" /><Sk h="h-3" w="w-3/5" /></div>
               </div>
@@ -732,7 +732,7 @@ function HostedEventsSection({ events, loading, navigate }) {
           </div>
         ) : events.length === 0 ? (
           <div className="flex flex-col items-center py-8 text-center">
-            <div className="w-12 h-12 bg-surface-2 border border-border rounded-2xl flex items-center
+            <div className="w-12 h-12 bg-surface-2 border border-border rounded-xl flex items-center
                             justify-center mx-auto mb-3">
               <CalendarDays size={22} strokeWidth={1.8} className="text-text-3" />
             </div>
@@ -766,7 +766,7 @@ function ActivityCard({ Icon: IconCmp, iconBg, title, desc, onClick }) {
   return (
     <motion.button whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.09)' }}
       whileTap={{ scale: 0.97 }} onClick={onClick}
-      className="relative flex flex-col items-start gap-2 p-4 rounded-2xl border
+      className="relative flex flex-col items-start gap-2 p-4 rounded-xl border
                  text-left transition-all bg-white overflow-hidden w-full
                  shadow-[0_1px_4px_rgba(0,0,0,0.05)] border-border hover:border-primary/25">
       <div className="absolute top-3 right-3">
@@ -807,7 +807,7 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
   const items = isOrg ? orgItems : studentItems;
 
   return (
-    <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+    <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
         <div className="font-display font-bold text-[15px] text-text-1">Activity Center</div>
         <div className="text-[11px] text-text-3 mt-0.5">Manage your account and preferences</div>
@@ -824,7 +824,7 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
         </div>
         <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}
           onClick={onLogout}
-          className="w-full flex items-center gap-3 p-4 rounded-2xl border border-[#FECACA]
+          className="w-full flex items-center gap-3 p-4 rounded-xl border border-[#FECACA]
                      bg-white hover:bg-[#FEF2F2] transition-all text-left
                      shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
           <div className="w-9 h-9 rounded-xl bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">

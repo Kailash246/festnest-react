@@ -41,7 +41,7 @@ const Spinner = () => (
 const Empty = ({ Icon: EIcon, title, sub, action, onAction }) => (
   <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
     className="flex flex-col items-center py-16 text-center px-4">
-    <div className="w-16 h-16 rounded-2xl bg-primary-light flex items-center justify-center mb-4
+    <div className="w-16 h-16 rounded-xl bg-primary-light flex items-center justify-center mb-4
                     shadow-[0_0_0_6px_rgba(79,70,229,0.08)]">
       <EIcon size={32} strokeWidth={1.8} className="text-primary" />
     </div>
@@ -82,7 +82,7 @@ const StatCard = ({ Icon: CardIcon, label, value, color = 'indigo', sub }) => {
   };
   return (
     <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }}
-      className="bg-white border border-border rounded-2xl p-4 shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+      className="bg-white border border-border rounded-xl p-4 shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="mb-3">
         <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${bg[color]}`}>
           <CardIcon size={17} strokeWidth={1.8} />
@@ -120,7 +120,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
 
   return (
     <motion.div layout
-      className="bg-white border border-border rounded-2xl overflow-hidden
+      className="bg-white border border-border rounded-xl overflow-hidden
                  shadow-[0_1px_4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]
                  hover:border-primary/20 transition-all duration-200">
 
@@ -418,7 +418,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
       {user?.points > 0 && (
         <motion.div whileHover={{ y: -1 }}
           className="bg-gradient-to-r from-primary-light to-[#EDE9FE] border border-[#C7D2FE]
-                     rounded-2xl p-4 flex items-center gap-4">
+                     rounded-xl p-4 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-white border border-[#C7D2FE] shadow-sm
                           flex items-center justify-center flex-shrink-0">
             <Star size={22} strokeWidth={1.8} className="text-amber-500" />
@@ -459,7 +459,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
           ].map(({ Icon: ActionIcon, label, sub, to, cls, subCls }) => (
             <motion.button key={label} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate(to)}
-              className={`flex items-center gap-3 p-4 rounded-2xl text-left transition-all ${cls}`}>
+              className={`flex items-center gap-3 p-4 rounded-xl text-left transition-all ${cls}`}>
               <ActionIcon size={22} strokeWidth={1.8} />
               <div>
                 <div className="font-semibold text-[13px] leading-tight">{label}</div>
@@ -593,7 +593,7 @@ function MyEventsTab({ events, loading, navigate, showToast }) {
       {!loading && events.length > 0 && (
         <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}
           onClick={() => navigate('/host')}
-          className="w-full py-3.5 border-2 border-dashed border-[#C7D2FE] rounded-2xl
+          className="w-full py-3.5 border-2 border-dashed border-[#C7D2FE] rounded-xl
                      text-[13px] font-semibold text-primary hover:bg-primary-light
                      hover:border-primary/40 transition-all flex items-center justify-center gap-2">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
@@ -648,7 +648,7 @@ function TipsTab({ navigate }) {
         <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10 pointer-events-none" />
         <div className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full bg-white/08 pointer-events-none" />
         <div className="relative z-10">
-          <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center mb-3">
+          <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center mb-3">
             <Lightbulb size={24} strokeWidth={1.8} className="text-white" />
           </div>
           <div className="font-display font-bold text-[18px] text-white mb-1">
@@ -674,7 +674,7 @@ function TipsTab({ navigate }) {
               <motion.div key={tip.title}
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.15, delay: si * 0.08 + i * 0.04 }}
-                className="bg-white border border-border rounded-2xl p-4
+                className="bg-white border border-border rounded-xl p-4
                            shadow-[0_1px_4px_rgba(0,0,0,0.05)]
                            hover:border-primary/30 hover:shadow-[0_3px_12px_rgba(79,70,229,0.08)]
                            transition-all duration-200">

@@ -38,7 +38,7 @@ const STEPS = [
 ];
 
 /* ─── Reusable field components ─────────────────────── */
-const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-xl font-body text-[14px] text-text-1 bg-white placeholder:text-text-4
+const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-lg font-body text-[14px] text-text-1 bg-white placeholder:text-text-4
   focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all duration-150 outline-none`;
 
 function Field({ label, required, hint, error, prefix, children }) {
@@ -96,7 +96,7 @@ function Select({ label, required, hint, error, children, ...props }) {
 /* ─── Section card wrapper ───────────────────────────── */
 function SectionCard({ icon, title, sub, children }) {
   return (
-    <div className="bg-white border border-[#E4E4E0] rounded-2xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+    <div className="bg-white border border-[#E4E4E0] rounded-xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-[#F1F0ED] bg-[#FAFAF9]">
         <div className="w-8 h-8 rounded-lg bg-primary-light flex items-center justify-center text-base flex-shrink-0">
           {icon}
@@ -157,7 +157,7 @@ function UploadZone({ label, hint, accept, Icon: UpIcon, file, onFile, onRemove 
         {file ? (
           <motion.div key="filled"
             initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }}
-            className="flex items-center gap-3 px-4 py-3 bg-green-bg border border-green-border rounded-xl">
+            className="flex items-center gap-3 px-4 py-3 bg-green-bg border border-green-border rounded-lg">
             <div className="w-8 h-8 rounded-lg bg-[#BBF7D0] flex items-center justify-center flex-shrink-0">
               <UpIcon size={16} strokeWidth={1.8} className="text-[#16A34A]" />
             </div>
@@ -173,7 +173,7 @@ function UploadZone({ label, hint, accept, Icon: UpIcon, file, onFile, onRemove 
         ) : (
           <motion.label key="empty"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex flex-col items-center gap-2.5 border-2 border-dashed border-[#CBCBC6] rounded-xl py-7 px-4 cursor-pointer
+            className="flex flex-col items-center gap-2.5 border-2 border-dashed border-[#CBCBC6] rounded-lg py-7 px-4 cursor-pointer
               hover:border-primary hover:bg-primary-xlight transition-all duration-150 group">
             <div className="w-11 h-11 rounded-xl bg-surface-3 group-hover:bg-primary-light flex items-center justify-center transition-all">
               <UpIcon size={22} strokeWidth={1.8} className="text-text-3 group-hover:text-primary" />
@@ -523,7 +523,7 @@ export default function HostEvent() {
                 key="draft-banner"
                 initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-center gap-3 px-4 py-3.5 mb-5 bg-amber-bg border border-amber-border rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+                className="flex items-center gap-3 px-4 py-3.5 mb-5 bg-amber-bg border border-amber-border rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
                 <div className="w-9 h-9 rounded-xl bg-amber/10 flex items-center justify-center flex-shrink-0">
                   <Clock size={17} strokeWidth={1.8} className="text-amber" />
                 </div>
@@ -620,7 +620,7 @@ export default function HostEvent() {
                       const active = f.mode === id;
                       return (
                         <button key={id} onClick={() => upd('mode', id)}
-                          className={`flex flex-col items-center gap-2.5 py-4 px-3 rounded-2xl border-[1.5px]
+                          className={`flex flex-col items-center gap-2.5 py-4 px-3 rounded-xl border-[1.5px]
                                       transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/40
                                       ${active
                                         ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.09)]'
@@ -824,7 +824,7 @@ export default function HostEvent() {
               </SectionCard>
 
               {/* Pre-submit checklist */}
-              <div className="bg-white border border-[#E4E4E0] rounded-2xl p-5 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+              <div className="bg-white border border-[#E4E4E0] rounded-xl p-5 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-6 h-6 rounded-full bg-[#F0FDF4] flex items-center justify-center">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -849,7 +849,7 @@ export default function HostEvent() {
               </div>
 
               {/* Event summary card */}
-              <div className="bg-primary-light border border-[#C7D2FE] rounded-2xl p-5">
+              <div className="bg-primary-light border border-[#C7D2FE] rounded-xl p-5">
                 <div className="text-[11px] font-bold tracking-wider uppercase text-primary mb-3">Submitting</div>
                 <div className="flex items-center gap-3">
                   {(() => { const T = EVENT_TYPES.find(t => t.name === f.category); const EIcon = T?.Icon || PartyPopper; return (

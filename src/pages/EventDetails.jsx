@@ -53,7 +53,7 @@ const StatPill = ({ icon, value, label }) => (
 
 /* ── InfoCell ── */
 const InfoCell = ({ icon, label, value, accent }) => (
-  <div className={`rounded-xl p-4 flex flex-col gap-1.5 border ${accent ? 'bg-primary-light border-[#C7D2FE]' : 'bg-surface border-border'}`}>
+  <div className={`rounded-lg p-4 flex flex-col gap-1.5 border ${accent ? 'bg-primary-light border-[#C7D2FE]' : 'bg-surface border-border'}`}>
     <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider uppercase text-text-4">
       <span className="flex-shrink-0">{icon}</span>{label}
     </div>
@@ -107,7 +107,7 @@ const PrizePodium = ({ prizes }) => {
 const RelatedCard = ({ ev, onClick }) => (
   <motion.button whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.10)' }} whileTap={{ scale: 0.97 }}
     onClick={onClick}
-    className="flex-shrink-0 w-[180px] bg-surface border border-border rounded-xl overflow-hidden text-left cursor-pointer transition-all duration-base">
+    className="flex-shrink-0 w-[180px] bg-surface border border-border rounded-lg overflow-hidden text-left cursor-pointer transition-all duration-base">
     <div className={`w-full h-[90px] flex items-center justify-center text-[40px] ${ev.bg}`}>
       {ev.imageUrl ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" /> : ev.emoji}
     </div>
@@ -124,7 +124,7 @@ const RelatedCard = ({ ev, onClick }) => (
 function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, handleRegister, showToast }) {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}
-      className="bg-surface border border-border rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
+      className="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
       {/* Price header */}
       <div className={`px-6 pt-6 pb-5 border-b border-border
         ${ev.entryType==='free'  ? 'bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]'
@@ -584,7 +584,7 @@ export default function EventDetails() {
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.22 }}
               className="mb-6">
-              <div className="flex items-center gap-4 px-4 py-4 bg-[#FFF7ED] border border-[#FED7AA] rounded-2xl shadow-[0_1px_6px_rgba(180,83,9,0.07)]">
+              <div className="flex items-center gap-4 px-4 py-4 bg-[#FFF7ED] border border-[#FED7AA] rounded-xl shadow-[0_1px_6px_rgba(180,83,9,0.07)]">
                 <div className="w-12 h-12 rounded-xl bg-[#B45309]/10 flex items-center justify-center flex-shrink-0">
                   <FileText size={24} strokeWidth={1.6} className="text-[#B45309]" />
                 </div>
@@ -607,7 +607,7 @@ export default function EventDetails() {
           {(pocName || pocPhone || pocEmail || website) && (
             <div className="mb-6">
               <SectionHeading><span className="flex items-center gap-2"><Phone size={17} strokeWidth={1.8} className="text-text-2" /> Contact Information</span></SectionHeading>
-              <div className="bg-white border border-border rounded-xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                 {pocName && (
                   <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border last:border-b-0">
                     <div className="w-8 h-8 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">

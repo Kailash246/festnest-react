@@ -179,7 +179,7 @@ input:focus:required {
 .otp-box {
   width: 52px; height: 60px;
   border: 2px solid #CBCBC6;
-  border-radius: 10px;
+  border-radius: 8px;
   text-align: center;
   font-family: 'Syne', sans-serif;
   font-size: 22px; font-weight: 700;
