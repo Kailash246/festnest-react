@@ -55,6 +55,25 @@ const FieldError = ({ children }) =>
     </p>
   ) : null;
 
+/* Eye / eye-off icon for password fields. `off` = password is currently visible. */
+const EyeIcon = ({ off }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
+    {off ? (
+      <>
+        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+        <line x1="2" x2="22" y1="2" y2="22" />
+      </>
+    ) : (
+      <>
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+        <circle cx="12" cy="12" r="3" />
+      </>
+    )}
+  </svg>
+);
+
 const INTERESTS = [
   '💻 Hackathons','🎭 Cultural Fests','🛠️ Workshops','🏆 Competitions',
   '🎙️ Tech Talks','⚽ Sports','🎨 Design','🧠 AI / ML','🚀 Startups','📸 Photography',
@@ -575,7 +594,7 @@ export default function AuthOverlay() {
                       <button type="button" onClick={() => setLoginPwVisible(v => !v)}
                         className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]"
                         aria-label={loginPwVisible ? 'Hide password' : 'Show password'}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <EyeIcon off={loginPwVisible} />
                       </button>
                     </div>
                     <FieldError>{fieldErrors.loginPw?.trim()}</FieldError>
@@ -675,8 +694,9 @@ export default function AuthOverlay() {
                         className={`${inputCls} pr-11 ${fieldErrors.password ? inputErrCls : ''}`}
                         onKeyDown={e => e.key === 'Enter' && handleSignup()} />
                       <button type="button" onClick={() => setPwVisible(v => !v)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]"
+                        aria-label={pwVisible ? 'Hide password' : 'Show password'}>
+                        <EyeIcon off={pwVisible} />
                       </button>
                     </div>
                     {pwStrength > 0 && (
@@ -895,8 +915,9 @@ export default function AuthOverlay() {
                         className={`${inputCls} pr-11`}
                         onKeyDown={e => e.key === 'Enter' && handleResetPassword()} />
                       <button type="button" onClick={() => setResetPwVisible(v => !v)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]"
+                        aria-label={resetPwVisible ? 'Hide password' : 'Show password'}>
+                        <EyeIcon off={resetPwVisible} />
                       </button>
                     </div>
                     {resetPwStrength > 0 && (
@@ -920,8 +941,9 @@ export default function AuthOverlay() {
                         className={`${inputCls} pr-11 ${confirmPassword && newPassword !== confirmPassword ? inputErrCls : ''}`}
                         onKeyDown={e => e.key === 'Enter' && handleResetPassword()} />
                       <button type="button" onClick={() => setConfirmPwVisible(v => !v)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]"
+                        aria-label={confirmPwVisible ? 'Hide password' : 'Show password'}>
+                        <EyeIcon off={confirmPwVisible} />
                       </button>
                     </div>
                     {confirmPassword && newPassword !== confirmPassword && (
