@@ -424,7 +424,7 @@ export default function Home() {
       </div>
 
       {secLoading ? <SkeletonHScroll count={5} /> : (
-        <div className="flex gap-3 md:gap-4 px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
+        <div className="flex gap-3 md:gap-4 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
           {trending.map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
               onClick={() => navigate(`/event/${ev.id}`)}
@@ -457,7 +457,7 @@ export default function Home() {
       </div>
 
       {secLoading ? <SkeletonHScroll count={4} wide /> : (
-        <div className="flex gap-3 px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
+        <div className="flex gap-3 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
           {urgent.map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
               onClick={() => navigate(`/event/${ev.id}`)}
