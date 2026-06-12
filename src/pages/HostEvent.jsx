@@ -272,6 +272,7 @@ export default function HostEvent() {
   const [step,      setStep]      = useState(1);
   const [submitting,setSubmitting]= useState(false);
   const [done,      setDone]      = useState(false);
+  const [hasPrize,  setHasPrize]  = useState(false);
   const [errors,    setErrors]    = useState({});
   const [draftBanner, setDraftBanner] = useState(null); // detected draft waiting for resume/discard
   const [draftSaved,  setDraftSaved]  = useState(false); // transient "Draft saved" indicator
@@ -403,14 +404,10 @@ export default function HostEvent() {
       fd.append('registrationUrl', f.regLink);
       fd.append('entryFee',        f.regFee);
       fd.append('isPaid',          f.regFee && f.regFee !== 'Free' ? 'true' : 'false');
-      fd.append('hasPrize',        (f.totalPrize || f.prize1 || f.prize2 || f.prize3) ? 'true' : 'false');
-      fd.append('prize1',          f.prize1);
-      fd.append('prize2',          f.prize2);
-      fd.append('prize3',          f.prize3);
-      fd.append('totalPrize',      f.totalPrize);
-      // prizeDetails = badge summary: "₹X Prize Pool | 1st: ₹X | 2nd: ₹Y | 3rd: ₹Z"
-      const _prizeParts = [f.prize1 && `1st: ₹${f.prize1}`, f.prize2 && `2nd: ₹${f.prize2}`, f.prize3 && `3rd: ₹${f.prize3}`].filter(Boolean);
-      fd.append('prizeDetails', f.totalPrize ? [`₹${f.totalPrize} Prize Pool`, ..._prizeParts].join(' | ') : _prizeParts.join(' | '));
+      fd.append('hasPrize',        hasPrize ? 'true' : 'false');
+      fd.append('totalPrize',      hasPrize ? f.totalPrize : '');
+      // prizeDetails = badge summary: "₹X Prize Pool"
+      fd.append('prizeDetails', hasPrize && f.totalPrize ? `₹${f.totalPrize} Prize Pool` : '');
       fd.append('eligibility',     f.eligibility);
       fd.append('rules',           f.rules);
       fd.append('pocName',         f.pocName);
@@ -461,7 +458,7 @@ export default function HostEvent() {
             className="px-8 py-3.5 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
             Back to Home
           </button>
-          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
+          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
             className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-md text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
             Post Another Event
           </button>
@@ -538,6 +535,7 @@ export default function HostEvent() {
                 <button
                   onClick={() => {
                     setF(draftBanner.f);
+                    setHasPrize(!!draftBanner.f.totalPrize);
                     setStep(draftBanner.step);
                     setDraftBanner(null);
                     showToast('Draft restored ✓', 'success');
@@ -695,26 +693,24 @@ export default function HostEvent() {
               className="space-y-4">
 
               <SectionCard icon={<Trophy size={16} strokeWidth={1.8} className="text-primary" />} title="Prizes and Registration" sub="Optional — fill what's applicable">
-                {/* Prize grid */}
-                <div className="grid grid-cols-3 gap-3">
-                  <Input label="1st Prize" prefix="₹" placeholder="50000"
-                    type="text" inputMode="numeric"
-                    value={f.prize1} onChange={e => upd('prize1', e.target.value)}
-                    className="pl-7" />
-                  <Input label="2nd Prize" prefix="₹" placeholder="25000"
-                    type="text" inputMode="numeric"
-                    value={f.prize2} onChange={e => upd('prize2', e.target.value)}
-                    className="pl-7" />
-                  <Input label="3rd Prize" prefix="₹" placeholder="10000"
-                    type="text" inputMode="numeric"
-                    value={f.prize3} onChange={e => upd('prize3', e.target.value)}
-                    className="pl-7" />
+                {/* Prize pool toggle */}
+                <div className="flex items-center justify-between p-4 bg-surface-2 rounded-md border border-border">
+                  <span className="text-[14px] font-medium text-text-1">Has a Prize Pool?</span>
+                  <button
+                    type="button"
+                    onClick={() => setHasPrize(p => !p)}
+                    className={`relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0
+                      ${hasPrize ? 'bg-primary' : 'bg-[#D1D5DB]'}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200
+                      ${hasPrize ? 'translate-x-6' : 'translate-x-0'}`} />
+                  </button>
                 </div>
 
-                <Input label="Total Prize Pool" prefix="₹" placeholder="1,00,000"
-                  value={f.totalPrize} onChange={e => upd('totalPrize', e.target.value)}
-                  hint="Combined value of all prizes"
-                  className="pl-7" />
+                {hasPrize && (
+                  <Input label="Total Prize Amount (₹)" placeholder="e.g. 2,00,000"
+                    value={f.totalPrize} onChange={e => upd('totalPrize', e.target.value)} />
+                )}
 
                 <div className="h-px bg-[#F1F0ED]" />
 
