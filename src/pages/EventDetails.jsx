@@ -165,7 +165,7 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
       <div className="px-6 pb-6 flex flex-col gap-2.5">
         <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
           onClick={handleRegister} disabled={registering || registered}
-          className={`w-full py-[14px] rounded-xl font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
+          className={`w-full py-[14px] rounded-lg font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
             ${registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`}`}>
           <AnimatePresence mode="wait">
             {registering ? (
@@ -188,7 +188,7 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
 
         <div className="flex gap-2">
           <motion.button whileTap={{scale:0.94}} onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
-            className={`flex-1 py-3 rounded-xl border-[1.5px] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all duration-fast
+            className={`flex-1 py-3 rounded-lg border-[1.5px] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all duration-fast
               ${isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:border-primary hover:text-primary hover:bg-primary-xlight'}`}>
             <svg viewBox="0 0 24 24" fill={isSaved?'currentColor':'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
             {isSaved ? 'Saved' : 'Save'}
@@ -201,7 +201,7 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
                 showToast('Link copied! 📋', 'success');
               }
             }}
-            className="flex-1 py-3 rounded-xl border-[1.5px] border-border text-[13px] font-semibold text-text-2 flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary hover:bg-primary-xlight transition-all">
+            className="flex-1 py-3 rounded-lg border-[1.5px] border-border text-[13px] font-semibold text-text-2 flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary hover:bg-primary-xlight transition-all">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             Share
           </motion.button>
@@ -330,8 +330,8 @@ export default function EventDetails() {
       </h2>
       <p className="text-[14px] text-text-3 mb-6">{error || 'This event may have ended or been removed.'}</p>
       <div className="flex gap-3">
-        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-xl text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
-        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-xl text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
+        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-lg text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
+        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-lg text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
       </div>
     </div>
   );
@@ -380,7 +380,7 @@ export default function EventDetails() {
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 md:px-10 md:pt-6 z-10">
           <motion.button whileTap={{ scale: 0.92 }} onClick={() => navigate(-1)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/80 backdrop-blur-sm text-[13px] font-medium text-text-1 border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/80 backdrop-blur-sm text-[13px] font-medium text-text-1 border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
             Back
           </motion.button>
@@ -571,7 +571,7 @@ export default function EventDetails() {
                 </div>
                 <motion.button whileTap={{ scale: 0.94 }}
                   onClick={() => { setFollowed(f => !f); showToast(followed ? 'Unfollowed' : `Following ${ev.orgName} ✓`, 'success'); }}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-[13px] font-semibold border transition-all duration-fast
+                  className={`flex-shrink-0 px-4 py-2 rounded-lg text-[13px] font-semibold border transition-all duration-fast
                     ${followed ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-primary-light text-primary border-[#C7D2FE] hover:bg-primary hover:text-white'}`}>
                   {followed ? '✓ Following' : '+ Follow'}
                 </motion.button>
@@ -737,7 +737,7 @@ export default function EventDetails() {
           )}
           <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
             onClick={handleRegister} disabled={registering || registered}
-            className={`flex-1 py-[14px] rounded-xl font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
+            className={`flex-1 py-[14px] rounded-lg font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
               ${registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`}`}>
             <AnimatePresence mode="wait">
               {registering ? (

@@ -131,8 +131,8 @@ function FilterSheet({ open, onClose, filters, setFilters, onApply, onReset, act
               </FilterSection>
             </div>
             <div className="flex gap-3 px-5 pt-3 pb-[calc(16px+env(safe-area-inset-bottom,0px))] border-t border-[#E4E4E0] flex-shrink-0">
-              <button onClick={handleReset} className="flex-1 py-3 border-[1.5px] border-[#E4E4E0] rounded-xl text-[14px] font-semibold text-[#8A8A85] hover:border-[#4F46E5] hover:text-[#4F46E5] transition-all">Reset All</button>
-              <button onClick={handleApply} className="flex-[2] py-3 bg-[#4F46E5] text-white rounded-xl text-[14px] font-bold hover:bg-[#3730A3] hover:shadow-[0_4px_14px_rgba(79,70,229,0.35)] transition-all">Show Events</button>
+              <button onClick={handleReset} className="flex-1 py-3 border-[1.5px] border-[#E4E4E0] rounded-lg text-[14px] font-semibold text-[#8A8A85] hover:border-[#4F46E5] hover:text-[#4F46E5] transition-all">Reset All</button>
+              <button onClick={handleApply} className="flex-[2] py-3 bg-[#4F46E5] text-white rounded-lg text-[14px] font-bold hover:bg-[#3730A3] hover:shadow-[0_4px_14px_rgba(79,70,229,0.35)] transition-all">Show Events</button>
             </div>
           </motion.div>
         </>
@@ -495,7 +495,7 @@ export default function Home() {
           <AlertTriangle size={56} strokeWidth={1.5} className="text-amber mb-4" />
           <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">{error}</div>
-          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-xl text-[14px] font-bold hover:bg-primary-dark transition-all">Retry</button>
+          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-lg text-[14px] font-bold hover:bg-primary-dark transition-all">Retry</button>
         </motion.div>
       )}
 
@@ -512,7 +512,7 @@ export default function Home() {
           <Search size={56} strokeWidth={1.5} className="text-text-3 mb-4" />
           <div className="font-display font-bold text-[18px] text-text-1 mb-2">No events found</div>
           <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">Try adjusting your search or removing some filters.</div>
-          <button onClick={clearAll} className="px-6 py-3 bg-primary text-white rounded-xl text-[14px] font-bold hover:bg-primary-dark hover:shadow-indigo transition-all">Clear All Filters</button>
+          <button onClick={clearAll} className="px-6 py-3 bg-primary text-white rounded-lg text-[14px] font-bold hover:bg-primary-dark hover:shadow-indigo transition-all">Clear All Filters</button>
         </motion.div>
       )}
 

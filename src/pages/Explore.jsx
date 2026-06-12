@@ -23,7 +23,7 @@ const SkeletonCard = () => (
       <div className="h-3 w-16 bg-surface-3 rounded-full" />
       <div className="h-5 w-3/4 bg-surface-3 rounded-full" />
       <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
-      <div className="h-10 bg-surface-3 rounded-xl mt-4" />
+      <div className="h-10 bg-surface-3 rounded-lg mt-4" />
     </div>
   </div>
 );
@@ -93,7 +93,7 @@ export default function Explore() {
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
         <h2 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Explore</h2>
         <p className="text-[14px] text-text-3 mb-4">Discover events across India</p>
-        <div className="flex items-center gap-3 bg-surface border-[1.5px] border-border-strong rounded-xl px-4 py-[11px] focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all max-w-[600px]">
+        <div className="flex items-center gap-3 bg-surface border-[1.5px] border-border-strong rounded-lg px-4 py-[11px] focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all max-w-[600px]">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-text-3 flex-shrink-0">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
@@ -118,7 +118,7 @@ export default function Explore() {
           return (
             <motion.button key={value} whileHover={{ y: -2, borderColor: '#4F46E5' }} whileTap={{ scale: 0.98 }}
               onClick={() => setActiveCat(activeCat === value ? 'all' : value)}
-              className={`flex flex-col gap-2 p-4 md:p-5 rounded-xl border cursor-pointer transition-all duration-fast text-left shadow-sm ${activeCat === value ? 'border-primary bg-[#EEF2FF] shadow-[0_0_0_3px_rgba(79,70,229,0.08)]' : 'border-[#E4E4E0] bg-white hover:border-primary hover:bg-[#F5F3FF]'}`}>
+              className={`flex flex-col gap-2 p-4 md:p-5 rounded-lg border cursor-pointer transition-all duration-fast text-left shadow-sm ${activeCat === value ? 'border-primary bg-[#EEF2FF] shadow-[0_0_0_3px_rgba(79,70,229,0.08)]' : 'border-[#E4E4E0] bg-white hover:border-primary hover:bg-[#F5F3FF]'}`}>
               <div className="text-[26px] md:text-[30px] leading-none">{emoji}</div>
               <div className={`font-display font-bold text-[14px] md:text-[15px] ${activeCat === value ? 'text-primary' : 'text-text-1'} transition-colors`}>{name}</div>
               <div className="text-[12px] text-text-3">
@@ -148,7 +148,7 @@ export default function Explore() {
           <div className="text-[48px] mb-4">⚠️</div>
           <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-text-3 mb-4">{error}</div>
-          <button onClick={fetchEvents} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>
+          <button onClick={fetchEvents} className="px-5 py-2.5 bg-primary text-white rounded-lg text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>
         </div>
       )}
 
@@ -165,7 +165,7 @@ export default function Explore() {
           <div className="text-[48px] mb-4">🔍</div>
           <div className="font-display font-bold text-[18px] text-text-1 mb-2">No events found</div>
           <div className="text-[14px] text-text-3 mb-4">Try a different search or category.</div>
-          <button onClick={() => { setActiveCat('all'); setQuery(''); }} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Clear Filters</button>
+          <button onClick={() => { setActiveCat('all'); setQuery(''); }} className="px-5 py-2.5 bg-primary text-white rounded-lg text-[14px] font-semibold hover:bg-primary-dark transition-colors">Clear Filters</button>
         </div>
       )}
 

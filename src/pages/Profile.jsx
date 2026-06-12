@@ -824,7 +824,7 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
         </div>
         <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}
           onClick={onLogout}
-          className="w-full flex items-center gap-3 p-4 rounded-xl border border-[#FECACA]
+          className="w-full flex items-center gap-3 p-4 rounded-lg border border-[#FECACA]
                      bg-white hover:bg-[#FEF2F2] transition-all text-left
                      shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
           <div className="w-9 h-9 rounded-xl bg-[#FEF2F2] flex items-center justify-center flex-shrink-0">

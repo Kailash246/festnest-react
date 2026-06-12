@@ -459,7 +459,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
           ].map(({ Icon: ActionIcon, label, sub, to, cls, subCls }) => (
             <motion.button key={label} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
               onClick={() => navigate(to)}
-              className={`flex items-center gap-3 p-4 rounded-xl text-left transition-all ${cls}`}>
+              className={`flex items-center gap-3 p-4 rounded-lg text-left transition-all ${cls}`}>
               <ActionIcon size={22} strokeWidth={1.8} />
               <div>
                 <div className="font-semibold text-[13px] leading-tight">{label}</div>
@@ -593,7 +593,7 @@ function MyEventsTab({ events, loading, navigate, showToast }) {
       {!loading && events.length > 0 && (
         <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}
           onClick={() => navigate('/host')}
-          className="w-full py-3.5 border-2 border-dashed border-[#C7D2FE] rounded-xl
+          className="w-full py-3.5 border-2 border-dashed border-[#C7D2FE] rounded-lg
                      text-[13px] font-semibold text-primary hover:bg-primary-light
                      hover:border-primary/40 transition-all flex items-center justify-center gap-2">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"

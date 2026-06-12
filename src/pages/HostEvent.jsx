@@ -199,7 +199,7 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
     <div className="flex gap-3 pt-2">
       {step > 1 && (
         <button onClick={onBack}
-          className="flex items-center gap-2 px-5 py-[13px] border-[1.5px] border-[#CBCBC6] rounded-xl
+          className="flex items-center gap-2 px-5 py-[13px] border-[1.5px] border-[#CBCBC6] rounded-lg
             text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all duration-150">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
           Back
@@ -207,14 +207,14 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
       )}
       {step < totalSteps ? (
         <motion.button whileTap={{ scale: 0.98 }} onClick={onNext}
-          className="flex-1 py-[13px] bg-primary text-white rounded-xl text-[14px] font-bold
+          className="flex-1 py-[13px] bg-primary text-white rounded-lg text-[14px] font-bold
             flex items-center justify-center gap-2 hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.30)] transition-all duration-150">
           {nextLabel || 'Continue'}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
         </motion.button>
       ) : (
         <motion.button whileTap={{ scale: 0.98 }} onClick={onSubmit} disabled={submitting}
-          className="flex-1 py-[13px] bg-[#16A34A] text-white rounded-xl text-[14px] font-bold
+          className="flex-1 py-[13px] bg-[#16A34A] text-white rounded-lg text-[14px] font-bold
             flex items-center justify-center gap-2 hover:bg-[#15803D] hover:shadow-[0_4px_14px_rgba(22,163,74,0.30)]
             transition-all duration-150 disabled:opacity-60">
           {submitting
@@ -458,11 +458,11 @@ export default function HostEvent() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button onClick={() => navigate('/')}
-            className="px-8 py-3.5 bg-primary text-white rounded-xl text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
+            className="px-8 py-3.5 bg-primary text-white rounded-lg text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
             Back to Home
           </button>
           <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
-            className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-xl text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
+            className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-lg text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
             Post Another Event
           </button>
         </div>
@@ -588,7 +588,7 @@ export default function HostEvent() {
                     {EVENT_TYPES.map(({ Icon: ETypeIcon, name, color }) => (
                       <motion.button key={name} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
                         onClick={() => upd('category', name)}
-                        className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-[1.5px] transition-all duration-150
+                        className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg border-[1.5px] transition-all duration-150
                           ${f.category === name
                             ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.10)]'
                             : 'border-[#E4E4E0] bg-white hover:border-primary-mid hover:bg-[#F5F3FF]'}`}>
@@ -620,7 +620,7 @@ export default function HostEvent() {
                       const active = f.mode === id;
                       return (
                         <button key={id} onClick={() => upd('mode', id)}
-                          className={`flex flex-col items-center gap-2.5 py-4 px-3 rounded-xl border-[1.5px]
+                          className={`flex flex-col items-center gap-2.5 py-4 px-3 rounded-lg border-[1.5px]
                                       transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/40
                                       ${active
                                         ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.09)]'

@@ -26,7 +26,7 @@ const BackBtn   = ({ onClick })  => (
 const AuthCta = ({ onClick, children, loading, green, disabled }) => (
   <motion.button type="button" whileHover={{ scale: 1.005 }} whileTap={{ scale: 0.98 }}
     onClick={onClick} disabled={loading || disabled}
-    className={`w-full py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 font-body text-[15px] font-bold text-white mb-4 transition-all duration-150 disabled:opacity-55 ${green ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-primary hover:bg-primary-dark hover:shadow-indigo'}`}>
+    className={`w-full py-3.5 px-6 rounded-lg flex items-center justify-center gap-2 font-body text-[15px] font-bold text-white mb-4 transition-all duration-150 disabled:opacity-55 ${green ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-primary hover:bg-primary-dark hover:shadow-indigo'}`}>
     {loading
       ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
       : children}
@@ -607,7 +607,7 @@ export default function AuthOverlay() {
                     ].map(({ r, em, title, sub }) => (
                       <motion.button key={r} whileHover={{ y:-2 }} whileTap={{ scale:0.97 }}
                         onClick={() => setRole(r)}
-                        className={`border-2 rounded-xl p-4 text-center transition-all duration-150 ${role===r ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.12)]' : 'border-[#E4E4E0] bg-white hover:border-primary-mid'}`}>
+                        className={`border-2 rounded-lg p-4 text-center transition-all duration-150 ${role===r ? 'border-primary bg-primary-light shadow-[0_0_0_3px_rgba(79,70,229,0.12)]' : 'border-[#E4E4E0] bg-white hover:border-primary-mid'}`}>
                         <div className="text-[32px] mb-2">{em}</div>
                         <div className={`font-display font-bold text-[14px] mb-1 ${role===r?'text-primary':'text-[#111110]'}`}>{title}</div>
                         <div className="text-[11px] text-[#8A8A85] leading-relaxed">{sub}</div>
