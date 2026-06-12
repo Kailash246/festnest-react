@@ -239,6 +239,7 @@ export default function EventDetails() {
   const [userToggled,   setUserToggled]   = useState(false);
   const [featuredEvs,     setFeaturedEvs]     = useState([]);
   const [featuredLoading, setFeaturedLoading] = useState(true);
+  const [lightboxOpen,    setLightboxOpen]    = useState(false);
 
   const heroRef = useRef(null);
   const { scrollY }   = useScroll();
@@ -272,6 +273,14 @@ export default function EventDetails() {
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  /* Close image lightbox on Escape */
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setLightboxOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightboxOpen]);
 
   // After the user toggles save, trust the context Set (it's optimistically updated and
   // synced to the backend). Before any toggle, if the context Set is still loading (empty),
@@ -367,14 +376,15 @@ export default function EventDetails() {
         className={`relative w-full overflow-hidden aspect-video md:aspect-auto md:min-h-[320px] bg-gradient-to-br ${BG_GRADIENT[ev.bg] || BG_GRADIENT.bg1}`}>
 
         {ev.imageUrl
-          ? <img src={ev.imageUrl} alt={ev.name} className="absolute inset-0 w-full h-full object-cover" />
+          ? <img src={ev.imageUrl} alt={ev.name} onClick={() => setLightboxOpen(true)}
+              className="absolute inset-0 w-full h-full object-cover cursor-zoom-in" />
           : (
             <motion.div style={{ y: emojiY, opacity: heroOpacity }}
               className="absolute inset-0 flex items-center justify-center text-[160px] md:text-[220px] select-none pointer-events-none" aria-hidden>
               {ev.emoji}
             </motion.div>
           )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10 pointer-events-none" />
 
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 md:px-10 md:pt-6 z-10">
@@ -756,6 +766,31 @@ export default function EventDetails() {
           </motion.button>
         </div>
       </div>
+
+      {/* ══ IMAGE LIGHTBOX ══ */}
+      <AnimatePresence>
+        {lightboxOpen && ev.imageUrl && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLightboxOpen(false)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-zoom-out"
+            role="dialog" aria-modal="true" aria-label={`${ev.name} image`}>
+            <motion.button whileTap={{ scale: 0.9 }}
+              onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/25 text-white hover:bg-white/25 transition-all"
+              aria-label="Close image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </motion.button>
+            <motion.img
+              initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              src={ev.imageUrl} alt={ev.name}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-full max-h-full object-contain rounded-md shadow-2xl cursor-default" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </motion.div>
   );
