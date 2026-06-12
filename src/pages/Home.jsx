@@ -341,7 +341,7 @@ export default function Home() {
         </h1>
 
         {/* Search + Filter */}
-        <div className="relative hidden md:block">
+        <div className="relative block mt-4 md:mt-0">
           <div className={`flex items-center gap-3 bg-white border-[1.5px] rounded-md px-4 py-[11px] transition-all duration-fast ${showSuggestions ? 'border-primary shadow-[0_0_0_3px_rgba(79,70,229,0.10)]' : 'border-[#CBCBC6]'}`} role="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-fast ${showSuggestions ? 'text-primary' : 'text-[#8A8A85]'}`}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input ref={searchRef} value={searchVal} onChange={e => setSearchVal(e.target.value)}
