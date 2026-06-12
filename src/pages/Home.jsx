@@ -390,16 +390,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Filter chips ── */}
-      <div className="flex gap-2 px-4 pt-4 overflow-x-auto no-scrollbar md:filter-row-desktop md:flex-wrap md:overflow-x-visible">
-        {CHIP_FILTERS.map(({ label, value, Icon: CfIcon }) => (
-          <button key={value} onClick={() => setChipCategory(prev => prev === value ? 'all' : value)}
-            className={`flex items-center gap-[6px] px-[14px] py-[7px] rounded-md border text-[13px] font-medium whitespace-nowrap flex-shrink-0 transition-all duration-150 active:scale-95 select-none ${chipCategory === value ? 'bg-primary border-primary text-white shadow-sm' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-primary hover:text-primary hover:bg-[#F5F3FF] shadow-sm'}`}>
-            <CfIcon size={13} strokeWidth={1.8} />{label}
-          </button>
-        ))}
-      </div>
-
       {/* Active filter pills */}
       <AnimatePresence>
         {activeSheetCount > 0 && (
@@ -478,6 +468,16 @@ export default function Home() {
           ))}
         </div>
       )}
+
+      {/* ── Filter chips ── */}
+      <div className="flex gap-2 px-4 pt-5 overflow-x-auto no-scrollbar md:filter-row-desktop md:flex-wrap md:overflow-x-visible">
+        {CHIP_FILTERS.map(({ label, value, Icon: CfIcon }) => (
+          <button key={value} onClick={() => setChipCategory(prev => prev === value ? 'all' : value)}
+            className={`flex items-center gap-[6px] px-[14px] py-[7px] rounded-md border text-[13px] font-medium whitespace-nowrap flex-shrink-0 transition-all duration-150 active:scale-95 select-none ${chipCategory === value ? 'bg-primary border-primary text-white shadow-sm' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-primary hover:text-primary hover:bg-[#F5F3FF] shadow-sm'}`}>
+            <CfIcon size={13} strokeWidth={1.8} />{label}
+          </button>
+        ))}
+      </div>
 
       {/* ── For You feed ── */}
       <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
