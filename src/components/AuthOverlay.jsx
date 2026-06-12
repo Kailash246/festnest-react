@@ -100,6 +100,7 @@ export default function AuthOverlay() {
   const [password, setPassword] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPw,    setLoginPw]    = useState('');
+  const [loginPwVisible, setLoginPwVisible] = useState(false);
 
   /* ── Inline field-level errors (keyed by field name) ── */
   const [fieldErrors, setFieldErrors] = useState({});
@@ -565,11 +566,18 @@ export default function AuthOverlay() {
                   </div>
                   <div className="mb-4">
                     <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Password</label>
-                    <input type="password" value={loginPw}
-                      onChange={e => { setLoginPw(e.target.value); clearFieldError('loginPw'); clearFieldError('loginEmail'); }}
-                      placeholder="Your password" autoComplete="current-password"
-                      className={`${inputCls} ${fieldErrors.loginPw ? inputErrCls : ''}`}
-                      onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+                    <div className="relative">
+                      <input type={loginPwVisible ? 'text' : 'password'} value={loginPw}
+                        onChange={e => { setLoginPw(e.target.value); clearFieldError('loginPw'); clearFieldError('loginEmail'); }}
+                        placeholder="Your password" autoComplete="current-password"
+                        className={`${inputCls} pr-11 ${fieldErrors.loginPw ? inputErrCls : ''}`}
+                        onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+                      <button type="button" onClick={() => setLoginPwVisible(v => !v)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#AEAEAD] hover:text-[#8A8A85]"
+                        aria-label={loginPwVisible ? 'Hide password' : 'Show password'}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
+                    </div>
                     <FieldError>{fieldErrors.loginPw?.trim()}</FieldError>
                   </div>
 
