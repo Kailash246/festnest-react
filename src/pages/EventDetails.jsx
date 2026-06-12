@@ -675,7 +675,7 @@ export default function EventDetails() {
               <SectionHeading><span className="flex items-center gap-2"><Star size={17} strokeWidth={1.8} className="text-amber-500" /> Featured Events</span></SectionHeading>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                 {featuredEvs.slice(0, 4).map(f => (
-                  <FeaturedEventCard key={f.id} event={f} className="w-[240px]" />
+                  <RelatedCard key={f.id} ev={f} onClick={() => navigate(`/event/${f.id}`)} />
                 ))}
               </div>
             </div>
