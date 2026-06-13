@@ -722,7 +722,14 @@ export default function AuthOverlay() {
                         {tosAgreed && <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-[11px] h-[11px]"><polyline points="20 6 9 17 4 12"/></svg>}
                       </div>
                       <span className="text-[13px] text-[#4B4B47] leading-relaxed select-none">
-                        I agree to FestNest's <span className="text-primary font-medium">Terms of Service</span> and <span className="text-primary font-medium">Privacy Policy</span>
+                        I agree to FestNest's{' '}
+                        <a href="/terms" target="_blank" rel="noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="text-primary font-medium hover:underline">Terms of Service</a>
+                        {' '}and{' '}
+                        <a href="/privacy" target="_blank" rel="noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="text-primary font-medium hover:underline">Privacy Policy</a>
                       </span>
                     </div>
                     <FieldError>{fieldErrors.tos}</FieldError>

@@ -954,7 +954,7 @@ function Footer() {
   const cols = [
     ['Platform', [['Explore Events', '/explore'], ['Post an Event', '/host'], ['Categories', '/explore'], ['Leaderboard', '/leaderboard']]],
     ['Company', [['About', '/about'], ['Blog', '#'], ['Careers', '#'], ['Press', '#']]],
-    ['Support', [['Help Center', '/support'], ['Contact', '/support'], ['Privacy', '#'], ['Terms', '#']]],
+    ['Support', [['Help Center', '/support'], ['Contact', '/support'], ['Privacy', '/privacy'], ['Terms', '/terms']]],
   ];
   return (
     <footer className="border-t border-border bg-surface-2/30">

@@ -134,9 +134,16 @@ export default function About() {
         <div className="text-center py-4">
           <div className="text-[13px] text-text-4 mb-2">FestNest v1.0 Beta · Built with ❤️ in India</div>
           <div className="flex justify-center gap-5">
-            {['Privacy Policy','Terms of Use','Careers'].map(l => (
-              <button key={l} onClick={() => showToast(`Opening ${l}…`, 'info')}
-                className="text-[12px] text-text-3 hover:text-primary transition-colors">{l}</button>
+            {[
+              { label: 'Privacy Policy', to: '/privacy' },
+              { label: 'Terms of Use',   to: '/terms'   },
+              { label: 'Careers',        to: null        },
+            ].map(({ label, to }) => (
+              <button key={label}
+                onClick={() => to ? navigate(to) : showToast(`Opening ${label}…`, 'info')}
+                className="text-[12px] text-text-3 hover:text-primary transition-colors">
+                {label}
+              </button>
             ))}
           </div>
         </div>

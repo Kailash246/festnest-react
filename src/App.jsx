@@ -23,8 +23,13 @@ import AdminDashboard      from './pages/admin/AdminDashboard';
 import OrganizerDashboard  from './pages/organizer/OrganizerDashboard';
 import Landing        from './pages/landing/Landing';
 import MobileLanding  from './pages/landing/MobileLanding';
+import Terms          from './pages/legal/Terms';
+import Privacy        from './pages/legal/Privacy';
 
 const isMobile = () => window.innerWidth < 768;
+
+// Routes that render full-bleed with no sidebar / topnav / bottom-nav chrome
+const STANDALONE_ROUTES = ['/terms', '/privacy'];
 
 export default function App() {
   const location = useLocation();
@@ -34,6 +39,18 @@ export default function App() {
 
   if (isLandingRoute) {
     return isMobile() ? <MobileLanding /> : <Landing />;
+  }
+
+  if (STANDALONE_ROUTES.includes(location.pathname)) {
+    return (
+      <>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/terms"   element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+        </Routes>
+      </>
+    );
   }
 
   return (

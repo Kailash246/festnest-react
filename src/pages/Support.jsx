@@ -795,7 +795,7 @@ export default function Support() {
 
                     <p className="text-center text-[12px] text-text-4 mt-3">
                       By submitting, you agree to our{' '}
-                      <button className="text-primary hover:underline">Privacy Policy</button>.
+                      <a href="/privacy" target="_blank" rel="noreferrer" className="text-primary hover:underline">Privacy Policy</a>.
                       We never share your data.
                     </p>
                   </motion.div>
