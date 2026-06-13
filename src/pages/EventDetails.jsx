@@ -30,80 +30,123 @@ const ENTRY_CONFIG = {
 };
 
 /* ── Skeleton ── */
-const DetailSkeleton = () => (
-  <div className="min-h-screen bg-white">
+const DetailSkeleton = () => {
+  const S = ({ h = '', w = '', className = '', style }) => (
+    <div className={['skeleton', h, w, className].filter(Boolean).join(' ')} style={style} />
+  );
 
-    {/* Hero image 16:9 */}
-    <div className="skeleton w-full" style={{ paddingTop: '56.25%', borderRadius: 0 }} />
+  return (
+    <div className="min-h-screen bg-white pb-[80px] md:pb-12">
 
-    {/* Quick stats row */}
-    <div className="px-4 mt-4 flex gap-3">
-      {[80, 90, 70].map((w, i) => (
-        <div key={i} className="skeleton h-16 rounded-lg" style={{ width: w }} />
-      ))}
-    </div>
+      {/* Hero 16:9 */}
+      <S style={{ paddingTop: '56.25%', borderRadius: 0 }} className="w-full" />
 
-    {/* Title + prize */}
-    <div className="px-4 mt-5 flex items-start justify-between gap-3">
-      <div className="flex-1 space-y-2">
-        <div className="skeleton h-5 w-4/5" />
-        <div className="skeleton h-4 w-1/2" />
+      {/* Quick stats row */}
+      <div className="px-4 md:px-10 mt-4 mb-6 md:max-w-[900px] md:mx-auto">
+        <div className="flex gap-3">
+          {[80, 90, 70].map((px, i) => (
+            <S key={i} h="h-16" className="rounded-lg flex-shrink-0" style={{ width: px }} />
+          ))}
+        </div>
       </div>
-      <div className="skeleton h-7 w-20 rounded-md" />
-    </div>
 
-    {/* Info grid 2x2 */}
-    <div className="px-4 mt-5 grid grid-cols-2 gap-3">
-      {[1,2,3,4].map(i => (
-        <div key={i} className="skeleton h-16 rounded-lg" />
-      ))}
-    </div>
+      {/* Two-column layout mirrors real page */}
+      <div className="px-4 md:px-10 md:max-w-[900px] md:mx-auto md:grid md:grid-cols-[1fr_300px] md:gap-8 md:items-start">
 
-    {/* About section */}
-    <div className="px-4 mt-6 space-y-2">
-      <div className="skeleton h-4 w-1/3 mb-3" />
-      <div className="skeleton h-3 w-full" />
-      <div className="skeleton h-3 w-full" />
-      <div className="skeleton h-3 w-5/6" />
-      <div className="skeleton h-3 w-3/4" />
-    </div>
+        {/* Left column */}
+        <div>
 
-    {/* Prize podium */}
-    <div className="px-4 mt-6">
-      <div className="skeleton h-4 w-1/4 mb-3" />
-      <div className="grid grid-cols-3 gap-3">
-        {[1,2,3].map(i => <div key={i} className="skeleton h-20 rounded-lg" />)}
-      </div>
-    </div>
-
-    {/* Contact section */}
-    <div className="px-4 mt-6">
-      <div className="skeleton h-4 w-1/3 mb-3" />
-      <div className="skeleton h-14 rounded-lg mb-2" />
-      <div className="skeleton h-14 rounded-lg mb-2" />
-      <div className="skeleton h-14 rounded-lg" />
-    </div>
-
-    {/* Related events */}
-    <div className="px-4 mt-6 mb-10">
-      <div className="skeleton h-4 w-1/3 mb-3" />
-      <div className="flex gap-3 overflow-hidden">
-        {[1,2,3].map(i => (
-          <div key={i} className="flex-shrink-0 w-44">
-            <div className="skeleton h-24 rounded-lg mb-2" />
-            <div className="skeleton h-3 w-3/4 mb-1.5" />
-            <div className="skeleton h-3 w-1/2" />
+          {/* Tags — pill shapes */}
+          <div className="flex gap-2 mb-6">
+            <S h="h-6" w="w-20" className="rounded-full" />
+            <S h="h-6" w="w-16" className="rounded-full" />
           </div>
-        ))}
+
+          {/* Info grid 2×2 */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {[1,2,3,4].map(i => <S key={i} h="h-16" className="rounded-lg" />)}
+          </div>
+
+          {/* About */}
+          <div className="mb-6">
+            <S h="h-4" w="w-1/3" className="mb-3" />
+            <div className="space-y-2">
+              <S h="h-3" w="w-full" />
+              <S h="h-3" w="w-full" />
+              <S h="h-3" w="w-5/6" />
+              <S h="h-3" w="w-3/4" />
+            </div>
+          </div>
+
+          {/* Prize podium — 3 equal cols + full-width total bar */}
+          <div className="mb-6">
+            <S h="h-4" w="w-1/4" className="mb-3" />
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              {[1,2,3].map(i => <S key={i} h="h-20" className="rounded-lg" />)}
+            </div>
+            <S h="h-12" w="w-full" className="rounded-lg" />
+          </div>
+
+          {/* Eligibility accordion — single row */}
+          <S h="h-12" w="w-full" className="rounded-lg mb-6" />
+
+          {/* Organiser card */}
+          <div className="mb-6">
+            <S h="h-4" w="w-1/4" className="mb-3" />
+            <div className="flex items-center gap-4 p-4 border border-border rounded-lg">
+              <S h="h-12" w="w-12" className="rounded-lg flex-shrink-0" />
+              <div className="flex-1 space-y-2">
+                <S h="h-4" w="w-2/3" />
+                <S h="h-3" w="w-1/2" />
+              </div>
+              <S h="h-8" w="w-20" className="rounded-md flex-shrink-0" />
+            </div>
+          </div>
+
+          {/* Contact — 4 rows with icon + 2 text lines */}
+          <div className="mb-6">
+            <S h="h-4" w="w-1/3" className="mb-3" />
+            <div className="border border-border rounded-md overflow-hidden">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="flex items-center gap-3 px-4 py-3.5 border-b border-border last:border-b-0">
+                  <S h="h-8" w="w-8" className="rounded-md flex-shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <S h="h-2.5" w="w-16" />
+                    <S h="h-3.5" w="w-2/5" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Related events — 3 horizontal cards */}
+          <div className="mb-6">
+            <S h="h-4" w="w-1/3" className="mb-3" />
+            <div className="flex gap-3 overflow-hidden">
+              {[1,2,3].map(i => (
+                <div key={i} className="flex-shrink-0 w-44">
+                  <S h="h-24" className="rounded-lg mb-2 w-full" />
+                  <S h="h-3" w="w-3/4" className="mb-1.5" />
+                  <S h="h-3" w="w-1/2" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right column — desktop only, mirrors PriceCard */}
+        <div className="hidden md:block sticky top-20">
+          <S h="h-96" w="w-full" className="rounded-lg" />
+        </div>
+      </div>
+
+      {/* Mobile sticky CTA */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 md:hidden">
+        <S h="h-12" w="w-full" className="rounded-lg" />
       </div>
     </div>
-
-    {/* Mobile sticky CTA */}
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 md:hidden">
-      <div className="skeleton h-12 w-full rounded-lg" />
-    </div>
-  </div>
-);
+  );
+};
 
 /* ── StatPill ── */
 const StatPill = ({ icon, value, label }) => (
