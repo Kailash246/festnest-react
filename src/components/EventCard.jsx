@@ -269,6 +269,9 @@ export default function EventCard({ event, onDelete }) {
           </span>
         </div>
 
+        {/* Divider */}
+        <div style={{ height: 1, background: '#F1F0ED', margin: '8px 0' }} />
+
         {/* 3. Date + deadline · View Details — same row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#8A8A85' }}>
