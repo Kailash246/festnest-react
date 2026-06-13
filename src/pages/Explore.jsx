@@ -18,13 +18,15 @@ const EXPLORE_CATEGORIES = [
 
 /* ── Skeleton ── */
 const SkeletonCard = () => (
-  <div className="bg-white border border-border rounded-[18px] overflow-hidden animate-pulse">
-    <div className="h-[156px] bg-surface-3" />
-    <div className="p-4 space-y-3">
-      <div className="h-3 w-16 bg-surface-3 rounded-full" />
-      <div className="h-5 w-3/4 bg-surface-3 rounded-full" />
-      <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
-      <div className="h-10 bg-surface-3 rounded-md mt-4" />
+  <div className="rounded-[18px] overflow-hidden border border-border bg-white">
+    <div className="skeleton w-full" style={{ paddingTop: '56.25%' }} />
+    <div className="p-3 space-y-2">
+      <div className="skeleton h-4 w-3/4" />
+      <div className="skeleton h-3 w-1/2" />
+      <div className="flex justify-between mt-2">
+        <div className="skeleton h-3 w-1/3" />
+        <div className="skeleton h-3 w-1/4" />
+      </div>
     </div>
   </div>
 );

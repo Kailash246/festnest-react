@@ -31,13 +31,18 @@ const ENTRY_CONFIG = {
 
 /* ── Skeleton ── */
 const DetailSkeleton = () => (
-  <div className="min-h-screen bg-white animate-pulse">
-    <div className="h-[320px] bg-surface-3 w-full" />
-    <div className="px-4 mt-4 space-y-4">
-      <div className="flex gap-3">{[1,2,3].map(i => <div key={i} className="h-[72px] w-[80px] bg-surface-3 rounded-lg flex-shrink-0" />)}</div>
-      <div className="h-5 w-2/3 bg-surface-3 rounded-full" />
-      <div className="h-4 w-full bg-surface-3 rounded-full" />
-      <div className="h-4 w-5/6 bg-surface-3 rounded-full" />
+  <div className="min-h-screen bg-white">
+    <div className="skeleton w-full" style={{ paddingTop: '56.25%', borderRadius: 0 }} />
+    <div className="px-4 mt-5 space-y-3">
+      <div className="skeleton h-7 w-2/3" />
+      <div className="skeleton h-5 w-5/6" />
+      <div className="grid grid-cols-2 gap-3 mt-4">
+        {[1,2,3,4].map(i => <div key={i} className="skeleton h-[72px] rounded-lg" />)}
+      </div>
+      <div className="skeleton h-4 w-full mt-4" />
+      <div className="skeleton h-4 w-full" />
+      <div className="skeleton h-4 w-4/5" />
+      <div className="skeleton h-4 w-3/4" />
     </div>
   </div>
 );
@@ -706,13 +711,13 @@ export default function EventDetails() {
               {featuredLoading ? (
                 <>
                   {[0, 1].map(i => (
-                    <div key={i} className="bg-white border border-[#E4E4E0] rounded-[18px] overflow-hidden animate-pulse">
-                      <div className="h-[140px] bg-surface-3" />
+                    <div key={i} className="rounded-[18px] overflow-hidden border border-border bg-white">
+                      <div className="skeleton w-full" style={{ paddingTop: '56.25%', borderRadius: 0 }} />
                       <div className="p-4 space-y-2">
-                        <div className="h-2.5 w-16 bg-surface-3 rounded-full" />
-                        <div className="h-4 w-3/4 bg-surface-3 rounded-full" />
-                        <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
-                        <div className="h-9 bg-surface-3 rounded-[10px] mt-2" />
+                        <div className="skeleton h-3 w-16" />
+                        <div className="skeleton h-4 w-3/4" />
+                        <div className="skeleton h-3 w-1/2" />
+                        <div className="skeleton h-9 mt-2" />
                       </div>
                     </div>
                   ))}

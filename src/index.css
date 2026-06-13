@@ -103,8 +103,8 @@ input:focus:required {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
 }
 @keyframes screenIn {
   from { opacity: 0; transform: translateY(4px); }
@@ -135,9 +135,15 @@ input:focus:required {
 
 /* ── Skeleton shimmer ── */
 .skeleton {
-  background: linear-gradient(90deg, #F1F0ED 25%, #F8F8F6 50%, #F1F0ED 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 37%,
+    #f0f0f0 63%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
 }
 
 /* ── Scrollbars ── */

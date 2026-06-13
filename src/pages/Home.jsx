@@ -46,13 +46,15 @@ const PinIcon = () => (
    SKELETON CARD  (loading placeholder)
 ───────────────────────────────────────── */
 const SkeletonCard = () => (
-  <div className="bg-white border border-border rounded-[18px] overflow-hidden animate-pulse">
-    <div className="h-[156px] bg-surface-3" />
-    <div className="p-4 space-y-3">
-      <div className="h-3 w-16 bg-surface-3 rounded-full" />
-      <div className="h-5 w-3/4 bg-surface-3 rounded-full" />
-      <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
-      <div className="h-10 bg-surface-3 rounded-md mt-4" />
+  <div className="rounded-[18px] overflow-hidden border border-border bg-white">
+    <div className="skeleton w-full" style={{ paddingTop: '56.25%' }} />
+    <div className="p-3 space-y-2">
+      <div className="skeleton h-4 w-3/4" />
+      <div className="skeleton h-3 w-1/2" />
+      <div className="flex justify-between mt-2">
+        <div className="skeleton h-3 w-1/3" />
+        <div className="skeleton h-3 w-1/4" />
+      </div>
     </div>
   </div>
 );
@@ -60,11 +62,11 @@ const SkeletonCard = () => (
 const SkeletonHScroll = ({ count = 4, wide }) => (
   <div className="flex gap-3 px-4 overflow-x-auto no-scrollbar pb-2">
     {Array.from({ length: count }).map((_, i) => (
-      <div key={i} className={`flex-shrink-0 ${wide ? 'w-[236px]' : 'w-[196px]'} bg-white border border-border rounded-md overflow-hidden animate-pulse`}>
-        <div className={`${wide ? 'h-[78px] w-[78px]' : 'h-[116px] w-full'} bg-surface-3`} />
+      <div key={i} className={`flex-shrink-0 ${wide ? 'w-[236px]' : 'w-[196px]'} bg-white border border-border rounded-md overflow-hidden`}>
+        <div className={`skeleton ${wide ? 'h-[78px] w-[78px]' : 'h-[116px] w-full'}`} style={{ borderRadius: 0 }} />
         <div className="p-3 space-y-2">
-          <div className="h-3 w-2/3 bg-surface-3 rounded-full" />
-          <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
+          <div className="skeleton h-3 w-2/3" />
+          <div className="skeleton h-3 w-1/2" />
         </div>
       </div>
     ))}

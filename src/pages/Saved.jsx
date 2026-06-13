@@ -6,15 +6,15 @@ import { events as eventsApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 
 const SkeletonRow = () => (
-  <div className="bg-surface border border-border rounded-lg overflow-hidden flex mb-3 animate-pulse">
-    <div className="w-[88px] bg-surface-3 flex-shrink-0" style={{ minHeight: 96 }} />
-    <div className="p-4 flex-1 space-y-2">
-      <div className="h-3 w-16 bg-surface-3 rounded-full" />
-      <div className="h-4 w-2/3 bg-surface-3 rounded-full" />
-      <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
+  <div className="bg-white border border-border rounded-lg overflow-hidden flex mb-3">
+    <div className="skeleton w-[88px] flex-shrink-0" style={{ minHeight: 96, borderRadius: 0 }} />
+    <div className="p-4 flex-1 space-y-2.5">
+      <div className="skeleton h-3 w-16" />
+      <div className="skeleton h-4 w-2/3" />
+      <div className="skeleton h-3 w-1/2" />
       <div className="flex gap-2 mt-2">
-        <div className="h-7 w-20 bg-surface-3 rounded" />
-        <div className="h-7 w-16 bg-surface-3 rounded" />
+        <div className="skeleton h-7 w-20" />
+        <div className="skeleton h-7 w-16" />
       </div>
     </div>
   </div>

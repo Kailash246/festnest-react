@@ -37,13 +37,13 @@ const groupLabel = (dateStr) => {
 
 /* ─── Skeleton ────────────────────────────────────────── */
 const SkeletonCard = () => (
-  <div className="mx-3 mb-2 rounded-lg bg-white border border-border p-4 animate-pulse">
+  <div className="mx-3 mb-2 rounded-lg bg-white border border-border p-4">
     <div className="flex items-start gap-3">
-      <div className="w-10 h-10 rounded-lg bg-surface-3 flex-shrink-0" />
+      <div className="skeleton w-10 h-10 rounded-lg flex-shrink-0" />
       <div className="flex-1 space-y-2.5 pt-0.5">
-        <div className="h-3.5 w-3/5 bg-surface-3 rounded-full" />
-        <div className="h-3 w-full bg-surface-3 rounded-full" />
-        <div className="h-3 w-2/3 bg-surface-3 rounded-full" />
+        <div className="skeleton h-3.5 w-3/5" />
+        <div className="skeleton h-3 w-full" />
+        <div className="skeleton h-3 w-2/3" />
       </div>
     </div>
   </div>
