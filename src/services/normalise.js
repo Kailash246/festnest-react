@@ -1,6 +1,13 @@
 // src/services/normalise.js
 // Maps MongoDB/API event shape → flat shape expected by all components.
 
+function fmtDate(raw) {
+  if (!raw) return '';
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return raw; // not parseable — return as-is
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 export function normaliseEvent(ev) {
   if (!ev) return null;
 
@@ -56,8 +63,8 @@ export function normaliseEvent(ev) {
     teamSize: ev.teamSize || '',
 
     // ── Date (nested → flat) ───────────────────────────────────────────
-    startDate:    ev.date?.start       || ev.startDate  || '',
-    endDate:      ev.date?.end         || ev.endDate    || '',
+    startDate:    fmtDate(ev.date?.start    || ev.startDate  || ''),
+    endDate:      fmtDate(ev.date?.end      || ev.endDate    || ''),
     time:         ev.date?.time        || ev.time       || '',
     deadlineDays: ev.date?.deadlineDays ?? ev.deadlineDays ?? 0,
 
