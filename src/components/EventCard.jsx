@@ -9,14 +9,14 @@ import { useApp } from '../context/AppContext';
 const BookmarkIcon = ({ filled }) => (
   <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'}
     stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-    style={{ width: 16, height: 16 }}>
+    style={{ width: 14, height: 14 }}>
     <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
   </svg>
 );
 
 const ShareIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-    strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+    strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
     <circle cx="18" cy="5" r="3" />
     <circle cx="6" cy="12" r="3" />
     <circle cx="18" cy="19" r="3" />
@@ -191,23 +191,23 @@ export default function EventCard({ event, onDelete }) {
           {/* Category badge — top left, coloured per category */}
           <span
             style={{ position: 'absolute', top: 12, left: 12 }}
-            className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded border ${CATEGORY_COLORS[event.category] ?? 'bg-white/90 text-gray-700 border-transparent'}`}
+            className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md border ${CATEGORY_COLORS[event.category] ?? 'bg-white/90 text-gray-700 border-transparent'}`}
           >
             {event.category}
           </span>
 
           {/* Share + Bookmark — top right, square */}
-          <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 6 }}>
+          <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 4 }}>
             <motion.button
               whileTap={{ scale: 0.88 }}
               whileHover={{ scale: 1.06 }}
               onClick={handleShare}
               aria-label="Share event"
               style={{
-                width: 36, height: 36, borderRadius: 8,
-                background: 'rgba(255,255,255,0.92)',
+                width: 28, height: 28, borderRadius: 8,
+                background: 'rgba(255,255,255,0.85)',
                 border: '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: '#444',
                 cursor: 'pointer',
@@ -223,10 +223,10 @@ export default function EventCard({ event, onDelete }) {
               onClick={handleSave}
               aria-label={isSaved ? 'Remove from saved' : 'Save'}
               style={{
-                width: 36, height: 36, borderRadius: 8,
-                background: isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.92)',
+                width: 28, height: 28, borderRadius: 8,
+                background: isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.85)',
                 border: isSaved ? '1.5px solid #C7D2FE' : '1px solid rgba(0,0,0,0.08)',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: isSaved ? '#4F46E5' : '#444',
                 cursor: 'pointer',
@@ -269,32 +269,49 @@ export default function EventCard({ event, onDelete }) {
           </span>
         </div>
 
-        {/* 3. Date + deadline */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#8A8A85' }}>
-          <CalIcon />
-          <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
-          {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
-            <>
-              <span style={{ color: '#CBCBC6' }}>·</span>
-              <span style={{
-                color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
-                fontWeight: 700, fontSize: 11,
-              }}>
-                {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
-              </span>
-            </>
-          )}
+        {/* 3. Date + deadline · View Details — same row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#8A8A85' }}>
+            <CalIcon />
+            <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
+            {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
+              <>
+                <span style={{ color: '#CBCBC6' }}>·</span>
+                <span style={{
+                  color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
+                  fontWeight: 700,
+                }}>
+                  {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
+                </span>
+              </>
+            )}
+          </div>
+          <motion.span
+            whileHover={{ x: 1 }}
+            transition={{ duration: 0.12 }}
+            onClick={goDetail}
+            style={{
+              fontSize: 11, fontWeight: 600, color: '#4F46E5',
+              display: 'flex', alignItems: 'center', gap: 2,
+              cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            View Details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+              strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}>
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </motion.span>
         </div>
 
-        {/* Bottom row: superadmin delete (left) + View Details (right) */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginTop: 'auto', paddingTop: 8 }}>
-          {isSuperAdmin && onDelete && (
+        {/* Superadmin delete — only visible to superadmin */}
+        {isSuperAdmin && onDelete && (
+          <div style={{ display: 'flex', marginTop: 8 }}>
             <motion.button
               whileTap={{ scale: 0.88 }}
               onClick={handleDeleteClick}
               aria-label="Delete event permanently"
               style={{
-                marginRight: 'auto',
                 width: 26, height: 26, borderRadius: 7,
                 border: '1.5px solid #FECACA',
                 background: '#FEF2F2',
@@ -304,20 +321,8 @@ export default function EventCard({ event, onDelete }) {
             >
               <TrashIcon />
             </motion.button>
-          )}
-          <motion.span
-            whileHover={{ x: 2 }}
-            transition={{ duration: 0.12 }}
-            onClick={goDetail}
-            style={{
-              fontSize: 12, fontWeight: 600, color: '#4F46E5',
-              display: 'flex', alignItems: 'center', gap: 2,
-              cursor: 'pointer',
-            }}
-          >
-            View Details ›
-          </motion.span>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ── Delete confirmation modal (portal) ── */}
