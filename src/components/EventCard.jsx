@@ -9,14 +9,14 @@ import { useApp } from '../context/AppContext';
 const BookmarkIcon = ({ filled }) => (
   <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'}
     stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-    style={{ width: 13, height: 13 }}>
+    style={{ width: 16, height: 16 }}>
     <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
   </svg>
 );
 
 const ShareIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-    strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+    strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
     <circle cx="18" cy="5" r="3" />
     <circle cx="6" cy="12" r="3" />
     <circle cx="18" cy="19" r="3" />
@@ -51,6 +51,16 @@ const TrashIcon = () => (
     <path d="M19 6l-1 14H6L5 6" />
   </svg>
 );
+
+/* ── Category colour map ── */
+const CATEGORY_COLORS = {
+  'Hackathon':     'bg-indigo-100 text-indigo-700 border-indigo-200',
+  'Cultural Fest': 'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200',
+  'Workshop':      'bg-teal-100 text-teal-700 border-teal-200',
+  'Competition':   'bg-amber-100 text-amber-700 border-amber-200',
+  'Tech Talk':     'bg-blue-100 text-blue-700 border-blue-200',
+  'Sports':        'bg-green-100 text-green-700 border-green-200',
+};
 
 /* ── Prize helpers ── */
 function formatPrize(val) {
@@ -178,56 +188,50 @@ export default function EventCard({ event, onDelete }) {
             </motion.span>
           )}
 
-          {/* Category badge — top left */}
-          <span style={{
-            position: 'absolute', top: 12, left: 12,
-            display: 'inline-flex', alignItems: 'center',
-            background: 'rgba(0,0,0,0.55)',
-            color: '#fff',
-            borderRadius: 999,
-            fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            padding: '4px 10px',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-          }}>
+          {/* Category badge — top left, coloured per category */}
+          <span
+            style={{ position: 'absolute', top: 12, left: 12 }}
+            className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded border ${CATEGORY_COLORS[event.category] ?? 'bg-white/90 text-gray-700 border-transparent'}`}
+          >
             {event.category}
           </span>
 
-          {/* Share + Bookmark — top right */}
-          <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 6 }}>
+          {/* Share + Bookmark — top right, square */}
+          <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 6 }}>
             <motion.button
-              whileTap={{ scale: 0.85 }}
-              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.88 }}
+              whileHover={{ scale: 1.06 }}
               onClick={handleShare}
               aria-label="Share event"
               style={{
-                width: 30, height: 30, borderRadius: '50%',
-                background: 'rgba(255,255,255,0.90)',
-                border: '1px solid rgba(0,0,0,0.10)',
+                width: 36, height: 36, borderRadius: 8,
+                background: 'rgba(255,255,255,0.92)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#555',
+                color: '#444',
                 cursor: 'pointer',
-                backdropFilter: 'blur(4px)',
-                WebkitBackdropFilter: 'blur(4px)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
               }}
             >
               <ShareIcon />
             </motion.button>
             <motion.button
-              whileTap={{ scale: 0.85 }}
-              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.88 }}
+              whileHover={{ scale: 1.06 }}
               onClick={handleSave}
               aria-label={isSaved ? 'Remove from saved' : 'Save'}
               style={{
-                width: 30, height: 30, borderRadius: '50%',
-                background: isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.90)',
-                border: isSaved ? '1.5px solid #C7D2FE' : '1px solid rgba(0,0,0,0.10)',
+                width: 36, height: 36, borderRadius: 8,
+                background: isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.92)',
+                border: isSaved ? '1.5px solid #C7D2FE' : '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: isSaved ? '#4F46E5' : '#555',
+                color: isSaved ? '#4F46E5' : '#444',
                 cursor: 'pointer',
-                backdropFilter: 'blur(4px)',
-                WebkitBackdropFilter: 'blur(4px)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
               }}
             >
               <BookmarkIcon filled={isSaved} />
@@ -239,17 +243,20 @@ export default function EventCard({ event, onDelete }) {
       {/* ── CARD BODY (30%) ── */}
       <div style={{ padding: '12px 14px 12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
 
-        {/* 1. Event name */}
-        <h3 style={{
-          fontFamily: "'Syne', sans-serif",
-          fontSize: 15, fontWeight: 700, color: '#111110',
-          letterSpacing: '-0.02em', lineHeight: 1.25,
-          marginBottom: 6,
-          display: '-webkit-box', WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical', overflow: 'hidden',
-        }}>
-          {event.name}
-        </h3>
+        {/* 1. Event name + prize badge on same row */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+          <h3 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 15, fontWeight: 700, color: '#111110',
+            letterSpacing: '-0.02em', lineHeight: 1.25,
+            display: '-webkit-box', WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            flex: 1,
+          }}>
+            {event.name}
+          </h3>
+          {hasPrize && prizeAmount && <PrizeBadge amount={prizeAmount} />}
+        </div>
 
         {/* 2. Location — college + city, once */}
         <div style={{
@@ -262,26 +269,21 @@ export default function EventCard({ event, onDelete }) {
           </span>
         </div>
 
-        {/* 3. Date + deadline (no city) · prize badge */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#8A8A85' }}>
-            <CalIcon />
-            <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
-            {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
-              <>
-                <span style={{ color: '#CBCBC6' }}>·</span>
-                <span style={{
-                  color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
-                  fontWeight: 700, fontSize: 11,
-                }}>
-                  {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
-                </span>
-              </>
-            )}
-          </div>
-          {hasPrize && prizeAmount && <PrizeBadge amount={prizeAmount} />}
+        {/* 3. Date + deadline */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#8A8A85' }}>
+          <CalIcon />
+          <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
+          {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
+            <>
+              <span style={{ color: '#CBCBC6' }}>·</span>
+              <span style={{
+                color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
+                fontWeight: 700, fontSize: 11,
+              }}>
+                {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Bottom row: superadmin delete (left) + View Details (right) */}
