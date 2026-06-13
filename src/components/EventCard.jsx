@@ -2,28 +2,21 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Ticket, Trash2 } from 'lucide-react';
+import { Trophy, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-
-/* ── Entry badge config ── */
-const BADGE = {
-  'badge-free':  { bg: '#F0FDF4', text: '#16A34A', border: '#BBF7D0' },
-  'badge-paid':  { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A' },
-  'badge-prize': { bg: '#EEF2FF', text: '#4F46E5', border: '#C7D2FE' },
-};
 
 /* ── Icons ── */
 const BookmarkIcon = ({ filled }) => (
   <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'}
     stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-    style={{ width: 15, height: 15 }}>
+    style={{ width: 13, height: 13 }}>
     <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
   </svg>
 );
 
 const ShareIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-    strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
+    strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
     <circle cx="18" cy="5" r="3" />
     <circle cx="6" cy="12" r="3" />
     <circle cx="18" cy="19" r="3" />
@@ -52,101 +45,52 @@ const CalIcon = () => (
 
 const TrashIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-    strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
+    strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
     <path d="M3 6h18" />
     <path d="M8 6V4h8v2" />
     <path d="M19 6l-1 14H6L5 6" />
   </svg>
 );
 
-/* ── Format a raw prize value into ₹X,XX,XXX ──
-   "50000"    → "₹50,000"
-   "1,00,000" → "₹1,00,000"
-   "1L"       → "₹1L"
-──────────────────────────────────────────────────── */
+/* ── Prize helpers ── */
 function formatPrize(val) {
   if (!val) return null;
   const stripped = String(val).replace(/,/g, '').replace(/^₹/, '').trim();
   const num = Number(stripped);
   if (!isNaN(num) && num > 0) return '₹' + num.toLocaleString('en-IN');
-  // Non-numeric (e.g. "1L", "2 Lakh") — just prepend ₹ if not already there
   return val.startsWith('₹') ? val : `₹${val}`;
 }
 
-/* ── Resolve the best prize amount to display ──
-   Priority: totalPrize → prize1 → badgeText extraction → null (hide badge)
-──────────────────────────────────────────────────── */
 function getPrizeAmount(event) {
   if (event.totalPrize) return formatPrize(event.totalPrize);
   if (event.prize1)     return formatPrize(event.prize1);
-  // Last resort: parse the badge string
   const raw = event.badgeText || '';
   const main = raw.split('|')[0].replace(/🏆\s*/g, '').replace(/\s*(Total\s+)?Prize(\s+Pool)?$/i, '').trim();
   return main && main !== '—' ? main : null;
 }
 
-/* ── Prize Pool Badge — pill, single line, one trophy ── */
 const PrizeBadge = ({ amount }) => (
   <motion.span
-    whileHover={{ scale: 1.04, boxShadow: '0 2px 10px rgba(251,191,36,0.35)' }}
+    whileHover={{ scale: 1.04 }}
     transition={{ duration: 0.15 }}
     style={{
       display: 'inline-flex',
       alignItems: 'center',
-      gap: 4,
+      gap: 3,
       background: 'linear-gradient(135deg, #FEF9C3 0%, #FDE68A 100%)',
       color: '#78350F',
       border: '1px solid #FCD34D',
       borderRadius: 999,
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: 700,
-      padding: '4px 10px',
+      padding: '3px 8px',
       letterSpacing: '0.01em',
-      boxShadow: '0 1px 4px rgba(251,191,36,0.25)',
       whiteSpace: 'nowrap',
       flexShrink: 0,
-      cursor: 'default',
     }}
   >
-    <Trophy size={9} strokeWidth={2.5} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} />{amount}
+    <Trophy size={8} strokeWidth={2.5} style={{ verticalAlign: 'middle' }} />{amount}
   </motion.span>
-);
-
-/* ── Icon Action Button ── */
-const IconBtn = ({ onClick, label, active, activeColor = '#4F46E5', activeBg = '#EEF2FF', activeBorder = '#C7D2FE', children }) => (
-  <motion.button
-    whileTap={{ scale: 0.88 }}
-    whileHover={{ y: -1, boxShadow: '0 3px 10px rgba(0,0,0,0.10)' }}
-    onClick={onClick}
-    aria-label={label}
-    style={{
-      width: 38, height: 38,
-      borderRadius: 10,
-      flexShrink: 0,
-      border: `1.5px solid ${active ? activeBorder : '#E4E4E0'}`,
-      background: active ? activeBg : '#fff',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      color: active ? activeColor : '#8A8A85',
-      cursor: 'pointer',
-      transition: 'all 0.15s ease',
-    }}
-    onMouseEnter={e => {
-      if (!active) {
-        e.currentTarget.style.borderColor = activeBorder;
-        e.currentTarget.style.color = activeColor;
-        e.currentTarget.style.background = activeBg;
-      }
-    }}
-    onMouseLeave={e => {
-      if (!active) {
-        e.currentTarget.style.borderColor = '#E4E4E0';
-        e.currentTarget.style.color = '#8A8A85';
-        e.currentTarget.style.background = '#fff';
-      }
-    }}
-  >
-    {children}
-  </motion.button>
 );
 
 /* ── Main EventCard ── */
@@ -156,13 +100,8 @@ export default function EventCard({ event, onDelete }) {
   const isSaved    = savedEvents.has(event.id);
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleting,    setDeleting]    = useState(false);
-  const badge      = BADGE[event.badgeClass] || BADGE['badge-prize'];
   const hasPrize   = event.entryType === 'prize' || event.badgeClass === 'badge-prize';
   const prizeAmount = hasPrize ? getPrizeAmount(event) : null;
-
-  /* Image overlay label — for prize events show entry type only (no 🏆, no amount),
-     so the trophy appears exactly once in the body prize badge below. */
-  const overlayLabel = hasPrize ? 'Prize Pool' : event.badgeText;
 
   const goDetail   = (e) => { e?.stopPropagation(); navigate(`/event/${event.id}`); };
   const handleSave  = (e) => { e.stopPropagation(); toggleSave(event.id); };
@@ -216,195 +155,166 @@ export default function EventCard({ event, onDelete }) {
       }}
     >
 
-      {/* ── IMAGE AREA — fixed 16:9 ── */}
-      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', overflow: 'hidden', flexShrink: 0 }}>
-      <div
-        className={event.bg}
-        style={{ position: 'absolute', inset: 0,
-                 display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        {/* Event image or emoji */}
-        {event.imageUrl ? (
-          <img
-            src={event.imageUrl}
-            alt={event.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
-        ) : (
-          <motion.span
-            whileHover={{ scale: 1.12 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            style={{ fontSize: 62, lineHeight: 1, userSelect: 'none', display: 'block' }}
-          >
-            {event.emoji}
-          </motion.span>
-        )}
-
-        {/* Entry type badge — top left, no trophy for prize events */}
-        <span style={{
-          position: 'absolute', top: 12, left: 12,
-          display: 'inline-flex', alignItems: 'center', gap: 4,
-          background: badge.bg,
-          color: badge.text,
-          border: `1px solid ${badge.border}`,
-          borderRadius: 999,
-          fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-          padding: '4px 10px',
-        }}>
-          {event.entryType === 'paid' && <Ticket size={10} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 2 }} />}
-          {overlayLabel}
-        </span>
-
-        {/* Bookmark — top right */}
-        <motion.button
-          whileTap={{ scale: 0.85 }}
-          whileHover={{ scale: 1.1 }}
-          onClick={handleSave}
-          aria-label={isSaved ? 'Remove from saved' : 'Save'}
-          style={{
-            position: 'absolute', top: 10, right: 10,
-            width: 32, height: 32, borderRadius: '50%',
-            background: isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.90)',
-            border: isSaved ? '1px solid #C7D2FE' : '1px solid rgba(0,0,0,0.10)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: isSaved ? '#4F46E5' : '#8A8A85',
-            cursor: 'pointer',
-            backdropFilter: 'blur(4px)',
-          }}
+      {/* ── IMAGE AREA — 4:3 ratio gives ~70% visual weight with compact body ── */}
+      <div style={{ position: 'relative', width: '100%', paddingTop: '75%', overflow: 'hidden', flexShrink: 0 }}>
+        <div
+          className={event.bg}
+          style={{ position: 'absolute', inset: 0,
+                   display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <BookmarkIcon filled={isSaved} />
-        </motion.button>
-      </div>
-      </div>
+          {event.imageUrl ? (
+            <img
+              src={event.imageUrl}
+              alt={event.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : (
+            <motion.span
+              whileHover={{ scale: 1.12 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              style={{ fontSize: 62, lineHeight: 1, userSelect: 'none', display: 'block' }}
+            >
+              {event.emoji}
+            </motion.span>
+          )}
 
-      {/* ── CARD BODY ── */}
-      <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+          {/* Category badge — top left */}
+          <span style={{
+            position: 'absolute', top: 12, left: 12,
+            display: 'inline-flex', alignItems: 'center',
+            background: 'rgba(0,0,0,0.55)',
+            color: '#fff',
+            borderRadius: 999,
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            padding: '4px 10px',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+          }}>
+            {event.category}
+          </span>
 
-        {/* 1. Category */}
-        <div style={{
-          fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
-          textTransform: 'uppercase', color: '#4F46E5', marginBottom: 5,
-        }}>
-          {event.category}
+          {/* Share + Bookmark — top right */}
+          <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 6 }}>
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              whileHover={{ scale: 1.1 }}
+              onClick={handleShare}
+              aria-label="Share event"
+              style={{
+                width: 30, height: 30, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.90)',
+                border: '1px solid rgba(0,0,0,0.10)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#555',
+                cursor: 'pointer',
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+              }}
+            >
+              <ShareIcon />
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              whileHover={{ scale: 1.1 }}
+              onClick={handleSave}
+              aria-label={isSaved ? 'Remove from saved' : 'Save'}
+              style={{
+                width: 30, height: 30, borderRadius: '50%',
+                background: isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.90)',
+                border: isSaved ? '1.5px solid #C7D2FE' : '1px solid rgba(0,0,0,0.10)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: isSaved ? '#4F46E5' : '#555',
+                cursor: 'pointer',
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+              }}
+            >
+              <BookmarkIcon filled={isSaved} />
+            </motion.button>
+          </div>
         </div>
+      </div>
 
-        {/* 2. Event title */}
+      {/* ── CARD BODY (30%) ── */}
+      <div style={{ padding: '12px 14px 12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+        {/* 1. Event name */}
         <h3 style={{
           fontFamily: "'Syne', sans-serif",
-          fontSize: 17, fontWeight: 700, color: '#111110',
+          fontSize: 15, fontWeight: 700, color: '#111110',
           letterSpacing: '-0.02em', lineHeight: 1.25,
-          marginBottom: 8,
+          marginBottom: 6,
           display: '-webkit-box', WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>
           {event.name}
         </h3>
 
-        {/* 3. Location (left) + Prize badge (right) */}
+        {/* 2. Location — college + city, once */}
         <div style={{
-          display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', gap: 8, marginBottom: 10,
+          display: 'flex', alignItems: 'center', gap: 4,
+          fontSize: 12, color: '#8A8A85', marginBottom: 6,
         }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            fontSize: 12, color: '#8A8A85', minWidth: 0,
-          }}>
-            <PinIcon />
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {event.college}, {event.city}
-            </span>
+          <PinIcon />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {event.college}, {event.city}
+          </span>
+        </div>
+
+        {/* 3. Date + deadline (no city) · prize badge */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#8A8A85' }}>
+            <CalIcon />
+            <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
+            {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
+              <>
+                <span style={{ color: '#CBCBC6' }}>·</span>
+                <span style={{
+                  color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
+                  fontWeight: 700, fontSize: 11,
+                }}>
+                  {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
+                </span>
+              </>
+            )}
           </div>
           {hasPrize && prizeAmount && <PrizeBadge amount={prizeAmount} />}
         </div>
 
-        {/* 4. Divider */}
-        <div style={{ height: 1, background: '#F1F0ED', marginBottom: 10 }} />
-
-        {/* 5. Date + City + Deadline */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          fontSize: 12, color: '#8A8A85', marginBottom: 14, flexWrap: 'wrap',
-        }}>
-          <CalIcon />
-          <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
-          <span style={{ color: '#CBCBC6' }}>·</span>
-          <PinIcon />
-          <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.city}</span>
-          {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
-            <>
-              <span style={{ color: '#CBCBC6' }}>·</span>
-              <span style={{
-                color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
-                fontWeight: 700,
-              }}>
-                {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* 6. Bottom action row */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 'auto' }}>
-
-          {/* Primary CTA */}
-          <motion.button
-            whileHover={{ scale: 1.015, boxShadow: '0 4px 14px rgba(79,70,229,0.30)' }}
-            whileTap={{ scale: 0.975 }}
-            onClick={goDetail}
-            style={{
-              flex: 1,
-              background: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 10,
-              padding: '10px 14px',
-              fontSize: 13,
-              fontWeight: 700,
-              fontFamily: "'DM Sans', sans-serif",
-              cursor: 'pointer',
-              letterSpacing: '0.01em',
-              boxShadow: '0 2px 8px rgba(79,70,229,0.20)',
-            }}
-          >
-            Know More
-          </motion.button>
-
-          {/* Share button */}
-          <IconBtn
-            onClick={handleShare}
-            label="Share event"
-            activeColor="#4F46E5"
-            activeBg="#EEF2FF"
-            activeBorder="#C7D2FE"
-          >
-            <ShareIcon />
-          </IconBtn>
-
-          {/* Bookmark button */}
-          <IconBtn
-            onClick={handleSave}
-            label={isSaved ? 'Remove from saved' : 'Save event'}
-            active={isSaved}
-            activeColor="#4F46E5"
-            activeBg="#EEF2FF"
-            activeBorder="#C7D2FE"
-          >
-            <BookmarkIcon filled={isSaved} />
-          </IconBtn>
-
-          {/* Superadmin delete button */}
+        {/* Bottom row: superadmin delete (left) + View Details (right) */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginTop: 'auto', paddingTop: 8 }}>
           {isSuperAdmin && onDelete && (
-            <IconBtn
+            <motion.button
+              whileTap={{ scale: 0.88 }}
               onClick={handleDeleteClick}
-              label="Delete event permanently"
-              activeColor="#DC2626"
-              activeBg="#FEF2F2"
-              activeBorder="#FECACA"
+              aria-label="Delete event permanently"
+              style={{
+                marginRight: 'auto',
+                width: 26, height: 26, borderRadius: 7,
+                border: '1.5px solid #FECACA',
+                background: '#FEF2F2',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#DC2626', cursor: 'pointer',
+              }}
             >
               <TrashIcon />
-            </IconBtn>
+            </motion.button>
           )}
+          <motion.span
+            whileHover={{ x: 2 }}
+            transition={{ duration: 0.12 }}
+            onClick={goDetail}
+            style={{
+              fontSize: 12, fontWeight: 600, color: '#4F46E5',
+              display: 'flex', alignItems: 'center', gap: 2,
+              cursor: 'pointer',
+            }}
+          >
+            View Details ›
+          </motion.span>
         </div>
       </div>
 
@@ -443,7 +353,9 @@ export default function EventCard({ event, onDelete }) {
                   boxShadow: '0 24px 64px rgba(0,0,0,0.22)',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}><Trash2 size={42} strokeWidth={1.5} style={{ color: '#DC2626' }} /></div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
+                  <Trash2 size={42} strokeWidth={1.5} style={{ color: '#DC2626' }} />
+                </div>
                 <h3 style={{
                   fontFamily: "'Syne', sans-serif",
                   fontSize: 18, fontWeight: 700, color: '#111110',
