@@ -32,17 +32,75 @@ const ENTRY_CONFIG = {
 /* ── Skeleton ── */
 const DetailSkeleton = () => (
   <div className="min-h-screen bg-white">
+
+    {/* Hero image 16:9 */}
     <div className="skeleton w-full" style={{ paddingTop: '56.25%', borderRadius: 0 }} />
-    <div className="px-4 mt-5 space-y-3">
-      <div className="skeleton h-7 w-2/3" />
-      <div className="skeleton h-5 w-5/6" />
-      <div className="grid grid-cols-2 gap-3 mt-4">
-        {[1,2,3,4].map(i => <div key={i} className="skeleton h-[72px] rounded-lg" />)}
+
+    {/* Quick stats row */}
+    <div className="px-4 mt-4 flex gap-3">
+      {[80, 90, 70].map((w, i) => (
+        <div key={i} className="skeleton h-16 rounded-lg" style={{ width: w }} />
+      ))}
+    </div>
+
+    {/* Title + prize */}
+    <div className="px-4 mt-5 flex items-start justify-between gap-3">
+      <div className="flex-1 space-y-2">
+        <div className="skeleton h-5 w-4/5" />
+        <div className="skeleton h-4 w-1/2" />
       </div>
-      <div className="skeleton h-4 w-full mt-4" />
-      <div className="skeleton h-4 w-full" />
-      <div className="skeleton h-4 w-4/5" />
-      <div className="skeleton h-4 w-3/4" />
+      <div className="skeleton h-7 w-20 rounded-md" />
+    </div>
+
+    {/* Info grid 2x2 */}
+    <div className="px-4 mt-5 grid grid-cols-2 gap-3">
+      {[1,2,3,4].map(i => (
+        <div key={i} className="skeleton h-16 rounded-lg" />
+      ))}
+    </div>
+
+    {/* About section */}
+    <div className="px-4 mt-6 space-y-2">
+      <div className="skeleton h-4 w-1/3 mb-3" />
+      <div className="skeleton h-3 w-full" />
+      <div className="skeleton h-3 w-full" />
+      <div className="skeleton h-3 w-5/6" />
+      <div className="skeleton h-3 w-3/4" />
+    </div>
+
+    {/* Prize podium */}
+    <div className="px-4 mt-6">
+      <div className="skeleton h-4 w-1/4 mb-3" />
+      <div className="grid grid-cols-3 gap-3">
+        {[1,2,3].map(i => <div key={i} className="skeleton h-20 rounded-lg" />)}
+      </div>
+    </div>
+
+    {/* Contact section */}
+    <div className="px-4 mt-6">
+      <div className="skeleton h-4 w-1/3 mb-3" />
+      <div className="skeleton h-14 rounded-lg mb-2" />
+      <div className="skeleton h-14 rounded-lg mb-2" />
+      <div className="skeleton h-14 rounded-lg" />
+    </div>
+
+    {/* Related events */}
+    <div className="px-4 mt-6 mb-10">
+      <div className="skeleton h-4 w-1/3 mb-3" />
+      <div className="flex gap-3 overflow-hidden">
+        {[1,2,3].map(i => (
+          <div key={i} className="flex-shrink-0 w-44">
+            <div className="skeleton h-24 rounded-lg mb-2" />
+            <div className="skeleton h-3 w-3/4 mb-1.5" />
+            <div className="skeleton h-3 w-1/2" />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Mobile sticky CTA */}
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 md:hidden">
+      <div className="skeleton h-12 w-full rounded-lg" />
     </div>
   </div>
 );
