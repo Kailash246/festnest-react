@@ -552,20 +552,6 @@ export default function HostEvent() {
             )}
           </AnimatePresence>
 
-          {/* ── Auto-save indicator ── */}
-          <AnimatePresence>
-            {draftSaved && !draftBanner && (
-              <motion.div
-                key="draft-saved"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="flex items-center gap-1.5 text-[11px] text-text-3 mb-4 -mt-5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] flex-shrink-0" />
-                Draft autosaved
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           <AnimatePresence mode="wait">
 
           {/* ════════════ STEP 1: BASIC INFO ════════════ */}
@@ -647,6 +633,12 @@ export default function HostEvent() {
                 </div>
               </SectionCard>
 
+              {draftSaved && (
+                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Draft autosaved
+                </div>
+              )}
               <NavButtons step={step} totalSteps={5} onNext={goNext} nextLabel="Date & Location →" />
             </motion.div>
           )}
@@ -681,6 +673,12 @@ export default function HostEvent() {
                   value={f.venue} onChange={e => upd('venue', e.target.value)} />
               </SectionCard>
 
+              {draftSaved && (
+                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Draft autosaved
+                </div>
+              )}
               <NavButtons step={step} totalSteps={5} onBack={goBack} onNext={goNext} nextLabel="Prizes & Registration →" />
             </motion.div>
           )}
@@ -737,6 +735,12 @@ export default function HostEvent() {
                   rows={3} value={f.rules} onChange={e => upd('rules', e.target.value)} />
               </SectionCard>
 
+              {draftSaved && (
+                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Draft autosaved
+                </div>
+              )}
               <NavButtons step={step} totalSteps={5} onBack={goBack} onNext={goNext} nextLabel="Contact Info →" />
             </motion.div>
           )}
@@ -771,6 +775,12 @@ export default function HostEvent() {
                   hint="Optional — your event website or social page" />
               </SectionCard>
 
+              {draftSaved && (
+                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Draft autosaved
+                </div>
+              )}
               <NavButtons step={step} totalSteps={5} onBack={goBack} onNext={goNext} nextLabel="Upload Media →" />
             </motion.div>
           )}
@@ -870,6 +880,12 @@ export default function HostEvent() {
                 </div>
               )}
 
+              {draftSaved && (
+                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  Draft autosaved
+                </div>
+              )}
               <NavButtons step={step} totalSteps={5} onBack={goBack} onSubmit={submit} submitting={submitting} />
             </motion.div>
           )}
