@@ -131,7 +131,7 @@ export default function AuthOverlay() {
 
   /* ── OTP ── */
   const [otpDigits, setOtpDigits]   = useState(['','','','','','']);
-  const [otpTimer,  setOtpTimer]    = useState(120);
+  const [otpTimer,  setOtpTimer]    = useState(40);
   const [timerActive, setTimerActive] = useState(false);
   const [otpError,  setOtpError]    = useState('');
   const otpRefs = useRef([]);
@@ -143,7 +143,7 @@ export default function AuthOverlay() {
   const [confirmPassword,  setConfirmPassword]  = useState('');
   const [resetPwVisible,   setResetPwVisible]   = useState(false);
   const [confirmPwVisible, setConfirmPwVisible] = useState(false);
-  const [resetTimer,       setResetTimer]       = useState(120);
+  const [resetTimer,       setResetTimer]       = useState(40);
   const [resetTimerActive, setResetTimerActive] = useState(false);
   const [resetPwStrength,  setResetPwStrength]  = useState(0);
   const resetOtpRefs = useRef([]);
@@ -255,7 +255,7 @@ export default function AuthOverlay() {
         showToast(`Dev OTP: ${r.data.otp} (auto-filled)`, 'info');
       }
       goTo(4);
-      setTimeout(() => { setOtpTimer(120); setTimerActive(true); otpRefs.current[0]?.focus(); }, 350);
+      setTimeout(() => { setOtpTimer(40); setTimerActive(true); otpRefs.current[0]?.focus(); }, 350);
     } catch (e) {
       // Email already registered — surface it inline on the email field and offer
       // log-in / reset shortcuts, instead of sending an OTP to a dead end.
@@ -362,7 +362,7 @@ export default function AuthOverlay() {
         setOtpDigits(['','','','','','']);
         showToast('New OTP sent ✓ — use the latest email', 'success');
       }
-      setOtpTimer(120);
+      setOtpTimer(40);
       setTimerActive(true);
     } catch (e) {
       showToast(e.message || 'Failed to resend OTP', 'error');
@@ -451,7 +451,7 @@ export default function AuthOverlay() {
         showToast(`Dev OTP: ${r.data.otp} (auto-filled)`, 'info');
       }
       goTo('reset-otp');
-      setResetTimer(120);
+      setResetTimer(40);
       setResetTimerActive(true);
       setTimeout(() => resetOtpRefs.current[0]?.focus(), 350);
     } catch (e) {
@@ -481,7 +481,7 @@ export default function AuthOverlay() {
         setResetOtpDigits(['','','','','','']);
         showToast('Code resent', 'success');
       }
-      setResetTimer(120);
+      setResetTimer(40);
       setResetTimerActive(true);
     } catch (e) {
       showToast(e.message || 'Failed to resend code', 'error');
