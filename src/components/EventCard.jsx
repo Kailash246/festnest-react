@@ -155,8 +155,8 @@ export default function EventCard({ event, onDelete }) {
       }}
     >
 
-      {/* ── IMAGE AREA — 4:3 ratio gives ~70% visual weight with compact body ── */}
-      <div style={{ position: 'relative', width: '100%', paddingTop: '75%', overflow: 'hidden', flexShrink: 0 }}>
+      {/* ── IMAGE AREA — 16:9 ── */}
+      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', overflow: 'hidden', flexShrink: 0 }}>
         <div
           className={event.bg}
           style={{ position: 'absolute', inset: 0,
