@@ -338,12 +338,6 @@ export default function EditProfile() {
       {/* Form */}
       <div className="max-w-[820px] mx-auto px-4 md:px-6 mt-3">
 
-        <SectionCard icon={User} title="Your photo" subtitle="A clear photo helps people recognise you.">
-          <AvatarUpload value={form.avatar} name={form.name}
-            onPick={handleAvatar} uploading={uploading}
-            onClear={() => { setForm(f => ({ ...f, avatar: '' })); setDirty(true); }}/>
-        </SectionCard>
-
         <SectionCard icon={User} title="Basic info" subtitle="The essentials about you.">
           <div data-error={!!errors.name}>
             <Input label="Full name" required value={form.name}
