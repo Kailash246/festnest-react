@@ -1,6 +1,7 @@
 // src/pages/landing/MobileLanding.jsx
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { Code2, Music, Wrench, Trophy } from 'lucide-react';
 
 const STATS = [
   { value: '48K+', label: 'Students' },
@@ -9,10 +10,10 @@ const STATS = [
 ];
 
 const CATEGORIES = [
-  { emoji: '💻', label: 'Hackathons',    bg: 'bg1' },
-  { emoji: '🎭', label: 'Cultural Fests', bg: 'bg5' },
-  { emoji: '🔧', label: 'Workshops',     bg: 'bg3' },
-  { emoji: '🏆', label: 'Competitions',  bg: 'bg7' },
+  { icon: Code2,  label: 'Hackathons',    bg: 'bg1' },
+  { icon: Music,  label: 'Cultural Fests', bg: 'bg5' },
+  { icon: Wrench, label: 'Workshops',     bg: 'bg3' },
+  { icon: Trophy, label: 'Competitions',  bg: 'bg7' },
 ];
 
 export default function MobileLanding() {
@@ -95,11 +96,11 @@ export default function MobileLanding() {
         <div>
           <div className="text-[12px] font-bold tracking-wider uppercase text-text-3 mb-3">Browse by Category</div>
           <div className="grid grid-cols-2 gap-2.5">
-            {CATEGORIES.map(({ emoji, label, bg }) => (
+            {CATEGORIES.map(({ icon: Icon, label, bg }) => (
               <button key={label} onClick={handleExplore}
                 className={`${bg} rounded-2xl p-4 flex items-center gap-3 text-left
                              hover:opacity-80 active:scale-[0.97] transition-all`}>
-                <span className="text-[28px] flex-shrink-0">{emoji}</span>
+                <Icon className="w-7 h-7 text-white/80 flex-shrink-0" />
                 <span className="font-display font-bold text-[14px] text-text-1 leading-tight">{label}</span>
               </button>
             ))}
