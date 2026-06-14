@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { trackPageView } from './utils/analytics';
 import { useApp } from './context/AppContext';
 import Topnav        from './components/Topnav';
 import Sidebar       from './components/Sidebar';
@@ -34,6 +36,11 @@ const STANDALONE_ROUTES = ['/terms', '/privacy'];
 
 export default function App() {
   const location = useLocation();
+
+  // Fire a GA4 page_view on every client-side navigation (covers all route branches below)
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
 
   // Landing page is only ever shown at the explicit /landing route
   const isLandingRoute = location.pathname === '/landing';
