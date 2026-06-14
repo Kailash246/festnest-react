@@ -25,6 +25,7 @@ import Landing        from './pages/landing/Landing';
 import MobileLanding  from './pages/landing/MobileLanding';
 import Terms          from './pages/legal/Terms';
 import Privacy        from './pages/legal/Privacy';
+import EditProfile    from './pages/profile/EditProfile';
 
 const isMobile = () => window.innerWidth < 768;
 
@@ -88,6 +89,7 @@ export default function App() {
               <Route path="/explore"       element={<Explore />} />
               <Route path="/saved"         element={<Saved />} />
               <Route path="/profile"       element={<Profile />} />
+              <Route path="/profile/edit" element={<EditProfile />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/college"       element={<MyCollege />} />
               <Route path="/leaderboard"   element={<Leaderboard />} />

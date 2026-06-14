@@ -791,7 +791,7 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
     { Icon: Bell,          iconBg: 'bg-[#EEF2FF] text-primary',       title: 'Notifications',      desc: 'Deadlines & announcements',     onClick: () => navigate('/notifications') },
     { Icon: Bookmark,      iconBg: 'bg-[#F0FDF4] text-[#16A34A]',     title: 'Saved Events',       desc: `${savedCount} bookmarked`,      onClick: () => navigate('/saved') },
     { Icon: ClipboardList, iconBg: 'bg-[#FFFBEB] text-[#B45309]',     title: 'My Registrations',   desc: 'All your event sign-ups',       onClick: () => navigate('/profile') },
-    { Icon: PenLine,       iconBg: 'bg-[#F5F3FF] text-[#7C3AED]',     title: 'Edit Profile',       desc: 'Name, photo, and details',      onClick: () => showToast('Edit profile coming soon', 'info') },
+    { Icon: PenLine,       iconBg: 'bg-[#F5F3FF] text-[#7C3AED]',     title: 'Edit Profile',       desc: 'Name, photo, and details',      onClick: () => navigate('/profile/edit') },
     { Icon: ShieldCheck,   iconBg: 'bg-surface-2 text-text-2',         title: 'Privacy & Security', desc: 'Password and account settings', onClick: () => showToast('Coming soon', 'info') },
     { Icon: CircleHelp,    iconBg: 'bg-[#FEF2F2] text-[#DC2626]',     title: 'Help & Support',     desc: 'FAQs and contact support',      onClick: () => navigate('/support') },
   ];
@@ -799,7 +799,7 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
   const orgItems = [
     { Icon: Bell,            iconBg: 'bg-[#EEF2FF] text-primary',       title: 'Notifications',      desc: 'Updates & announcements',       onClick: () => navigate('/notifications') },
     { Icon: LayoutDashboard, iconBg: 'bg-[#F5F3FF] text-[#7C3AED]',    title: 'My Events',          desc: 'Manage your hosted events',     onClick: () => navigate('/organizer') },
-    { Icon: PenLine,         iconBg: 'bg-[#FFFBEB] text-[#B45309]',    title: 'Edit Profile',       desc: 'Name, photo, and org info',     onClick: () => showToast('Edit profile coming soon', 'info') },
+    { Icon: PenLine,         iconBg: 'bg-[#FFFBEB] text-[#B45309]',    title: 'Edit Profile',       desc: 'Name, photo, and org info',     onClick: () => navigate('/profile/edit') },
     { Icon: ShieldCheck,     iconBg: 'bg-surface-2 text-text-2',        title: 'Privacy & Security', desc: 'Password and account settings', onClick: () => showToast('Coming soon', 'info') },
     { Icon: CircleHelp,      iconBg: 'bg-[#FEF2F2] text-[#DC2626]',    title: 'Help & Support',     desc: 'FAQs and contact support',      onClick: () => navigate('/support') },
   ];
@@ -925,7 +925,7 @@ export default function Profile() {
 
         <HeroSection
           user={displayUser} role={role} loading={loading}
-          onEdit={() => showToast('Edit profile coming soon', 'info')}
+          onEdit={() => navigate('/profile/edit')}
         />
 
         {!isOrg && (

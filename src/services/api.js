@@ -175,6 +175,7 @@ export const events = {
 export const users = {
   me:             ()      => get('/users/me'),
   update:         (body)  => patch('/users/me', body),
+  updateMe:       (body)  => patch('/users/me', body),
   changePassword: (body)  => patch('/users/me/password', body),
   uploadAvatar:   (file)  => { const fd = new FormData(); fd.append('avatar', file); return post('/users/me/avatar', fd); },
   registrations:  ()      => get('/users/me/registrations'),
