@@ -60,6 +60,7 @@ const CATEGORY_COLORS = {
   'Competition':   'bg-amber-100 text-amber-700 border-amber-200',
   'Tech Talk':     'bg-blue-100 text-blue-700 border-blue-200',
   'Sports':        'bg-green-100 text-green-700 border-green-200',
+  'Mega Fest':     'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 border-amber-200',
 };
 
 /* ── Prize helpers ── */

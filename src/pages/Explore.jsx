@@ -5,15 +5,16 @@ import EventCard from '../components/EventCard';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { useApp } from '../context/AppContext';
-import { Code2, Music, Wrench, Trophy, Mic2, Volleyball, Palette, Rocket } from 'lucide-react';
+import { Code2, Music, Wrench, Trophy, Mic2, Volleyball, Palette, Rocket, PartyPopper } from 'lucide-react';
 
 const EXPLORE_CATEGORIES = [
-  { icon: Code2,     name: 'Hackathons',     value: 'Hackathon',     color: 'text-indigo-600 bg-indigo-50' },
-  { icon: Music,     name: 'Cultural Fests', value: 'Cultural Fest', color: 'text-fuchsia-600 bg-fuchsia-50' },
-  { icon: Wrench,    name: 'Workshops',      value: 'Workshop',      color: 'text-teal-600 bg-teal-50' },
-  { icon: Trophy,    name: 'Competitions',   value: 'Competition',   color: 'text-amber-600 bg-amber-50' },
-  { icon: Mic2,      name: 'Tech Talks',     value: 'Tech Talk',     color: 'text-blue-600 bg-blue-50' },
-  { icon: Volleyball,name: 'Sports Meets',   value: 'Sports',        color: 'text-green-600 bg-green-50' },
+  { icon: Code2,        name: 'Hackathons',     value: 'Hackathon',     color: 'text-indigo-600 bg-indigo-50' },
+  { icon: Music,        name: 'Cultural Fests', value: 'Cultural Fest', color: 'text-fuchsia-600 bg-fuchsia-50' },
+  { icon: Wrench,       name: 'Workshops',      value: 'Workshop',      color: 'text-teal-600 bg-teal-50' },
+  { icon: Trophy,       name: 'Competitions',   value: 'Competition',   color: 'text-amber-600 bg-amber-50' },
+  { icon: Mic2,         name: 'Tech Talks',     value: 'Tech Talk',     color: 'text-blue-600 bg-blue-50' },
+  { icon: Volleyball,   name: 'Sports Meets',   value: 'Sports',        color: 'text-green-600 bg-green-50' },
+  { icon: PartyPopper,  name: 'Mega Fests',     value: 'Mega Fest',     color: 'text-amber-600 bg-amber-50' },
 ];
 
 /* ── Skeleton ── */

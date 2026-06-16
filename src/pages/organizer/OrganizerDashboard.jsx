@@ -23,6 +23,7 @@ const TYPE_ICON_STYLE = {
   Competition:     { Icon: Trophy,      cls: 'bg7 text-[#D97706]' },
   'Tech Talk':     { Icon: Mic,         cls: 'bg8 text-[#1D4ED8]' },
   Sports:          { Icon: Zap,         cls: 'bg4 text-[#16A34A]' },
+  'Mega Fest':     { Icon: PartyPopper, cls: 'bg-amber-50 text-[#D97706]' },
   Other:           { Icon: PartyPopper, cls: 'bg2 text-[#EA580C]' },
 };
 

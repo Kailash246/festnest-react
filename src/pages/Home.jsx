@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin } from 'lucide-react';
+import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin, PartyPopper } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EventCard from '../components/EventCard';
 import { events as eventsApi, admin as adminApi } from '../services/api';
@@ -17,6 +17,7 @@ const CHIP_FILTERS = [
   { label: 'Hackathon',     value: 'Hackathon',     Icon: Code2 },
   { label: 'Cultural Fest', value: 'Cultural Fest', Icon: Music4 },
   { label: 'Workshop',      value: 'Workshop',      Icon: Wrench },
+  { label: 'Mega Fest',     value: 'Mega Fest',     Icon: PartyPopper },
   { label: 'Free Entry',    value: 'free',          Icon: Ticket },
   { label: 'Prize Pool',    value: 'prize',         Icon: Trophy },
 ];
@@ -109,7 +110,7 @@ function FilterSheet({ open, onClose, filters, setFilters, onApply, onReset, act
             <div className="overflow-y-auto flex-1 px-5 py-4">
               <FilterSection title="Category">
                 <div className="flex flex-wrap gap-2">
-                  {['Hackathon','Cultural Fest','Workshop','Competition','Tech Talk','Sports'].map(cat => (
+                  {['Hackathon','Cultural Fest','Workshop','Competition','Tech Talk','Sports','Mega Fest'].map(cat => (
                     <Chip key={cat} label={cat} active={local.category === cat} onClick={() => toggle('category', cat)} />
                   ))}
                 </div>

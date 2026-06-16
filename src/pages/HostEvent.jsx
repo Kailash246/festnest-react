@@ -15,12 +15,13 @@ import {
 
 /* ─── Constants ─────────────────────────────────────── */
 const EVENT_TYPES = [
-  { Icon: Code2,  name: 'Hackathon',     color: 'bg1' },
-  { Icon: Music4, name: 'Cultural Fest', color: 'bg5' },
-  { Icon: Wrench, name: 'Workshop',      color: 'bg3' },
-  { Icon: Trophy, name: 'Competition',   color: 'bg7' },
-  { Icon: Mic,    name: 'Tech Talk',     color: 'bg8' },
-  { Icon: Zap,    name: 'Sports',        color: 'bg4' },
+  { Icon: Code2,        name: 'Hackathon',     color: 'bg1' },
+  { Icon: Music4,       name: 'Cultural Fest', color: 'bg5' },
+  { Icon: Wrench,       name: 'Workshop',      color: 'bg3' },
+  { Icon: Trophy,       name: 'Competition',   color: 'bg7' },
+  { Icon: Mic,          name: 'Tech Talk',     color: 'bg8' },
+  { Icon: Zap,          name: 'Sports',        color: 'bg4' },
+  { Icon: PartyPopper,  name: 'Mega Fest',     color: 'bg2' },
 ];
 
 const MODES = [
