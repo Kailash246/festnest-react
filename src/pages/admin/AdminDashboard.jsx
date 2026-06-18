@@ -758,8 +758,11 @@ function UsersTab({ showToast }) {
                       {u.isBanned && <Badge color="red">Banned</Badge>}
                     </div>
                     <div className="text-[11px] text-text-3 truncate mt-0.5">{u.email}</div>
-                    {u.college && (
-                      <div className="text-[12px] text-text-2 font-medium truncate mt-0.5">{u.college}</div>
+                    {(u.organization || u.college) && (
+                      <div className="text-[12px] text-text-2 font-medium truncate mt-0.5">
+                        {u.organization || u.college}
+                        {u.role === 'organizer' && u.designation ? ` · ${u.designation}` : ''}
+                      </div>
                     )}
                   </div>
                 </div>

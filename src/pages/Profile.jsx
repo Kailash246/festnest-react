@@ -5,7 +5,7 @@ import {
   Star, CalendarDays, Map, CheckCircle2, Crown, Lock, Trophy, Award,
   Bell, Bookmark, ClipboardList, PenLine, ShieldCheck, CircleHelp, LogOut,
   BarChart3, Building2, MapPin, Mail, GraduationCap, Code2, Music4, Wrench,
-  Mic, Zap, PartyPopper, Users, LayoutDashboard,
+  Mic, Zap, PartyPopper, Users, LayoutDashboard, Globe, Link2, Briefcase,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { users as usersApi, events as eventsApi } from '../services/api';
@@ -178,10 +178,21 @@ function HeroSection({ user, role, loading, onEdit }) {
           <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
             className="flex flex-wrap gap-2">
-            {user?.college && (
-              <InfoChip Icon={GraduationCap}>
-                {user.college}{user.branch ? ` · ${user.branch}` : ''}
-              </InfoChip>
+            {isOrg ? (
+              (user?.organization || user?.college) && (
+                <InfoChip Icon={Building2}>
+                  {user.organization || user.college}{user.branch ? ` · ${user.branch}` : ''}
+                </InfoChip>
+              )
+            ) : (
+              user?.college && (
+                <InfoChip Icon={GraduationCap}>
+                  {user.college}{user.branch ? ` · ${user.branch}` : ''}
+                </InfoChip>
+              )
+            )}
+            {isOrg && user?.designation && (
+              <InfoChip Icon={Briefcase}>{user.designation}</InfoChip>
             )}
             {role !== 'organizer' && user?.year && (
               <InfoChip Icon={CalendarDays}>{user.year} Year</InfoChip>
@@ -617,43 +628,101 @@ function OrganizerCTA({ navigate }) {
 /* ══════════════════════════════════════════════════
    ORGANIZER: ABOUT SECTION
 ══════════════════════════════════════════════════ */
-function AboutOrgSection({ user }) {
+function AboutOrgSection({ user, events = [] }) {
+  // All values come straight from the database-backed user object.
+  const orgName     = user?.organization || user?.college || '';
+  const liveEvents  = events.filter(e => e.status === 'approved');
+  const totalRegs   = liveEvents.reduce((s, e) => s + (e.registrationCount || 0), 0);
+
+  const STATS = [
+    { label: 'Events Hosted',  value: events.length },
+    { label: 'Registrations',  value: totalRegs },
+    { label: 'Active Events',  value: liveEvents.length },
+  ];
+
+  const NotProvided = () => <span className="text-text-4 italic font-normal">Not provided</span>;
+
+  // Normalise a social/web handle into a clickable href
+  const toHref = (v) => (/^https?:\/\//i.test(v) ? v : `https://${v}`);
+
+  const LinkRow = ({ Icon, label, value, href }) => (
+    <div className="flex items-center gap-2.5 p-3 bg-surface-2 rounded-lg border border-border">
+      <div className="w-7 h-7 rounded-md bg-primary-light flex items-center justify-center flex-shrink-0">
+        <Icon size={13} strokeWidth={1.8} className="text-primary" />
+      </div>
+      <div className="min-w-0">
+        <div className="text-[10px] text-text-4 font-semibold uppercase tracking-wide">{label}</div>
+        {href ? (
+          <a href={href} target="_blank" rel="noreferrer"
+            className="text-[13px] text-primary font-medium hover:underline truncate block">{value}</a>
+        ) : (
+          <div className="text-[13px] text-text-1 font-medium truncate">{value}</div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="bg-white border border-border rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
         <div className="font-display font-bold text-[15px] text-text-1">About Organization</div>
       </div>
       <div className="p-5">
+        {/* Identity */}
         <div className="flex items-center gap-3.5 mb-4">
           <div className="w-12 h-12 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE]
                           flex items-center justify-center flex-shrink-0">
             <Building2 size={22} strokeWidth={1.8} className="text-[#7C3AED]" />
           </div>
-          <div>
-            <div className="font-display font-bold text-[16px] text-text-1">
-              {user?.college || 'Organization Name'}
+          <div className="min-w-0">
+            <div className="font-display font-bold text-[16px] text-text-1 truncate">
+              {orgName || <NotProvided />}
             </div>
-            <div className="flex items-center gap-1 text-[12px] text-text-3 mt-0.5">
-              {user?.city && <><MapPin size={10} strokeWidth={2} />{user.city}</>}
+            <div className="flex items-center gap-2 text-[12px] text-text-3 mt-0.5 flex-wrap">
+              <span className="inline-flex items-center gap-1">
+                <Briefcase size={11} strokeWidth={2} />
+                {user?.designation || <NotProvided />}
+              </span>
+              {user?.city && (
+                <span className="inline-flex items-center gap-1">
+                  <MapPin size={11} strokeWidth={2} />{user.city}
+                </span>
+              )}
             </div>
           </div>
         </div>
-        <p className="text-[13px] text-text-2 leading-relaxed mb-4">
-          {user?.college
-            ? `${user.college} organizes events on FestNest to connect with students across India.`
-            : 'Add your organization description to help students know more about you.'}
-        </p>
-        {user?.email && (
-          <div className="flex items-center gap-2.5 p-3 bg-surface-2 rounded-lg border border-border">
-            <div className="w-7 h-7 rounded-md bg-primary-light flex items-center justify-center flex-shrink-0">
-              <Mail size={13} strokeWidth={1.8} className="text-primary" />
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {STATS.map(s => (
+            <div key={s.label}
+              className="bg-surface-2 border border-border rounded-lg p-3 text-center">
+              <div className="font-display font-bold text-[20px] text-text-1 leading-none mb-1">
+                {s.value}
+              </div>
+              <div className="text-[10px] text-text-3 font-semibold uppercase tracking-wide leading-tight">
+                {s.label}
+              </div>
             </div>
-            <div>
-              <div className="text-[10px] text-text-4 font-semibold uppercase tracking-wide">Contact</div>
-              <div className="text-[13px] text-text-1 font-medium">{user.email}</div>
-            </div>
-          </div>
+          ))}
+        </div>
+
+        {/* Bio (only if available) */}
+        {user?.bio && (
+          <p className="text-[13px] text-text-2 leading-relaxed mb-4">{user.bio}</p>
         )}
+
+        {/* Contact & links */}
+        <div className="space-y-2">
+          <LinkRow Icon={Mail} label="Contact"
+            value={user?.email || 'Not provided'} />
+          {user?.website && (
+            <LinkRow Icon={Globe} label="Website" value={user.website} href={toHref(user.website)} />
+          )}
+          {user?.linkedin && (
+            <LinkRow Icon={Link2} label="LinkedIn" value={user.linkedin} href={toHref(user.linkedin)} />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -957,7 +1026,7 @@ export default function Profile() {
         {isOrg && (
           <>
             <OrganizerCTA navigate={navigate} />
-            <AboutOrgSection user={displayUser} />
+            <AboutOrgSection user={displayUser} events={hostedEvents} />
             <HostedEventsSection events={hostedEvents} loading={loading} navigate={navigate} />
           </>
         )}

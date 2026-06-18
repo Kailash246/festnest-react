@@ -149,8 +149,10 @@ export default function AuthOverlay() {
   const resetOtpRefs = useRef([]);
 
   /* ── Registration extra ── */
-  const [role,      setRole]      = useState('student');
-  const [tosAgreed, setTosAgreed] = useState(false);
+  const [role,         setRole]         = useState('student');
+  const [organization, setOrganization] = useState('');
+  const [designation,  setDesignation]  = useState('');
+  const [tosAgreed,    setTosAgreed]    = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
   const [pwStrength, setPwStrength] = useState(0);
   const [selectedInterests, setSelectedInterests] = useState(new Set());
@@ -236,6 +238,14 @@ export default function AuthOverlay() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimEmail)) errs.email = 'Please enter a valid email address';
     if (!password) errs.password = 'Please create a password';
     else if (password.length < 8) errs.password = 'Password must be at least 8 characters';
+    // Organizer-only required fields
+    if (role === 'organizer') {
+      if (!organization.trim())                   errs.organization = 'Please enter your organization or college';
+      const d = designation.trim();
+      if (!d)                                      errs.designation = 'Please enter your designation';
+      else if (d.length < 2)                       errs.designation = 'Designation must be at least 2 characters';
+      else if (d.length > 100)                     errs.designation = 'Designation cannot exceed 100 characters';
+    }
     if (!tosAgreed) errs.tos = 'Please agree to the Terms of Service to continue';
 
     if (Object.keys(errs).length) {
@@ -278,14 +288,19 @@ export default function AuthOverlay() {
 
     setLoading(true);
     try {
+      const isOrg = role === 'organizer';
       const r = await authApi.register({
-        name:     name.trim(),
-        email:    email.trim(),
-        otp:      code,
-        password: password,
-        college:  '',
-        city:     '',
-        role:     role,
+        name:         name.trim(),
+        email:        email.trim(),
+        otp:          code,
+        password:     password,
+        // For organizers, mirror organization into college so existing
+        // college-based displays stay populated.
+        college:      isOrg ? organization.trim() : '',
+        city:         '',
+        organization: isOrg ? organization.trim() : '',
+        designation:  isOrg ? designation.trim()  : '',
+        role:         role,
       });
       login(r.data.user);
       goTo(5);  // profile setup
@@ -688,6 +703,28 @@ export default function AuthOverlay() {
                       </div>
                     )}
                   </div>
+                  {/* Organizer-only: Organization / College + Designation */}
+                  {role === 'organizer' && (
+                    <>
+                      <div className="mb-4">
+                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Organization / College</label>
+                        <input type="text" value={organization}
+                          onChange={e => { setOrganization(e.target.value); clearFieldError('organization'); }}
+                          placeholder="e.g. IIT Bombay · Techfest"
+                          className={`${inputCls} ${fieldErrors.organization ? inputErrCls : ''}`} />
+                        <FieldError>{fieldErrors.organization}</FieldError>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Your Designation</label>
+                        <input type="text" value={designation}
+                          onChange={e => { setDesignation(e.target.value); clearFieldError('designation'); }}
+                          placeholder="Faculty Coordinator, Event Coordinator, Club President…"
+                          className={`${inputCls} ${fieldErrors.designation ? inputErrCls : ''}`} />
+                        <FieldError>{fieldErrors.designation}</FieldError>
+                      </div>
+                    </>
+                  )}
+
                   <div className="mb-4">
                     <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Password</label>
                     <div className="relative">

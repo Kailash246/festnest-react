@@ -346,7 +346,8 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
             Welcome back, {user?.name?.split(' ')[0] || 'Organizer'}
           </div>
           <div className="text-white/70 text-[13px] mb-4">
-            {user?.college || 'FestNest Organizer'}
+            {user?.organization || user?.college || 'FestNest Organizer'}
+            {user?.designation ? ` · ${user.designation}` : ''}
           </div>
 
           <div className="flex items-center gap-4">
@@ -859,7 +860,7 @@ export default function OrganizerDashboard() {
               Organizer Hub
             </div>
             <div className="text-[11px] text-text-3 truncate mt-0.5">
-              {user?.name || '…'} · {user?.college || 'FestNest'}
+              {user?.name || '…'} · {user?.organization || user?.college || 'FestNest'}
             </div>
           </div>
 

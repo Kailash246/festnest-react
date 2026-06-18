@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowLeft, Camera, User, GraduationCap, Building2, MapPin, Mail, Phone,
+  ArrowLeft, User, GraduationCap, Building2, MapPin, Mail, Phone,
   BookOpen, Code2, Music, Wrench, Trophy, Mic2, Volleyball,
   Globe, Sparkles, Check, X, Save,
 } from 'lucide-react';
@@ -136,63 +136,16 @@ const INTEREST_OPTIONS = [
 ];
 
 /* ════════════════════════════════════════════
-   AVATAR uploader
-════════════════════════════════════════════ */
-function AvatarUpload({ value, name, onPick, onClear, uploading }) {
-  const fileRef = useRef(null);
-  const initial = (name?.[0] || 'U').toUpperCase();
-  return (
-    <div className="flex items-center gap-4 md:gap-5">
-      <div className="relative">
-        <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-gradient-to-br from-primary to-[#7C3AED]
-                        flex items-center justify-center text-white font-display font-bold text-[30px] md:text-[36px]
-                        ring-4 ring-white shadow-[0_4px_16px_rgba(79,70,229,0.18)]">
-          {value
-            ? <img src={value} alt="" className="w-full h-full object-cover" />
-            : <span>{initial}</span>}
-        </div>
-        {uploading && (
-          <div className="absolute inset-0 rounded-full bg-black/45 flex items-center justify-center">
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/>
-          </div>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-semibold text-text-1 mb-0.5">Profile photo</p>
-        <p className="text-[11.5px] text-text-3 mb-2.5 leading-snug">JPG or PNG · square works best · max 2 MB</p>
-        <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => fileRef.current?.click()}
-            className="inline-flex items-center gap-1.5 bg-primary text-white text-[12.5px] font-semibold px-3.5 py-2 rounded-md hover:bg-primary-dark transition-colors">
-            <Camera className="w-3.5 h-3.5"/>
-            {value ? 'Change' : 'Upload'}
-          </button>
-          {value && (
-            <button type="button" onClick={onClear}
-              className="inline-flex items-center gap-1.5 bg-white border border-border text-text-2 text-[12.5px] font-semibold px-3.5 py-2 rounded-md hover:border-red hover:text-red transition-colors">
-              <X className="w-3.5 h-3.5"/>
-              Remove
-            </button>
-          )}
-        </div>
-        <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
-          onChange={e => { const f = e.target.files?.[0]; if (f) onPick(f); e.target.value = ''; }}/>
-      </div>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════
    MAIN PAGE
 ════════════════════════════════════════════ */
 export default function EditProfile() {
   const navigate = useNavigate();
   const { isLoggedIn, requireAuth, currentUser, showToast, refreshUser } = useApp();
 
-  const [loading, setLoading]     = useState(true);
-  const [saving, setSaving]       = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [dirty, setDirty]         = useState(false);
-  const [errors, setErrors]       = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving]   = useState(false);
+  const [dirty, setDirty]     = useState(false);
+  const [errors, setErrors]   = useState({});
 
   const [form, setForm] = useState({
     name: '', email: '', phone: '', avatar: '', bio: '',
@@ -234,27 +187,19 @@ export default function EditProfile() {
 
   const upd = (k, v) => { setForm(f => ({ ...f, [k]: v })); setDirty(true); setErrors(e => ({ ...e, [k]: undefined })); };
 
-  const handleAvatar = async (file) => {
-    if (file.size > 2 * 1024 * 1024) { showToast('Image must be under 2 MB', 'error'); return; }
-    setUploading(true);
-    try {
-      const fd = new FormData();
-      fd.append('avatar', file);
-      const { data } = await usersApi.uploadAvatar(fd);
-      const url = data.avatar?.url || data.url;
-      if (url) { setForm(f => ({ ...f, avatar: url })); setDirty(true); showToast('Photo updated', 'success'); }
-    } catch (e) {
-      showToast(e.message || 'Could not upload photo', 'error');
-    } finally { setUploading(false); }
-  };
-
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = 'Required';
     if (form.phone && !/^[+\d][\d\s-]{6,15}$/.test(form.phone)) e.phone = 'Looks invalid';
     if (form.website && !/^https?:\/\/.+/.test(form.website)) e.website = 'Must start with https://';
-    if (role === 'student'   && !form.college.trim())      e.college      = 'Required';
-    if (role === 'organizer' && !form.organization.trim()) e.organization = 'Required';
+    if (role === 'student' && !form.college.trim()) e.college = 'Required';
+    if (role === 'organizer') {
+      if (!form.organization.trim()) e.organization = 'Required';
+      const d = form.designation.trim();
+      if (!d)                  e.designation = 'Required';
+      else if (d.length < 2)   e.designation = 'Must be at least 2 characters';
+      else if (d.length > 100) e.designation = 'Cannot exceed 100 characters';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -269,7 +214,6 @@ export default function EditProfile() {
     try {
       const payload = { ...form };
       delete payload.email;
-      delete payload.avatar;
       await usersApi.updateMe(payload);
       showToast('Profile saved', 'success');
       setDirty(false);
@@ -408,9 +352,12 @@ export default function EditProfile() {
                     placeholder="e.g. IIT Bombay · Techfest"/>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-x-4">
-                  <Input label="Your designation" value={form.designation}
-                    onChange={e => upd('designation', e.target.value)}
-                    placeholder="e.g. Events Head"/>
+                  <div data-error={!!errors.designation}>
+                    <Input label="Your designation" required value={form.designation}
+                      onChange={e => upd('designation', e.target.value)} error={errors.designation}
+                      maxLength={100}
+                      placeholder="e.g. Faculty Coordinator, Club President"/>
+                  </div>
                   <Input label="Department" value={form.branch}
                     onChange={e => upd('branch', e.target.value)}
                     placeholder="e.g. Student Council"/>
