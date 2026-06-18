@@ -149,10 +149,10 @@ function StepBar({ current }) {
 }
 
 /* ─── File upload zone ───────────────────────────────── */
-function UploadZone({ label, hint, accept, Icon: UpIcon, file, onFile, onRemove }) {
+function UploadZone({ id, label, hint, accept, Icon: UpIcon, file, onFile, onRemove, error }) {
   const ref = useRef();
   return (
-    <div>
+    <div id={id} style={{ scrollMarginTop: '90px' }}>
       {label && <label className="block text-[13px] font-semibold text-text-1 mb-1.5">{label}</label>}
       <AnimatePresence mode="wait">
         {file ? (
@@ -174,8 +174,9 @@ function UploadZone({ label, hint, accept, Icon: UpIcon, file, onFile, onRemove 
         ) : (
           <motion.label key="empty"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex flex-col items-center gap-2.5 border-2 border-dashed border-[#CBCBC6] rounded-md py-7 px-4 cursor-pointer
-              hover:border-primary hover:bg-primary-xlight transition-all duration-150 group">
+            className={`flex flex-col items-center gap-2.5 border-2 border-dashed rounded-md py-7 px-4 cursor-pointer
+              transition-all duration-150 group
+              ${error ? 'border-red bg-red-bg/40' : 'border-[#CBCBC6] hover:border-primary hover:bg-primary-xlight'}`}>
             <div className="w-11 h-11 rounded-lg bg-surface-3 group-hover:bg-primary-light flex items-center justify-center transition-all">
               <UpIcon size={22} strokeWidth={1.8} className="text-text-3 group-hover:text-primary" />
             </div>
@@ -190,6 +191,10 @@ function UploadZone({ label, hint, accept, Icon: UpIcon, file, onFile, onRemove 
           </motion.label>
         )}
       </AnimatePresence>
+      {error && <p className="text-[12px] text-red mt-1 flex items-center gap-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {error}
+      </p>}
     </div>
   );
 }
@@ -336,45 +341,96 @@ export default function HostEvent() {
 
   const upd = (k, v) => { setF(prev => ({ ...prev, [k]: v })); if (errors[k]) setErrors(e => ({ ...e, [k]: '' })); };
 
-  /* ── Validation per step ── */
+  // Numeric-only update: strips letters/symbols/commas at the keystroke level,
+  // keeping digits and at most one decimal point. Used for the Prize Pool field.
+  const updNumeric = (k, raw) => {
+    let v = raw.replace(/[^\d.]/g, '');
+    const dot = v.indexOf('.');
+    if (dot !== -1) v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, '');
+    upd(k, v);
+  };
+
+  /* ── Validation rules ── */
   const PHONE_RE = /^[+\d][\d\s\-().]{5,18}$/;
   const URL_RE   = /^https?:\/\/.+/i;
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Whole number with an optional decimal (max 2 places). No commas, symbols, or letters.
+  const MONEY_RE = /^\d+(\.\d{1,2})?$/;
 
-  const validate = (s) => {
+  // Which step each field lives on — drives "jump to the first invalid field".
+  const FIELD_STEP = {
+    category: 1, title: 1, description: 1,
+    startDate: 2, college: 2, cityState: 2,
+    totalPrize: 3, regFee: 3, regLink: 3,
+    pocName: 4, phone: 4, email: 4, website: 4,
+    poster: 5, brochure: 5,
+  };
+
+  // Pure: compute the errors for a single step. Does not touch state.
+  const computeErrors = (s) => {
     const errs = {};
     if (s === 1) {
       if (!f.category)                             errs.category    = 'Please select a category';
       if (!f.title.trim())                         errs.title       = 'Event title is required';
-      else if (f.title.trim().length > 100)        errs.title       = 'Event title must not exceed 100 characters';
+      else if (f.title.trim().length > 100)        errs.title       = 'Event title cannot exceed 100 characters';
       if (!f.description.trim())                   errs.description = 'Description is required';
-      else if (f.description.trim().length > 5000) errs.description = 'Description must not exceed 5000 characters';
+      else if (f.description.trim().length > 5000) errs.description = 'Description cannot exceed 5000 characters';
     }
     if (s === 2) {
-      if (!f.startDate)                          errs.startDate = 'Start date is required';
-      if (!f.college.trim())                     errs.college   = 'College / Organization is required';
-      else if (f.college.trim().length > 100)    errs.college   = 'Organizer name must not exceed 100 characters';
-      if (f.cityState && f.cityState.length > 200) errs.cityState = 'Location must not exceed 200 characters';
+      if (!f.startDate)                            errs.startDate = 'Start date is required';
+      if (f.endDate && f.startDate && f.endDate < f.startDate)
+        errs.endDate = 'End date cannot be before the start date';
+      if (!f.college.trim())                       errs.college   = 'College / Organization is required';
+      else if (f.college.trim().length > 100)      errs.college   = 'Organizer name cannot exceed 100 characters';
+      if (f.cityState && f.cityState.length > 200) errs.cityState = 'Location cannot exceed 200 characters';
     }
     if (s === 3) {
-      if (f.totalPrize && !/^\d[\d,]*$/.test(f.totalPrize.trim()))
-        errs.totalPrize = 'Prize pool must be a non-negative number';
-      if (f.regFee && f.regFee.trim().toLowerCase() !== 'free' && isNaN(Number(f.regFee.replace(/,/g, ''))))
-        errs.regFee = 'Registration fee must be a number or "Free"';
-      if (f.regLink && !URL_RE.test(f.regLink.trim()))
-        errs.regLink = 'Registration link must be a valid URL starting with https://';
+      if (hasPrize) {
+        if (!f.totalPrize.trim())                  errs.totalPrize = 'Prize pool is required when a prize pool is enabled';
+        else if (!MONEY_RE.test(f.totalPrize.trim())) errs.totalPrize = 'Prize pool must contain numbers only';
+      }
+      if (f.regFee.trim() && f.regFee.trim().toLowerCase() !== 'free' && !MONEY_RE.test(f.regFee.trim()))
+        errs.regFee = 'Registration fee must be a valid number';
+      if (f.regLink.trim() && !URL_RE.test(f.regLink.trim()))
+        errs.regLink = 'Enter a valid URL starting with http:// or https://';
     }
     if (s === 4) {
-      if (!f.pocName.trim())                      errs.pocName = 'Contact name is required';
-      else if (f.pocName.trim().length > 100)     errs.pocName = 'Contact name must not exceed 100 characters';
-      if (!f.phone.trim())                        errs.phone   = 'Phone number is required';
-      else if (!PHONE_RE.test(f.phone.trim()))    errs.phone   = 'Enter a valid phone number (e.g. +91 98765 43210)';
-      if (!f.email.trim())                        errs.email   = 'Email is required';
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) errs.email = 'Invalid email address';
-      if (f.website && !URL_RE.test(f.website.trim()))
-        errs.website = 'Website must be a valid URL starting with https://';
+      if (!f.pocName.trim())                       errs.pocName = 'Contact name is required';
+      else if (f.pocName.trim().length > 100)      errs.pocName = 'Contact name cannot exceed 100 characters';
+      if (!f.phone.trim())                         errs.phone   = 'Phone number is required';
+      else if (!PHONE_RE.test(f.phone.trim()))     errs.phone   = 'Enter a valid phone number (e.g. +91 98765 43210)';
+      if (!f.email.trim())                         errs.email   = 'Email is required';
+      else if (!EMAIL_RE.test(f.email.trim()))     errs.email   = 'Enter a valid email address';
+      if (f.website.trim() && !URL_RE.test(f.website.trim()))
+        errs.website = 'Enter a valid website URL';
     }
+    if (s === 5) {
+      const imgTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (posterFile) {
+        if (!imgTypes.includes(posterFile.type))   errs.poster = 'Poster must be JPG, PNG, or WEBP';
+        else if (posterFile.size > 5 * 1024 * 1024) errs.poster = 'Poster size cannot exceed 5 MB';
+      }
+      if (brochureFile) {
+        if (brochureFile.type !== 'application/pdf') errs.brochure = 'Brochure must be a PDF file';
+        else if (brochureFile.size > 10 * 1024 * 1024) errs.brochure = 'Brochure size cannot exceed 10 MB';
+      }
+    }
+    return errs;
+  };
+
+  // Validate a single step, commit its errors to state, return them.
+  const validate = (s) => {
+    const errs = computeErrors(s);
     setErrors(errs);
     return errs;
+  };
+
+  // Validate every step at once (used on final submit).
+  const validateAll = () => {
+    let all = {};
+    for (let s = 1; s <= 5; s++) all = { ...all, ...computeErrors(s) };
+    setErrors(all);
+    return all;
   };
 
   // Maps an error key to the DOM id of its field, then scrolls/focuses it.
@@ -391,7 +447,7 @@ export default function HostEvent() {
   const goNext = () => {
     const errs = validate(step);
     if (Object.keys(errs).length) {
-      showToast('Please fill in the required fields', 'error');
+      showToast('Please fix the highlighted fields below', 'error');
       scrollToFirstError(errs);
       return;
     }
@@ -402,10 +458,18 @@ export default function HostEvent() {
 
   /* ── Submit ── */
   const submit = async () => {
-    const errs = validate(step);
+    const errs = validateAll();
     if (Object.keys(errs).length) {
-      showToast('Please fill in all required fields', 'error');
-      scrollToFirstError(errs);
+      const firstKey   = Object.keys(errs)[0];
+      const targetStep = FIELD_STEP[firstKey] || step;
+      showToast('Please fix the highlighted fields below', 'error');
+      // If the first error is on an earlier step, navigate there before scrolling.
+      if (targetStep !== step) {
+        setStep(targetStep);
+        setTimeout(() => scrollToFirstError(errs), 350);
+      } else {
+        scrollToFirstError(errs);
+      }
       return;
     }
     if (!requireAuth()) return;
@@ -420,8 +484,10 @@ export default function HostEvent() {
       fd.append('venue',           f.venue);
       fd.append('about',           f.description);
       fd.append('registrationUrl', f.regLink);
+      const feeTrim = f.regFee.trim();
+      const isFree  = !feeTrim || feeTrim.toLowerCase() === 'free';
       fd.append('entryFee',        f.regFee);
-      fd.append('isPaid',          f.regFee && f.regFee !== 'Free' ? 'true' : 'false');
+      fd.append('isPaid',          isFree ? 'false' : 'true');
       fd.append('hasPrize',        hasPrize ? 'true' : 'false');
       fd.append('totalPrize',      hasPrize ? f.totalPrize : '');
       // prizeDetails = badge summary: "₹X Prize Pool"
@@ -570,6 +636,25 @@ export default function HostEvent() {
             )}
           </AnimatePresence>
 
+          {/* ── Validation summary (current step) ── */}
+          {(() => {
+            const stepErrors = Object.entries(errors).filter(
+              ([k, v]) => v && FIELD_STEP[k] === step
+            );
+            if (stepErrors.length < 2) return null;
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-2.5 px-4 py-3 mb-5 bg-red-bg border border-red-border rounded-lg"
+                role="alert" aria-live="assertive">
+                <AlertTriangle size={17} strokeWidth={2} className="text-red flex-shrink-0 mt-0.5" />
+                <div className="text-[13px] text-red font-semibold">
+                  Please fix the {stepErrors.length} highlighted fields below.
+                </div>
+              </motion.div>
+            );
+          })()}
+
           <AnimatePresence mode="wait">
 
           {/* ════════════ STEP 1: BASIC INFO ════════════ */}
@@ -675,18 +760,22 @@ export default function HostEvent() {
                   <Input id="host-startDate" label="Start Date" required type="date"
                     value={f.startDate} onChange={e => upd('startDate', e.target.value)}
                     error={errors.startDate} />
-                  <Input label="End Date" type="date"
-                    value={f.endDate} onChange={e => upd('endDate', e.target.value)} />
+                  <Input id="host-endDate" label="End Date" type="date"
+                    value={f.endDate} onChange={e => upd('endDate', e.target.value)}
+                    error={errors.endDate} />
                 </div>
 
                 <Input id="host-college" label="College / Organization" required
                   placeholder="e.g. IIT Bombay"
+                  maxLength={100}
                   value={f.college} onChange={e => upd('college', e.target.value)}
                   error={errors.college} />
 
-                <Input label="City / State"
+                <Input id="host-cityState" label="City / State"
                   placeholder="e.g. Mumbai, MH"
-                  value={f.cityState} onChange={e => upd('cityState', e.target.value)} />
+                  maxLength={200}
+                  value={f.cityState} onChange={e => upd('cityState', e.target.value)}
+                  error={errors.cityState} />
 
                 <Input label="Venue"
                   placeholder="e.g. Main Auditorium"
@@ -726,19 +815,25 @@ export default function HostEvent() {
                 </div>
 
                 {hasPrize && (
-                  <Input label="Total Prize Amount (₹)" placeholder="e.g. 2,00,000"
-                    value={f.totalPrize} onChange={e => upd('totalPrize', e.target.value)} />
+                  <Input id="host-totalPrize" label="Total Prize Amount (₹)" required
+                    placeholder="e.g. 200000 or 2500.50"
+                    inputMode="decimal"
+                    hint="Numbers only — no commas or symbols"
+                    value={f.totalPrize} onChange={e => updNumeric('totalPrize', e.target.value)}
+                    error={errors.totalPrize} />
                 )}
 
                 <div className="h-px bg-[#F1F0ED]" />
 
-                <Input label="Registration Fee"
-                  placeholder="e.g. 200/team or Free"
-                  value={f.regFee} onChange={e => upd('regFee', e.target.value)} />
+                <Input id="host-regFee" label="Registration Fee"
+                  placeholder='e.g. 200 or "Free"'
+                  value={f.regFee} onChange={e => upd('regFee', e.target.value)}
+                  error={errors.regFee} />
 
-                <Input label="Registration Link" type="url"
+                <Input id="host-regLink" label="Registration Link" type="url"
                   placeholder="https://forms.gle/..."
-                  value={f.regLink} onChange={e => upd('regLink', e.target.value)} />
+                  value={f.regLink} onChange={e => upd('regLink', e.target.value)}
+                  error={errors.regLink} />
 
                 <Textarea label="Other Perks"
                   placeholder="Internship offers, goodies, certificates, swag..."
@@ -775,6 +870,7 @@ export default function HostEvent() {
               <SectionCard icon={<Phone size={16} strokeWidth={1.8} className="text-primary" />} title="Contact Information" sub="Students will reach out to you">
                 <Input id="host-pocName" label="POC Name" required
                   placeholder="Contact person name"
+                  maxLength={100}
                   value={f.pocName} onChange={e => upd('pocName', e.target.value)}
                   error={errors.pocName} />
 
@@ -789,9 +885,10 @@ export default function HostEvent() {
                     error={errors.email} />
                 </div>
 
-                <Input label="Website" type="url"
+                <Input id="host-website" label="Website" type="url"
                   placeholder="https://yourfest.edu"
                   value={f.website} onChange={e => upd('website', e.target.value)}
+                  error={errors.website}
                   hint="Optional — your event website or social page" />
               </SectionCard>
 
@@ -814,24 +911,27 @@ export default function HostEvent() {
 
               <SectionCard icon={<Image size={16} strokeWidth={1.8} className="text-primary" />} title="Media and Documents" sub="Help your event stand out">
                 <UploadZone
+                  id="host-poster"
                   label="Poster"
                   hint="PNG, JPG, WebP — Max 5 MB · opens cropper · 16:9 output"
                   accept="image/png,image/jpeg,image/webp"
                   Icon={Image}
                   file={posterFile}
+                  error={errors.poster}
                   onFile={raw => {
-                    if (raw.size > 5 * 1024 * 1024) {
-                      showToast('Poster must be 5 MB or smaller', 'error');
-                      return;
-                    }
                     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
                     if (!allowed.includes(raw.type)) {
-                      showToast('Only JPG, PNG or WebP images are allowed', 'error');
+                      setErrors(e => ({ ...e, poster: 'Poster must be JPG, PNG, or WEBP' }));
                       return;
                     }
+                    if (raw.size > 5 * 1024 * 1024) {
+                      setErrors(e => ({ ...e, poster: 'Poster size cannot exceed 5 MB' }));
+                      return;
+                    }
+                    setErrors(e => ({ ...e, poster: '' }));
                     setCropperFile(raw);
                   }}
-                  onRemove={() => { setPosterFile(null); setCropperFile(null); }}
+                  onRemove={() => { setPosterFile(null); setCropperFile(null); setErrors(e => ({ ...e, poster: '' })); }}
                 />
 
                 {/* Poster 16:9 preview (stable URL from state, no per-render createObjectURL) */}
@@ -850,23 +950,26 @@ export default function HostEvent() {
                 </AnimatePresence>
 
                 <UploadZone
+                  id="host-brochure"
                   label="Brochure (PDF)"
                   hint="PDF only — Max 10 MB"
                   accept="application/pdf"
                   Icon={FileText}
                   file={brochureFile}
+                  error={errors.brochure}
                   onFile={raw => {
-                    if (raw.size > 10 * 1024 * 1024) {
-                      showToast('Brochure must be 10 MB or smaller', 'error');
-                      return;
-                    }
                     if (raw.type !== 'application/pdf') {
-                      showToast('Only PDF files are allowed for brochures', 'error');
+                      setErrors(e => ({ ...e, brochure: 'Brochure must be a PDF file' }));
                       return;
                     }
+                    if (raw.size > 10 * 1024 * 1024) {
+                      setErrors(e => ({ ...e, brochure: 'Brochure size cannot exceed 10 MB' }));
+                      return;
+                    }
+                    setErrors(e => ({ ...e, brochure: '' }));
                     setBrochureFile(raw);
                   }}
-                  onRemove={() => setBrochureFile(null)}
+                  onRemove={() => { setBrochureFile(null); setErrors(e => ({ ...e, brochure: '' })); }}
                 />
               </SectionCard>
 
