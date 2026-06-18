@@ -151,6 +151,7 @@ export default function AuthOverlay() {
   /* ── Registration extra ── */
   const [role,         setRole]         = useState('student');
   const [organization, setOrganization] = useState('');
+  const [cityState,    setCityState]    = useState('');
   const [designation,  setDesignation]  = useState('');
   const [tosAgreed,    setTosAgreed]    = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
@@ -284,7 +285,7 @@ export default function AuthOverlay() {
       // For organizers, mirror organization into college so existing
       // college-based displays stay populated.
       college:      isOrg ? organization.trim() : '',
-      city:         '',
+      city:         isOrg ? cityState.trim() : '',
       organization: isOrg ? organization.trim() : '',
       designation:  isOrg ? designation.trim()  : '',
       role:         role,
@@ -854,8 +855,19 @@ export default function AuthOverlay() {
                           onChange={e => { setOrganization(e.target.value); clearFieldError('organization'); }}
                           placeholder="e.g. IIT Bombay · Techfest"
                           className={`${inputCls} ${fieldErrors.organization ? inputErrCls : ''}`}
-                          onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-designation')?.focus()} />
+                          onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-citystate')?.focus()} />
                         <FieldError>{fieldErrors.organization}</FieldError>
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">
+                          City / State
+                        </label>
+                        <input id="reg-citystate" type="text" value={cityState} maxLength={120}
+                          onChange={e => setCityState(e.target.value)}
+                          placeholder="e.g. Mumbai, Maharashtra"
+                          className={inputCls}
+                          onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-designation')?.focus()} />
                       </div>
 
                       <div className="mb-5">
