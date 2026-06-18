@@ -10,6 +10,7 @@ import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
 import FeaturedEventCard from '../components/FeaturedEventCard';
+import { sanitizeText } from '../utils/sanitize';
 
 /* ── bg → gradient (unchanged) ── */
 const BG_GRADIENT = {
@@ -451,7 +452,8 @@ export default function EventDetails() {
     </div>
   );
 
-  const aboutShort = ev.about?.slice(0, 240) || '';
+  const safeAbout  = sanitizeText(ev.about || '');
+  const aboutShort = safeAbout.slice(0, 240);
 
   /* Parse extra fields from normalised event */
   const prizes = {
@@ -579,14 +581,14 @@ export default function EventDetails() {
           </div>
 
           {/* About */}
-          {ev.about && (
+          {safeAbout && (
             <div className="mb-6">
               <SectionHeading>About this Event</SectionHeading>
               <p className="text-[14px] md:text-[15px] text-text-2 leading-relaxed">
-                {showFullAbout ? ev.about : aboutShort}
-                {!showFullAbout && ev.about.length > 240 && '…'}
+                {showFullAbout ? safeAbout : aboutShort}
+                {!showFullAbout && safeAbout.length > 240 && '…'}
               </p>
-              {ev.about.length > 240 && (
+              {safeAbout.length > 240 && (
                 <button onClick={() => setShowFullAbout(v => !v)}
                   className="text-[13px] font-semibold text-primary mt-2 hover:underline">
                   {showFullAbout ? 'Show less ↑' : 'Read more ↓'}

@@ -337,24 +337,41 @@ export default function HostEvent() {
   const upd = (k, v) => { setF(prev => ({ ...prev, [k]: v })); if (errors[k]) setErrors(e => ({ ...e, [k]: '' })); };
 
   /* ── Validation per step ── */
-  // Returns the errors object (empty == valid). Keys are inserted top-to-bottom
-  // so the first key is always the topmost field on screen.
+  const PHONE_RE = /^[+\d][\d\s\-().]{5,18}$/;
+  const URL_RE   = /^https?:\/\/.+/i;
+
   const validate = (s) => {
     const errs = {};
     if (s === 1) {
-      if (!f.category)           errs.category    = 'Please select a category';
-      if (!f.title.trim())       errs.title       = 'Event title is required';
-      if (!f.description.trim()) errs.description = 'Description is required';
+      if (!f.category)                             errs.category    = 'Please select a category';
+      if (!f.title.trim())                         errs.title       = 'Event title is required';
+      else if (f.title.trim().length > 100)        errs.title       = 'Event title must not exceed 100 characters';
+      if (!f.description.trim())                   errs.description = 'Description is required';
+      else if (f.description.trim().length > 5000) errs.description = 'Description must not exceed 5000 characters';
     }
     if (s === 2) {
-      if (!f.startDate)          errs.startDate = 'Start date is required';
-      if (!f.college.trim())     errs.college   = 'College / Organization is required';
+      if (!f.startDate)                          errs.startDate = 'Start date is required';
+      if (!f.college.trim())                     errs.college   = 'College / Organization is required';
+      else if (f.college.trim().length > 100)    errs.college   = 'Organizer name must not exceed 100 characters';
+      if (f.cityState && f.cityState.length > 200) errs.cityState = 'Location must not exceed 200 characters';
+    }
+    if (s === 3) {
+      if (f.totalPrize && !/^\d[\d,]*$/.test(f.totalPrize.trim()))
+        errs.totalPrize = 'Prize pool must be a non-negative number';
+      if (f.regFee && f.regFee.trim().toLowerCase() !== 'free' && isNaN(Number(f.regFee.replace(/,/g, ''))))
+        errs.regFee = 'Registration fee must be a number or "Free"';
+      if (f.regLink && !URL_RE.test(f.regLink.trim()))
+        errs.regLink = 'Registration link must be a valid URL starting with https://';
     }
     if (s === 4) {
-      if (!f.pocName.trim())     errs.pocName = 'Contact name is required';
-      if (!f.phone.trim())       errs.phone   = 'Phone number is required';
-      if (!f.email.trim())       errs.email   = 'Email is required';
+      if (!f.pocName.trim())                      errs.pocName = 'Contact name is required';
+      else if (f.pocName.trim().length > 100)     errs.pocName = 'Contact name must not exceed 100 characters';
+      if (!f.phone.trim())                        errs.phone   = 'Phone number is required';
+      else if (!PHONE_RE.test(f.phone.trim()))    errs.phone   = 'Enter a valid phone number (e.g. +91 98765 43210)';
+      if (!f.email.trim())                        errs.email   = 'Email is required';
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) errs.email = 'Invalid email address';
+      if (f.website && !URL_RE.test(f.website.trim()))
+        errs.website = 'Website must be a valid URL starting with https://';
     }
     setErrors(errs);
     return errs;
@@ -590,11 +607,13 @@ export default function HostEvent() {
                 </div>
 
                 <Input id="host-title" label="Event Title" required placeholder="e.g. TechFest 2025"
-                  value={f.title} onChange={e => upd('title', e.target.value)} error={errors.title} />
+                  maxLength={100}
+                  value={f.title} onChange={e => upd('title', e.target.value)} error={errors.title}
+                  hint={f.title.length > 80 ? `${f.title.length}/100 characters` : undefined} />
 
                 <Textarea id="host-description" label="Description" required
                   placeholder="Describe your event — what will participants do, learn, or win?"
-                  rows={4} value={f.description} onChange={e => upd('description', e.target.value)}
+                  rows={4} maxLength={5000} value={f.description} onChange={e => upd('description', e.target.value)}
                   error={errors.description} />
 
                 {/* Mode */}
@@ -796,11 +815,22 @@ export default function HostEvent() {
               <SectionCard icon={<Image size={16} strokeWidth={1.8} className="text-primary" />} title="Media and Documents" sub="Help your event stand out">
                 <UploadZone
                   label="Poster"
-                  hint="PNG, JPG, WebP — opens cropper · 16:9 output"
+                  hint="PNG, JPG, WebP — Max 5 MB · opens cropper · 16:9 output"
                   accept="image/png,image/jpeg,image/webp"
                   Icon={Image}
                   file={posterFile}
-                  onFile={raw => setCropperFile(raw)}
+                  onFile={raw => {
+                    if (raw.size > 5 * 1024 * 1024) {
+                      showToast('Poster must be 5 MB or smaller', 'error');
+                      return;
+                    }
+                    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                    if (!allowed.includes(raw.type)) {
+                      showToast('Only JPG, PNG or WebP images are allowed', 'error');
+                      return;
+                    }
+                    setCropperFile(raw);
+                  }}
                   onRemove={() => { setPosterFile(null); setCropperFile(null); }}
                 />
 
@@ -821,11 +851,21 @@ export default function HostEvent() {
 
                 <UploadZone
                   label="Brochure (PDF)"
-                  hint="PDF only — Max 20MB"
+                  hint="PDF only — Max 10 MB"
                   accept="application/pdf"
                   Icon={FileText}
                   file={brochureFile}
-                  onFile={setBrochureFile}
+                  onFile={raw => {
+                    if (raw.size > 10 * 1024 * 1024) {
+                      showToast('Brochure must be 10 MB or smaller', 'error');
+                      return;
+                    }
+                    if (raw.type !== 'application/pdf') {
+                      showToast('Only PDF files are allowed for brochures', 'error');
+                      return;
+                    }
+                    setBrochureFile(raw);
+                  }}
                   onRemove={() => setBrochureFile(null)}
                 />
               </SectionCard>
