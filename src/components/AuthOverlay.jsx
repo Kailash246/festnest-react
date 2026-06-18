@@ -238,14 +238,6 @@ export default function AuthOverlay() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimEmail)) errs.email = 'Please enter a valid email address';
     if (!password) errs.password = 'Please create a password';
     else if (password.length < 8) errs.password = 'Password must be at least 8 characters';
-    // Organizer-only required fields
-    if (role === 'organizer') {
-      if (!organization.trim())                   errs.organization = 'Please enter your organization or college';
-      const d = designation.trim();
-      if (!d)                                      errs.designation = 'Please enter your designation';
-      else if (d.length < 2)                       errs.designation = 'Designation must be at least 2 characters';
-      else if (d.length > 100)                     errs.designation = 'Designation cannot exceed 100 characters';
-    }
     if (!tosAgreed) errs.tos = 'Please agree to the Terms of Service to continue';
 
     if (Object.keys(errs).length) {
@@ -280,46 +272,88 @@ export default function AuthOverlay() {
     }
   };
 
-  /* ─── STEP 4: Verify OTP → register ─── */
+  /* ─── Shared: send the register request and log the user in (no navigation) ─── */
+  const submitRegistration = async () => {
+    const code  = otpDigits.join('');
+    const isOrg = role === 'organizer';
+    const r = await authApi.register({
+      name:         name.trim(),
+      email:        email.trim(),
+      otp:          code,
+      password:     password,
+      // For organizers, mirror organization into college so existing
+      // college-based displays stay populated.
+      college:      isOrg ? organization.trim() : '',
+      city:         '',
+      organization: isOrg ? organization.trim() : '',
+      designation:  isOrg ? designation.trim()  : '',
+      role:         role,
+    });
+    login(r.data.user);
+  };
+
+  /* Maps a register() error to the right recovery (duplicate → step 3, OTP → step 4). */
+  const handleRegisterError = (e) => {
+    const msg = e.message || 'Something went wrong — please try again';
+    const isDuplicate = e.status === 409 || msg.toLowerCase().includes('already');
+    if (isDuplicate) {
+      showToast('This email is already registered.', 'error');
+      setEmailError('An account with this email already exists.');
+      goTo(3);
+    } else {
+      // Likely an invalid/expired OTP — send the user back to the OTP step to retry
+      setOtpDigits(['','','','','','']);
+      setOtpError(msg);
+      showToast(msg || 'Invalid OTP — please try again', 'error');
+      goTo(4);
+      setTimeout(() => otpRefs.current[0]?.focus(), 350);
+    }
+  };
+
+  /* ─── STEP 4 (OTP): students register now; organizers go collect org details ─── */
   const verifyOtp = async () => {
     const code = otpDigits.join('');
     if (code.length < 6 || otpDigits.some(d => d === ''))
       return showToast('Please enter all 6 digits', 'error');
 
+    // Organizers complete required Organization + Designation before the account
+    // is created — advance to the final step (no API call yet).
+    if (role === 'organizer') { goTo(5); return; }
+
     setLoading(true);
     try {
-      const isOrg = role === 'organizer';
-      const r = await authApi.register({
-        name:         name.trim(),
-        email:        email.trim(),
-        otp:          code,
-        password:     password,
-        // For organizers, mirror organization into college so existing
-        // college-based displays stay populated.
-        college:      isOrg ? organization.trim() : '',
-        city:         '',
-        organization: isOrg ? organization.trim() : '',
-        designation:  isOrg ? designation.trim()  : '',
-        role:         role,
-      });
-      login(r.data.user);
-      goTo(5);  // profile setup
+      await submitRegistration();
+      goTo(5);  // optional interests step
     } catch (e) {
-      setOtpDigits(['','','','','','']);  // clear boxes on any error so the user can retry
-      const msg = e.message || 'Something went wrong — please try again';
-      const isDuplicate = e.status === 409 || msg.toLowerCase().includes('already');
-      if (isDuplicate) {
-        // Shouldn't normally reach here (we check before sending the OTP), but if a
-        // 409 still slips through, send the user back to step 3 where the inline
-        // "email exists" error and its log-in / reset shortcuts are shown.
-        showToast('This email is already registered.', 'error');
-        setEmailError('An account with this email already exists.');
-        goTo(3);
-      } else {
-        setOtpError(msg);
-        showToast(msg || 'Invalid OTP — please try again', 'error');
-        setTimeout(() => otpRefs.current[0]?.focus(), 100);
-      }
+      handleRegisterError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ─── STEP 4-of-4 (organizers): validate org fields, then create the account ─── */
+  const finishOrganizerRegistration = async () => {
+    const errs = {};
+    const org = organization.trim();
+    const des = designation.trim();
+    if (!org)                 errs.organization = 'Organization / College name is required';
+    else if (org.length < 2)  errs.organization = 'Must be at least 2 characters';
+    else if (org.length > 150) errs.organization = 'Cannot exceed 150 characters';
+    if (!des)                 errs.designation = 'Designation is required';
+    else if (des.length < 2)  errs.designation = 'Must be at least 2 characters';
+    else if (des.length > 100) errs.designation = 'Cannot exceed 100 characters';
+    if (Object.keys(errs).length) {
+      setFieldErrors(errs);
+      return showToast('Please fix the highlighted fields', 'error');
+    }
+    setFieldErrors({});
+
+    setLoading(true);
+    try {
+      await submitRegistration();
+      goTo(6);  // success
+    } catch (e) {
+      handleRegisterError(e);
     } finally {
       setLoading(false);
     }
@@ -703,28 +737,6 @@ export default function AuthOverlay() {
                       </div>
                     )}
                   </div>
-                  {/* Organizer-only: Organization / College + Designation */}
-                  {role === 'organizer' && (
-                    <>
-                      <div className="mb-4">
-                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Organization / College</label>
-                        <input type="text" value={organization}
-                          onChange={e => { setOrganization(e.target.value); clearFieldError('organization'); }}
-                          placeholder="e.g. IIT Bombay · Techfest"
-                          className={`${inputCls} ${fieldErrors.organization ? inputErrCls : ''}`} />
-                        <FieldError>{fieldErrors.organization}</FieldError>
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Your Designation</label>
-                        <input type="text" value={designation}
-                          onChange={e => { setDesignation(e.target.value); clearFieldError('designation'); }}
-                          placeholder="Faculty Coordinator, Event Coordinator, Club President…"
-                          className={`${inputCls} ${fieldErrors.designation ? inputErrCls : ''}`} />
-                        <FieldError>{fieldErrors.designation}</FieldError>
-                      </div>
-                    </>
-                  )}
-
                   <div className="mb-4">
                     <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Password</label>
                     <div className="relative">
@@ -816,46 +828,85 @@ export default function AuthOverlay() {
                   </p>
 
                   <AuthCta onClick={verifyOtp} loading={loading}>
-                    {!loading && <>Verify & Create Account <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m9 18 6-6-6-6"/></svg></>}
+                    {!loading && <>{role === 'organizer' ? 'Continue' : 'Verify & Create Account'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m9 18 6-6-6-6"/></svg></>}
                   </AuthCta>
                 </motion.div>
               )}
 
-              {/* ─── STEP 5: Profile setup ─── */}
+              {/* ─── STEP 5: Final step (Step 4 of 4) ─── */}
               {step === 5 && (
                 <motion.div key="s5" initial={{ opacity:0, x:16 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:-16 }} transition={{ duration:0.18 }}>
-                  <ProgressDots total={4} current={3} />
-                  <StepLabel>Step 4 of 4 — Optional</StepLabel>
-                  <AuthTitle>Almost done!</AuthTitle>
-                  <AuthSub>Tell us a bit more so we can personalise your feed. You can skip this.</AuthSub>
 
-                  <div className="mb-4">
-                    <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Your College</label>
-                    <input type="text" placeholder="e.g. NSIT Delhi, IIT Bombay…" className={inputCls} />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Interests</label>
-                    <div className="flex flex-wrap gap-2">
-                      {INTERESTS.map(interest => (
-                        <button key={interest} onClick={() => setSelectedInterests(prev => {
-                          const next = new Set(prev);
-                          next.has(interest) ? next.delete(interest) : next.add(interest);
-                          return next;
-                        })}
-                          className={`px-3.5 py-1.5 rounded-md border text-[13px] font-medium transition-all ${selectedInterests.has(interest) ? 'bg-primary-light border-primary text-primary' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-primary'}`}>
-                          {interest}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  {role === 'organizer' ? (
+                    /* ── Organizer: required Organization + Designation, then create account ── */
+                    <>
+                      <BackBtn onClick={() => goTo(4)} />
+                      <ProgressDots total={4} current={3} />
+                      <StepLabel>Step 4 of 4</StepLabel>
+                      <AuthTitle>Tell us about your organization</AuthTitle>
+                      <AuthSub>These details appear with the events you host on FestNest.</AuthSub>
 
-                  <AuthCta onClick={() => goTo(6)}>
-                    Finish Setup
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m9 18 6-6-6-6"/></svg>
-                  </AuthCta>
-                  <p className="text-center">
-                    <button onClick={() => goTo(6)} className="text-[13px] text-[#8A8A85] hover:text-[#4B4B47]">Skip for now →</button>
-                  </p>
+                      <div className="mb-4">
+                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">
+                          Organization / College Name <span className="text-red-500">*</span>
+                        </label>
+                        <input type="text" value={organization} maxLength={150}
+                          onChange={e => { setOrganization(e.target.value); clearFieldError('organization'); }}
+                          placeholder="e.g. IIT Bombay · Techfest"
+                          className={`${inputCls} ${fieldErrors.organization ? inputErrCls : ''}`}
+                          onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-designation')?.focus()} />
+                        <FieldError>{fieldErrors.organization}</FieldError>
+                      </div>
+
+                      <div className="mb-5">
+                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">
+                          Your Designation <span className="text-red-500">*</span>
+                        </label>
+                        <input id="reg-designation" type="text" value={designation} maxLength={100}
+                          onChange={e => { setDesignation(e.target.value); clearFieldError('designation'); }}
+                          placeholder="Faculty Coordinator, Event Coordinator, Club President…"
+                          className={`${inputCls} ${fieldErrors.designation ? inputErrCls : ''}`}
+                          onKeyDown={e => e.key === 'Enter' && finishOrganizerRegistration()} />
+                        <FieldError>{fieldErrors.designation}</FieldError>
+                      </div>
+
+                      <AuthCta onClick={finishOrganizerRegistration} loading={loading}>
+                        {!loading && <>Create Account <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m9 18 6-6-6-6"/></svg></>}
+                      </AuthCta>
+                    </>
+                  ) : (
+                    /* ── Student: optional interests ── */
+                    <>
+                      <ProgressDots total={4} current={3} />
+                      <StepLabel>Step 4 of 4 — Optional</StepLabel>
+                      <AuthTitle>Almost done!</AuthTitle>
+                      <AuthSub>Tell us a bit more so we can personalise your feed. You can skip this.</AuthSub>
+
+                      <div className="mb-4">
+                        <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Interests</label>
+                        <div className="flex flex-wrap gap-2">
+                          {INTERESTS.map(interest => (
+                            <button key={interest} onClick={() => setSelectedInterests(prev => {
+                              const next = new Set(prev);
+                              next.has(interest) ? next.delete(interest) : next.add(interest);
+                              return next;
+                            })}
+                              className={`px-3.5 py-1.5 rounded-md border text-[13px] font-medium transition-all ${selectedInterests.has(interest) ? 'bg-primary-light border-primary text-primary' : 'bg-white border-[#E4E4E0] text-[#4B4B47] hover:border-primary'}`}>
+                              {interest}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <AuthCta onClick={() => goTo(6)}>
+                        Finish Setup
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m9 18 6-6-6-6"/></svg>
+                      </AuthCta>
+                      <p className="text-center">
+                        <button onClick={() => goTo(6)} className="text-[13px] text-[#8A8A85] hover:text-[#4B4B47]">Skip for now →</button>
+                      </p>
+                    </>
+                  )}
                 </motion.div>
               )}
 
