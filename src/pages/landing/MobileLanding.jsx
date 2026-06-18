@@ -1,7 +1,7 @@
 // src/pages/landing/MobileLanding.jsx
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { Code2, Music, Wrench, Trophy } from 'lucide-react';
+import { Code2, Music, Trophy, PartyPopper, BriefcaseBusiness, Rocket } from 'lucide-react';
 
 const STATS = [
   { value: '48K+', label: 'Students' },
@@ -9,11 +9,14 @@ const STATS = [
   { value: '850+', label: 'Colleges' },
 ];
 
+// Priority categories, in order.
 const CATEGORIES = [
-  { icon: Code2,  label: 'Hackathons',    bg: 'bg1' },
-  { icon: Music,  label: 'Cultural Fests', bg: 'bg5' },
-  { icon: Wrench, label: 'Workshops',     bg: 'bg3' },
-  { icon: Trophy, label: 'Competitions',  bg: 'bg7' },
+  { icon: PartyPopper,       label: 'Mega Fests',     bg: 'bg2' },
+  { icon: Code2,             label: 'Hackathons',     bg: 'bg1' },
+  { icon: BriefcaseBusiness, label: 'Management',     bg: 'bg8' },
+  { icon: Rocket,            label: 'Startups',       bg: 'bg7' },
+  { icon: Music,             label: 'Cultural Fests', bg: 'bg5' },
+  { icon: Trophy,            label: 'Sports',         bg: 'bg4' },
 ];
 
 export default function MobileLanding() {

@@ -5,7 +5,7 @@ import { useReveal, useCountUp, useMouseParallax, Reveal } from './_hooks';
 import {
   UserCircle, Star, Flame, CheckCircle2,
   PartyPopper, Landmark, Users, Trophy,
-  Code2, Music, Wrench, Mic2, Volleyball, Palette, Rocket,
+  Code2, Music, Wrench, Mic2, Volleyball, Palette, Rocket, BriefcaseBusiness,
   BarChart3, Calendar, Eye, Search,
   Sparkles, Bookmark, Bell, Briefcase, Smartphone,
   TrendingUp, Target,
@@ -431,16 +431,18 @@ function Featured() {
 /* ════════════════════════════════════════════════════════════
    CATEGORIES
 ════════════════════════════════════════════════════════════ */
+// Priority categories lead the showcase, then the remaining categories.
 const CATS = [
-  { icon: Code2,       iconColor: 'text-indigo-600',  name: 'Hackathons',     count: '420 events', g: 'from-indigo-50 to-blue-50',    cat: 'Hackathon' },
-  { icon: Music,       iconColor: 'text-fuchsia-600', name: 'Cultural Fests', count: '310 events', g: 'from-fuchsia-50 to-pink-50',   cat: 'Cultural Fest' },
-  { icon: Wrench,      iconColor: 'text-teal-600',    name: 'Workshops',      count: '580 events', g: 'from-teal-50 to-emerald-50',   cat: 'Workshop' },
-  { icon: Trophy,      iconColor: 'text-amber-600',   name: 'Competitions',   count: '270 events', g: 'from-amber-50 to-orange-50',   cat: 'Competition' },
-  { icon: Mic2,        iconColor: 'text-blue-600',    name: 'Tech Talks',     count: '190 events', g: 'from-blue-50 to-sky-50',       cat: 'Tech Talk' },
-  { icon: Volleyball,  iconColor: 'text-green-600',   name: 'Sports Meets',   count: '140 events', g: 'from-green-50 to-lime-50',     cat: 'Sports' },
-  { icon: Palette,     iconColor: 'text-rose-600',    name: 'Design Jams',    count: '95 events',  g: 'from-rose-50 to-red-50',       cat: 'Workshop' },
-  { icon: Rocket,      iconColor: 'text-violet-600',  name: 'Startup Pitches',count: '110 events', g: 'from-violet-50 to-purple-50',  cat: 'Competition' },
-  { icon: PartyPopper, iconColor: 'text-amber-600',   name: 'Mega Fests',     count: '60 events',  g: 'from-amber-50 to-orange-50',   cat: 'Mega Fest' },
+  { icon: PartyPopper,       iconColor: 'text-amber-600',   name: 'Mega Fests',     count: '60 events',  g: 'from-amber-50 to-orange-50',   cat: 'Mega Fest' },
+  { icon: Code2,             iconColor: 'text-indigo-600',  name: 'Hackathons',     count: '420 events', g: 'from-indigo-50 to-blue-50',    cat: 'Hackathon' },
+  { icon: BriefcaseBusiness, iconColor: 'text-blue-600',    name: 'Management',     count: '85 events',  g: 'from-blue-50 to-sky-50',       cat: 'Management' },
+  { icon: Rocket,            iconColor: 'text-violet-600',  name: 'Startups',       count: '110 events', g: 'from-violet-50 to-purple-50',  cat: 'Startup' },
+  { icon: Music,             iconColor: 'text-fuchsia-600', name: 'Cultural Fests', count: '310 events', g: 'from-fuchsia-50 to-pink-50',   cat: 'Cultural Fest' },
+  { icon: Volleyball,        iconColor: 'text-green-600',   name: 'Sports Meets',   count: '140 events', g: 'from-green-50 to-lime-50',     cat: 'Sports' },
+  { icon: Wrench,            iconColor: 'text-teal-600',    name: 'Workshops',      count: '580 events', g: 'from-teal-50 to-emerald-50',   cat: 'Workshop' },
+  { icon: Trophy,            iconColor: 'text-amber-600',   name: 'Competitions',   count: '270 events', g: 'from-amber-50 to-orange-50',   cat: 'Competition' },
+  { icon: Mic2,              iconColor: 'text-blue-600',    name: 'Tech Talks',     count: '190 events', g: 'from-blue-50 to-sky-50',       cat: 'Tech Talk' },
+  { icon: Palette,           iconColor: 'text-rose-600',    name: 'Design Jams',    count: '95 events',  g: 'from-rose-50 to-red-50',       cat: 'Workshop' },
 ];
 
 function Categories() {

@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { PRIORITY_CATEGORIES } from '../data/categories';
 
 const SidebarBtn = ({ href, icon, label, badge, badgeStyle, onClick, isActive }) => {
   const navigate = useNavigate();
@@ -107,10 +108,12 @@ export default function Sidebar() {
       <Divider />
       <Label>Browse by Type</Label>
 
-      <SidebarBtn onClick={() => navigate('/explore?cat=Hackathon')}     icon={<CodeIcon />}   label="Hackathons" />
-      <SidebarBtn onClick={() => navigate('/explore?cat=Cultural+Fest')} icon={<MusicIcon />}  label="Cultural Fests" />
-      <SidebarBtn onClick={() => navigate('/explore?cat=Workshop')}      icon={<WrenchIcon />} label="Workshops" />
-      <SidebarBtn onClick={() => navigate('/explore?cat=Competition')}   icon={<TrophyIcon />} label="Competitions" />
+      {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
+        <SidebarBtn key={value}
+          onClick={() => navigate(`/explore?cat=${encodeURIComponent(value)}`)}
+          icon={<CatIcon className="w-[17px] h-[17px]" strokeWidth={2} />}
+          label={label} />
+      ))}
 
       <Divider />
       <Label>My Activity</Label>

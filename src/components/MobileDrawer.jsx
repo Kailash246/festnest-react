@@ -12,6 +12,7 @@ import {
   Code2, Music4, Wrench, Trophy, LogOut,
   Info, HelpCircle, ClipboardList, ShieldCheck, MessageCircle,
 } from 'lucide-react';
+import { PRIORITY_CATEGORIES } from '../data/categories';
 
 const Lbl = ({ c }) => (
   <div className="text-[10px] font-bold tracking-wider text-[#AEAEAD] uppercase px-3 pt-4 pb-1.5">
@@ -171,16 +172,10 @@ export default function MobileDrawer() {
 
               <Div />
               <Lbl c="Browse by Type" />
-              {[
-                { label: 'Hackathons',     cat: 'Hackathon',    badge: '42', Icon: Code2 },
-                { label: 'Cultural Fests', cat: 'Cultural+Fest', badge: '31', Icon: Music4 },
-                { label: 'Workshops',      cat: 'Workshop',     badge: '58', Icon: Wrench },
-                { label: 'Competitions',   cat: 'Competition',  badge: '27', Icon: Trophy },
-              ].map(({ label, cat, badge, Icon: CatIcon }) => (
-                <Btn key={cat}
-                  onClick={() => go(`/explore?cat=${cat}`)}
-                  Icon={CatIcon} label={label}
-                  badge={badge} badgeStyle="bg-[#F1F0ED] text-[#8A8A85]" />
+              {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
+                <Btn key={value}
+                  onClick={() => go(`/explore?cat=${encodeURIComponent(value)}`)}
+                  Icon={CatIcon} label={label} />
               ))}
 
               <Div />

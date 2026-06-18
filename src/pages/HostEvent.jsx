@@ -6,6 +6,7 @@ import { events as eventsApi } from '../services/api';
 import FeaturedEventCard from '../components/FeaturedEventCard';
 import { normaliseEvents } from '../services/normalise';
 import ImageCropper from '../components/ImageCropper';
+import { CATEGORIES } from '../data/categories';
 import {
   Code2, Music4, Wrench, Trophy, Mic, Zap,
   ClipboardList, MapPin, Phone, Image, FileText,
@@ -14,15 +15,10 @@ import {
 } from 'lucide-react';
 
 /* ─── Constants ─────────────────────────────────────── */
-const EVENT_TYPES = [
-  { Icon: Code2,        name: 'Hackathon',     color: 'bg1' },
-  { Icon: Music4,       name: 'Cultural Fest', color: 'bg5' },
-  { Icon: Wrench,       name: 'Workshop',      color: 'bg3' },
-  { Icon: Trophy,       name: 'Competition',   color: 'bg7' },
-  { Icon: Mic,          name: 'Tech Talk',     color: 'bg8' },
-  { Icon: Zap,          name: 'Sports',        color: 'bg4' },
-  { Icon: PartyPopper,  name: 'Mega Fest',     color: 'bg2' },
-];
+// Category tiles are sourced from the shared catalog so the six priority
+// categories always lead, in the same order, across the whole platform.
+// `name` is the exact backend category value submitted with the event.
+const EVENT_TYPES = CATEGORIES.map(c => ({ Icon: c.Icon, name: c.value, label: c.label, color: c.color }));
 
 const MODES = [
   { id: 'Offline', label: 'Offline', Icon: Building2, desc: 'In-person venue' },
@@ -672,7 +668,7 @@ export default function HostEvent() {
                     Category <span className="text-red text-[14px] leading-none">*</span>
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {EVENT_TYPES.map(({ Icon: ETypeIcon, name, color }) => (
+                    {EVENT_TYPES.map(({ Icon: ETypeIcon, name, label, color }) => (
                       <motion.button key={name} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
                         onClick={() => upd('category', name)}
                         className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-md border-[1.5px] transition-all duration-150
@@ -683,7 +679,7 @@ export default function HostEvent() {
                           <ETypeIcon size={18} strokeWidth={1.8} />
                         </div>
                         <span className={`text-[11px] font-semibold leading-snug text-center ${f.category === name ? 'text-primary' : 'text-text-2'}`}>
-                          {name}
+                          {label}
                         </span>
                       </motion.button>
                     ))}

@@ -7,19 +7,19 @@ import { useApp } from '../context/AppContext';
 import EventCard from '../components/EventCard';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
+import { CATEGORIES, PRIORITY_CATEGORIES } from '../data/categories';
 
 /* ─────────────────────────────────────────
-   FILTER CONFIG  (unchanged)
+   FILTER CONFIG
+   Priority categories lead the quick-filter row, between the
+   "All / This Week" shortcuts and the "Free / Prize" entry filters.
 ───────────────────────────────────────── */
 const CHIP_FILTERS = [
-  { label: 'All Events',    value: 'all',          Icon: Star },
-  { label: 'This Week',     value: 'week',          Icon: CalendarDays },
-  { label: 'Hackathon',     value: 'Hackathon',     Icon: Code2 },
-  { label: 'Cultural Fest', value: 'Cultural Fest', Icon: Music4 },
-  { label: 'Workshop',      value: 'Workshop',      Icon: Wrench },
-  { label: 'Mega Fest',     value: 'Mega Fest',     Icon: PartyPopper },
-  { label: 'Free Entry',    value: 'free',          Icon: Ticket },
-  { label: 'Prize Pool',    value: 'prize',         Icon: Trophy },
+  { label: 'All Events',    value: 'all',  Icon: Star },
+  { label: 'This Week',     value: 'week', Icon: CalendarDays },
+  ...PRIORITY_CATEGORIES.map(c => ({ label: c.label, value: c.value, Icon: c.Icon })),
+  { label: 'Free Entry',    value: 'free',  Icon: Ticket },
+  { label: 'Prize Pool',    value: 'prize', Icon: Trophy },
 ];
 
 const CITIES   = ['All Cities', 'Mumbai', 'Delhi', 'Bangalore', 'Tiruchirappalli', 'Pilani', 'Vellore'];
@@ -110,8 +110,8 @@ function FilterSheet({ open, onClose, filters, setFilters, onApply, onReset, act
             <div className="overflow-y-auto flex-1 px-5 py-4">
               <FilterSection title="Category">
                 <div className="flex flex-wrap gap-2">
-                  {['Hackathon','Cultural Fest','Workshop','Competition','Tech Talk','Sports','Mega Fest'].map(cat => (
-                    <Chip key={cat} label={cat} active={local.category === cat} onClick={() => toggle('category', cat)} />
+                  {CATEGORIES.map(c => (
+                    <Chip key={c.value} label={c.label} active={local.category === c.value} onClick={() => toggle('category', c.value)} />
                   ))}
                 </div>
               </FilterSection>
