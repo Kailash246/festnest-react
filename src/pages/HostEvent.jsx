@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
 import FeaturedEventCard from '../components/FeaturedEventCard';
+import Seo from '../components/Seo';
 import { normaliseEvents } from '../services/normalise';
 import ImageCropper from '../components/ImageCropper';
 import { CATEGORIES } from '../data/categories';
@@ -584,6 +585,12 @@ export default function HostEvent() {
       exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
       className="bg-[#F8F8F6] min-h-screen w-full overflow-x-hidden">
 
+      <Seo
+        title="Post Your Event"
+        description="Hosting a hackathon, fest, or workshop? Submit your college event to FestNest and reach 48,000+ students across India for free."
+        canonical="/host"
+      />
+
       <div className="px-4 pt-6 pb-24 md:px-6 md:pt-10
                       lg:max-w-[1100px] lg:mx-auto lg:px-8
                       lg:grid lg:grid-cols-[3fr_1fr] lg:gap-8 lg:items-start">
@@ -935,7 +942,7 @@ export default function HostEvent() {
                   {posterPreview && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
                       <div className="relative rounded-lg overflow-hidden border border-border" style={{ paddingTop: '56.25%' }}>
-                        <img src={posterPreview} alt="poster preview"
+                        <img src={posterPreview} alt={f.name ? `${f.name} event poster preview` : 'Event poster preview'}
                           className="absolute inset-0 w-full h-full object-cover" />
                         <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/50 rounded text-[10px] text-white font-semibold">
                           16:9 · {posterFile?.name}

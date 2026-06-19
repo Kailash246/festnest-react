@@ -8,6 +8,7 @@ import {
   Mic, Zap, PartyPopper, Users, LayoutDashboard, Globe, Link2, Briefcase,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import Seo from '../components/Seo';
 import { users as usersApi, events as eventsApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
 
@@ -989,6 +990,8 @@ export default function Profile() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
       exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
       className="bg-[#F5F5F9] min-h-screen w-full overflow-x-hidden">
+
+      <Seo title="Your Profile" canonical="/profile" noindex />
 
       <div className="max-w-[720px] mx-auto px-4 pt-6 pb-28 md:px-6 space-y-5">
 

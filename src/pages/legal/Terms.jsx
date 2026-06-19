@@ -1,5 +1,5 @@
 // src/pages/legal/Terms.jsx
-import { useEffect } from 'react';
+import Seo from '../../components/Seo';
 import {
   ClipboardList, Landmark, Lock, Scale, Ticket, Copyright,
   FileText, Calculator, DoorOpen, Gavel, MessageCircle, Inbox,
@@ -30,13 +30,13 @@ const SECTIONS = [
 ];
 
 export default function Terms() {
-  useEffect(() => {
-    const prev = document.title;
-    document.title = 'Terms of Service — FestNest';
-    return () => { document.title = prev; };
-  }, []);
-
   return (
+    <>
+      <Seo
+        title="Terms of Service"
+        description="The agreement between you and FestNest — plain-spoken terms covering accounts, organizer obligations, attending events, and your rights."
+        canonical="/terms"
+      />
     <LegalLayout
       kind="Legal · Terms"
       title="Terms of Service"
@@ -272,5 +272,6 @@ export default function Terms() {
       </Section>
 
     </LegalLayout>
+    </>
   );
 }

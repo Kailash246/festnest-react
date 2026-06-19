@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReveal, useCountUp, useMouseParallax, Reveal } from './_hooks';
+import BrandMark from '../../components/BrandMark';
 import {
   UserCircle, Star, Flame, CheckCircle2,
   PartyPopper, Landmark, Users, Trophy,
@@ -22,9 +23,7 @@ const IconYoutube   = ({ className }) => <svg className={className} viewBox="0 0
 ════════════════════════════════════════════════════════════ */
 const Logo = ({ light }) => (
   <div className="flex items-center gap-2.5">
-    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-[20px] ${light ? 'bg-white/15' : 'bg-primary'}`}>
-      🪺
-    </div>
+    <BrandMark className="w-9 h-9" />
     <span className={`font-display font-bold text-[21px] tracking-tight ${light ? 'text-white' : 'text-text-1'}`}>
       FestNest
     </span>

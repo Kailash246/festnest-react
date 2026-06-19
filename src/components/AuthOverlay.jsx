@@ -4,6 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { auth as authApi } from '../services/api';
 import { GraduationCap, Building2 } from 'lucide-react';
+import Seo from './Seo';
+import BrandMark from './BrandMark';
+
+// Title shown while the auth modal is open. 'login' & 'forgot' flows lean
+// "Sign in"; every other step is part of account creation.
+const authTitle = (step) =>
+  step === 'login' || step === 'forgot' || step === 'reset-otp' || step === 'reset-pw' || step === 'reset-done'
+    ? 'Log In'
+    : 'Sign Up';
 
 /* ─── Small shared UI pieces ─────────────────────────── */
 const ProgressDots = ({ total, current }) => (
@@ -85,7 +94,7 @@ const LeftPanel = () => (
     <div className="absolute w-[400px] h-[400px] rounded-full bg-white/[0.06] -top-20 -right-20 pointer-events-none"/>
     <div className="absolute w-[300px] h-[300px] rounded-full bg-white/[0.06] -bottom-16 -left-16 pointer-events-none"/>
     <div className="flex items-center gap-2.5 relative z-10 font-display font-bold text-[22px] text-white tracking-[-0.4px]">
-      <div className="w-9 h-9 bg-white/20 rounded-[10px] flex items-center justify-center text-[18px]">🪺</div>
+      <BrandMark className="w-9 h-9" />
       FestNest
     </div>
     <div className="relative z-10">
@@ -578,6 +587,12 @@ export default function AuthOverlay() {
       className="fixed inset-0 z-[9999] flex bg-white md:bg-[#F1F0ED]"
       role="dialog" aria-modal="true" aria-label="Sign in to FestNest">
 
+      <Seo
+        title={authTitle(step)}
+        description="Sign in or create a free FestNest account to discover and register for college events across India."
+        noindex
+      />
+
       <LeftPanel />
 
       <div className="relative flex-1 flex flex-col overflow-y-auto bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
@@ -593,7 +608,7 @@ export default function AuthOverlay() {
 
             {/* Mobile logo */}
             <div className="md:hidden flex items-center gap-2 font-display font-bold text-[18px] text-primary tracking-[-0.025em] mb-8">
-              <div className="w-7 h-7 bg-primary rounded-[8px] flex items-center justify-center text-white text-sm">🪺</div>
+              <BrandMark className="w-7 h-7" />
               FestNest
             </div>
 

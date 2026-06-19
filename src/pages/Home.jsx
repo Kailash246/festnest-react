@@ -5,9 +5,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin, PartyPopper } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EventCard from '../components/EventCard';
+import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { CATEGORIES, PRIORITY_CATEGORIES } from '../data/categories';
+
+/* Organization + WebSite structured data for the homepage. */
+const HOME_JSON_LD = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'FestNest',
+    url: SITE_URL,
+    logo: `${SITE_URL}/icon-512.png`,
+    image: DEFAULT_OG_IMAGE,
+    description:
+      "FestNest is India's home for college events — discover and register for hackathons, cultural fests, workshops, competitions, and internships at colleges across India.",
+    areaServed: { '@type': 'Country', name: 'India' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'FestNest',
+    url: SITE_URL,
+  },
+];
 
 /* ─────────────────────────────────────────
    FILTER CONFIG
@@ -307,6 +329,13 @@ export default function Home() {
       exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
       className="screen-enter bg-white min-h-screen">
 
+      <Seo
+        title="Discover College Events"
+        description="Find and register for hackathons, cultural fests, workshops, and competitions at colleges across India. FestNest brings every college event together in one feed."
+        canonical="/"
+        jsonLd={HOME_JSON_LD}
+      />
+
       {createPortal(
         <FilterSheet open={filterOpen} onClose={() => setFilterOpen(false)} filters={sheetFilters}
           setFilters={setSheetFilters} onApply={setSheetFilters} onReset={clearAll} activeCount={activeSheetCount} />,
@@ -457,7 +486,7 @@ export default function Home() {
               className="flex-shrink-0 w-[236px] md:w-[270px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start flex transition-all duration-base"
               tabIndex={0} role="listitem" onKeyDown={e => { if (e.key === 'Enter') navigate(`/event/${ev.id}`); }}>
               <div className={`w-[78px] min-h-[78px] flex items-center justify-center text-[28px] flex-shrink-0 ${ev.bg}`}>
-                {ev.imageUrl ? <img src={ev.imageUrl} alt="" className="w-full h-full object-cover" /> : ev.emoji}
+                {ev.imageUrl ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" /> : ev.emoji}
               </div>
               <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
                 <div className="flex items-center gap-[5px] text-[10px] font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-md w-fit mb-[5px] tracking-normal">

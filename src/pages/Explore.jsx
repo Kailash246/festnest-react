@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import EventCard from '../components/EventCard';
+import Seo from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { useApp } from '../context/AppContext';
@@ -88,9 +89,15 @@ export default function Explore() {
       exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
       className="bg-white min-h-screen w-full overflow-x-hidden">
 
+      <Seo
+        title="Explore All Events"
+        description="Browse every college event on FestNest — hackathons, cultural fests, technical fests, workshops, and competitions across India. Filter by category and city."
+        canonical="/explore"
+      />
+
       {/* Header */}
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
-        <h2 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Explore</h2>
+        <h1 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Explore</h1>
         <p className="text-[14px] text-text-3 mb-4">Discover events across India</p>
         <div className="flex items-center gap-3 bg-surface border-[1.5px] border-border-strong rounded-md px-4 py-[11px] focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all max-w-[600px]">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-text-3 flex-shrink-0">

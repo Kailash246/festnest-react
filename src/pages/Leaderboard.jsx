@@ -40,7 +40,7 @@ export default function Leaderboard() {
       className="bg-white min-h-screen w-full overflow-x-hidden">
 
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10 md:max-w-[1000px] md:mx-auto">
-        <h2 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Leaderboard</h2>
+        <h1 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Leaderboard</h1>
         <p className="text-[14px] text-text-3">Top students by events attended & points earned</p>
       </div>
 

@@ -1,5 +1,5 @@
 // src/pages/legal/Privacy.jsx
-import { useEffect } from 'react';
+import Seo from '../../components/Seo';
 import {
   ShieldCheck, Info, Lock, PartyPopper, FolderOpen, Mail,
   BarChart3, Ban, Scale, Inbox, Users, Bell, MessageCircle, Landmark,
@@ -40,13 +40,13 @@ const Right = ({ section, title, children }) => (
 );
 
 export default function Privacy() {
-  useEffect(() => {
-    const prev = document.title;
-    document.title = 'Privacy Policy — FestNest';
-    return () => { document.title = prev; };
-  }, []);
-
   return (
+    <>
+      <Seo
+        title="Privacy Policy"
+        description="How FestNest collects, uses, and protects your data, and the rights you hold under India's Digital Personal Data Protection Act, 2023."
+        canonical="/privacy"
+      />
     <LegalLayout
       kind="Legal · Privacy"
       title="Privacy Policy"
@@ -208,5 +208,6 @@ export default function Privacy() {
       </Section>
 
     </LegalLayout>
+    </>
   );
 }

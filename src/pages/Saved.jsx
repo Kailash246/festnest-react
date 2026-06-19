@@ -54,9 +54,9 @@ export default function Saved() {
       className="bg-white min-h-screen w-full overflow-x-hidden">
 
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
-        <h2 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">
+        <h1 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">
           Saved Events
-        </h2>
+        </h1>
         <p className="text-[14px] text-text-3">
           {loading ? 'Loading…' : savedList.length > 0
             ? `${savedList.length} event${savedList.length > 1 ? 's' : ''} saved`

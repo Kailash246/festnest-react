@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Search, ClipboardList, Bell, Trophy, Target, Globe, Camera, MessageCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import BrandMark from '../components/BrandMark';
 
 const HOW = [
   { Icon: Search,       title:'Discover events near you',  desc:'Search by college, city, category, or date. Filter by entry type or prize pool.' },
@@ -40,10 +41,8 @@ export default function About() {
         <div className="text-center py-10 md:py-12">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="w-[72px] h-[72px] bg-primary rounded-[20px] flex items-center justify-center mx-auto mb-4">
-            <svg viewBox="0 0 14 14" fill="none" className="w-10 h-10">
-              <path d="M7 2C4.24 2 2 4.24 2 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 2c.83 0 1.5.67 1.5 1.5S7.83 7 7 7s-1.5-.67-1.5-1.5S6.17 4 7 4zm0 7.2c-1.25 0-2.35-.63-3-1.58.02-.98 2-.98 3-.98s2.98.01 3 .98c-.65.95-1.75 1.58-3 1.58z" fill="white"/>
-            </svg>
+            className="w-[72px] h-[72px] flex items-center justify-center mx-auto mb-4">
+            <BrandMark className="w-[72px] h-[72px]" />
           </motion.div>
           <h1 className="font-display font-bold text-[28px] md:text-[40px] text-primary tracking-tight mb-2">FestNest</h1>
           <p className="text-[15px] text-text-3 leading-relaxed">Discover every college event across India — in one place.</p>

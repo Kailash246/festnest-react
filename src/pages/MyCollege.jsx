@@ -33,7 +33,7 @@ export default function MyCollege() {
       className="bg-white min-h-screen w-full overflow-x-hidden">
       {/* Page title */}
       <div className="px-4 pt-5 pb-0 md:px-12 md:pt-10">
-        <h2 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">My College</h2>
+        <h1 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">My College</h1>
         <p className="text-[14px] text-text-3 mb-4">NSIT Delhi — your campus hub</p>
       </div>
 

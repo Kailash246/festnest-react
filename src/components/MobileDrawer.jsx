@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import BrandMark from './BrandMark';
 
 const getInitials = (name) =>
   name?.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
@@ -92,11 +93,7 @@ export default function MobileDrawer() {
             <div className="flex-shrink-0 border-b border-[#E4E4E0]">
               {/* Logo row */}
               <div className="flex items-center gap-2.5 px-4 pt-5 pb-3">
-                <div className="w-8 h-8 bg-primary rounded-[10px] flex items-center justify-center flex-shrink-0">
-                  <svg viewBox="0 0 14 14" fill="none" className="w-[18px] h-[18px]">
-                    <path d="M7 2C4.24 2 2 4.24 2 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 2c.83 0 1.5.67 1.5 1.5S7.83 7 7 7s-1.5-.67-1.5-1.5S6.17 4 7 4zm0 7.2c-1.25 0-2.35-.63-3-1.58.02-.98 2-.98 3-.98s2.98.01 3 .98c-.65.95-1.75 1.58-3 1.58z" fill="white"/>
-                  </svg>
-                </div>
+                <BrandMark className="w-8 h-8" />
                 <span className="font-display font-bold text-[20px] text-primary tracking-[-0.4px]">FestNest</span>
                 <button
                   onClick={() => setDrawerOpen(false)}

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Keep auth/account & dashboard utility routes out of the index
+Disallow: /profile/edit
+Disallow: /admin
+Disallow: /organizer
+Disallow: /notifications
+
+Sitemap: https://festnest.in/sitemap.xml

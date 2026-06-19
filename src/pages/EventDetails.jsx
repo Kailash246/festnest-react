@@ -10,7 +10,72 @@ import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
 import FeaturedEventCard from '../components/FeaturedEventCard';
+import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { sanitizeText } from '../utils/sanitize';
+
+/* Best-effort ISO 8601 date for structured data; falls back to the raw
+   human string when the stored value isn't machine-parseable. */
+const toIsoDate = (raw) => {
+  if (!raw) return undefined;
+  const d = new Date(raw);
+  return isNaN(d.getTime()) ? raw : d.toISOString();
+};
+
+/* Build schema.org/Event JSON-LD from a normalised event. */
+function buildEventJsonLd(ev, canonicalUrl, description) {
+  const attendanceMode =
+    ev.mode === 'Online' ? 'https://schema.org/OnlineEventAttendanceMode'
+    : ev.mode === 'Hybrid' ? 'https://schema.org/MixedEventAttendanceMode'
+    : 'https://schema.org/OfflineEventAttendanceMode';
+
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: ev.name,
+    description,
+    image: [ev.imageUrl || DEFAULT_OG_IMAGE],
+    eventAttendanceMode: attendanceMode,
+    eventStatus: 'https://schema.org/EventScheduled',
+    url: canonicalUrl,
+    organizer: {
+      '@type': 'Organization',
+      name: ev.orgName || ev.college,
+    },
+    location: ev.mode === 'Online'
+      ? { '@type': 'VirtualLocation', url: ev.website || canonicalUrl }
+      : {
+          '@type': 'Place',
+          name: ev.venue || ev.college,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: ev.city,
+            addressCountry: 'IN',
+          },
+        },
+  };
+
+  const start = toIsoDate(ev.startDate);
+  if (start) data.startDate = start;
+  const end = toIsoDate(ev.endDate);
+  if (end) data.endDate = end;
+
+  // Offers: free entry → price 0; otherwise parse a number out of the display price.
+  if (ev.entryType === 'free' || ev.entryType === 'prize') {
+    data.offers = {
+      '@type': 'Offer', price: '0', priceCurrency: 'INR',
+      availability: 'https://schema.org/InStock', url: canonicalUrl,
+    };
+  } else {
+    const num = String(ev.price || '').replace(/[^0-9.]/g, '');
+    if (num) {
+      data.offers = {
+        '@type': 'Offer', price: num, priceCurrency: 'INR',
+        availability: 'https://schema.org/InStock', url: canonicalUrl,
+      };
+    }
+  }
+  return data;
+}
 
 /* ── bg → gradient (unchanged) ── */
 const BG_GRADIENT = {
@@ -440,6 +505,7 @@ export default function EventDetails() {
 
   if (error || !ev) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
+      <Seo title={error ? 'Could not load event' : 'Event not found'} noindex />
       {error ? <AlertTriangle size={72} strokeWidth={1.3} className="text-amber mb-4" /> : <HelpCircle size={72} strokeWidth={1.3} className="text-text-3 mb-4" />}
       <h2 className="font-display font-bold text-[22px] text-text-1 tracking-tight mb-2">
         {error ? 'Could not load event' : 'Event not found'}
@@ -474,10 +540,28 @@ export default function EventDetails() {
   const mode          = ev.mode        || '';
   const brochureUrl   = ev.brochureUrl || '';
 
+  /* ── SEO ── */
+  const canonicalUrl = `${SITE_URL}/event/${ev.slug || ev.id}`;
+  const seoDescription = (
+    safeAbout
+      ? safeAbout.replace(/\s+/g, ' ').trim().slice(0, 155)
+      : `${ev.name} at ${ev.college}, ${ev.city}. ${ev.category} on FestNest — discover details and register.`
+  );
+  const eventJsonLd = buildEventJsonLd(ev, canonicalUrl, seoDescription);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.22 }}
       className="min-h-screen bg-white w-full overflow-x-hidden pb-[120px] md:pb-12">
+
+      <Seo
+        rawTitle={`${ev.name} — ${ev.college} | FestNest`}
+        description={seoDescription}
+        canonical={canonicalUrl}
+        image={ev.imageUrl || DEFAULT_OG_IMAGE}
+        type="article"
+        jsonLd={eventJsonLd}
+      />
 
       {/* ══ HERO ══ */}
       <div ref={heroRef}
