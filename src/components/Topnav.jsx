@@ -66,7 +66,7 @@ export default function Topnav() {
 
         {/* ── Desktop nav links ── */}
         <div className="hidden md:flex items-center gap-1 flex-shrink-0">
-          {[{ label: 'Home', href: '/home' }, { label: 'Explore', href: '/explore' }]
+          {[{ label: 'Home', href: '/home' }, { label: 'Explore', href: '/explore' }, { label: 'Blog', href: '/blog' }]
             .map(({ label, href }) => (
               <button key={href} onClick={() => navigate(href)}
                 className={`px-4 py-2 rounded-md text-[14px] font-medium transition-colors duration-150

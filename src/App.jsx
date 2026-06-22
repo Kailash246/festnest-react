@@ -28,6 +28,15 @@ import MobileLanding  from './pages/landing/MobileLanding';
 import Terms          from './pages/legal/Terms';
 import Privacy        from './pages/legal/Privacy';
 import EditProfile    from './pages/profile/EditProfile';
+import HubPage        from './pages/seo/HubPage';
+import CityPage       from './pages/seo/CityPage';
+import CategoryPage   from './pages/seo/CategoryPage';
+import BlogHub            from './pages/blog/BlogHub';
+import HowToWinHackathon  from './pages/blog/HowToWinHackathon';
+import HackathonStrategy  from './pages/blog/HackathonStrategy';
+import WinningPitch       from './pages/blog/WinningPitch';
+import TopColleges        from './pages/blog/TopColleges';
+import BestCollegeEvents  from './pages/blog/BestCollegeEvents';
 
 const isMobile = () => window.innerWidth < 768;
 
@@ -103,6 +112,15 @@ export default function App() {
               <Route path="/host"          element={<HostEvent />} />
               <Route path="/about"         element={<About />} />
               <Route path="/support"       element={<Support />} />
+              <Route path="/discover"      element={<HubPage />} />
+              <Route path="/events/:city"  element={<CityPage />} />
+              <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/blog"                                                    element={<BlogHub />} />
+              <Route path="/blog/how-to-win-a-hackathon"                             element={<HowToWinHackathon />} />
+              <Route path="/blog/hackathon-strategy-guide"                           element={<HackathonStrategy />} />
+              <Route path="/blog/how-to-win-startup-pitch-competition"               element={<WinningPitch />} />
+              <Route path="/blog/best-colleges-for-inter-college-competitions-india" element={<TopColleges />} />
+              <Route path="/blog/best-college-events-india-2025"                     element={<BestCollegeEvents />} />
               <Route path="/event/:id"     element={<EventDetails />} />
               <Route path="/admin"         element={<AdminDashboard />} />
               <Route path="/organizer"    element={<OrganizerDashboard />} />

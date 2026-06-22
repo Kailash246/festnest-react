@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin, PartyPopper } from 'lucide-react';
+import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin, PartyPopper, Compass } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EventCard from '../components/EventCard';
 import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
@@ -371,6 +371,14 @@ export default function Home() {
         <h1 className="font-display font-bold text-[32px] md:text-[40px] text-text-1 leading-tight tracking-tight mb-0 md:mb-4">
           Find your next<br /><em className="text-primary not-italic">big moment</em>
         </h1>
+
+        {/* Discover hub — internal SEO entry point */}
+        <button onClick={() => navigate('/discover')}
+          className="inline-flex items-center gap-1.5 mt-3 md:mt-0 mb-1 text-[13px] font-semibold text-primary hover:gap-2.5 transition-all duration-fast">
+          <Compass size={15} strokeWidth={2} />
+          Discover events by city &amp; category
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
 
         {/* Search + Filter */}
         <div className="relative block mt-4 md:mt-0">

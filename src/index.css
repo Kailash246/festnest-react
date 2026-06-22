@@ -383,3 +383,29 @@ input:focus:required {
   animation: lp-marquee 30s linear infinite;
 }
 .lp-marquee:hover { animation-play-state: paused; }
+
+/* ── Blog article typography (applied via .prose-custom on the article body) ── */
+.prose-custom p {
+  color: #4B5563;
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+.prose-custom h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+.prose-custom h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1F2937;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.prose-custom strong {
+  color: #1F2937;
+  font-weight: 600;
+}
