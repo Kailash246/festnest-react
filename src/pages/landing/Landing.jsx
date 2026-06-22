@@ -34,6 +34,7 @@ const Logo = ({ light }) => (
    STICKY NAV
 ════════════════════════════════════════════════════════════ */
 function Nav({ onEnter }) {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -56,10 +57,14 @@ function Nav({ onEnter }) {
         <nav className="flex items-center gap-1">
           {links.map(([label, id]) => (
             <button key={id} onClick={() => scrollTo(id)}
-              className="px-4 py-2 text-[14px] font-medium text-text-2 hover:text-text-1 rounded-lg hover:bg-surface-2 transition-all">
+              className="px-4 py-2 text-[14px] font-medium text-text-2 hover:text-text-1 rounded-md hover:bg-surface-2 transition-all">
               {label}
             </button>
           ))}
+          <button onClick={() => navigate('/blog')}
+            className="px-4 py-2 text-[14px] font-medium text-text-2 hover:text-text-1 rounded-md hover:bg-surface-2 transition-all">
+            Blog
+          </button>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -68,7 +73,7 @@ function Nav({ onEnter }) {
             Log in
           </button>
           <button onClick={onEnter}
-            className="px-5 py-2.5 bg-primary text-white text-[14px] font-bold rounded-xl
+            className="px-5 py-2.5 bg-primary text-white text-[14px] font-bold rounded-md
                        hover:bg-primary-dark hover:shadow-indigo transition-all duration-200
                        hover:-translate-y-0.5">
             Get Started
@@ -84,8 +89,8 @@ function Nav({ onEnter }) {
 ════════════════════════════════════════════════════════════ */
 const MiniCard = ({ icon: Icon, bg, title, sub, badge, badgeColor, style, cls }) => (
   <div style={style}
-    className={`absolute bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-border p-3 w-[200px] ${cls}`}>
-    <div className={`w-full h-[88px] rounded-xl ${bg} flex items-center justify-center mb-2.5 relative overflow-hidden lp-shine-wrap`}>
+    className={`absolute bg-white rounded-lg shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-border p-3 w-[200px] ${cls}`}>
+    <div className={`w-full h-[88px] rounded-md ${bg} flex items-center justify-center mb-2.5 relative overflow-hidden lp-shine-wrap`}>
       <Icon className="w-10 h-10 text-white/80" />
       {badge && (
         <span className={`absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
@@ -166,7 +171,7 @@ function Hero({ onEnter }) {
 
           {/* Search */}
           <Reveal delay={0.18}>
-            <div className="flex items-center gap-2 bg-white border-[1.5px] border-border-strong rounded-2xl pl-4 pr-2 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.06)] max-w-[480px] mb-6 focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgba(79,70,229,0.10)] transition-all">
+            <div className="flex items-center gap-2 bg-white border-[1.5px] border-border-strong rounded-lg pl-4 pr-2 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.06)] max-w-[480px] mb-6 focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgba(79,70,229,0.10)] transition-all">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-text-3 flex-shrink-0">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
@@ -177,7 +182,7 @@ function Hero({ onEnter }) {
                 className="flex-1 bg-transparent text-[15px] text-text-1 placeholder:text-text-3 outline-none cursor-pointer py-2"
               />
               <button onClick={() => navigate('/explore')}
-                className="bg-primary text-white text-[14px] font-bold px-5 py-2.5 rounded-xl hover:bg-primary-dark transition-all flex-shrink-0">
+                className="bg-primary text-white text-[14px] font-bold px-5 py-2.5 rounded-md hover:bg-primary-dark transition-all flex-shrink-0">
                 Search
               </button>
             </div>
@@ -187,14 +192,14 @@ function Hero({ onEnter }) {
           <Reveal delay={0.24}>
             <div className="flex items-center gap-3">
               <button onClick={() => navigate('/explore')}
-                className="group bg-primary text-white text-[15px] font-bold px-7 py-3.5 rounded-2xl hover:bg-primary-dark hover:shadow-indigo transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2">
+                className="group bg-primary text-white text-[15px] font-bold px-7 py-3.5 rounded-lg hover:bg-primary-dark hover:shadow-indigo transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2">
                 Explore Events
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
                   <path d="m9 18 6-6-6-6"/>
                 </svg>
               </button>
               <button onClick={() => navigate('/host')}
-                className="bg-white text-text-1 text-[15px] font-bold px-7 py-3.5 rounded-2xl border-[1.5px] border-border-strong hover:border-primary hover:text-primary transition-all duration-200 hover:-translate-y-0.5">
+                className="bg-white text-text-1 text-[15px] font-bold px-7 py-3.5 rounded-lg border-[1.5px] border-border-strong hover:border-primary hover:text-primary transition-all duration-200 hover:-translate-y-0.5">
                 Post an Event
               </button>
             </div>
@@ -227,14 +232,14 @@ function Hero({ onEnter }) {
           style={{ transform: `translate(${px}px, ${py}px)`, transition: 'transform 0.2s ease-out' }}>
 
           {/* Main dashboard card */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[340px] bg-white rounded-[28px] shadow-[0_30px_80px_rgba(0,0,0,0.18)] border border-border overflow-hidden lp-float-slow">
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[340px] bg-white rounded-lg shadow-[0_30px_80px_rgba(0,0,0,0.18)] border border-border overflow-hidden lp-float-slow">
             <div className="bg-gradient-to-br from-primary to-[#7C3AED] px-5 pt-5 pb-7">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-white/80 text-[12px] font-semibold">Good afternoon 👋</span>
                 <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/40"/>)}</div>
               </div>
               <div className="text-white font-display font-bold text-[22px] leading-tight">Find your next<br/>big moment</div>
-              <div className="mt-4 bg-white/95 rounded-xl px-3 py-2.5 flex items-center gap-2">
+              <div className="mt-4 bg-white/95 rounded-md px-3 py-2.5 flex items-center gap-2">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#8A8A85" strokeWidth="2" className="w-4 h-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 <span className="text-[12px] text-text-3">Search events…</span>
               </div>
@@ -244,8 +249,8 @@ function Hero({ onEnter }) {
                 { E: Code2, bg: 'bg1', t: 'HackBits 2025', s: 'IIT Bombay · ₹2L prize', showFlame: true },
                 { E: Music, bg: 'bg5', t: "Kaleidoscope '25", s: 'NIT Trichy · 3 days', showFlame: false },
               ].map((c, i) => (
-                <div key={i} className="flex items-center gap-3 p-2 rounded-xl border border-border hover:border-primary-mid transition-colors">
-                  <div className={`w-11 h-11 rounded-lg ${c.bg} flex items-center justify-center`}>
+                <div key={i} className="flex items-center gap-3 p-2 rounded-md border border-border hover:border-primary-mid transition-colors">
+                  <div className={`w-11 h-11 rounded-md ${c.bg} flex items-center justify-center`}>
                     <c.E className="w-5 h-5 text-white/80" />
                   </div>
                   <div className="flex-1">
@@ -268,9 +273,9 @@ function Hero({ onEnter }) {
             cls="lp-float-slow" style={{ bottom: 30, left: -20, '--r': '-5deg', animationDelay: '1.2s' }} />
 
           {/* Notification pop */}
-          <div className="absolute bottom-0 right-4 bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.14)] border border-border p-3 w-[210px] lp-float" style={{ animationDelay: '0.8s' }}>
+          <div className="absolute bottom-0 right-4 bg-white rounded-lg shadow-[0_12px_40px_rgba(0,0,0,0.14)] border border-border p-3 w-[210px] lp-float" style={{ animationDelay: '0.8s' }}>
             <div className="flex items-start gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-green-bg flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-md bg-green-bg flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
               </div>
               <div>
@@ -305,7 +310,7 @@ function LogoWall() {
         <div className="flex gap-4 lp-marquee w-max">
           {row.map((c, i) => (
             <div key={i}
-              className="flex items-center gap-2.5 bg-white border border-border rounded-xl px-5 py-3 whitespace-nowrap
+              className="flex items-center gap-2.5 bg-white border border-border rounded-md px-5 py-3 whitespace-nowrap
                          grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-primary-mid transition-all duration-300">
               <Landmark className="w-5 h-5 text-text-2" />
               <span className="font-display font-bold text-[15px] text-text-2">{c}</span>
@@ -386,7 +391,7 @@ function Featured() {
             return (
               <Reveal key={ev.name} delay={i * 0.1}>
                 <div onClick={() => navigate('/explore')}
-                  className="group bg-white rounded-[24px] border border-border overflow-hidden cursor-pointer
+                  className="group bg-white rounded-lg border border-border overflow-hidden cursor-pointer
                              hover:shadow-[0_24px_60px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-300">
                   {/* Poster */}
                   <div className={`relative h-[200px] ${ev.bg} flex items-center justify-center overflow-hidden`}>
@@ -462,13 +467,13 @@ function Categories() {
           return (
             <Reveal key={c.name} delay={(i % 4) * 0.06}>
               <button onClick={() => navigate(`/explore?cat=${encodeURIComponent(c.cat)}`)}
-                className={`group relative w-full text-left bg-gradient-to-br ${c.g} rounded-[22px] p-6 border border-border
+                className={`group relative w-full text-left bg-gradient-to-br ${c.g} rounded-md p-6 border border-border
                            hover:border-primary hover:shadow-[0_16px_40px_rgba(79,70,229,0.14)] hover:-translate-y-1.5 transition-all duration-300 overflow-hidden`}>
                 <div className={`absolute -right-6 -bottom-6 opacity-[0.07] group-hover:scale-125 group-hover:opacity-[0.12] transition-all duration-500 ${c.iconColor}`}>
                   <CatIcon className="w-24 h-24" />
                 </div>
                 <div className="relative">
-                  <div className={`w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 ${c.iconColor}`}>
+                  <div className={`w-14 h-14 rounded-lg bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 ${c.iconColor}`}>
                     <CatIcon className="w-6 h-6" />
                   </div>
                   <h3 className="font-display font-bold text-[17px] text-text-1 mb-1">{c.name}</h3>
@@ -502,7 +507,7 @@ function Showcase() {
   const mockups = {
     feed: (
       <div className="space-y-3">
-        <div className="h-10 bg-gradient-to-r from-primary to-[#7C3AED] rounded-xl" />
+        <div className="h-10 bg-gradient-to-r from-primary to-[#7C3AED] rounded-md" />
         <div className="flex gap-2">
           {FEED_PILL_ICONS.map((C, i) => (
             <div key={i} className={`px-3 py-1.5 rounded-full text-[11px] font-bold flex items-center justify-center ${i === 0 ? 'bg-primary text-white' : 'bg-surface-3 text-text-3'}`}>
@@ -514,7 +519,7 @@ function Showcase() {
           {['bg1','bg5','bg7','bg4'].map((b, i) => {
             const FeedIcon = FEED_CARD_ICONS[i];
             return (
-              <div key={i} className="bg-white border border-border rounded-xl overflow-hidden">
+              <div key={i} className="bg-white border border-border rounded-md overflow-hidden">
                 <div className={`h-16 ${b} flex items-center justify-center`}>
                   <FeedIcon className="w-7 h-7 text-white/80" />
                 </div>
@@ -527,40 +532,40 @@ function Showcase() {
     ),
     detail: (
       <div className="space-y-3">
-        <div className="h-28 bg-gradient-to-br from-indigo-100 to-violet-50 rounded-xl flex items-center justify-center">
+        <div className="h-28 bg-gradient-to-br from-indigo-100 to-violet-50 rounded-md flex items-center justify-center">
           <Code2 className="w-12 h-12 text-indigo-400" />
         </div>
         <div className="h-3 bg-surface-3 rounded w-2/3" />
-        <div className="flex gap-2">{[1,2,3].map(i=><div key={i} className="h-12 flex-1 bg-surface-2 rounded-lg"/>)}</div>
+        <div className="flex gap-2">{[1,2,3].map(i=><div key={i} className="h-12 flex-1 bg-surface-2 rounded-md"/>)}</div>
         <div className="h-2 bg-surface-3 rounded w-full" /><div className="h-2 bg-surface-3 rounded w-5/6" />
-        <div className="h-10 bg-primary rounded-xl" />
+        <div className="h-10 bg-primary rounded-md" />
       </div>
     ),
     organizer: (
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-2">
           {[['12','Submitted'],['8','Live'],['3','Pending'],['1.2k','Registered']].map(([n,l],i)=>(
-            <div key={i} className="bg-white border border-border rounded-lg p-2.5">
+            <div key={i} className="bg-white border border-border rounded-md p-2.5">
               <div className="text-[16px] font-bold text-text-1">{n}</div>
               <div className="text-[9px] text-text-3">{l}</div>
             </div>
           ))}
         </div>
-        {[1,2].map(i=><div key={i} className="flex items-center gap-2 bg-white border border-border rounded-lg p-2"><div className="w-8 h-8 bg-primary-light rounded-lg"/><div className="flex-1"><div className="h-2 bg-surface-3 rounded w-2/3 mb-1"/><div className="h-1.5 bg-surface-3 rounded w-1/3"/></div><div className="px-2 py-0.5 bg-green-bg rounded-full text-[8px] text-green font-bold">Live</div></div>)}
+        {[1,2].map(i=><div key={i} className="flex items-center gap-2 bg-white border border-border rounded-md p-2"><div className="w-8 h-8 bg-primary-light rounded-md"/><div className="flex-1"><div className="h-2 bg-surface-3 rounded w-2/3 mb-1"/><div className="h-1.5 bg-surface-3 rounded w-1/3"/></div><div className="px-2 py-0.5 bg-green-bg rounded-full text-[8px] text-green font-bold">Live</div></div>)}
       </div>
     ),
     admin: (
       <div className="space-y-3">
         <div className="grid grid-cols-3 gap-2">
           {[Users, Calendar, Clock].map((E, i) => (
-            <div key={i} className="bg-white border border-border rounded-lg p-2 text-center">
+            <div key={i} className="bg-white border border-border rounded-md p-2 text-center">
               <div className="flex justify-center"><E className="w-4 h-4 text-text-3" /></div>
               <div className="h-1.5 bg-surface-3 rounded mt-1"/>
             </div>
           ))}
         </div>
         {[1,2,3].map(i=>(
-          <div key={i} className="flex items-center gap-2 bg-amber-bg border border-amber-border rounded-lg p-2">
+          <div key={i} className="flex items-center gap-2 bg-amber-bg border border-amber-border rounded-md p-2">
             <ClipboardList className="w-3.5 h-3.5 text-amber flex-shrink-0" />
             <div className="flex-1 h-2 bg-amber-border/50 rounded"/>
             <div className="px-2 py-0.5 bg-white rounded text-[8px] text-amber font-bold">Review</div>
@@ -584,7 +589,7 @@ function Showcase() {
           <div className="flex justify-center gap-2 mb-10">
             {SHOWCASE.map(s => (
               <button key={s.id} onClick={() => setActive(s.id)}
-                className={`px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all
+                className={`px-5 py-2.5 rounded-md text-[14px] font-semibold transition-all
                   ${active === s.id ? 'bg-primary text-white shadow-indigo' : 'bg-white border border-border text-text-2 hover:border-primary-mid'}`}>
                 {s.label}
               </button>
@@ -593,7 +598,7 @@ function Showcase() {
         </Reveal>
 
         <Reveal delay={0.15}>
-          <div className="grid grid-cols-[1fr_1.2fr] gap-10 items-center bg-white rounded-[28px] border border-border p-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+          <div className="grid grid-cols-[1fr_1.2fr] gap-10 items-center bg-white rounded-lg border border-border p-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
             <div>
               <h3 className="font-display font-bold text-[26px] text-text-1 mb-3">{SHOWCASE.find(s => s.id === active).label}</h3>
               <p className="text-[16px] text-text-2 leading-relaxed mb-6">{SHOWCASE.find(s => s.id === active).desc}</p>
@@ -610,8 +615,8 @@ function Showcase() {
             </div>
             {/* Phone frame */}
             <div className="flex justify-center">
-              <div className="w-[300px] bg-surface-2 rounded-[32px] border-[6px] border-text-1 p-4 shadow-2xl">
-                <div className="bg-white rounded-[20px] p-4 min-h-[360px]">
+              <div className="w-[300px] bg-surface-2 rounded-lg border-[6px] border-text-1 p-4 shadow-2xl">
+                <div className="bg-white rounded-md p-4 min-h-[360px]">
                   {mockups[active]}
                 </div>
               </div>
@@ -650,8 +655,8 @@ function Features() {
           const FIcon = f.icon;
           return (
             <Reveal key={f.title} delay={(i % 3) * 0.08}>
-              <div className="group bg-white rounded-[22px] border border-border p-7 hover:border-primary-mid hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300">
-                <div className="w-14 h-14 rounded-2xl bg-primary-light flex items-center justify-center mb-5 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 text-primary">
+              <div className="group bg-white rounded-md border border-border p-7 hover:border-primary-mid hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300">
+                <div className="w-14 h-14 rounded-lg bg-primary-light flex items-center justify-center mb-5 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 text-primary">
                   <FIcon className="w-6 h-6" />
                 </div>
                 <h3 className="font-display font-bold text-[18px] text-text-1 mb-2">{f.title}</h3>
@@ -696,8 +701,8 @@ function HowItWorks() {
               <Reveal key={s.n} delay={i * 0.12}>
                 <div className="relative text-center">
                   <div className="relative w-[84px] h-[84px] mx-auto mb-5">
-                    <div className="absolute inset-0 bg-primary-light rounded-2xl rotate-3" />
-                    <div className="relative w-full h-full bg-white rounded-2xl border-2 border-primary flex items-center justify-center shadow-[0_8px_24px_rgba(79,70,229,0.15)] text-primary">
+                    <div className="absolute inset-0 bg-primary-light rounded-lg rotate-3" />
+                    <div className="relative w-full h-full bg-white rounded-lg border-2 border-primary flex items-center justify-center shadow-[0_8px_24px_rgba(79,70,229,0.15)] text-primary">
                       <StepIcon className="w-9 h-9" />
                     </div>
                     <div className="absolute -top-2 -right-2 w-7 h-7 bg-primary text-white rounded-full flex items-center justify-center text-[11px] font-bold">
@@ -734,15 +739,15 @@ function Organizers() {
         {/* Left: mockup */}
         <Reveal>
           <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-br from-primary/10 to-[#7C3AED]/10 rounded-[32px] blur-2xl" />
-            <div className="relative bg-white rounded-[28px] border border-border shadow-[0_24px_60px_rgba(0,0,0,0.12)] p-7">
+            <div className="absolute -inset-4 bg-gradient-to-br from-primary/10 to-[#7C3AED]/10 rounded-lg blur-2xl" />
+            <div className="relative bg-white rounded-lg border border-border shadow-[0_24px_60px_rgba(0,0,0,0.12)] p-7">
               <div className="flex items-center justify-between mb-6">
                 <div className="font-display font-bold text-[18px] text-text-1">Organizer Dashboard</div>
                 <div className="px-3 py-1 bg-green-bg text-green text-[11px] font-bold rounded-full">● Live</div>
               </div>
               <div className="grid grid-cols-3 gap-3 mb-5">
                 {ORG_STATS.map(([E, n, l]) => (
-                  <div key={l} className="bg-surface-2 rounded-xl p-3 text-center">
+                  <div key={l} className="bg-surface-2 rounded-md p-3 text-center">
                     <div className="flex justify-center mb-1"><E className="w-5 h-5 text-text-2" /></div>
                     <div className="font-display font-bold text-[20px] text-text-1 mt-1">{n}</div>
                     <div className="text-[10px] text-text-3">{l}</div>
@@ -774,7 +779,7 @@ function Organizers() {
             <div className="space-y-3 mb-9">
               {ORG_FEATURES.map(([I, t, d]) => (
                 <div key={t} className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center text-primary flex-shrink-0">
+                  <div className="w-10 h-10 rounded-md bg-primary-light flex items-center justify-center text-primary flex-shrink-0">
                     <I className="w-5 h-5" />
                   </div>
                   <div>
@@ -785,7 +790,7 @@ function Organizers() {
               ))}
             </div>
             <button onClick={() => navigate('/host')}
-              className="bg-primary text-white text-[15px] font-bold px-8 py-4 rounded-2xl hover:bg-primary-dark hover:shadow-indigo hover:-translate-y-0.5 transition-all flex items-center gap-2">
+              className="bg-primary text-white text-[15px] font-bold px-8 py-4 rounded-lg hover:bg-primary-dark hover:shadow-indigo hover:-translate-y-0.5 transition-all flex items-center gap-2">
               Host Your Event
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
             </button>
@@ -827,7 +832,7 @@ function Comparison() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="bg-white rounded-[24px] border border-border overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+          <div className="bg-white rounded-lg border border-border overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
             <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr]">
               {/* Header */}
               <div className="p-5 bg-surface-2 font-display font-bold text-[14px] text-text-3">Feature</div>
@@ -896,7 +901,7 @@ function Testimonials() {
         <div className="grid grid-cols-2 gap-6">
           {visible.map((t, i) => (
             <div key={`${idx}-${i}`}
-              className="bg-white rounded-[24px] border border-border p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+              className="bg-white rounded-lg border border-border p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
               style={{ animation: 'screenIn 0.4s ease-out both', animationDelay: `${i * 0.08}s` }}>
               <div className="flex items-center gap-0.5 mb-4">
                 {Array.from({ length: t.rating }).map((_, j) => (
@@ -955,7 +960,7 @@ function FAQ() {
         <div className="space-y-3">
           {FAQS.map(([q, a], i) => (
             <Reveal key={q} delay={i * 0.05}>
-              <div className={`bg-white rounded-2xl border transition-all duration-300 ${open === i ? 'border-primary shadow-[0_8px_30px_rgba(79,70,229,0.08)]' : 'border-border'}`}>
+              <div className={`bg-white rounded-lg border transition-all duration-300 ${open === i ? 'border-primary shadow-[0_8px_30px_rgba(79,70,229,0.08)]' : 'border-border'}`}>
                 <button onClick={() => setOpen(open === i ? -1 : i)}
                   className="w-full flex items-center justify-between gap-4 p-5 text-left">
                   <span className="font-display font-bold text-[16px] text-text-1">{q}</span>
@@ -988,7 +993,7 @@ function FinalCTA({ onEnter }) {
   return (
     <section className="py-24 max-w-[1240px] mx-auto px-8">
       <Reveal>
-        <div className="relative rounded-[36px] overflow-hidden bg-gradient-to-br from-primary via-[#5B4FE5] to-[#7C3AED] px-12 py-16">
+        <div className="relative rounded-lg overflow-hidden bg-gradient-to-br from-primary via-[#5B4FE5] to-[#7C3AED] px-12 py-16">
           {/* Decorative */}
           <div className="absolute top-[-60px] right-[-40px] w-72 h-72 bg-white/10 lp-blob blur-2xl" />
           <div className="absolute bottom-[-80px] left-[-60px] w-80 h-80 bg-white/10 lp-blob blur-2xl" style={{ animationDelay: '2s' }} />
@@ -1008,11 +1013,11 @@ function FinalCTA({ onEnter }) {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 bg-white/95 rounded-2xl px-5 py-4 text-[15px] text-text-1 placeholder:text-text-3 outline-none focus:ring-4 focus:ring-white/30 transition-all"
+                className="flex-1 bg-white/95 rounded-lg px-5 py-4 text-[15px] text-text-1 placeholder:text-text-3 outline-none focus:ring-4 focus:ring-white/30 transition-all"
               />
               <button
                 onClick={() => { if (email.includes('@')) { setSubbed(true); setEmail(''); } }}
-                className="bg-white text-primary text-[15px] font-bold px-6 py-4 rounded-2xl hover:bg-white/90 transition-all flex-shrink-0">
+                className="bg-white text-primary text-[15px] font-bold px-6 py-4 rounded-lg hover:bg-white/90 transition-all flex-shrink-0">
                 {subbed ? '✓ Subscribed' : 'Notify me'}
               </button>
             </div>
@@ -1020,11 +1025,11 @@ function FinalCTA({ onEnter }) {
 
             <div className="flex items-center justify-center gap-3">
               <button onClick={() => navigate('/explore')}
-                className="bg-white text-primary text-[15px] font-bold px-8 py-4 rounded-2xl hover:-translate-y-0.5 hover:shadow-2xl transition-all">
+                className="bg-white text-primary text-[15px] font-bold px-8 py-4 rounded-lg hover:-translate-y-0.5 hover:shadow-2xl transition-all">
                 Explore Events
               </button>
               <button onClick={() => navigate('/host')}
-                className="bg-white/15 backdrop-blur text-white text-[15px] font-bold px-8 py-4 rounded-2xl border border-white/25 hover:bg-white/25 transition-all">
+                className="bg-white/15 backdrop-blur text-white text-[15px] font-bold px-8 py-4 rounded-lg border border-white/25 hover:bg-white/25 transition-all">
                 Post an Event
               </button>
             </div>
@@ -1044,7 +1049,7 @@ function Footer() {
   const navigate = useNavigate();
   const cols = [
     ['Platform', [['Explore Events', '/explore'], ['Post an Event', '/host'], ['Categories', '/explore'], ['Leaderboard', '/leaderboard']]],
-    ['Company', [['About', '/about'], ['Blog', '#'], ['Careers', '#'], ['Press', '#']]],
+    ['Company', [['About', '/about'], ['Blog', '/blog'], ['Careers', '#'], ['Press', '#']]],
     ['Support', [['Help Center', '/support'], ['Contact', '/support'], ['Privacy', '/privacy'], ['Terms', '/terms']]],
   ];
   return (
@@ -1058,7 +1063,7 @@ function Footer() {
             </p>
             <div className="flex gap-2 mt-5">
               {SOCIAL_ICONS.map((S, i) => (
-                <button key={i} className="w-9 h-9 rounded-xl bg-white border border-border flex items-center justify-center text-text-3 hover:border-primary hover:text-primary transition-all">
+                <button key={i} className="w-9 h-9 rounded-md bg-white border border-border flex items-center justify-center text-text-3 hover:border-primary hover:text-primary transition-all">
                   <S className="w-4 h-4" />
                 </button>
               ))}

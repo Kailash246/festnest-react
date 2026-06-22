@@ -36,13 +36,20 @@ export default function MobileLanding() {
           <BrandMark className="w-8 h-8" />
           <span className="font-display font-bold text-[20px] text-primary tracking-[-0.4px]">FestNest</span>
         </div>
-        {!isLoggedIn && (
-          <button onClick={handleSignIn}
-            className="px-4 py-2 border border-border rounded-lg text-[13px] font-semibold text-text-2
-                       hover:border-primary hover:text-primary transition-colors">
-            Log in
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate('/blog')}
+            className="px-3 py-2 text-[13px] font-semibold text-text-2
+                       hover:text-primary transition-colors">
+            Blog
           </button>
-        )}
+          {!isLoggedIn && (
+            <button onClick={handleSignIn}
+              className="px-4 py-2 border border-border rounded-md text-[13px] font-semibold text-text-2
+                         hover:border-primary hover:text-primary transition-colors">
+              Log in
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Hero */}
@@ -68,14 +75,14 @@ export default function MobileLanding() {
         {/* CTAs */}
         <div className="flex flex-col gap-3 mb-8">
           <button onClick={handleExplore}
-            className="w-full py-4 bg-primary text-white font-bold text-[16px] rounded-2xl
+            className="w-full py-4 bg-primary text-white font-bold text-[16px] rounded-md
                        hover:bg-primary-dark active:scale-[0.98] transition-all">
             Explore Events
           </button>
           {!isLoggedIn && (
             <button onClick={handleSignIn}
               className="w-full py-4 bg-white border-[1.5px] border-border-strong text-text-1
-                         font-bold text-[16px] rounded-2xl hover:border-primary hover:text-primary
+                         font-bold text-[16px] rounded-md hover:border-primary hover:text-primary
                          active:scale-[0.98] transition-all">
               Create Free Account
             </button>
@@ -85,7 +92,7 @@ export default function MobileLanding() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-8">
           {STATS.map(({ value, label }) => (
-            <div key={label} className="bg-surface-2 rounded-2xl py-4 text-center">
+            <div key={label} className="bg-surface-2 rounded-lg py-4 text-center">
               <div className="font-display font-bold text-[22px] text-text-1 leading-none">{value}</div>
               <div className="text-[11px] text-text-3 font-semibold mt-1">{label}</div>
             </div>
@@ -98,7 +105,7 @@ export default function MobileLanding() {
           <div className="grid grid-cols-2 gap-2.5">
             {CATEGORIES.map(({ icon: Icon, label, bg }) => (
               <button key={label} onClick={handleExplore}
-                className={`${bg} rounded-2xl p-4 flex items-center gap-3 text-left
+                className={`${bg} rounded-lg p-4 flex items-center gap-3 text-left
                              hover:opacity-80 active:scale-[0.97] transition-all`}>
                 <Icon className="w-7 h-7 text-white/80 flex-shrink-0" />
                 <span className="font-display font-bold text-[14px] text-text-1 leading-tight">{label}</span>
