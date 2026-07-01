@@ -54,6 +54,16 @@ const inputCls = `w-full px-4 py-3 border-[1.5px] border-[#CBCBC6] rounded-md fo
 // Applied on top of inputCls when a field has a validation error.
 const inputErrCls = `border-red-500 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.10)]`;
 
+const DESIGNATIONS = [
+  'Event Coordinator',
+  'Event Head',
+  'Club President',
+  'Faculty Coordinator',
+  'Core Team Member',
+  'Organizing Committee Member',
+  'Other',
+];
+
 /* Small inline error message shown directly below a field. */
 const FieldError = ({ children }) =>
   children ? (
@@ -162,7 +172,8 @@ export default function AuthOverlay() {
   const [collegeName,  setCollegeName]  = useState('');
   const [organization, setOrganization] = useState('');
   const [cityState,    setCityState]    = useState('');
-  const [designation,  setDesignation]  = useState('');
+  const [designation,       setDesignation]       = useState('');
+  const [customDesignation, setCustomDesignation] = useState('');
   const [tosAgreed,    setTosAgreed]    = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
   const [pwStrength, setPwStrength] = useState(0);
@@ -298,7 +309,7 @@ export default function AuthOverlay() {
       college:      isOrg ? organization.trim() : collegeName.trim(),
       city:         isOrg ? cityState.trim() : '',
       organization: isOrg ? organization.trim() : '',
-      designation:  isOrg ? designation.trim()  : '',
+      designation:  isOrg ? (designation === 'Other' ? customDesignation.trim() : designation.trim()) : '',
       role:         role,
     });
     login(r.data.user);
@@ -347,7 +358,7 @@ export default function AuthOverlay() {
   const finishOrganizerRegistration = async () => {
     const errs = {};
     const org = organization.trim();
-    const des = designation.trim();
+    const des = designation === 'Other' ? customDesignation.trim() : designation.trim();
     if (!org)                 errs.organization = 'Organization / College name is required';
     else if (org.length < 2)  errs.organization = 'Must be at least 2 characters';
     else if (org.length > 150) errs.organization = 'Cannot exceed 150 characters';
@@ -906,11 +917,19 @@ export default function AuthOverlay() {
                         <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">
                           Your Designation <span className="text-red-500">*</span>
                         </label>
-                        <input id="reg-designation" type="text" value={designation} maxLength={100}
-                          onChange={e => { setDesignation(e.target.value); clearFieldError('designation'); }}
-                          placeholder="Faculty Coordinator, Event Coordinator, Club President…"
-                          className={`${inputCls} ${fieldErrors.designation ? inputErrCls : ''}`}
-                          onKeyDown={e => e.key === 'Enter' && finishOrganizerRegistration()} />
+                        <select value={designation}
+                          onChange={e => { setDesignation(e.target.value); setCustomDesignation(''); clearFieldError('designation'); }}
+                          className={`${inputCls} cursor-pointer ${fieldErrors.designation && !designation ? inputErrCls : ''}`}>
+                          <option value="">Select your designation</option>
+                          {DESIGNATIONS.map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                        {designation === 'Other' && (
+                          <input type="text" value={customDesignation} maxLength={100}
+                            onChange={e => { setCustomDesignation(e.target.value); clearFieldError('designation'); }}
+                            placeholder="Please specify your designation"
+                            className={`${inputCls} mt-2 ${fieldErrors.designation ? inputErrCls : ''}`}
+                            onKeyDown={e => e.key === 'Enter' && finishOrganizerRegistration()} />
+                        )}
                         <FieldError>{fieldErrors.designation}</FieldError>
                       </div>
 

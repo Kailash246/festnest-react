@@ -87,6 +87,17 @@ const Select = ({ label, hint, error, required, children, ...props }) => (
   </div>
 );
 
+const DESIGNATIONS = [
+  'Event Coordinator',
+  'Event Head',
+  'Club President',
+  'Faculty Coordinator',
+  'Core Team Member',
+  'Organizing Committee Member',
+  'Other',
+];
+const KNOWN_DESIGNATIONS = DESIGNATIONS.slice(0, -1); // excludes 'Other'
+
 const SectionCard = ({ icon: Icon, title, subtitle, children }) => (
   <div className="bg-white border border-border rounded-xl p-5 md:p-6 mb-4">
     <div className="flex items-start gap-3 mb-5">
@@ -151,7 +162,7 @@ export default function EditProfile() {
     name: '', email: '', phone: '', avatar: '', bio: '',
     college: '', branch: '', year: '', city: '',
     interests: [],
-    organization: '', designation: '', website: '',
+    organization: '', designation: '', designationOther: '', website: '',
     linkedin: '', instagram: '', github: '',
   });
 
@@ -174,7 +185,8 @@ export default function EditProfile() {
           city:         u.city         || '',
           interests:    Array.isArray(u.interests) ? u.interests : [],
           organization: u.organization || '',
-          designation:  u.designation  || '',
+          designation:  KNOWN_DESIGNATIONS.includes(u.designation) ? u.designation : (u.designation ? 'Other' : ''),
+          designationOther: KNOWN_DESIGNATIONS.includes(u.designation) ? '' : (u.designation || ''),
           website:      u.website      || '',
           linkedin:     u.linkedin     || '',
           instagram:    u.instagram    || '',
@@ -195,7 +207,7 @@ export default function EditProfile() {
     if (role === 'student' && !form.college.trim()) e.college = 'Required';
     if (role === 'organizer') {
       if (!form.organization.trim()) e.organization = 'Required';
-      const d = form.designation.trim();
+      const d = form.designation === 'Other' ? form.designationOther.trim() : form.designation.trim();
       if (!d)                  e.designation = 'Required';
       else if (d.length < 2)   e.designation = 'Must be at least 2 characters';
       else if (d.length > 100) e.designation = 'Cannot exceed 100 characters';
@@ -214,6 +226,8 @@ export default function EditProfile() {
     try {
       const payload = { ...form };
       delete payload.email;
+      delete payload.designationOther;
+      payload.designation = form.designation === 'Other' ? form.designationOther.trim() : form.designation;
       await usersApi.updateMe(payload);
       showToast('Profile saved', 'success');
       setDirty(false);
@@ -353,10 +367,20 @@ export default function EditProfile() {
                 </div>
                 <div className="grid sm:grid-cols-2 gap-x-4">
                   <div data-error={!!errors.designation}>
-                    <Input label="Your designation" required value={form.designation}
-                      onChange={e => upd('designation', e.target.value)} error={errors.designation}
-                      maxLength={100}
-                      placeholder="e.g. Faculty Coordinator, Club President"/>
+                    <Select label="Your designation" required
+                      value={form.designation}
+                      onChange={e => { upd('designation', e.target.value); upd('designationOther', ''); }}
+                      error={form.designation !== 'Other' ? errors.designation : undefined}>
+                      <option value="">Select your designation</option>
+                      {DESIGNATIONS.map(d => <option key={d} value={d}>{d}</option>)}
+                    </Select>
+                    {form.designation === 'Other' && (
+                      <Input label="" value={form.designationOther}
+                        onChange={e => upd('designationOther', e.target.value)}
+                        error={errors.designation}
+                        maxLength={100}
+                        placeholder="Please specify your designation" />
+                    )}
                   </div>
                   <Input label="Department" value={form.branch}
                     onChange={e => upd('branch', e.target.value)}

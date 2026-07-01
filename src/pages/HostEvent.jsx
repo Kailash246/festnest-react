@@ -388,8 +388,10 @@ export default function HostEvent() {
       }
       if (f.regFee.trim() && f.regFee.trim().toLowerCase() !== 'free' && !MONEY_RE.test(f.regFee.trim()))
         errs.regFee = 'Registration fee must be a valid number';
-      if (f.regLink.trim() && !URL_RE.test(f.regLink.trim()))
-        errs.regLink = 'Enter a valid URL starting with http:// or https://';
+      if (!f.regLink.trim())
+        errs.regLink = 'Registration link is required — all attendees will be redirected here to register';
+      else if (!URL_RE.test(f.regLink.trim()))
+        errs.regLink = 'Please enter a valid URL starting with https://';
     }
     if (s === 4) {
       if (!f.pocName.trim())                       errs.pocName = 'Contact name is required';
@@ -833,10 +835,11 @@ export default function HostEvent() {
                   value={f.regFee} onChange={e => upd('regFee', e.target.value)}
                   error={errors.regFee} />
 
-                <Input id="host-regLink" label="Registration Link" type="url"
+                <Input id="host-regLink" label="Registration Link" type="url" required
                   placeholder="https://forms.gle/..."
                   value={f.regLink} onChange={e => upd('regLink', e.target.value)}
-                  error={errors.regLink} />
+                  error={errors.regLink}
+                  hint="Students will be redirected to this link to register. Make sure it's the official registration form." />
 
                 <Textarea label="Other Perks"
                   placeholder="Internship offers, goodies, certificates, swag..."
