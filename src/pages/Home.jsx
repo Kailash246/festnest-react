@@ -614,7 +614,7 @@ export default function Home() {
                 sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
                 sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
               }}>
-              <EventCard event={ev} onDelete={handleDeleteEvent} featured={true} />
+              <EventCard event={ev} onDelete={handleDeleteEvent} featured={ev.isFeatured || false} />
             </motion.div>
           ))}
         </div>
