@@ -501,6 +501,14 @@ export default function EventDetails() {
     }
   };
 
+  const handleBack = () => {
+    if (window.history.length > 2 && document.referrer.includes('festnest.in')) {
+      navigate(-1);
+    } else {
+      navigate('/explore');
+    }
+  };
+
   if (loading) return <DetailSkeleton />;
 
   if (error || !ev) return (
@@ -580,7 +588,7 @@ export default function EventDetails() {
 
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 md:px-10 md:pt-6 z-10">
-          <motion.button whileTap={{ scale: 0.92 }} onClick={() => navigate(-1)}
+          <motion.button whileTap={{ scale: 0.92 }} onClick={handleBack}
             className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-white/80 backdrop-blur-sm text-[13px] font-medium text-text-1 border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
             Back
