@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import BrandMark from './BrandMark';
+import LogoutConfirmModal from './LogoutConfirmModal';
 
 const getInitials = (name) =>
   name?.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
@@ -46,7 +47,8 @@ const Btn = ({ Icon: BtnIcon, label, badge, badgeStyle, onClick, accent }) => (
 
 export default function MobileDrawer() {
   const { drawerOpen, setDrawerOpen, savedCount, requireAuth, isLoggedIn, isAdmin, isOrganizer, isSuperAdmin, logout, currentUser, unreadNotifCount } = useApp();
-  const [avatarImgError, setAvatarImgError] = useState(false);
+  const [avatarImgError,   setAvatarImgError]   = useState(false);
+  const [showLogoutModal,  setShowLogoutModal]  = useState(false);
   const initials   = currentUser?.avatar?.initials || getInitials(currentUser?.name);
   const avatarUrl  = !avatarImgError && currentUser?.avatar?.url;
   const roleLabel  = ROLE_LABEL[currentUser?.role] || 'Member';
@@ -67,6 +69,7 @@ export default function MobileDrawer() {
   };
 
   return (
+    <>
     <AnimatePresence>
       {drawerOpen && (
         <>
@@ -194,7 +197,7 @@ export default function MobileDrawer() {
                             pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
               {isLoggedIn ? (
                 <button
-                  onClick={() => { setDrawerOpen(false); logout(); }}
+                  onClick={() => setShowLogoutModal(true)}
                   className="w-full py-3 border-[1.5px] border-[#FECACA]
                              rounded-lg text-[14px] font-semibold
                              text-[#DC2626] bg-[#FEF2F2]
@@ -216,5 +219,12 @@ export default function MobileDrawer() {
         </>
       )}
     </AnimatePresence>
+
+    <LogoutConfirmModal
+      open={showLogoutModal}
+      onConfirm={() => { setShowLogoutModal(false); setDrawerOpen(false); logout(); }}
+      onCancel={() => setShowLogoutModal(false)}
+    />
+    </>
   );
 }

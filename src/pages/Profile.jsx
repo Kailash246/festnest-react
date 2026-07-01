@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import Seo from '../components/Seo';
+import LogoutConfirmModal from '../components/LogoutConfirmModal';
 import { users as usersApi, events as eventsApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
 
@@ -925,10 +926,11 @@ export default function Profile() {
   const [stats,         setStats]         = useState({});
   const [registrations, setRegistrations] = useState([]);
   const [hostedEvents,  setHostedEvents]  = useState([]);
-  const [savedEvList,   setSavedEvList]   = useState([]);
-  const [loading,       setLoading]       = useState(true);
-  const [savedLoading,  setSavedLoading]  = useState(false);
-  const [savedFetched,  setSavedFetched]  = useState(false);
+  const [savedEvList,      setSavedEvList]      = useState([]);
+  const [loading,          setLoading]          = useState(true);
+  const [savedLoading,     setSavedLoading]     = useState(false);
+  const [savedFetched,     setSavedFetched]     = useState(false);
+  const [showLogoutModal,  setShowLogoutModal]  = useState(false);
 
   const role  = profile?.role || currentUser?.role || 'user';
   const isOrg = role === 'organizer';
@@ -1039,7 +1041,13 @@ export default function Profile() {
           savedCount={savedCount}
           navigate={navigate}
           showToast={showToast}
-          onLogout={handleLogout}
+          onLogout={() => setShowLogoutModal(true)}
+        />
+
+        <LogoutConfirmModal
+          open={showLogoutModal}
+          onConfirm={() => { setShowLogoutModal(false); handleLogout(); }}
+          onCancel={() => setShowLogoutModal(false)}
         />
       </div>
     </motion.div>
