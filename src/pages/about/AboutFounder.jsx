@@ -190,13 +190,6 @@ export default function AboutFounder() {
                                  hover:bg-indigo-50 transition-colors">
                       LinkedIn <ExternalLink size={11} />
                     </a>
-                    <a href="https://github.com/Kailash246"
-                      target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200
-                                 text-gray-700 text-[12px] font-semibold rounded-md
-                                 hover:bg-gray-50 transition-colors">
-                      GitHub <ExternalLink size={11} />
-                    </a>
                   </div>
                 </div>
               </div>
