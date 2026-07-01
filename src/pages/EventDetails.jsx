@@ -614,16 +614,6 @@ export default function EventDetails() {
 
         {/* Hero bottom */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 md:px-10 md:pb-7 z-10">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <div className={`inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-md border backdrop-blur-sm ${cfg.pill}`}>
-              {ev.badgeText}
-            </div>
-            {mode && (
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-md bg-black/30 text-white border border-white/20 backdrop-blur-sm">
-                {mode === 'Online' ? <Monitor size={11} strokeWidth={2} /> : mode === 'Hybrid' ? <Globe size={11} strokeWidth={2} /> : <Building2 size={11} strokeWidth={2} />} {mode}
-              </div>
-            )}
-          </div>
           <h1 className="font-display font-bold text-white text-[26px] md:text-[36px] leading-tight tracking-tight mb-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
             {ev.name}
           </h1>
