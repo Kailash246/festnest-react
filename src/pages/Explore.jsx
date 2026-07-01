@@ -1,12 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { BadgeCheck, ExternalLink, MapPin, Trophy } from 'lucide-react';
 import EventCard from '../components/EventCard';
 import Seo from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES } from '../data/categories';
+
+const WHY = [
+  { Icon: BadgeCheck,   title: 'Always Free',         desc: 'No sign-up fees, no hidden charges, ever.' },
+  { Icon: ExternalLink, title: 'Direct Registration', desc: 'Links go straight to the official form — no middlemen.' },
+  { Icon: MapPin,       title: 'Discover by City',    desc: 'Find events near you or anywhere across India.' },
+  { Icon: Trophy,       title: 'Points & Rankings',   desc: 'Earn FestNest points for every event you attend.' },
+];
 
 // Priority-first category tiles from the shared catalog.
 const EXPLORE_CATEGORIES = CATEGORIES.map(c => ({
@@ -112,6 +120,21 @@ export default function Explore() {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Why FestNest */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-4 md:px-12 mb-5 md:max-w-[1140px] md:mx-auto">
+        {WHY.map(({ Icon: WhyIcon, title, desc }) => (
+          <div key={title}
+            className="bg-surface border border-border rounded-lg p-4
+                       hover:border-primary hover:-translate-y-[1px] transition-all">
+            <div className="w-9 h-9 bg-primary-light rounded-md flex items-center justify-center mb-3">
+              <WhyIcon size={18} strokeWidth={1.8} className="text-primary" />
+            </div>
+            <div className="text-[13px] font-semibold text-text-1 mb-1">{title}</div>
+            <div className="text-[12px] text-text-3 leading-relaxed">{desc}</div>
+          </div>
+        ))}
       </div>
 
       {/* Category grid */}

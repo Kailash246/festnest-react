@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search, ClipboardList, Bell, Trophy, Target,
   Globe, Camera, MessageCircle, ExternalLink,
+  BadgeCheck, MapPin,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import BrandMark from '../../components/BrandMark';
@@ -51,10 +52,10 @@ const LINKS = [
 ];
 
 const WHY = [
-  { emoji: '🆓', title: 'Always Free',         desc: 'FestNest is free for every student — no sign-up fees, no hidden charges, ever.' },
-  { emoji: '🔗', title: 'Direct Registration', desc: 'We link straight to the official form. No middlemen, no re-registration, no friction.' },
-  { emoji: '📍', title: 'Discover by City',    desc: 'Find events in your city or across India. Filter by category, date, or prize pool.' },
-  { emoji: '🏆', title: 'Points & Rankings',   desc: 'Earn FestNest points for every event you attend. See how you rank in your college.' },
+  { Icon: BadgeCheck,   title: 'Always Free',         desc: 'FestNest is free for every student — no sign-up fees, no hidden charges, ever.' },
+  { Icon: ExternalLink, title: 'Direct Registration', desc: 'We link straight to the official form. No middlemen, no re-registration, no friction.' },
+  { Icon: MapPin,       title: 'Discover by City',    desc: 'Find events in your city or across India. Filter by category, date, or prize pool.' },
+  { Icon: Trophy,       title: 'Points & Rankings',   desc: 'Earn FestNest points for every event you attend. See how you rank in your college.' },
 ];
 
 export default function AboutFounder() {
@@ -115,11 +116,13 @@ export default function AboutFounder() {
               Why FestNest?
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {WHY.map(({ emoji, title, desc }) => (
+              {WHY.map(({ Icon: WhyIcon, title, desc }) => (
                 <div key={title}
                   className="bg-surface border border-border rounded-lg p-4
                              hover:border-primary hover:-translate-y-[1px] transition-all">
-                  <div className="text-[26px] mb-2">{emoji}</div>
+                  <div className="w-9 h-9 bg-primary-light rounded-md flex items-center justify-center mb-3">
+                    <WhyIcon size={18} strokeWidth={1.8} className="text-primary" />
+                  </div>
                   <div className="text-[13px] font-semibold text-text-1 mb-1">{title}</div>
                   <div className="text-[12px] text-text-3 leading-relaxed">{desc}</div>
                 </div>
