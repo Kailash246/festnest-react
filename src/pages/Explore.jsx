@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BadgeCheck, ExternalLink, MapPin, Trophy } from 'lucide-react';
 import EventCard from '../components/EventCard';
@@ -37,35 +37,69 @@ const SkeletonCard = () => (
 );
 
 export default function Explore() {
-  const navigate      = useNavigate();
+  const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
-  const { showToast } = useApp();
+  const { pathname }   = useLocation();
+  const { showToast, exploreFeedCache, exploreFeedCacheTime, setExploreFeedCache, setExploreFeedCacheTime } = useApp();
+  const CACHE_TTL = 5 * 60 * 1000;
+  const cacheRef  = useRef({ cache: exploreFeedCache, cacheTime: exploreFeedCacheTime });
+  cacheRef.current = { cache: exploreFeedCache, cacheTime: exploreFeedCacheTime };
 
   const [query,     setQuery]     = useState('');
-  const [activeCat, setActiveCat] = useState('all');
+  const [activeCat, setActiveCat] = useState(() => {
+    const cat = searchParams.get('cat');
+    return cat ? decodeURIComponent(cat) : 'all';
+  });
   const [allEvents, setAllEvents] = useState([]);
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState(null);
+  const scrollRestoredRef         = useRef(false);
 
-  /* Honour ?cat= query param */
+  /* Keep activeCat in sync when URL changes */
   useEffect(() => {
     const cat = searchParams.get('cat');
-    if (cat) setActiveCat(decodeURIComponent(cat));
+    setActiveCat(cat ? decodeURIComponent(cat) : 'all');
   }, [searchParams]);
 
-  /* Fetch from API */
+  /* Fetch from API (skip if cache is warm and category matches) */
   const fetchEvents = useCallback(() => {
+    const { cache, cacheTime } = cacheRef.current;
+    if (cache && (Date.now() - cacheTime < CACHE_TTL) && cache.activeCat === activeCat) {
+      setAllEvents(cache.allEvents);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     const params = { limit: 100 };
     if (activeCat !== 'all') params.category = activeCat;
     eventsApi.list(params)
-      .then(r => setAllEvents(normaliseEvents(r.data.events)))
+      .then(r => {
+        const evts = normaliseEvents(r.data.events);
+        setAllEvents(evts);
+        setExploreFeedCache({ allEvents: evts, activeCat });
+        setExploreFeedCacheTime(Date.now());
+      })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [activeCat]);
 
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
+
+  /* Restore scroll position when navigating back from an event page */
+  useLayoutEffect(() => {
+    if (scrollRestoredRef.current || allEvents.length === 0) return;
+    const origin = sessionStorage.getItem('feed_scroll_origin');
+    if (origin !== pathname) return;
+    scrollRestoredRef.current = true;
+    const winY  = parseInt(sessionStorage.getItem('feed_scroll_window') || '0', 10);
+    const mainY = parseInt(sessionStorage.getItem('feed_scroll_main')   || '0', 10);
+    window.scrollTo({ top: winY, left: 0, behavior: 'instant' });
+    document.querySelector('main')?.scrollTo({ top: mainY, left: 0, behavior: 'instant' });
+    sessionStorage.removeItem('feed_scroll_origin');
+    sessionStorage.removeItem('feed_scroll_window');
+    sessionStorage.removeItem('feed_scroll_main');
+  }, [allEvents]);
 
   const handleDeleteEvent = useCallback(async (eventId) => {
     await adminApi.hardDeleteEvent(eventId);
@@ -205,7 +239,12 @@ export default function Explore() {
         <div className="feed-grid" role="list">
           {filtered.map((ev, i) => (
             <motion.div key={ev.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.15, delay: Math.min(i * 0.03, 0.2) }}>
+              transition={{ duration: 0.15, delay: Math.min(i * 0.03, 0.2) }}
+              onClickCapture={() => {
+                sessionStorage.setItem('feed_scroll_origin', pathname);
+                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+              }}>
               <EventCard event={ev} onDelete={handleDeleteEvent} />
             </motion.div>
           ))}

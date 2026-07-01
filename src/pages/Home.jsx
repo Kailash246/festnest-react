@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin, PartyPopper, Compass } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -250,8 +250,15 @@ function applyFilters(events, chipCategory, sheetFilters, searchVal) {
    MAIN PAGE
 ───────────────────────────────────────── */
 export default function Home() {
-  const navigate = useNavigate();
-  const { notifBannerVisible, setNotifBannerVisible, showToast } = useApp();
+  const navigate     = useNavigate();
+  const { pathname } = useLocation();
+  const { notifBannerVisible, setNotifBannerVisible, showToast,
+          homeFeedCache, homeFeedCacheTime, setHomeFeedCache, setHomeFeedCacheTime } = useApp();
+
+  const CACHE_TTL  = 5 * 60 * 1000;
+  const cacheValid = homeFeedCache && (Date.now() - homeFeedCacheTime < CACHE_TTL);
+  const cacheRef   = useRef({ cache: homeFeedCache, cacheTime: homeFeedCacheTime });
+  cacheRef.current = { cache: homeFeedCache, cacheTime: homeFeedCacheTime };
 
   const [searchVal,       setSearchVal]       = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -259,33 +266,62 @@ export default function Home() {
   const [filterOpen,      setFilterOpen]      = useState(false);
   const [sheetFilters,    setSheetFilters]    = useState({ category: null, entry: null, city: null, sort: 'Latest' });
 
-  /* ── API state ── */
-  const [allEvents,   setAllEvents]   = useState([]);
-  const [trending,    setTrending]    = useState([]);
-  const [urgent,      setUrgent]      = useState([]);
-  const [feedLoading, setFeedLoading] = useState(true);
-  const [secLoading,  setSecLoading]  = useState(true);  // trending + urgent
+  /* ── API state (lazy-initialised from cache when available) ── */
+  const [allEvents,   setAllEvents]   = useState(() => cacheValid ? homeFeedCache.allEvents : []);
+  const [trending,    setTrending]    = useState(() => cacheValid ? homeFeedCache.trending  : []);
+  const [urgent,      setUrgent]      = useState(() => cacheValid ? homeFeedCache.urgent    : []);
+  const [feedLoading, setFeedLoading] = useState(!cacheValid);
+  const [secLoading,  setSecLoading]  = useState(!cacheValid);
   const [error,       setError]       = useState(null);
 
-  const searchRef = useRef();
+  const searchRef         = useRef();
+  const scrollRestoredRef = useRef(false);
 
-  /* ── Fetch all data on mount ── */
+  /* ── Fetch all data on mount (skip if cache is warm) ── */
   useEffect(() => {
-    // Main feed
+    if (cacheRef.current.cache && (Date.now() - cacheRef.current.cacheTime < CACHE_TTL)) return;
+
+    let mainEvents = null;
+    let secEvents  = null;
+    const trySaveCache = () => {
+      if (mainEvents && secEvents) {
+        setHomeFeedCache({ allEvents: mainEvents, ...secEvents });
+        setHomeFeedCacheTime(Date.now());
+      }
+    };
+
     eventsApi.list({ limit: 50 })
-      .then(r => setAllEvents(normaliseEvents(r.data.events)))
+      .then(r => { mainEvents = normaliseEvents(r.data.events); setAllEvents(mainEvents); trySaveCache(); })
       .catch(e => setError(e.message))
       .finally(() => setFeedLoading(false));
 
-    // Trending + Urgent in parallel
     Promise.all([eventsApi.trending(), eventsApi.urgent()])
       .then(([tr, ur]) => {
-        setTrending(normaliseEvents(tr.data.events));
-        setUrgent(normaliseEvents(ur.data.events));
+        const t = normaliseEvents(tr.data.events);
+        const u = normaliseEvents(ur.data.events);
+        setTrending(t);
+        setUrgent(u);
+        secEvents = { trending: t, urgent: u };
+        trySaveCache();
       })
       .catch(console.error)
       .finally(() => setSecLoading(false));
   }, []);
+
+  /* ── Restore scroll position when navigating back from an event page ── */
+  useLayoutEffect(() => {
+    if (scrollRestoredRef.current || allEvents.length === 0) return;
+    const origin = sessionStorage.getItem('feed_scroll_origin');
+    if (origin !== pathname) return;
+    scrollRestoredRef.current = true;
+    const winY  = parseInt(sessionStorage.getItem('feed_scroll_window') || '0', 10);
+    const mainY = parseInt(sessionStorage.getItem('feed_scroll_main')   || '0', 10);
+    window.scrollTo({ top: winY, left: 0, behavior: 'instant' });
+    document.querySelector('main')?.scrollTo({ top: mainY, left: 0, behavior: 'instant' });
+    sessionStorage.removeItem('feed_scroll_origin');
+    sessionStorage.removeItem('feed_scroll_window');
+    sessionStorage.removeItem('feed_scroll_main');
+  }, [allEvents]);
 
   // In the unfiltered default feed, featured events (sorted by featuredOrder) float to the top.
   // Any active filter/search/category reverts to normal order.
@@ -458,7 +494,12 @@ export default function Home() {
         <div className="flex gap-3 md:gap-4 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
           {trending.map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-              onClick={() => navigate(`/event/${ev.id}`)}
+              onClick={() => {
+                sessionStorage.setItem('feed_scroll_origin', pathname);
+                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+                navigate(`/event/${ev.id}`);
+              }}
               className="flex-shrink-0 w-[196px] md:w-[224px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start transition-all duration-base"
               tabIndex={0} role="listitem" onKeyDown={e => { if (e.key === 'Enter') navigate(`/event/${ev.id}`); }}>
               <div className={`relative w-full h-[116px] md:h-[136px] flex items-center justify-center text-[36px] ${ev.bg}`}>
@@ -491,7 +532,12 @@ export default function Home() {
         <div className="flex gap-3 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
           {urgent.map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-              onClick={() => navigate(`/event/${ev.id}`)}
+              onClick={() => {
+                sessionStorage.setItem('feed_scroll_origin', pathname);
+                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+                navigate(`/event/${ev.id}`);
+              }}
               className="flex-shrink-0 w-[236px] md:w-[270px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start flex transition-all duration-base"
               tabIndex={0} role="listitem" onKeyDown={e => { if (e.key === 'Enter') navigate(`/event/${ev.id}`); }}>
               <div className={`w-[78px] min-h-[78px] flex items-center justify-center text-[28px] flex-shrink-0 ${ev.bg}`}>
@@ -562,7 +608,12 @@ export default function Home() {
         <div className="feed-grid" role="list" aria-label="Event feed">
           {displayedEvents.map((ev, i) => (
             <motion.div key={ev.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.16, delay: Math.min(i * 0.04, 0.24) }}>
+              transition={{ duration: 0.16, delay: Math.min(i * 0.04, 0.24) }}
+              onClickCapture={() => {
+                sessionStorage.setItem('feed_scroll_origin', pathname);
+                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+              }}>
               <EventCard event={ev} onDelete={handleDeleteEvent} />
             </motion.div>
           ))}

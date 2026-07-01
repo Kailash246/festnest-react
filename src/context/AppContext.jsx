@@ -15,6 +15,12 @@ export function AppProvider({ children }) {
   const [toasts,              setToasts]              = useState([]);
   const [unreadNotifCount,    setUnreadNotifCount]    = useState(0);
 
+  /* ── Feed caches (survive navigation, cleared by TTL) ── */
+  const [homeFeedCache,        setHomeFeedCache]        = useState(null);
+  const [homeFeedCacheTime,    setHomeFeedCacheTime]    = useState(0);
+  const [exploreFeedCache,     setExploreFeedCache]     = useState(null);
+  const [exploreFeedCacheTime, setExploreFeedCacheTime] = useState(0);
+
   /* ── Auth state — hydrated from localStorage ── */
   const [isLoggedIn,    setIsLoggedIn]    = useState(() => tokens.isLoggedIn());
   const [currentUser,   setCurrentUser]   = useState(() => tokens.getUser());
@@ -170,6 +176,9 @@ export function AppProvider({ children }) {
       currentUser, setCurrentUser, isAdmin, isSuperAdmin, isOrganizer,
       /* Notifications */
       unreadNotifCount, setUnreadNotifCount,
+      /* Feed cache */
+      homeFeedCache, setHomeFeedCache, homeFeedCacheTime, setHomeFeedCacheTime,
+      exploreFeedCache, setExploreFeedCache, exploreFeedCacheTime, setExploreFeedCacheTime,
     }}>
       {children}
     </AppContext.Provider>

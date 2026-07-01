@@ -1,16 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
-/**
- * Resets scroll position to the top on every route change.
- * The app scrolls the window on mobile, but on desktop the scroll
- * container is the <main> element (the outer grid is overflow-hidden),
- * so we reset both to cover all breakpoints.
- */
+const FEED_PATHS = new Set(['/', '/home', '/explore']);
+const EVENT_RE   = /^\/event\//;
+
 export default function ScrollToTop() {
   const { pathname } = useLocation();
+  const prevRef = useRef(pathname);
 
   useEffect(() => {
+    const prev = prevRef.current;
+    prevRef.current = pathname;
+    // Feed pages manage their own scroll restoration on back-nav from an event page.
+    if (EVENT_RE.test(prev) && FEED_PATHS.has(pathname)) return;
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.querySelector('main')?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
