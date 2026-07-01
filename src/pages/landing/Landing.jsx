@@ -6,6 +6,7 @@ import BrandMark from '../../components/BrandMark';
 import { events as eventsApi } from '../../services/api';
 import {
   Flame, CheckCircle2,
+  // Star, UserCircle, Brain — kept for legacy sections below
   PartyPopper, Landmark, Users, Trophy,
   Code2, Music, Wrench, Mic2, Volleyball, Palette, Rocket, BriefcaseBusiness,
   BarChart3, Calendar, Eye, Search,
@@ -270,6 +271,37 @@ function Hero({ onEnter }) {
 }
 
 /* ════════════════════════════════════════════════════════════
+   LOGO MARQUEE — hidden until real partner data available
+   To restore: uncomment below, remove <CategoryStrip /> in render,
+   add <LogoWall /> instead.
+════════════════════════════════════════════════════════════
+const COLLEGES = ['IIT Bombay','IIT Delhi','NIT Warangal','BITS Pilani','VIT Vellore','IISc Bangalore','Christ University','PES University','RV University','NIT Trichy'];
+function LogoWall() {
+  const row = [...COLLEGES, ...COLLEGES];
+  return (
+    <section className="py-14 border-y border-border bg-surface-2/50 overflow-hidden">
+      <Reveal>
+        <p className="text-center text-[13px] font-bold tracking-wider uppercase text-text-3 mb-8">
+          Trusted by students from India's top colleges
+        </p>
+      </Reveal>
+      <div className="relative">
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
+        <div className="flex gap-4 lp-marquee w-max">
+          {row.map((c, i) => (
+            <div key={i} className="flex items-center gap-2.5 bg-white border border-border rounded-md px-5 py-3 whitespace-nowrap grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-primary-mid transition-all duration-300">
+              <span className="font-display font-bold text-[15px] text-text-2">{c}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+END LEGACY LOGO WALL */
+
+/* ════════════════════════════════════════════════════════════
    CATEGORY STRIP (replaces fake college logo marquee)
 ════════════════════════════════════════════════════════════ */
 function CategoryStrip() {
@@ -298,6 +330,39 @@ function CategoryStrip() {
     </section>
   );
 }
+
+/* ════════════════════════════════════════════════════════════
+   LEGACY STATS — fake placeholder numbers, kept for reference.
+   To restore: uncomment below, remove <StatsRow .../> in render,
+   add <Stats /> instead. Also re-add useCountUp to _hooks import.
+════════════════════════════════════════════════════════════
+function StatItem({ target, suffix, prefix, label, icon: Icon }) {
+  // const [ref, val] = useCountUp(target);
+  return (
+    <div className="text-center">
+      <div className="flex justify-center mb-2"><Icon className="w-8 h-8 text-text-2" /></div>
+      <div className="font-display font-bold text-[40px] text-text-1 leading-none tracking-tight">
+        {prefix}{target.toLocaleString('en-IN')}{suffix}
+      </div>
+      <div className="text-[14px] text-text-3 font-medium mt-2">{label}</div>
+    </div>
+  );
+}
+function Stats() {
+  return (
+    <section className="py-24 max-w-[1100px] mx-auto px-8">
+      <Reveal>
+        <div className="grid grid-cols-4 gap-8">
+          <StatItem icon={PartyPopper} target={2400}  suffix="+" label="Events Listed" />
+          <StatItem icon={Landmark}   target={850}   suffix="+" label="Colleges" />
+          <StatItem icon={Users}      target={48000} suffix="+" label="Active Students" />
+          <StatItem icon={Trophy}     target={2}     suffix="Cr+" prefix="₹" label="Prize Pool" />
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+END LEGACY STATS */
 
 /* ════════════════════════════════════════════════════════════
    STATS (real API data — hidden on failure)
@@ -352,6 +417,76 @@ function StatsRow({ loading, stats }) {
 /* ════════════════════════════════════════════════════════════
    CATEGORIES
 ════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════
+   LEGACY FEATURED EVENTS — fake placeholder cards, kept for reference.
+   To restore: uncomment below, add <Featured /> back in render
+   (between <StatsRow /> and <Categories />).
+   Also re-add: Brain, Star imports from lucide-react.
+════════════════════════════════════════════════════════════
+const FEATURED = [
+  { icon: Code2,  iconCls: 'text-indigo-200',  bg: 'bg1', cat: 'Hackathon',    name: 'HackBits 2025',    college: 'IIT Bombay',    prize: '₹2,00,000', deadline: '4 days left', deadlineColor: 'text-amber', accent: 'from-indigo-500/10' },
+  { icon: Brain,  iconCls: 'text-blue-200',    bg: 'bg8', cat: 'Competition',  name: "AI Challenge '25", college: 'IISc Bangalore', prize: '₹5,00,000', deadline: '2 days left', deadlineColor: 'text-red',   accent: 'from-blue-500/10'   },
+  { icon: Music,  iconCls: 'text-fuchsia-200', bg: 'bg5', cat: 'Cultural Fest',name: "Kaleidoscope '25", college: 'NIT Trichy',     prize: '₹50,000',   deadline: '8 days left', deadlineColor: 'text-green', accent: 'from-fuchsia-500/10' },
+];
+function Featured() {
+  const navigate = useNavigate();
+  return (
+    <section className="py-24 bg-surface-2/40">
+      <div className="max-w-[1240px] mx-auto px-8">
+        <Reveal>
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2 flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> Featured
+              </div>
+              <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">This week's spotlight</h2>
+            </div>
+            <button onClick={() => navigate('/explore')} className="text-[14px] font-semibold text-primary flex items-center gap-1">
+              View all events
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        </Reveal>
+        <div className="grid grid-cols-3 gap-6">
+          {FEATURED.map((ev, i) => {
+            const EvIcon = ev.icon;
+            return (
+              <Reveal key={ev.name} delay={i * 0.1}>
+                <div onClick={() => navigate('/explore')} className="group bg-white rounded-lg border border-border overflow-hidden cursor-pointer hover:shadow-[0_24px_60px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-300">
+                  <div className={`relative h-[200px] ${ev.bg} flex items-center justify-center overflow-hidden`}>
+                    <div className={`absolute inset-0 bg-gradient-to-t ${ev.accent} to-transparent`} />
+                    <EvIcon className={`relative w-20 h-20 ${ev.iconCls} group-hover:scale-110 transition-transform duration-500`} />
+                    <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[11px] font-bold text-text-1 px-3 py-1 rounded-full">{ev.cat}</span>
+                    <span className="absolute top-4 right-4 bg-black/60 backdrop-blur text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                      <Trophy className="w-3 h-3" /> {ev.prize}
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-display font-bold text-[20px] text-text-1 mb-1 group-hover:text-primary transition-colors">{ev.name}</h3>
+                    <div className="flex items-center gap-1.5 text-[13px] text-text-3 mb-4">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                      {ev.college}
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <span className={`text-[12px] font-bold ${ev.deadlineColor} flex items-center gap-1`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse-dot"/>{ev.deadline}
+                      </span>
+                      <span className="text-[13px] font-bold text-primary flex items-center gap-1">
+                        View Details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5"><path d="m9 18 6-6-6-6"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+END LEGACY FEATURED */
+
 // Priority categories lead the showcase, then the remaining categories.
 const CATS = [
   { icon: PartyPopper,       iconColor: 'text-amber-600',   name: 'Mega Fests',     g: 'from-amber-50 to-orange-50',   cat: 'Mega Fest' },
@@ -771,6 +906,73 @@ function Comparison() {
     </section>
   );
 }
+
+/* ════════════════════════════════════════════════════════════
+   LEGACY TESTIMONIALS — fake placeholder quotes, kept for reference.
+   To restore: uncomment below, remove <WhyStudentsLove /> in render,
+   add <Testimonials /> instead. Also re-add Star, UserCircle imports.
+════════════════════════════════════════════════════════════
+const TESTIMONIALS = [
+  { name: 'Ananya Sharma', role: 'CS, IIT Bombay',          avatarColor: 'text-indigo-500', text: 'Found and registered for 3 hackathons in one week. Won ₹50k at one of them. FestNest literally changed my semester.', rating: 5 },
+  { name: 'Rohan Mehta',   role: 'Events Head, NIT Trichy', avatarColor: 'text-violet-500', text: 'As an organizer, listing our fest on FestNest got us 4x the registrations we got from Instagram. The dashboard is gold.', rating: 5 },
+  { name: 'Priya Nair',    role: 'Design, BITS Pilani',     avatarColor: 'text-rose-500',   text: "I used to miss deadlines all the time. Now I get reminders and never miss a workshop. Wish I'd found this in my 1st year.", rating: 5 },
+  { name: 'Karthik Reddy', role: 'ECE, IISc',               avatarColor: 'text-teal-500',   text: 'The search and filters are so good. I can find AI competitions in my city in seconds. Genuinely the cleanest app I use.', rating: 5 },
+];
+function Testimonials() {
+  const [idx, setIdx] = useState(0);
+  const next = () => setIdx(i => (i + 1) % TESTIMONIALS.length);
+  const prev = () => setIdx(i => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+  useEffect(() => { const t = setInterval(next, 5000); return () => clearInterval(t); }, []);
+  const visible = [0, 1].map(o => TESTIMONIALS[(idx + o) % TESTIMONIALS.length]);
+  return (
+    <section className="py-24 max-w-[1100px] mx-auto px-8">
+      <Reveal>
+        <div className="flex items-end justify-between mb-12">
+          <div>
+            <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Loved by students</div>
+            <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">Don't just take our word for it</h2>
+          </div>
+          <div className="flex gap-2">
+            {[['prev', prev, 'm15 18-6-6 6-6'], ['next', next, 'm9 18 6-6-6-6']].map(([k, fn, d]) => (
+              <button key={k} onClick={fn} className="w-11 h-11 rounded-full border border-border bg-white flex items-center justify-center text-text-2 hover:border-primary hover:text-primary transition-all">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d={d}/></svg>
+              </button>
+            ))}
+          </div>
+        </div>
+      </Reveal>
+      <Reveal delay={0.1}>
+        <div className="grid grid-cols-2 gap-6">
+          {visible.map((t, i) => (
+            <div key={`${idx}-${i}`} className="bg-white rounded-lg border border-border p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)]" style={{ animation: 'screenIn 0.4s ease-out both', animationDelay: `${i * 0.08}s` }}>
+              <div className="flex items-center gap-0.5 mb-4">
+                {Array.from({ length: t.rating }).map((_, j) => (
+                  <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="text-[16px] text-text-1 leading-relaxed mb-6">"{t.text}"</p>
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-full bg-primary-light flex items-center justify-center ${t.avatarColor}`}>
+                  <UserCircle className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="font-display font-bold text-[15px] text-text-1">{t.name}</div>
+                  <div className="text-[13px] text-text-3">{t.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Reveal>
+      <div className="flex justify-center gap-2 mt-8">
+        {TESTIMONIALS.map((_, i) => (
+          <button key={i} onClick={() => setIdx(i)} className={`h-2 rounded-full transition-all ${i === idx ? 'w-8 bg-primary' : 'w-2 bg-surface-4'}`} />
+        ))}
+      </div>
+    </section>
+  );
+}
+END LEGACY TESTIMONIALS */
 
 /* ════════════════════════════════════════════════════════════
    WHY STUDENTS LOVE FESTNEST (replaces fake testimonials)

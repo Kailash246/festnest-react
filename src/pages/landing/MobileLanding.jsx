@@ -1,4 +1,11 @@
 // src/pages/landing/MobileLanding.jsx
+// LEGACY STATIC STATS — kept for reference, hidden until real data is ready.
+// To restore: remove the API stats block below and use this instead.
+// const STATS = [
+//   { value: '48K+', label: 'Students' },
+//   { value: '2.4K+', label: 'Events'   },
+//   { value: '850+',  label: 'Colleges' },
+// ];
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
