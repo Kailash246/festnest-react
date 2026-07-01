@@ -159,6 +159,7 @@ export default function AuthOverlay() {
 
   /* ── Registration extra ── */
   const [role,         setRole]         = useState('student');
+  const [collegeName,  setCollegeName]  = useState('');
   const [organization, setOrganization] = useState('');
   const [cityState,    setCityState]    = useState('');
   const [designation,  setDesignation]  = useState('');
@@ -249,6 +250,7 @@ export default function AuthOverlay() {
     if (!password) errs.password = 'Please create a password';
     else if (password.length < 8) errs.password = 'Password must be at least 8 characters';
     if (!tosAgreed) errs.tos = 'Please agree to the Terms of Service to continue';
+    if (role === 'student' && !collegeName.trim()) errs.collegeName = 'Please enter your college name';
 
     if (Object.keys(errs).length) {
       setFieldErrors(errs);
@@ -293,7 +295,7 @@ export default function AuthOverlay() {
       password:     password,
       // For organizers, mirror organization into college so existing
       // college-based displays stay populated.
-      college:      isOrg ? organization.trim() : '',
+      college:      isOrg ? organization.trim() : collegeName.trim(),
       city:         isOrg ? cityState.trim() : '',
       organization: isOrg ? organization.trim() : '',
       designation:  isOrg ? designation.trim()  : '',
@@ -734,6 +736,21 @@ export default function AuthOverlay() {
                       onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-email')?.focus()} />
                     <FieldError>{fieldErrors.name}</FieldError>
                   </div>
+                  {role === 'student' && (
+                    <div className="mb-4">
+                      <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">
+                        College Name <span className="text-red-500">*</span>
+                      </label>
+                      <input type="text" value={collegeName}
+                        onChange={e => { setCollegeName(e.target.value); clearFieldError('collegeName'); }}
+                        placeholder="e.g. VIT Vellore, NSIT Delhi…"
+                        autoComplete="organization"
+                        className={`${inputCls} ${fieldErrors.collegeName ? inputErrCls : ''}`}
+                        onKeyDown={e => e.key === 'Enter' && document.getElementById('reg-email')?.focus()} />
+                      <FieldError>{fieldErrors.collegeName}</FieldError>
+                    </div>
+                  )}
+
                   <div className="mb-4">
                     <label className="block text-[13px] font-semibold text-[#111110] mb-1.5">Email Address</label>
                     <input id="reg-email" type="email" value={email}
