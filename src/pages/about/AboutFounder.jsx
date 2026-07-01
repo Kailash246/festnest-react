@@ -31,11 +31,6 @@ const PERSON_JSON_LD = {
 };
 
 /* ── Data ─────────────────────────────────────────────────────────── */
-const STATS = [
-  { value: '850+',   label: 'Colleges',    sub: 'Listed'      },
-  { value: '7',      label: 'Event',       sub: 'Categories'  },
-  { value: '4.3 Cr', label: 'Students',   sub: 'in India'    },
-];
 
 const WHY = [
   { Icon: BadgeCheck,   title: 'Always Free',         desc: 'FestNest is free for every student — no sign-up fees, no hidden charges, ever.' },
@@ -91,23 +86,6 @@ export default function AboutFounder() {
           </p>
         </section>
 
-        {/* ── 2. STATS BAR ────────────────────────────────────────── */}
-        <section className="bg-white border-b border-gray-100">
-          <div className="max-w-3xl mx-auto px-6 py-8">
-            <div className="grid grid-cols-3 divide-x divide-gray-100">
-              {STATS.map(({ value, label, sub }) => (
-                <div key={label} className="text-center px-2 sm:px-6">
-                  <div className="font-display font-bold text-[24px] sm:text-[32px] md:text-[38px] text-[#4F46E5] leading-none mb-1">
-                    {value}
-                  </div>
-                  <div className="text-[11px] sm:text-[13px] text-gray-500 leading-snug">
-                    {label}<br />{sub}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ── 3. OUR MISSION ──────────────────────────────────────── */}
         <section className="bg-white py-14 px-6">
