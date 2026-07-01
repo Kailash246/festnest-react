@@ -22,6 +22,7 @@ const HOME_JSON_LD = [
     description:
       "FestNest is India's home for college events — discover and register for hackathons, cultural fests, workshops, competitions, and internships at colleges across India.",
     areaServed: { '@type': 'Country', name: 'India' },
+    founder: { '@type': 'Person', name: 'Kailash Kumar B', url: `${SITE_URL}/about` },
   },
   {
     '@context': 'https://schema.org',

@@ -12,10 +12,8 @@ const HOW = [
 ];
 
 const TEAM = [
-  { av:'AV', color:'#818CF8', name:'Aditya Verma',  role:'Co-founder & CEO',         college:"IIT Delhi '23" },
-  { av:'SK', color:'#34D399', name:'Shruti Kapoor', role:'Co-founder & CTO',          college:"BITS Pilani '23" },
-  { av:'RM', color:'#F472B6', name:'Rahul Mehta',   role:'Head of Design',            college:"NID Ahmedabad '24" },
-  { av:'PS', color:'#FB923C', name:'Priya Singh',   role:'Growth & Partnerships',     college:"IIM Bangalore '24" },
+  { av:'KK', color:'#4F46E5', name:'Kailash Kumar', role:'Founder & CEO',  college:'Building FestNest' },
+  { av:'AK', color:'#34D399', name:'Adarsh Kumar',  role:'Co-founder',     college:'Building FestNest' },
 ];
 
 const LINKS = [
@@ -25,7 +23,12 @@ const LINKS = [
   { Icon: MessageCircle, label:'Help & Support',sub:'Get help, report bugs, contact us', action: 'support' },
 ];
 
-const STATS = [['230+','Events Listed'],['48k+','Students Reached'],['180+','Colleges'],['₹2Cr+','Prize Money Listed']];
+const WHY = [
+  { emoji:'🆓', title:'Always Free',         desc:'FestNest is free for every student — no sign-up fees, no hidden charges, ever.' },
+  { emoji:'🔗', title:'Direct Registration', desc:'We link straight to the official form. No middlemen, no re-registration, no friction.' },
+  { emoji:'📍', title:'Discover by City',    desc:'Find events in your city or across India. Filter by category, date, or prize pool.' },
+  { emoji:'🏆', title:'Points & Rankings',  desc:'Earn FestNest points for every event you attend. See how you rank in your college.' },
+];
 
 export default function About() {
   const { showToast } = useApp();
@@ -60,15 +63,19 @@ export default function About() {
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-          {STATS.map(([n, l]) => (
-            <div key={l} className="bg-surface border border-border rounded-lg p-4 text-center
-                                    hover:border-primary hover:-translate-y-[1px] transition-all">
-              <div className="font-display font-bold text-[26px] text-primary mb-1">{n}</div>
-              <div className="text-[12px] text-text-3 font-medium">{l}</div>
-            </div>
-          ))}
+        {/* Why FestNest */}
+        <div className="mb-5">
+          <div className="font-display font-bold text-[16px] md:text-[18px] text-text-1 mb-4">Why FestNest?</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {WHY.map(({ emoji, title, desc }) => (
+              <div key={title} className="bg-surface border border-border rounded-lg p-4
+                                          hover:border-primary hover:-translate-y-[1px] transition-all">
+                <div className="text-[26px] mb-2">{emoji}</div>
+                <div className="text-[13px] font-semibold text-text-1 mb-1">{title}</div>
+                <div className="text-[12px] text-text-3 leading-relaxed">{desc}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* How it works */}
@@ -93,7 +100,7 @@ export default function About() {
         {/* Team */}
         <div className="mb-5">
           <div className="font-display font-bold text-[16px] md:text-[18px] text-text-1 mb-4">The Team</div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 about-team-grid">
+          <div className="grid grid-cols-2 gap-3 about-team-grid" style={{ maxWidth: 420 }}>
             {TEAM.map(({ av, color, name, role, college }) => (
               <div key={name} className="bg-surface border border-border rounded-lg p-4 text-center
                                          hover:border-primary-mid hover:-translate-y-[1px] transition-all">

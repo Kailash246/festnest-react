@@ -18,7 +18,7 @@ import Notifications from './pages/Notifications';
 import MyCollege     from './pages/MyCollege';
 import Leaderboard   from './pages/Leaderboard';
 import HostEvent     from './pages/HostEvent';
-import About          from './pages/About';
+import AboutFounder   from './pages/about/AboutFounder';
 import Support        from './pages/Support';
 import EventDetails   from './pages/EventDetails';
 import AdminDashboard      from './pages/admin/AdminDashboard';
@@ -110,7 +110,7 @@ export default function App() {
               <Route path="/college"       element={<MyCollege />} />
               <Route path="/leaderboard"   element={<Leaderboard />} />
               <Route path="/host"          element={<HostEvent />} />
-              <Route path="/about"         element={<About />} />
+              <Route path="/about"         element={<AboutFounder />} />
               <Route path="/support"       element={<Support />} />
               <Route path="/discover"      element={<HubPage />} />
               <Route path="/events/:city"  element={<CityPage />} />

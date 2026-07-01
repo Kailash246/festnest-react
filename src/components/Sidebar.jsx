@@ -141,6 +141,18 @@ export default function Sidebar() {
       <SidebarBtn href="/about"   icon={<InfoIcon />} label="About FestNest" isActive={path === '/about'} />
       <SidebarBtn href="/support" icon={<HelpIcon />} label="Help & Support"  isActive={path === '/support'} />
 
+      <div className="px-[14px] pt-4 pb-1 mt-1">
+        <p className="text-[11px] text-text-4 leading-snug">
+          Built by{' '}
+          <button
+            onClick={() => navigate('/about')}
+            className="text-primary hover:underline font-medium"
+          >
+            Kailash Kumar B
+          </button>
+        </p>
+      </div>
+
       {isAdmin && (
         <>
           <Divider />

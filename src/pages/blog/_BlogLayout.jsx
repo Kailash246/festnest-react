@@ -173,6 +173,15 @@ export default function BlogLayout({ meta, sections = [], children, relatedSlugs
               FestNest Editorial
             </span>
           </div>
+
+          {/* Author byline */}
+          <p className="mt-3 text-sm text-gray-500">
+            By{' '}
+            <Link to="/about" className="font-semibold text-indigo-600 hover:underline">
+              Kailash Kumar B
+            </Link>
+            , Founder of FestNest
+          </p>
         </div>
       </div>
 
