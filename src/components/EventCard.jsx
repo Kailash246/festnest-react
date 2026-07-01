@@ -90,8 +90,8 @@ const PrizeBadge = ({ amount, featured }) => (
       display: 'inline-flex',
       alignItems: 'center',
       gap: 3,
-      background: 'linear-gradient(135deg, #FBBF24 0%, #FDE047 100%)',
-      color: '#1e1b4b',
+      background: '#fbbf24',
+      color: '#451a03',
       borderRadius: 6,
       fontSize: 10,
       fontWeight: 700,
@@ -164,7 +164,7 @@ export default function EventCard({ event, onDelete, featured }) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={isFeaturedCard
-        ? { y: -4, boxShadow: '0 4px 24px rgba(79,70,229,0.18)', borderColor: '#818cf8' }
+        ? { y: -4, boxShadow: '0 4px 20px rgba(251,191,36,0.20)', borderColor: '#f59e0b' }
         : { y: -4, boxShadow: '0 12px 32px rgba(0,0,0,0.10)' }
       }
       transition={{ duration: 0.16, ease: 'easeOut' }}
@@ -175,7 +175,7 @@ export default function EventCard({ event, onDelete, featured }) {
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && goDetail()}
       style={{
         background: '#fff',
-        border: isFeaturedCard ? '1px solid #c7d2fe' : '1px solid #E4E4E0',
+        border: isFeaturedCard ? '1px solid #fde68a' : '1px solid #E4E4E0',
         borderRadius: 18,
         overflow: 'hidden',
         cursor: 'pointer',
@@ -183,9 +183,7 @@ export default function EventCard({ event, onDelete, featured }) {
         flexDirection: 'column',
         width: '100%',
         height: '100%',
-        boxShadow: isFeaturedCard
-          ? '0 4px 6px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)'
-          : '0 2px 8px rgba(0,0,0,0.05)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
       }}
     >
 
@@ -229,11 +227,11 @@ export default function EventCard({ event, onDelete, featured }) {
               aria-label="Share event"
               style={{
                 width: 28, height: 28, borderRadius: 8,
-                background: isFeaturedCard ? 'rgba(30,27,75,0.70)' : 'rgba(255,255,255,0.85)',
-                border: isFeaturedCard ? '1px solid rgba(99,102,241,0.40)' : '1px solid rgba(0,0,0,0.08)',
+                background: 'rgba(255,255,255,0.85)',
+                border: '1px solid rgba(0,0,0,0.08)',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: isFeaturedCard ? '#fff' : '#444',
+                color: '#444',
                 cursor: 'pointer',
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
@@ -248,15 +246,11 @@ export default function EventCard({ event, onDelete, featured }) {
               aria-label={isSaved ? 'Remove from saved' : 'Save'}
               style={{
                 width: 28, height: 28, borderRadius: 8,
-                background: isFeaturedCard
-                  ? (isSaved ? 'rgba(99,102,241,0.35)' : 'rgba(30,27,75,0.70)')
-                  : (isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.85)'),
-                border: isFeaturedCard
-                  ? (isSaved ? '1.5px solid rgba(165,180,252,0.60)' : '1px solid rgba(99,102,241,0.40)')
-                  : (isSaved ? '1.5px solid #C7D2FE' : '1px solid rgba(0,0,0,0.08)'),
+                background: isSaved ? '#EEF2FF' : 'rgba(255,255,255,0.85)',
+                border: isSaved ? '1.5px solid #C7D2FE' : '1px solid rgba(0,0,0,0.08)',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: isFeaturedCard ? (isSaved ? '#a5b4fc' : '#fff') : (isSaved ? '#4F46E5' : '#444'),
+                color: isSaved ? '#4F46E5' : '#444',
                 cursor: 'pointer',
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
@@ -268,15 +262,15 @@ export default function EventCard({ event, onDelete, featured }) {
         </div>
       </div>
 
-      {/* Indigo separator line for featured cards */}
+      {/* Amber top divider for featured cards */}
       {isFeaturedCard && (
-        <div style={{ height: 2, background: 'rgba(99,102,241,0.40)', flexShrink: 0 }} />
+        <div style={{ height: 2, background: '#fcd34d', flexShrink: 0 }} />
       )}
 
       {/* ── CARD BODY (30%) ── */}
       <div style={{
         padding: '12px 14px 12px', display: 'flex', flexDirection: 'column', flex: 1,
-        background: isFeaturedCard ? 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)' : undefined,
+        background: isFeaturedCard ? 'linear-gradient(135deg, #fffbeb 0%, #fefce8 100%)' : undefined,
       }}>
 
         {/* 1. Event name + prize badge on same row */}
@@ -284,7 +278,7 @@ export default function EventCard({ event, onDelete, featured }) {
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
             fontSize: 15, fontWeight: 700,
-            color: isFeaturedCard ? '#ffffff' : '#111110',
+            color: isFeaturedCard ? '#78350f' : '#111110',
             letterSpacing: '-0.02em', lineHeight: 1.25,
             display: '-webkit-box', WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -298,9 +292,9 @@ export default function EventCard({ event, onDelete, featured }) {
         {/* 2. Location — college + city, once */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 4,
-          fontSize: 12, color: isFeaturedCard ? '#a5b4fc' : '#8A8A85', marginBottom: 6,
+          fontSize: 12, color: isFeaturedCard ? '#b45309' : '#8A8A85', marginBottom: 6,
         }}>
-          <span style={{ color: isFeaturedCard ? '#818cf8' : 'inherit', display: 'flex', flexShrink: 0 }}>
+          <span style={{ color: isFeaturedCard ? '#f59e0b' : 'inherit', display: 'flex', flexShrink: 0 }}>
             <PinIcon />
           </span>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -309,22 +303,20 @@ export default function EventCard({ event, onDelete, featured }) {
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: isFeaturedCard ? 'rgba(99,102,241,0.30)' : '#F1F0ED', margin: '8px 0' }} />
+        <div style={{ height: 1, background: isFeaturedCard ? '#fde68a' : '#F1F0ED', margin: '8px 0' }} />
 
         {/* 3. Date + deadline · View Details — same row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#8A8A85' }}>
-            <span style={{ color: isFeaturedCard ? '#818cf8' : 'inherit', display: 'flex', flexShrink: 0 }}>
+            <span style={{ color: isFeaturedCard ? '#f59e0b' : 'inherit', display: 'flex', flexShrink: 0 }}>
               <CalIcon />
             </span>
-            <span style={{ color: isFeaturedCard ? '#a5b4fc' : '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
+            <span style={{ color: isFeaturedCard ? '#b45309' : '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
             {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
               <>
-                <span style={{ color: isFeaturedCard ? 'rgba(165,180,252,0.50)' : '#CBCBC6' }}>·</span>
+                <span style={{ color: isFeaturedCard ? 'rgba(180,83,9,0.40)' : '#CBCBC6' }}>·</span>
                 <span style={{
-                  color: isFeaturedCard
-                    ? (event.deadlineDays <= 2 ? '#fca5a5' : '#fde68a')
-                    : (event.deadlineDays <= 2 ? '#DC2626' : '#B45309'),
+                  color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
                   fontWeight: 700,
                 }}>
                   {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
@@ -340,7 +332,7 @@ export default function EventCard({ event, onDelete, featured }) {
             onMouseLeave={() => setDetailHover(false)}
             style={{
               fontSize: 11, fontWeight: 600,
-              color: isFeaturedCard ? (detailHover ? '#ffffff' : '#a5b4fc') : '#4F46E5',
+              color: isFeaturedCard ? (detailHover ? '#78350f' : '#b45309') : '#4F46E5',
               display: 'flex', alignItems: 'center', gap: 2,
               cursor: 'pointer', flexShrink: 0,
             }}
