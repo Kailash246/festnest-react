@@ -82,11 +82,24 @@ function getPrizeAmount(event) {
   return main && main !== '—' ? main : null;
 }
 
-const PrizeBadge = ({ amount }) => (
+const PrizeBadge = ({ amount, featured }) => (
   <motion.span
     whileHover={{ scale: 1.04 }}
     transition={{ duration: 0.15 }}
-    style={{
+    style={featured ? {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 3,
+      background: 'linear-gradient(135deg, #FBBF24 0%, #EAB308 100%)',
+      color: '#111827',
+      borderRadius: 6,
+      fontSize: 10,
+      fontWeight: 700,
+      padding: '2px 8px',
+      letterSpacing: '0.01em',
+      whiteSpace: 'nowrap',
+      flexShrink: 0,
+    } : {
       display: 'inline-flex',
       alignItems: 'center',
       gap: 3,
@@ -102,19 +115,22 @@ const PrizeBadge = ({ amount }) => (
       flexShrink: 0,
     }}
   >
-    <Trophy size={8} strokeWidth={2.5} style={{ verticalAlign: 'middle' }} />{amount}
+    <Trophy size={featured ? 11 : 8} strokeWidth={2.5} style={{ verticalAlign: 'middle' }} />{amount}
   </motion.span>
 );
 
 /* ── Main EventCard ── */
-export default function EventCard({ event, onDelete }) {
+export default function EventCard({ event, onDelete, featured }) {
   const navigate   = useNavigate();
   const { savedEvents, toggleSave, showToast, isSuperAdmin } = useApp();
   const isSaved    = savedEvents.has(event.id);
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleting,    setDeleting]    = useState(false);
+  const [detailHover, setDetailHover] = useState(false);
   const hasPrize   = event.entryType === 'prize' || event.badgeClass === 'badge-prize';
   const prizeAmount = hasPrize ? getPrizeAmount(event) : null;
+  // Use explicit prop if passed, otherwise fall back to event.isFeatured
+  const isFeaturedCard = featured !== undefined ? featured : (event.isFeatured ?? false);
 
   const goDetail   = (e) => { e?.stopPropagation(); navigate(`/event/${event.id}`); };
   const handleSave  = (e) => { e.stopPropagation(); toggleSave(event.id); };
@@ -147,7 +163,10 @@ export default function EventCard({ event, onDelete }) {
     <motion.article
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(0,0,0,0.10)' }}
+      whileHover={isFeaturedCard
+        ? { y: -4, boxShadow: '0 0 20px rgba(251,191,36,0.25), 0 12px 32px rgba(0,0,0,0.30)' }
+        : { y: -4, boxShadow: '0 12px 32px rgba(0,0,0,0.10)' }
+      }
       transition={{ duration: 0.16, ease: 'easeOut' }}
       onClick={goDetail}
       tabIndex={0}
@@ -155,8 +174,8 @@ export default function EventCard({ event, onDelete }) {
       aria-label={`${event.name} at ${event.college}`}
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && goDetail()}
       style={{
-        background: '#fff',
-        border: '1px solid #E4E4E0',
+        background: isFeaturedCard ? '#111827' : '#fff',
+        border: isFeaturedCard ? '1px solid rgba(251,191,36,0.20)' : '1px solid #E4E4E0',
         borderRadius: 18,
         overflow: 'hidden',
         cursor: 'pointer',
@@ -164,7 +183,7 @@ export default function EventCard({ event, onDelete }) {
         flexDirection: 'column',
         width: '100%',
         height: '100%',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+        boxShadow: isFeaturedCard ? '0 2px 8px rgba(0,0,0,0.20)' : '0 2px 8px rgba(0,0,0,0.05)',
       }}
     >
 
@@ -243,14 +262,20 @@ export default function EventCard({ event, onDelete }) {
         </div>
       </div>
 
+      {/* Amber separator line for featured cards */}
+      {isFeaturedCard && (
+        <div style={{ height: 2, background: 'rgba(251,191,36,0.60)', flexShrink: 0 }} />
+      )}
+
       {/* ── CARD BODY (30%) ── */}
-      <div style={{ padding: '12px 14px 12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div style={{ padding: '12px 14px 12px', display: 'flex', flexDirection: 'column', flex: 1, background: isFeaturedCard ? '#111827' : undefined }}>
 
         {/* 1. Event name + prize badge on same row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
-            fontSize: 15, fontWeight: 700, color: '#111110',
+            fontSize: 15, fontWeight: 700,
+            color: isFeaturedCard ? '#ffffff' : '#111110',
             letterSpacing: '-0.02em', lineHeight: 1.25,
             display: '-webkit-box', WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -258,33 +283,39 @@ export default function EventCard({ event, onDelete }) {
           }}>
             {event.name}
           </h3>
-          {hasPrize && prizeAmount && <PrizeBadge amount={prizeAmount} />}
+          {hasPrize && prizeAmount && <PrizeBadge amount={prizeAmount} featured={isFeaturedCard} />}
         </div>
 
         {/* 2. Location — college + city, once */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 4,
-          fontSize: 12, color: '#8A8A85', marginBottom: 6,
+          fontSize: 12, color: isFeaturedCard ? '#9CA3AF' : '#8A8A85', marginBottom: 6,
         }}>
-          <PinIcon />
+          <span style={{ color: isFeaturedCard ? '#FBBF24' : 'inherit', display: 'flex', flexShrink: 0 }}>
+            <PinIcon />
+          </span>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {event.college}, {event.city}
           </span>
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: '#F1F0ED', margin: '8px 0' }} />
+        <div style={{ height: 1, background: isFeaturedCard ? '#374151' : '#F1F0ED', margin: '8px 0' }} />
 
         {/* 3. Date + deadline · View Details — same row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#8A8A85' }}>
-            <CalIcon />
-            <span style={{ color: '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
+            <span style={{ color: isFeaturedCard ? '#FBBF24' : 'inherit', display: 'flex', flexShrink: 0 }}>
+              <CalIcon />
+            </span>
+            <span style={{ color: isFeaturedCard ? '#9CA3AF' : '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
             {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
               <>
-                <span style={{ color: '#CBCBC6' }}>·</span>
+                <span style={{ color: isFeaturedCard ? '#6B7280' : '#CBCBC6' }}>·</span>
                 <span style={{
-                  color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
+                  color: isFeaturedCard
+                    ? (event.deadlineDays <= 2 ? '#FCA5A5' : '#FCD34D')
+                    : (event.deadlineDays <= 2 ? '#DC2626' : '#B45309'),
                   fontWeight: 700,
                 }}>
                   {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
@@ -296,8 +327,11 @@ export default function EventCard({ event, onDelete }) {
             whileHover={{ x: 1 }}
             transition={{ duration: 0.12 }}
             onClick={goDetail}
+            onMouseEnter={() => isFeaturedCard && setDetailHover(true)}
+            onMouseLeave={() => setDetailHover(false)}
             style={{
-              fontSize: 11, fontWeight: 600, color: '#4F46E5',
+              fontSize: 11, fontWeight: 600,
+              color: isFeaturedCard ? (detailHover ? '#FCD34D' : '#FBBF24') : '#4F46E5',
               display: 'flex', alignItems: 'center', gap: 2,
               cursor: 'pointer', flexShrink: 0,
             }}
