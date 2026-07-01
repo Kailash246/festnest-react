@@ -1,16 +1,17 @@
 // src/pages/landing/Landing.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useReveal, useCountUp, useMouseParallax, Reveal } from './_hooks';
+import { useReveal, useMouseParallax, Reveal } from './_hooks';
 import BrandMark from '../../components/BrandMark';
+import { events as eventsApi } from '../../services/api';
 import {
-  UserCircle, Star, Flame, CheckCircle2,
+  Flame, CheckCircle2,
   PartyPopper, Landmark, Users, Trophy,
   Code2, Music, Wrench, Mic2, Volleyball, Palette, Rocket, BriefcaseBusiness,
   BarChart3, Calendar, Eye, Search,
   Sparkles, Bookmark, Bell, Briefcase, Smartphone,
   TrendingUp, Target,
-  Bot, Brain, ClipboardList, Clock,
+  Bot, ClipboardList, Clock,
 } from 'lucide-react';
 
 const IconX         = ({ className }) => <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>;
@@ -108,8 +109,6 @@ const MiniCard = ({ icon: Icon, bg, title, sub, badge, badgeColor, style, cls })
 ════════════════════════════════════════════════════════════ */
 const SEARCH_HINTS = ['hackathons…', 'cultural fests…', 'workshops by college…', 'events near you…', 'competitions with prizes…'];
 
-const AVATAR_COLORS = ['text-indigo-500', 'text-fuchsia-500', 'text-teal-500', 'text-amber-500', 'text-rose-500'];
-
 function Hero({ onEnter }) {
   const navigate = useNavigate();
   const [paraRef, mouse] = useMouseParallax();
@@ -149,7 +148,7 @@ function Hero({ onEnter }) {
           <Reveal>
             <div className="inline-flex items-center gap-2 bg-primary-light border border-[#C7D2FE] rounded-full pl-1.5 pr-3.5 py-1.5 mb-7">
               <span className="bg-primary text-white text-[11px] font-bold px-2 py-0.5 rounded-full">NEW</span>
-              <span className="text-[13px] font-semibold text-primary">2,400+ live events across India</span>
+              <span className="text-[13px] font-semibold text-primary">Live events across India</span>
             </div>
           </Reveal>
 
@@ -164,7 +163,7 @@ function Hero({ onEnter }) {
           <Reveal delay={0.12}>
             <p className="text-[18px] text-text-2 leading-relaxed max-w-[480px] mb-8">
               Hackathons, fests, workshops, competitions, and student opportunities —
-              from <strong className="text-text-1">850+ colleges</strong>, all in your pocket.
+              from colleges across India, all in your pocket.
               Never miss a deadline again.
             </p>
           </Reveal>
@@ -205,26 +204,6 @@ function Hero({ onEnter }) {
             </div>
           </Reveal>
 
-          {/* Trust strip */}
-          <Reveal delay={0.32}>
-            <div className="flex items-center gap-4 mt-9">
-              <div className="flex -space-x-2.5">
-                {AVATAR_COLORS.map((color, i) => (
-                  <div key={i} className="w-9 h-9 rounded-full bg-surface-3 border-2 border-white flex items-center justify-center">
-                    <UserCircle className={`w-5 h-5 ${color}`} />
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="flex items-center gap-0.5 mb-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <div className="text-[12px] text-text-3 mt-0.5"><strong className="text-text-1">48,000+</strong> students already on board</div>
-              </div>
-            </div>
-          </Reveal>
         </div>
 
         {/* ── Right: Floating mockup ── */}
@@ -291,162 +270,100 @@ function Hero({ onEnter }) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   LOGO MARQUEE
+   CATEGORY STRIP (replaces fake college logo marquee)
 ════════════════════════════════════════════════════════════ */
-const COLLEGES = ['IIT Bombay','IIT Delhi','NIT Warangal','BITS Pilani','VIT Vellore','IISc Bangalore','Christ University','PES University','RV University','NIT Trichy'];
-
-function LogoWall() {
-  const row = [...COLLEGES, ...COLLEGES];
+function CategoryStrip() {
+  const navigate = useNavigate();
   return (
-    <section className="py-14 border-y border-border bg-surface-2/50 overflow-hidden">
+    <section className="py-12 border-y border-border bg-surface-2/50">
       <Reveal>
-        <p className="text-center text-[13px] font-bold tracking-wider uppercase text-text-3 mb-8">
-          Trusted by students from India's top colleges
+        <p className="text-center text-[13px] font-bold tracking-wider uppercase text-text-3 mb-6">
+          Browse by Category
         </p>
       </Reveal>
-      <div className="relative">
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
-        <div className="flex gap-4 lp-marquee w-max">
-          {row.map((c, i) => (
-            <div key={i}
-              className="flex items-center gap-2.5 bg-white border border-border rounded-md px-5 py-3 whitespace-nowrap
-                         grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-primary-mid transition-all duration-300">
-              <Landmark className="w-5 h-5 text-text-2" />
-              <span className="font-display font-bold text-[15px] text-text-2">{c}</span>
+      <div className="flex flex-wrap justify-center gap-3 px-8 max-w-[1100px] mx-auto">
+        {CATS.map(c => {
+          const CatIcon = c.icon;
+          return (
+            <button key={c.cat} onClick={() => navigate(`/explore?cat=${encodeURIComponent(c.cat)}`)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white border border-border rounded-full
+                         text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary
+                         transition-all duration-200 hover:-translate-y-0.5">
+              <CatIcon className={`w-4 h-4 ${c.iconColor}`} />
+              {c.name}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════
+   STATS (real API data — hidden on failure)
+════════════════════════════════════════════════════════════ */
+function StatsRow({ loading, stats }) {
+  if (!loading && !stats) return null;
+
+  if (loading) {
+    return (
+      <section className="py-20 max-w-[1100px] mx-auto px-8">
+        <div className="grid grid-cols-3 gap-8">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="text-center">
+              <div className="skeleton h-8 w-8 rounded-md mx-auto mb-3" />
+              <div className="skeleton h-10 w-28 rounded mx-auto mb-2" />
+              <div className="skeleton h-4 w-20 rounded mx-auto" />
             </div>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
+      </section>
+    );
+  }
 
-/* ════════════════════════════════════════════════════════════
-   STATS
-════════════════════════════════════════════════════════════ */
-function StatItem({ target, suffix, prefix, label, icon: Icon }) {
-  const [ref, val] = useCountUp(target);
-  return (
-    <div ref={ref} className="text-center">
-      <div className="flex justify-center mb-2">
-        <Icon className="w-8 h-8 text-text-2" />
-      </div>
-      <div className="font-display font-bold text-[40px] text-text-1 leading-none tracking-tight">
-        {prefix}{val.toLocaleString('en-IN')}{suffix}
-      </div>
-      <div className="text-[14px] text-text-3 font-medium mt-2">{label}</div>
-    </div>
-  );
-}
+  const items = [
+    { icon: PartyPopper, value: stats.totalEvents.toLocaleString('en-IN') + '+', label: 'Events Listed' },
+    { icon: Landmark,    value: stats.totalColleges.toLocaleString('en-IN') + '+', label: 'Colleges Represented' },
+    { icon: Sparkles,    value: String(stats.totalCategories), label: 'Event Categories' },
+  ];
 
-function Stats() {
   return (
-    <section className="py-24 max-w-[1100px] mx-auto px-8">
+    <section className="py-20 max-w-[1100px] mx-auto px-8">
       <Reveal>
-        <div className="grid grid-cols-4 gap-8">
-          <StatItem icon={PartyPopper} target={2400}  suffix="+" label="Events Listed" />
-          <StatItem icon={Landmark}   target={850}   suffix="+" label="Colleges" />
-          <StatItem icon={Users}      target={48000} suffix="+" label="Active Students" />
-          <StatItem icon={Trophy}     target={2}     suffix="Cr+" prefix="₹" label="Prize Pool" />
+        <div className="grid grid-cols-3 gap-8">
+          {items.map(({ icon: Icon, value, label }) => (
+            <div key={label} className="text-center">
+              <div className="flex justify-center mb-2">
+                <Icon className="w-8 h-8 text-text-2" />
+              </div>
+              <div className="font-display font-bold text-[40px] text-text-1 leading-none tracking-tight">
+                {value}
+              </div>
+              <div className="text-[14px] text-text-3 font-medium mt-2">{label}</div>
+            </div>
+          ))}
         </div>
       </Reveal>
     </section>
   );
 }
 
-/* ════════════════════════════════════════════════════════════
-   FEATURED EVENTS
-════════════════════════════════════════════════════════════ */
-const FEATURED = [
-  { icon: Code2, iconCls: 'text-indigo-200', bg: 'bg1', cat: 'Hackathon', name: 'HackBits 2025', college: 'IIT Bombay', prize: '₹2,00,000', deadline: '4 days left', deadlineColor: 'text-amber', accent: 'from-indigo-500/10' },
-  { icon: Brain, iconCls: 'text-blue-200',   bg: 'bg8', cat: 'Competition', name: "AI Challenge '25", college: 'IISc Bangalore', prize: '₹5,00,000', deadline: '2 days left', deadlineColor: 'text-red', accent: 'from-blue-500/10' },
-  { icon: Music, iconCls: 'text-fuchsia-200', bg: 'bg5', cat: 'Cultural Fest', name: "Kaleidoscope '25", college: 'NIT Trichy', prize: '₹50,000', deadline: '8 days left', deadlineColor: 'text-green', accent: 'from-fuchsia-500/10' },
-];
-
-function Featured() {
-  const navigate = useNavigate();
-  return (
-    <section className="py-24 bg-surface-2/40">
-      <div className="max-w-[1240px] mx-auto px-8">
-        <Reveal>
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2 flex items-center gap-1.5">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> Featured
-              </div>
-              <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">This week's spotlight</h2>
-            </div>
-            <button onClick={() => navigate('/explore')}
-              className="text-[14px] font-semibold text-primary hover:gap-2 flex items-center gap-1 transition-all">
-              View all events
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
-          </div>
-        </Reveal>
-
-        <div className="grid grid-cols-3 gap-6">
-          {FEATURED.map((ev, i) => {
-            const EvIcon = ev.icon;
-            return (
-              <Reveal key={ev.name} delay={i * 0.1}>
-                <div onClick={() => navigate('/explore')}
-                  className="group bg-white rounded-lg border border-border overflow-hidden cursor-pointer
-                             hover:shadow-[0_24px_60px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-300">
-                  {/* Poster */}
-                  <div className={`relative h-[200px] ${ev.bg} flex items-center justify-center overflow-hidden`}>
-                    <div className={`absolute inset-0 bg-gradient-to-t ${ev.accent} to-transparent`} />
-                    <EvIcon className={`relative w-20 h-20 ${ev.iconCls} group-hover:scale-110 transition-transform duration-500`} />
-                    <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[11px] font-bold text-text-1 px-3 py-1 rounded-full">
-                      {ev.cat}
-                    </span>
-                    <span className="absolute top-4 right-4 bg-black/60 backdrop-blur text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                      <Trophy className="w-3 h-3" /> {ev.prize}
-                    </span>
-                  </div>
-                  {/* Body */}
-                  <div className="p-5">
-                    <h3 className="font-display font-bold text-[20px] text-text-1 mb-1 group-hover:text-primary transition-colors">{ev.name}</h3>
-                    <div className="flex items-center gap-1.5 text-[13px] text-text-3 mb-4">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                      {ev.college}
-                    </div>
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <span className={`text-[12px] font-bold ${ev.deadlineColor} flex items-center gap-1`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse-dot"/>
-                        {ev.deadline}
-                      </span>
-                      <span className="text-[13px] font-bold text-primary group-hover:gap-2 flex items-center gap-1 transition-all">
-                        View Details
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5"><path d="m9 18 6-6-6-6"/></svg>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ════════════════════════════════════════════════════════════
    CATEGORIES
 ════════════════════════════════════════════════════════════ */
 // Priority categories lead the showcase, then the remaining categories.
 const CATS = [
-  { icon: PartyPopper,       iconColor: 'text-amber-600',   name: 'Mega Fests',     count: '60 events',  g: 'from-amber-50 to-orange-50',   cat: 'Mega Fest' },
-  { icon: Code2,             iconColor: 'text-indigo-600',  name: 'Hackathons',     count: '420 events', g: 'from-indigo-50 to-blue-50',    cat: 'Hackathon' },
-  { icon: BriefcaseBusiness, iconColor: 'text-blue-600',    name: 'Management',     count: '85 events',  g: 'from-blue-50 to-sky-50',       cat: 'Management' },
-  { icon: Rocket,            iconColor: 'text-violet-600',  name: 'Startups',       count: '110 events', g: 'from-violet-50 to-purple-50',  cat: 'Startup' },
-  { icon: Music,             iconColor: 'text-fuchsia-600', name: 'Cultural Fests', count: '310 events', g: 'from-fuchsia-50 to-pink-50',   cat: 'Cultural Fest' },
-  { icon: Volleyball,        iconColor: 'text-green-600',   name: 'Sports Meets',   count: '140 events', g: 'from-green-50 to-lime-50',     cat: 'Sports' },
-  { icon: Wrench,            iconColor: 'text-teal-600',    name: 'Workshops',      count: '580 events', g: 'from-teal-50 to-emerald-50',   cat: 'Workshop' },
-  { icon: Trophy,            iconColor: 'text-amber-600',   name: 'Competitions',   count: '270 events', g: 'from-amber-50 to-orange-50',   cat: 'Competition' },
-  { icon: Mic2,              iconColor: 'text-blue-600',    name: 'Tech Talks',     count: '190 events', g: 'from-blue-50 to-sky-50',       cat: 'Tech Talk' },
-  { icon: Palette,           iconColor: 'text-rose-600',    name: 'Design Jams',    count: '95 events',  g: 'from-rose-50 to-red-50',       cat: 'Workshop' },
+  { icon: PartyPopper,       iconColor: 'text-amber-600',   name: 'Mega Fests',     g: 'from-amber-50 to-orange-50',   cat: 'Mega Fest' },
+  { icon: Code2,             iconColor: 'text-indigo-600',  name: 'Hackathons',     g: 'from-indigo-50 to-blue-50',    cat: 'Hackathon' },
+  { icon: BriefcaseBusiness, iconColor: 'text-blue-600',    name: 'Management',     g: 'from-blue-50 to-sky-50',       cat: 'Management' },
+  { icon: Rocket,            iconColor: 'text-violet-600',  name: 'Startups',       g: 'from-violet-50 to-purple-50',  cat: 'Startup' },
+  { icon: Music,             iconColor: 'text-fuchsia-600', name: 'Cultural Fests', g: 'from-fuchsia-50 to-pink-50',   cat: 'Cultural Fest' },
+  { icon: Volleyball,        iconColor: 'text-green-600',   name: 'Sports Meets',   g: 'from-green-50 to-lime-50',     cat: 'Sports' },
+  { icon: Wrench,            iconColor: 'text-teal-600',    name: 'Workshops',      g: 'from-teal-50 to-emerald-50',   cat: 'Workshop' },
+  { icon: Trophy,            iconColor: 'text-amber-600',   name: 'Competitions',   g: 'from-amber-50 to-orange-50',   cat: 'Competition' },
+  { icon: Mic2,              iconColor: 'text-blue-600',    name: 'Tech Talks',     g: 'from-blue-50 to-sky-50',       cat: 'Tech Talk' },
+  { icon: Palette,           iconColor: 'text-rose-600',    name: 'Design Jams',    g: 'from-rose-50 to-red-50',       cat: 'Workshop' },
 ];
 
 function Categories() {
@@ -477,7 +394,6 @@ function Categories() {
                     <CatIcon className="w-6 h-6" />
                   </div>
                   <h3 className="font-display font-bold text-[17px] text-text-1 mb-1">{c.name}</h3>
-                  <p className="text-[13px] text-text-3">{c.count}</p>
                 </div>
               </button>
             </Reveal>
@@ -633,7 +549,7 @@ function Showcase() {
 ════════════════════════════════════════════════════════════ */
 const FEATURES = [
   { icon: Search,    title: 'Smart Discovery',  desc: 'Personalised feed filtered by your college, city, and interests — no noise.' },
-  { icon: Trophy,    title: 'Win Big',           desc: 'Track ₹2Cr+ in prizes across hackathons and competitions nationwide.' },
+  { icon: Trophy,    title: 'Win Big',           desc: 'Find hackathons and competitions with prizes across India, all in one place.' },
   { icon: Bell,      title: 'Never Miss Out',    desc: 'Deadline reminders and live updates so you never miss a registration.' },
   { icon: Briefcase, title: 'Organizer Tools',   desc: 'Post, manage, and promote your events with a powerful dashboard.' },
   { icon: Bookmark,  title: 'Save & Track',      desc: "Bookmark events and track everything you've registered for in one place." },
@@ -773,7 +689,7 @@ function Organizers() {
               Reach thousands of students with your event
             </h2>
             <p className="text-[17px] text-text-2 leading-relaxed mb-8">
-              List your hackathon, fest, or workshop and get discovered by 48,000+ students.
+              List your hackathon, fest, or workshop and get discovered by students across India.
               Track registrations, manage submissions, and grow your reach — all for free.
             </p>
             <div className="space-y-3 mb-9">
@@ -857,79 +773,39 @@ function Comparison() {
 }
 
 /* ════════════════════════════════════════════════════════════
-   TESTIMONIALS
+   WHY STUDENTS LOVE FESTNEST (replaces fake testimonials)
 ════════════════════════════════════════════════════════════ */
-const TESTIMONIALS = [
-  { name: 'Ananya Sharma', role: 'CS, IIT Bombay',        avatarColor: 'text-indigo-500',  text: 'Found and registered for 3 hackathons in one week. Won ₹50k at one of them. FestNest literally changed my semester.', rating: 5 },
-  { name: 'Rohan Mehta',   role: 'Events Head, NIT Trichy', avatarColor: 'text-violet-500', text: 'As an organizer, listing our fest on FestNest got us 4x the registrations we got from Instagram. The dashboard is gold.', rating: 5 },
-  { name: 'Priya Nair',    role: 'Design, BITS Pilani',    avatarColor: 'text-rose-500',    text: "I used to miss deadlines all the time. Now I get reminders and never miss a workshop. Wish I'd found this in my 1st year.", rating: 5 },
-  { name: 'Karthik Reddy', role: 'ECE, IISc',             avatarColor: 'text-teal-500',    text: 'The search and filters are so good. I can find AI competitions in my city in seconds. Genuinely the cleanest app I use.', rating: 5 },
+const WHY_LOVE = [
+  { icon: CheckCircle2, title: 'Zero middlemen',              desc: 'Every event links directly to the official registration page — no re-registration, no friction.' },
+  { icon: Search,       title: 'All categories in one place', desc: 'Hackathons, fests, workshops, competitions, and more — search once, find everything.' },
+  { icon: Sparkles,     title: 'Always free for students',    desc: 'No sign-up fees, no hidden costs, no premium tiers. FestNest is free forever.' },
 ];
 
-function Testimonials() {
-  const [idx, setIdx] = useState(0);
-  const next = () => setIdx(i => (i + 1) % TESTIMONIALS.length);
-  const prev = () => setIdx(i => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
-
-  useEffect(() => {
-    const t = setInterval(next, 5000);
-    return () => clearInterval(t);
-  }, []);
-
-  const visible = [0, 1].map(o => TESTIMONIALS[(idx + o) % TESTIMONIALS.length]);
-
+function WhyStudentsLove() {
   return (
     <section className="py-24 max-w-[1100px] mx-auto px-8">
       <Reveal>
-        <div className="flex items-end justify-between mb-12">
-          <div>
-            <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Loved by students</div>
-            <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">Don't just take our word for it</h2>
-          </div>
-          <div className="flex gap-2">
-            {[['prev', prev, 'm15 18-6-6 6-6'], ['next', next, 'm9 18 6-6-6-6']].map(([k, fn, d]) => (
-              <button key={k} onClick={fn}
-                className="w-11 h-11 rounded-full border border-border bg-white flex items-center justify-center text-text-2 hover:border-primary hover:text-primary transition-all">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d={d}/></svg>
-              </button>
-            ))}
-          </div>
+        <div className="text-center mb-12">
+          <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Why FestNest</div>
+          <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">Why students love FestNest</h2>
         </div>
       </Reveal>
-
       <Reveal delay={0.1}>
-        <div className="grid grid-cols-2 gap-6">
-          {visible.map((t, i) => (
-            <div key={`${idx}-${i}`}
-              className="bg-white rounded-lg border border-border p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
-              style={{ animation: 'screenIn 0.4s ease-out both', animationDelay: `${i * 0.08}s` }}>
-              <div className="flex items-center gap-0.5 mb-4">
-                {Array.from({ length: t.rating }).map((_, j) => (
-                  <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <p className="text-[16px] text-text-1 leading-relaxed mb-6">"{t.text}"</p>
-              <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-full bg-primary-light flex items-center justify-center ${t.avatarColor}`}>
-                  <UserCircle className="w-7 h-7" />
+        <div className="grid grid-cols-3 gap-6">
+          {WHY_LOVE.map(w => {
+            const WIcon = w.icon;
+            return (
+              <div key={w.title} className="bg-white rounded-lg border border-border p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+                <div className="w-14 h-14 rounded-lg bg-primary-light flex items-center justify-center mb-5 text-primary">
+                  <WIcon className="w-6 h-6" />
                 </div>
-                <div>
-                  <div className="font-display font-bold text-[15px] text-text-1">{t.name}</div>
-                  <div className="text-[13px] text-text-3">{t.role}</div>
-                </div>
+                <h3 className="font-display font-bold text-[20px] text-text-1 mb-3">{w.title}</h3>
+                <p className="text-[15px] text-text-2 leading-relaxed">{w.desc}</p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Reveal>
-
-      {/* Dots */}
-      <div className="flex justify-center gap-2 mt-8">
-        {TESTIMONIALS.map((_, i) => (
-          <button key={i} onClick={() => setIdx(i)}
-            className={`h-2 rounded-full transition-all ${i === idx ? 'w-8 bg-primary' : 'w-2 bg-surface-4'}`} />
-        ))}
-      </div>
     </section>
   );
 }
@@ -1004,7 +880,7 @@ function FinalCTA({ onEnter }) {
               Ready to discover your<br />next big opportunity?
             </h2>
             <p className="text-[18px] text-white/75 mb-9">
-              Join 48,000+ students who never miss an event. Free forever.
+              Free forever. No sign-ups fees, no hidden costs — just events.
             </p>
 
             {/* Newsletter */}
@@ -1097,6 +973,15 @@ function Footer() {
 ════════════════════════════════════════════════════════════ */
 export default function Landing() {
   const navigate = useNavigate();
+  const [apiStats,    setApiStats]    = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    eventsApi.stats()
+      .then(r => setApiStats(r.data))
+      .catch(() => setApiStats(null))
+      .finally(() => setStatsLoading(false));
+  }, []);
 
   // SEO: set document title + meta
   useEffect(() => {
@@ -1107,7 +992,7 @@ export default function Landing() {
       if (!m) { m = document.createElement('meta'); m.name = name; document.head.appendChild(m); }
       m.content = content;
     };
-    setMeta('description', "FestNest is India's #1 platform to discover college events — hackathons, fests, workshops, and competitions from 850+ colleges. Free for students. Post events for free.");
+    setMeta('description', "FestNest is India's platform to discover college events — hackathons, fests, workshops, and competitions from colleges across India. Free for students. Post events for free.");
     setMeta('keywords', 'college events india, hackathons, college fest, workshops, competitions, student events, festnest');
     return () => { document.title = prevTitle; };
   }, []);
@@ -1119,16 +1004,15 @@ export default function Landing() {
       <Nav onEnter={enter} />
       <main>
         <Hero onEnter={enter} />
-        <LogoWall />
-        <Stats />
-        <Featured />
+        <CategoryStrip />
+        <StatsRow loading={statsLoading} stats={apiStats} />
         <Categories />
         <Showcase />
         <Features />
         <HowItWorks />
         <Organizers />
         <Comparison />
-        <Testimonials />
+        <WhyStudentsLove />
         <FAQ />
         <FinalCTA onEnter={enter} />
       </main>

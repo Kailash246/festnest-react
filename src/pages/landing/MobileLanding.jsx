@@ -1,14 +1,10 @@
 // src/pages/landing/MobileLanding.jsx
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import BrandMark from '../../components/BrandMark';
+import { events as eventsApi } from '../../services/api';
 import { Code2, Music, Trophy, PartyPopper, BriefcaseBusiness, Rocket } from 'lucide-react';
-
-const STATS = [
-  { value: '48K+', label: 'Students' },
-  { value: '2.4K+', label: 'Events' },
-  { value: '850+', label: 'Colleges' },
-];
 
 // Priority categories, in order.
 const CATEGORIES = [
@@ -23,6 +19,15 @@ const CATEGORIES = [
 export default function MobileLanding() {
   const navigate = useNavigate();
   const { requireAuth, isLoggedIn } = useApp();
+  const [apiStats,     setApiStats]     = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    eventsApi.stats()
+      .then(r => setApiStats(r.data))
+      .catch(() => setApiStats(null))
+      .finally(() => setStatsLoading(false));
+  }, []);
 
   const handleSignIn  = () => requireAuth();
   const handleExplore = () => navigate('/explore');
@@ -59,7 +64,7 @@ export default function MobileLanding() {
         <div className="inline-flex self-start items-center gap-2 bg-primary-light border border-[#C7D2FE]
                         rounded-full pl-1.5 pr-3.5 py-1 mb-5">
           <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">NEW</span>
-          <span className="text-[12px] font-semibold text-primary">2,400+ live events across India</span>
+          <span className="text-[12px] font-semibold text-primary">Live events across India</span>
         </div>
 
         {/* Headline */}
@@ -69,7 +74,7 @@ export default function MobileLanding() {
         </h1>
 
         <p className="text-[15px] text-text-2 leading-relaxed mb-8">
-          Hackathons, fests, workshops &amp; competitions from <strong className="text-text-1">850+ colleges</strong>. Never miss a deadline again.
+          Hackathons, fests, workshops &amp; competitions from colleges across India. Never miss a deadline again.
         </p>
 
         {/* CTAs */}
@@ -89,15 +94,28 @@ export default function MobileLanding() {
           )}
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          {STATS.map(({ value, label }) => (
-            <div key={label} className="bg-surface-2 rounded-lg py-4 text-center">
-              <div className="font-display font-bold text-[22px] text-text-1 leading-none">{value}</div>
-              <div className="text-[11px] text-text-3 font-semibold mt-1">{label}</div>
-            </div>
-          ))}
-        </div>
+        {/* Stats — real API data, skeleton while loading, hidden on failure */}
+        {(statsLoading || apiStats) && (
+          <div className="grid grid-cols-3 gap-3 mb-8">
+            {statsLoading ? (
+              [0, 1, 2].map(i => (
+                <div key={i} className="bg-surface-2 rounded-lg py-4 text-center">
+                  <div className="skeleton h-6 w-14 rounded mx-auto mb-1" />
+                  <div className="skeleton h-3 w-10 rounded mx-auto" />
+                </div>
+              ))
+            ) : [
+              { value: apiStats.totalEvents.toLocaleString('en-IN') + '+', label: 'Events' },
+              { value: apiStats.totalColleges.toLocaleString('en-IN') + '+', label: 'Colleges' },
+              { value: String(apiStats.totalCategories), label: 'Categories' },
+            ].map(({ value, label }) => (
+              <div key={label} className="bg-surface-2 rounded-lg py-4 text-center">
+                <div className="font-display font-bold text-[22px] text-text-1 leading-none">{value}</div>
+                <div className="text-[11px] text-text-3 font-semibold mt-1">{label}</div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Categories */}
         <div>
@@ -117,7 +135,7 @@ export default function MobileLanding() {
 
       {/* Footer strip */}
       <div className="flex-shrink-0 px-5 py-4 border-t border-border text-center">
-        <p className="text-[12px] text-text-3">Free for students forever · 48,000+ on board</p>
+        <p className="text-[12px] text-text-3">Free for students · forever</p>
       </div>
     </div>
   );

@@ -169,6 +169,7 @@ export const events = {
   register:          (slug) => post(`/events/${slug}/register`),
   cancelRegistration:(slug) => del(`/events/${slug}/register`),
   host:              (fd)   => post('/events/host', fd),
+  stats:             ()    => get('/events/stats'),
 };
 
 /* ─── Users ──────────────────────────────────────────────── */
