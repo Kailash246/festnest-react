@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useNavigationType } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import {
   Users, AlertTriangle, HelpCircle, CalendarDays, Clock, MapPin,
@@ -391,7 +391,8 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
 ══════════════════════════════════════════════════════ */
 export default function EventDetails() {
   const { id }   = useParams();
-  const navigate = useNavigate();
+  const navigate     = useNavigate();
+  const navType      = useNavigationType();
   const { savedEvents, toggleSave, showToast, requireAuth } = useApp();
 
   const [ev,            setEv]            = useState(null);
@@ -502,11 +503,8 @@ export default function EventDetails() {
   };
 
   const handleBack = () => {
-    if (window.history.length > 2 && document.referrer.includes('festnest.in')) {
-      navigate(-1);
-    } else {
-      navigate('/explore');
-    }
+    if (navType === 'PUSH') navigate(-1);
+    else navigate('/explore');
   };
 
   if (loading) return <DetailSkeleton />;
