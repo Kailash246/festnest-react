@@ -5,7 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { admin, events as eventsApi } from '../../services/api';
 import { normaliseEvents } from '../../services/normalise';
-import { BarChart3, ClipboardList, CalendarDays, Users, Ticket, Star, Megaphone } from 'lucide-react';
+import {
+  BarChart3, ClipboardList, CalendarDays, Users, Ticket, Star, Megaphone,
+  AlertTriangle, Hourglass, CheckCircle2, MapPin, Calendar, Eye, Trash2,
+  Trophy, Lock, Medal, Lightbulb, Send,
+} from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════
    SHARED TINY COMPONENTS
@@ -56,7 +60,7 @@ const SectionHeader = ({ title, sub }) => (
 
 const EmptyState = ({ icon, title, sub }) => (
   <div className="text-center py-12">
-    <div className="text-4xl mb-3">{icon}</div>
+    <div className="mb-3 flex justify-center text-text-4">{icon}</div>
     <div className="font-semibold text-text-2 text-[14px]">{title}</div>
     {sub && <div className="text-[13px] text-text-3 mt-1">{sub}</div>}
   </div>
@@ -106,7 +110,7 @@ function OverviewTab({ showToast }) {
   }, [showToast]);
 
   if (loading) return <Spinner />;
-  if (!stats) return <EmptyState icon="⚠️" title="Could not load stats" />;
+  if (!stats) return <EmptyState icon={<AlertTriangle size={40} strokeWidth={1.5} />} title="Could not load stats" />;
 
   const { totals, categoryBreakdown = [], registrationsTrend = [], recentUsers = [], recentSubmissions = [] } = stats;
 
@@ -114,11 +118,11 @@ function OverviewTab({ showToast }) {
     <div className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <StatCard icon="👥" label="Total Users"        value={totals?.totalUsers}          color="indigo" />
-        <StatCard icon="🗓️" label="Live Events"        value={totals?.totalEvents}          color="green" />
-        <StatCard icon="⏳" label="Pending Reviews"    value={totals?.pendingSubmissions}   color="amber" />
-        <StatCard icon="✅" label="Registrations"      value={totals?.totalRegistrations}   color="indigo" />
-        <StatCard icon="🎫" label="Open Tickets"       value={totals?.openTickets}          color="red" />
+        <StatCard icon={<Users size={19} strokeWidth={2} />}        label="Total Users"     value={totals?.totalUsers}          color="indigo" />
+        <StatCard icon={<CalendarDays size={19} strokeWidth={2} />} label="Live Events"     value={totals?.totalEvents}          color="green" />
+        <StatCard icon={<Hourglass size={19} strokeWidth={2} />}    label="Pending Reviews" value={totals?.pendingSubmissions}   color="amber" />
+        <StatCard icon={<CheckCircle2 size={19} strokeWidth={2} />} label="Registrations"   value={totals?.totalRegistrations}   color="indigo" />
+        <StatCard icon={<Ticket size={19} strokeWidth={2} />}       label="Open Tickets"    value={totals?.openTickets}          color="red" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -193,7 +197,7 @@ function OverviewTab({ showToast }) {
           <div className="space-y-3">
             {recentSubmissions.map(s => (
               <div key={s._id} className="flex items-start gap-3 p-3 bg-amber-bg border border-amber-border rounded-md">
-                <div className="text-lg flex-shrink-0">📋</div>
+                <div className="flex-shrink-0 text-amber mt-0.5"><ClipboardList size={18} strokeWidth={2} /></div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[13px] font-semibold text-text-1 truncate">{s.eventName}</div>
                   <div className="text-[11px] text-text-3">{s.submittedBy?.name} · {s.college}</div>
@@ -201,7 +205,7 @@ function OverviewTab({ showToast }) {
                 <Badge color="amber">Pending</Badge>
               </div>
             ))}
-            {recentSubmissions.length === 0 && <div className="text-[13px] text-text-3">No pending submissions 🎉</div>}
+            {recentSubmissions.length === 0 && <div className="text-[13px] text-text-3">No pending submissions</div>}
           </div>
         </div>
       </div>
@@ -246,7 +250,7 @@ function SubmissionPreviewModal({ sub, onClose }) {
               <div className="relative h-44 bg-primary-light flex items-center justify-center overflow-hidden">
                 {sub.bannerImage?.url
                   ? <img src={sub.bannerImage.url} alt={sub.eventName} className="w-full h-full object-cover" />
-                  : <span className="text-[64px]">📋</span>
+                  : <ClipboardList size={64} strokeWidth={1.25} className="text-primary/40" />
                 }
                 <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/50 text-white text-[10px] font-bold rounded-md tracking-wide uppercase">
                   Admin Preview · {sub.status}
@@ -281,18 +285,18 @@ function SubmissionPreviewModal({ sub, onClose }) {
                 {/* Location + date */}
                 <div className="space-y-1.5 text-[13px] text-text-2">
                   <div className="flex items-start gap-2">
-                    <span className="mt-px flex-shrink-0">📍</span>
+                    <MapPin size={14} strokeWidth={2} className="mt-0.5 flex-shrink-0 text-text-3" />
                     <span>{sub.college}{sub.city ? `, ${sub.city}` : ''}{sub.venue ? ` · ${sub.venue}` : ''}</span>
                   </div>
                   {sub.startDate && (
                     <div className="flex items-center gap-2">
-                      <span>📅</span>
+                      <Calendar size={14} strokeWidth={2} className="flex-shrink-0 text-text-3" />
                       <span>{sub.startDate}</span>
                     </div>
                   )}
                   {sub.teamSize && (
                     <div className="flex items-center gap-2">
-                      <span>👥</span>
+                      <Users size={14} strokeWidth={2} className="flex-shrink-0 text-text-3" />
                       <span>Team size: {sub.teamSize}</span>
                     </div>
                   )}
@@ -377,7 +381,7 @@ function SubmissionsTab({ showToast }) {
     setActionLoading(id + '-approve');
     try {
       await admin.approveSubmission(id, { isFeatured: markAsFeatured });
-      showToast(`Event approved and published${markAsFeatured ? ' as Featured ⭐' : ''}! 🎉`, 'success');
+      showToast(`Event approved and published${markAsFeatured ? ' as Featured' : ''}!`, 'success');
       setMarkAsFeatured(false);
       load(filter);
       setSelected(null);
@@ -426,7 +430,7 @@ function SubmissionsTab({ showToast }) {
       </div>
 
       {loading ? <Spinner /> : items.length === 0
-        ? <EmptyState icon="📋" title={`No ${filter} submissions`} />
+        ? <EmptyState icon={<ClipboardList size={40} strokeWidth={1.5} />} title={`No ${filter} submissions`} />
         : (
           <div className="space-y-3">
             {items.map(s => (
@@ -435,10 +439,10 @@ function SubmissionsTab({ showToast }) {
                 onClick={() => setSelected(selected?._id === s._id ? null : s)}>
                 <div className="flex items-start gap-3">
                   {/* Banner thumbnail or placeholder */}
-                  <div className="w-12 h-12 rounded-md bg-primary-light flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
+                  <div className="w-12 h-12 rounded-md bg-primary-light flex items-center justify-center flex-shrink-0 overflow-hidden">
                     {s.bannerImage?.url
                       ? <img src={s.bannerImage.url} alt="" className="w-full h-full object-cover" />
-                      : '📋'}
+                      : <ClipboardList size={22} strokeWidth={1.75} className="text-primary/60" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -449,7 +453,7 @@ function SubmissionsTab({ showToast }) {
                     <div className="text-[12px] text-text-3">By: {s.submittedBy?.name || '—'} ({s.submittedBy?.email || '—'})</div>
                     <div className="flex gap-3 mt-1 flex-wrap">
                       {s.isPaid    && <span className="text-[11px] text-amber font-medium">₹{s.entryFee} entry</span>}
-                      {s.hasPrize  && <span className="text-[11px] text-[#16A34A] font-medium">🏆 Prize</span>}
+                      {s.hasPrize  && <span className="text-[11px] text-[#16A34A] font-medium inline-flex items-center gap-1"><Trophy size={11} strokeWidth={2} /> Prize</span>}
                       {s.venue     && <span className="text-[11px] text-text-3">{s.venue}</span>}
                     </div>
                   </div>
@@ -477,7 +481,7 @@ function SubmissionsTab({ showToast }) {
 
                         <div className="pt-1">
                           <Btn variant="ghost" onClick={(e) => { e.stopPropagation(); handlePreview(s); }}>
-                            👁 Preview
+                            <Eye size={13} strokeWidth={2} /> Preview
                           </Btn>
                         </div>
 
@@ -494,13 +498,13 @@ function SubmissionsTab({ showToast }) {
                                   onChange={e => setMarkAsFeatured(e.target.checked)}
                                   className="w-4 h-4 accent-primary flex-shrink-0"
                                 />
-                                <span className="text-[12px] font-semibold text-[#B45309]">
-                                  ⭐ Mark as Featured Event
+                                <span className="text-[12px] font-semibold text-[#B45309] inline-flex items-center gap-1.5">
+                                  <Star size={13} strokeWidth={2} /> Mark as Featured Event
                                 </span>
                               </label>
                             )}
                             <Btn variant="success" onClick={(e) => { e.stopPropagation(); approve(s._id); }} loading={actionLoading === s._id + '-approve'}>
-                              ✅ Approve & Publish
+                              <CheckCircle2 size={13} strokeWidth={2} /> Approve & Publish
                             </Btn>
                             <div className="flex gap-2 items-start">
                               <input
@@ -562,7 +566,7 @@ function EventsTab({ showToast }) {
 
   const restore = async (id) => {
     setActionId(id + '-res');
-    try { await admin.restoreEvent(id); showToast('Event restored ✓', 'success'); load(); }
+    try { await admin.restoreEvent(id); showToast('Event restored', 'success'); load(); }
     catch (e) { showToast(e.message, 'error'); }
     finally { setActionId(''); }
   };
@@ -583,7 +587,7 @@ function EventsTab({ showToast }) {
     setActionId(id + '-feat');
     try {
       await admin.featureEvent(id, !currentFeatured);
-      showToast(!currentFeatured ? 'Event marked as Featured ⭐' : 'Event removed from Featured', 'success');
+      showToast(!currentFeatured ? 'Event marked as Featured' : 'Event removed from Featured', 'success');
       load();
     } catch (e) { showToast(e.message, 'error'); }
     finally { setActionId(''); }
@@ -609,7 +613,7 @@ function EventsTab({ showToast }) {
               transition={{ duration: 0.18 }}
               className="fixed inset-0 z-[301] flex items-center justify-center p-4">
               <div className="bg-white rounded-lg shadow-[0_20px_60px_rgba(0,0,0,0.20)] max-w-sm w-full p-6">
-                <div className="text-3xl mb-3">🗑️</div>
+                <div className="mb-3 text-red"><Trash2 size={28} strokeWidth={1.75} /></div>
                 <div className="font-display font-bold text-[16px] text-text-1 mb-2">Permanently delete event?</div>
                 <div className="text-[13px] text-text-3 mb-1">
                   <span className="font-semibold text-text-1">"{confirmDelete.name}"</span> will be removed forever along with all saves and registrations.
@@ -628,7 +632,7 @@ function EventsTab({ showToast }) {
       </AnimatePresence>
 
       {loading ? <Spinner /> : items.length === 0
-        ? <EmptyState icon="🗓️" title="No events found" />
+        ? <EmptyState icon={<CalendarDays size={40} strokeWidth={1.5} />} title="No events found" />
         : (
           <div className="space-y-2">
             {items.map(ev => (
@@ -641,7 +645,7 @@ function EventsTab({ showToast }) {
                       <span className="font-semibold text-[14px] text-text-1 truncate">{ev.name}</span>
                       {!ev.isActive && <Badge color="gray">Inactive</Badge>}
                       <Badge color="indigo">{ev.category}</Badge>
-                      {ev.isFeatured && <Badge color="amber">⭐ Featured</Badge>}
+                      {ev.isFeatured && <Badge color="amber"><Star size={10} strokeWidth={2} className="mr-1" /> Featured</Badge>}
                     </div>
                     <div className="text-[12px] text-text-3 truncate">{ev.college} · {ev.city}</div>
                     <div className="text-[11px] text-text-3 mt-0.5">{ev.date?.start} · {ev.stats?.registrationCount ?? 0} regs · {ev.stats?.viewCount ?? 0} views</div>
@@ -656,7 +660,8 @@ function EventsTab({ showToast }) {
                       onClick={() => toggleFeature(ev._id, ev.isFeatured)}
                       loading={actionId === ev._id + '-feat'}
                     >
-                      {ev.isFeatured ? '⭐ Featured' : '☆ Feature'}
+                      <Star size={12} strokeWidth={2} fill={ev.isFeatured ? 'currentColor' : 'none'} />
+                      {ev.isFeatured ? 'Featured' : 'Feature'}
                     </Btn>
                   )}
                   <div className="ml-auto flex items-center gap-1.5">
@@ -666,7 +671,7 @@ function EventsTab({ showToast }) {
                     }
                     {isSuperAdmin && (
                       <Btn variant="danger" onClick={() => setConfirmDelete(ev)} loading={actionId === ev._id + '-hd'}>
-                        🗑️ Delete
+                        <Trash2 size={12} strokeWidth={2} /> Delete
                       </Btn>
                     )}
                   </div>
@@ -709,7 +714,7 @@ function UsersTab({ showToast }) {
     setActionId(id);
     try {
       await admin.toggleBan(id);
-      showToast(isBanned ? 'User unbanned ✓' : 'User banned', isBanned ? 'success' : 'info');
+      showToast(isBanned ? 'User unbanned' : 'User banned', isBanned ? 'success' : 'info');
       load();
     } catch (e) { showToast(e.message, 'error'); }
     finally { setActionId(''); }
@@ -741,7 +746,7 @@ function UsersTab({ showToast }) {
       </div>
 
       {loading ? <Spinner /> : items.length === 0
-        ? <EmptyState icon="👥" title="No users found" />
+        ? <EmptyState icon={<Users size={40} strokeWidth={1.5} />} title="No users found" />
         : (
           <div className="space-y-2">
             {items.map(u => (
@@ -817,7 +822,7 @@ function TicketsTab({ showToast }) {
     setActionId(id + status);
     try {
       await admin.updateTicket(id, { status, adminNote });
-      showToast(`Ticket marked as ${status} ✓`, 'success');
+      showToast(`Ticket marked as ${status}`, 'success');
       setAdminNote('');
       load(filter);
       setSelected(null);
@@ -839,7 +844,7 @@ function TicketsTab({ showToast }) {
       </div>
 
       {loading ? <Spinner /> : items.length === 0
-        ? <EmptyState icon="🎫" title={`No ${filter.replace('_',' ')} tickets`} />
+        ? <EmptyState icon={<Ticket size={40} strokeWidth={1.5} />} title={`No ${filter.replace('_',' ')} tickets`} />
         : (
           <div className="space-y-2">
             {items.map(t => (
@@ -847,7 +852,7 @@ function TicketsTab({ showToast }) {
                 className="bg-white border border-border rounded-lg p-4 shadow-1 cursor-pointer hover:border-primary-mid transition-colors"
                 onClick={() => setSelected(selected?._id === t._id ? null : t)}>
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-md bg-surface-2 flex items-center justify-center text-lg flex-shrink-0 mt-0.5">🎫</div>
+                  <div className="w-9 h-9 rounded-md bg-surface-2 flex items-center justify-center flex-shrink-0 mt-0.5 text-text-3"><Ticket size={16} strokeWidth={2} /></div>
                   <div className="flex-1 min-w-0">
                     {/* ID + status */}
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
@@ -925,7 +930,7 @@ function TicketsTab({ showToast }) {
 
                         <div className="flex gap-2 flex-wrap" onClick={e => e.stopPropagation()}>
                           {t.status !== 'in_progress' && <Btn variant="ghost" onClick={() => updateStatus(t._id, 'in_progress')} loading={actionId === t._id + 'in_progress'}>Mark In Progress</Btn>}
-                          {t.status !== 'resolved'    && <Btn variant="success" onClick={() => updateStatus(t._id, 'resolved')} loading={actionId === t._id + 'resolved'}>✅ Resolve & Send Response</Btn>}
+                          {t.status !== 'resolved'    && <Btn variant="success" onClick={() => updateStatus(t._id, 'resolved')} loading={actionId === t._id + 'resolved'}><CheckCircle2 size={13} strokeWidth={2} /> Resolve & Send Response</Btn>}
                           {t.status !== 'open'        && <Btn variant="danger" onClick={() => updateStatus(t._id, 'open')} loading={actionId === t._id + 'open'}>Reopen</Btn>}
                         </div>
                       </div>
@@ -954,7 +959,7 @@ function BroadcastTab({ showToast }) {
     try {
       const r = await admin.notify(form);
       setSent(r.data.sent);
-      showToast(`Notification sent to ${r.data.sent} users ✓`, 'success');
+      showToast(`Notification sent to ${r.data.sent} users`, 'success');
       setForm({ title: '', sub: '', type: 'system', icon: '📢' });
     } catch (e) { showToast(e.message, 'error'); }
     finally { setLoading(false); }
@@ -1019,11 +1024,11 @@ function BroadcastTab({ showToast }) {
         </div>
 
         <Btn variant="primary" size="md" onClick={send} loading={loading}>
-          📢 Send to All Users
+          <Send size={14} strokeWidth={2} /> Send to All Users
         </Btn>
 
         {sent !== null && (
-          <div className="text-[12px] text-[#16A34A] font-medium">✅ Sent to {sent} user(s)</div>
+          <div className="text-[12px] text-[#16A34A] font-medium inline-flex items-center gap-1.5"><CheckCircle2 size={13} strokeWidth={2} /> Sent to {sent} user(s)</div>
         )}
       </div>
     </div>
@@ -1034,7 +1039,8 @@ function BroadcastTab({ showToast }) {
    FEATURED TAB  (Super Admin only)
 ═══════════════════════════════════════════════════════ */
 const ORDINALS = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
-const RANK_ICONS = ['🥇', '🥈', '🥉'];
+// Gold / silver / bronze medal colours for the top three positions
+const RANK_COLORS = ['text-[#D4A017]', 'text-[#9CA3AF]', 'text-[#B08D57]'];
 const ordinal = n => ORDINALS[n - 1] || `${n}th`;
 
 function FeaturedTab({ showToast }) {
@@ -1061,7 +1067,7 @@ function FeaturedTab({ showToast }) {
   useEffect(() => { load(); }, [load]);
 
   if (!isSuperAdmin) return (
-    <EmptyState icon="🔒" title="Super Admin only" sub="You need super admin privileges to manage featured events." />
+    <EmptyState icon={<Lock size={40} strokeWidth={1.5} />} title="Super Admin only" sub="You need super admin privileges to manage featured events." />
   );
 
   const changePosition = async (eventId, newRank) => {
@@ -1071,7 +1077,7 @@ function FeaturedTab({ showToast }) {
     setActionId(eventId + '-pos');
     try {
       await Promise.all(without.map((ev, i) => admin.featureEvent(ev._id, true, i + 1)));
-      showToast('Priority updated ✓', 'success');
+      showToast('Priority updated', 'success');
       load();
     } catch (e) { showToast(e.message, 'error'); }
     finally { setActionId(''); }
@@ -1098,9 +1104,9 @@ function FeaturedTab({ showToast }) {
 
       {items.length === 0 ? (
         <EmptyState
-          icon="⭐"
+          icon={<Star size={40} strokeWidth={1.5} />}
           title="No featured events"
-          sub='Feature events from the Events tab using the "☆ Feature" button.'
+          sub='Feature events from the Events tab using the "Feature" button.'
         />
       ) : (
         <div className="space-y-3">
@@ -1111,8 +1117,8 @@ function FeaturedTab({ showToast }) {
               <div key={ev._id} className="bg-white border border-border rounded-lg p-4 shadow-1">
                 {/* Identity row */}
                 <div className="flex items-center gap-3">
-                  <div className="text-[20px] flex-shrink-0 w-7 text-center leading-none select-none">
-                    {RANK_ICONS[idx] ?? `${rank}.`}
+                  <div className="flex-shrink-0 w-7 flex justify-center text-[13px] font-bold text-text-3 leading-none select-none">
+                    {idx < 3 ? <Medal size={20} strokeWidth={2} className={RANK_COLORS[idx]} /> : `${rank}.`}
                   </div>
                   <div className={`w-10 h-10 rounded-lg ${ev.bg || 'bg1'} flex items-center justify-center text-[18px] flex-shrink-0 overflow-hidden`}>
                     {ev.imageUrl
@@ -1124,7 +1130,7 @@ function FeaturedTab({ showToast }) {
                     <div className="text-[12px] text-text-3 truncate">{ev.college} · {ev.city}</div>
                     <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                       <Badge color="indigo">{ev.category}</Badge>
-                      <Badge color="amber">⭐ {ordinal(rank)}</Badge>
+                      <Badge color="amber"><Star size={10} strokeWidth={2} className="mr-1" /> {ordinal(rank)}</Badge>
                     </div>
                   </div>
                 </div>
@@ -1162,8 +1168,9 @@ function FeaturedTab({ showToast }) {
       )}
 
       {items.length > 0 && (
-        <p className="text-[12px] text-text-3 px-1">
-          💡 Use the position dropdown to reorder. 1st appears first in feeds; up to 6 events can be featured.
+        <p className="text-[12px] text-text-3 px-1 flex items-start gap-1.5">
+          <Lightbulb size={13} strokeWidth={2} className="mt-0.5 flex-shrink-0" />
+          <span>Use the position dropdown to reorder. 1st appears first in feeds; up to 6 events can be featured.</span>
         </p>
       )}
     </div>
