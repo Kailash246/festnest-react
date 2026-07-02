@@ -304,7 +304,7 @@ export default function Home() {
         secEvents = { trending: t, urgent: u };
         trySaveCache();
       })
-      .catch(console.error)
+      .catch(err => { if (import.meta.env.DEV) console.error('[Home] rails fetch failed:', err); })
       .finally(() => setSecLoading(false));
   }, []);
 
