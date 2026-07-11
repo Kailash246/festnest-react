@@ -36,7 +36,10 @@ export default function MobileLanding() {
       .finally(() => setStatsLoading(false));
   }, []);
 
-  const handleSignIn  = () => requireAuth();
+  const handleSignIn = () => {
+    navigate('/home');
+    requireAuth();
+  };
   const handleExplore = () => navigate('/explore');
 
   return (

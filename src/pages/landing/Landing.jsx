@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReveal, useMouseParallax, Reveal } from './_hooks';
 import BrandMark from '../../components/BrandMark';
+import { useApp } from '../../context/AppContext';
 import { events as eventsApi } from '../../services/api';
 import {
   Flame, CheckCircle2,
@@ -35,7 +36,7 @@ const Logo = ({ light }) => (
 /* ════════════════════════════════════════════════════════════
    STICKY NAV
 ════════════════════════════════════════════════════════════ */
-function Nav({ onEnter }) {
+function Nav({ onLogin, onGetStarted }) {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -70,11 +71,11 @@ function Nav({ onEnter }) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button onClick={onEnter}
+          <button onClick={onLogin}
             className="px-4 py-2 text-[14px] font-semibold text-text-2 hover:text-primary transition-colors">
             Log in
           </button>
-          <button onClick={onEnter}
+          <button onClick={onGetStarted}
             className="px-5 py-2.5 bg-primary text-white text-[14px] font-bold rounded-md
                        hover:bg-primary-dark hover:shadow-indigo transition-all duration-200
                        hover:-translate-y-0.5">
@@ -1175,6 +1176,7 @@ function Footer() {
 ════════════════════════════════════════════════════════════ */
 export default function Landing() {
   const navigate = useNavigate();
+  const { requireAuth } = useApp();
   const [apiStats,    setApiStats]    = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
 
@@ -1199,13 +1201,17 @@ export default function Landing() {
     return () => { document.title = prevTitle; };
   }, []);
 
-  const enter = () => navigate('/explore');
+  const handleLogin = () => {
+    navigate('/home');
+    requireAuth();
+  };
+  const handleGetStarted = () => navigate('/home');
 
   return (
     <div className="bg-white text-text-1 antialiased">
-      <Nav onEnter={enter} />
+      <Nav onLogin={handleLogin} onGetStarted={handleGetStarted} />
       <main>
-        <Hero onEnter={enter} />
+        <Hero onEnter={handleGetStarted} />
         <CategoryStrip />
         <StatsRow loading={statsLoading} stats={apiStats} />
         <Categories />
@@ -1216,7 +1222,7 @@ export default function Landing() {
         <Comparison />
         <WhyStudentsLove />
         <FAQ />
-        <FinalCTA onEnter={enter} />
+        <FinalCTA onEnter={handleGetStarted} />
       </main>
       <Footer />
     </div>
