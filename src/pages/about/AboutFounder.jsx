@@ -205,7 +205,11 @@ export default function AboutFounder() {
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-[72px] h-[72px] rounded-full bg-indigo-600 flex items-center justify-center
                                     font-display font-bold text-[22px] text-white flex-shrink-0">
-                      AK
+                      <img
+                        src="/adrash pro.png"
+                        alt="Adarsh Kumar"
+                        className="w-full h-full rounded-full object-cover"
+                      />
                     </div>
                     <div className="min-w-0">
                       <div className="font-display font-bold text-[18px] text-gray-900 mb-0.5">
