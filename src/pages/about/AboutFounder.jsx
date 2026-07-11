@@ -153,7 +153,7 @@ export default function AboutFounder() {
             <h2 className="font-display font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
               The People Building FestNest
             </h2>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
 
               {/* Founder — prominent, spans 2 cols */}
               <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex">
@@ -195,15 +195,39 @@ export default function AboutFounder() {
               </div>
 
               {/* Co-founder */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6
-                              flex flex-col items-center justify-center text-center">
-                <div className="w-14 h-14 rounded-full bg-teal-600 flex items-center justify-center
-                                font-display font-bold text-[18px] text-white mb-3">
-                  AK
+              <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex">
+                <div className="w-1.5 bg-gradient-to-b from-[#4F46E5] to-indigo-700 flex-shrink-0" />
+                <div className="p-6 flex-1">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-[72px] h-[72px] rounded-full bg-indigo-600 flex items-center justify-center
+                                    font-display font-bold text-[22px] text-white flex-shrink-0">
+                      AK
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-display font-bold text-[18px] text-gray-900 mb-0.5">
+                        Adarsh Kumar
+                      </div>
+                      <div className="text-[13px] font-semibold text-indigo-600 mb-2">Co-Founder</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-full">
+                          Alliance University (BCA)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-[13px] text-gray-600 leading-relaxed mb-4">
+                    Co-Founder at FestNest | BCA Student at Alliance University | Passionate about AI, Full-Stack Development, Product Building, and creating technology that empowers students across India.
+                  </p>
+                  <div className="flex gap-2">
+                    <a href="https://www.linkedin.com/in/adarsh-kasaudhan"
+                      target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-indigo-200
+                                 text-indigo-600 text-[12px] font-semibold rounded-md
+                                 hover:bg-indigo-50 transition-colors">
+                      LinkedIn <ExternalLink size={11} />
+                    </a>
+                  </div>
                 </div>
-                <div className="font-display font-bold text-[16px] text-gray-900 mb-0.5">Adarsh Kumar</div>
-                <div className="text-[12px] font-semibold text-teal-600 mb-2">Co-Founder</div>
-                <div className="text-[11px] text-gray-400">Building FestNest</div>
               </div>
 
             </div>
