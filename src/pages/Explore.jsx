@@ -1,20 +1,14 @@
 import { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { BadgeCheck, ExternalLink, MapPin, Trophy } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import EventCard from '../components/EventCard';
 import Seo from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES } from '../data/categories';
-
-const WHY = [
-  { Icon: BadgeCheck,   title: 'Always Free',         desc: 'No sign-up fees, no hidden charges, ever.' },
-  { Icon: ExternalLink, title: 'Direct Registration', desc: 'Links go straight to the official form — no middlemen.' },
-  { Icon: MapPin,       title: 'Discover by City',    desc: 'Find events near you or anywhere across India.' },
-  { Icon: Trophy,       title: 'Points & Rankings',   desc: 'Earn FestNest points for every event you attend.' },
-];
+import { FilterSheet, SortDropdown, ActivePill } from '../components/EventFilters';
 
 // Priority-first category tiles from the shared catalog.
 const EXPLORE_CATEGORIES = CATEGORIES.map(c => ({
@@ -37,7 +31,6 @@ const SkeletonCard = () => (
 );
 
 export default function Explore() {
-  const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
   const { pathname }   = useLocation();
   const { showToast, exploreFeedCache, exploreFeedCacheTime, setExploreFeedCache, setExploreFeedCacheTime } = useApp();
@@ -55,11 +48,24 @@ export default function Explore() {
   const [error,     setError]     = useState(null);
   const scrollRestoredRef         = useRef(false);
 
+  const [filterOpen,   setFilterOpen]   = useState(false);
+  const [sheetFilters, setSheetFilters] = useState({ category: null, entry: null, city: null, sort: 'Latest' });
+
   /* Keep activeCat in sync when URL changes */
   useEffect(() => {
     const cat = searchParams.get('cat');
     setActiveCat(cat ? decodeURIComponent(cat) : 'all');
   }, [searchParams]);
+
+  /* Keep the filter sheet's category in sync with the category grid */
+  useEffect(() => {
+    setSheetFilters(prev => ({ ...prev, category: activeCat === 'all' ? null : activeCat }));
+  }, [activeCat]);
+
+  const applySheetFilters = useCallback((f) => {
+    setSheetFilters(f);
+    setActiveCat(f.category || 'all');
+  }, []);
 
   /* Fetch from API (skip if cache is warm and category matches) */
   const fetchEvents = useCallback(() => {
@@ -107,20 +113,37 @@ export default function Explore() {
     showToast('Event permanently deleted', 'success');
   }, [showToast]);
 
-  /* Client-side text filter on top of the already-category-filtered API results */
-  const filtered = allEvents.filter(ev => {
-    if (!query) return true;
-    const q = query.toLowerCase();
-    return ev.name.toLowerCase().includes(q) ||
-      ev.college.toLowerCase().includes(q) ||
-      ev.city.toLowerCase().includes(q);
+  /* Client-side text + entry/city filter on top of the already-category-filtered API results */
+  let filtered = allEvents.filter(ev => {
+    if (query) {
+      const q = query.toLowerCase();
+      const matchesQuery = ev.name.toLowerCase().includes(q) ||
+        ev.college.toLowerCase().includes(q) ||
+        ev.city.toLowerCase().includes(q);
+      if (!matchesQuery) return false;
+    }
+    if (sheetFilters.entry && sheetFilters.entry !== 'All') {
+      const entryMap = { Free: 'free', Paid: 'paid', 'Prize Pool': 'prize' };
+      if (ev.entryType !== entryMap[sheetFilters.entry]) return false;
+    }
+    if (sheetFilters.city && ev.city !== sheetFilters.city) return false;
+    return true;
   });
+
+  switch (sheetFilters.sort) {
+    case 'Oldest':          filtered.sort((a, b) => b.deadlineDays - a.deadlineDays); break;
+    case 'Most Registered': filtered.sort((a, b) => b.registrationCount - a.registrationCount); break;
+    case 'Deadline Soon':   filtered.sort((a, b) => a.deadlineDays - b.deadlineDays); break;
+    default: break;
+  }
 
   /* Category counts from loaded data */
   const catCounts = allEvents.reduce((acc, ev) => {
     acc[ev.category] = (acc[ev.category] || 0) + 1;
     return acc;
   }, {});
+
+  const activeSheetCount = [sheetFilters.category, sheetFilters.entry && sheetFilters.entry !== 'All' ? sheetFilters.entry : null, sheetFilters.city].filter(Boolean).length;
 
   const title = activeCat === 'all'
     ? (query ? `Results for "${query}"` : 'All Events')
@@ -136,6 +159,13 @@ export default function Explore() {
         description="Browse every college event on FestNest — hackathons, cultural fests, technical fests, workshops, and competitions across India. Filter by category and city."
         canonical="/explore"
       />
+
+      {createPortal(
+        <FilterSheet open={filterOpen} onClose={() => setFilterOpen(false)} filters={sheetFilters}
+          setFilters={setSheetFilters} onApply={applySheetFilters}
+          activeCount={activeSheetCount} />,
+        document.body
+      )}
 
       {/* Header */}
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
@@ -153,23 +183,30 @@ export default function Explore() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
             </button>
           )}
+          <div className="w-px h-5 bg-[#E4E4E0] flex-shrink-0" />
+          <button onClick={() => setFilterOpen(true)}
+            className="flex items-center gap-[5px] rounded px-[11px] py-1.5 text-[12px] font-semibold flex-shrink-0 active:scale-95 transition-all duration-fast relative bg-primary text-white hover:bg-primary-dark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+            Filter
+            {activeSheetCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold rounded-full flex items-center justify-center">{activeSheetCount}</span>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Why FestNest */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-4 md:px-12 mb-5 md:max-w-[1140px] md:mx-auto">
-        {WHY.map(({ Icon: WhyIcon, title, desc }) => (
-          <div key={title}
-            className="bg-surface border border-border rounded-lg p-4
-                       hover:border-primary hover:-translate-y-[1px] transition-all">
-            <div className="w-9 h-9 bg-primary-light rounded-md flex items-center justify-center mb-3">
-              <WhyIcon size={18} strokeWidth={1.8} className="text-primary" />
-            </div>
-            <div className="text-[13px] font-semibold text-text-1 mb-1">{title}</div>
-            <div className="text-[12px] text-text-3 leading-relaxed">{desc}</div>
-          </div>
-        ))}
-      </div>
+      {/* Active filter pills */}
+      <AnimatePresence>
+        {(sheetFilters.entry && sheetFilters.entry !== 'All' || sheetFilters.city) && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="flex items-center gap-2 px-4 md:px-12 pt-3 overflow-x-auto no-scrollbar">
+            <span className="text-[12px] text-[#8A8A85] flex-shrink-0">Filters:</span>
+            {sheetFilters.entry && sheetFilters.entry !== 'All' && <ActivePill label={sheetFilters.entry} onRemove={() => setSheetFilters(f => ({ ...f, entry: null }))} />}
+            {sheetFilters.city && <ActivePill label={sheetFilters.city} onRemove={() => setSheetFilters(f => ({ ...f, city: null }))} />}
+            <button onClick={() => setSheetFilters(f => ({ ...f, entry: null, city: null }))} className="text-[12px] font-semibold text-red flex-shrink-0 hover:underline">Clear all</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Category grid */}
       <div className="section-hd-desktop">
@@ -202,9 +239,12 @@ export default function Explore() {
             <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{filtered.length}</span>
           )}
         </div>
-        {activeCat !== 'all' && (
-          <button onClick={() => setActiveCat('all')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">Clear</button>
-        )}
+        <div className="flex items-center gap-3">
+          {activeCat !== 'all' && (
+            <button onClick={() => setActiveCat('all')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">Clear</button>
+          )}
+          <SortDropdown value={sheetFilters.sort} onChange={v => setSheetFilters(f => ({ ...f, sort: v }))} />
+        </div>
       </div>
 
       {/* Error */}

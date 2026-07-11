@@ -92,6 +92,17 @@ export default function Sidebar() {
         isActive={path === '/profile'}
       />
 
+      {/* Admin-only — shown immediately after Profile */}
+      {isAdmin && (
+        <SidebarBtn
+          href="/admin"
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>}
+          label="Admin Dashboard"
+          isActive={path === '/admin'}
+          badgeStyle="bg-amber-bg text-amber border border-amber-border"
+        />
+      )}
+
       {/* Organizer-only section — shown immediately after Profile */}
       {(isOrganizer || isSuperAdmin) && (
         <>
@@ -152,20 +163,6 @@ export default function Sidebar() {
           </button>
         </p>
       </div>
-
-      {isAdmin && (
-        <>
-          <Divider />
-          <Label>Admin</Label>
-          <SidebarBtn
-            href="/admin"
-            icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>}
-            label="Admin Dashboard"
-            isActive={path === '/admin'}
-            badgeStyle="bg-amber-bg text-amber border border-amber-border"
-          />
-        </>
-      )}
     </div>
   );
 }
