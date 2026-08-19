@@ -32,6 +32,7 @@ export function normaliseEvent(ev) {
       perks:       base.perks       ?? ev.perks        ?? '',
       mode:        base.mode        ?? ev.mode         ?? '',
       endDate:     base.endDate     ?? ev.date?.end    ?? ev.endDate ?? '',
+      registrationUrl: base.registrationUrl ?? ev.registrationUrl ?? '#',
     };
   }
 

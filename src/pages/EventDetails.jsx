@@ -77,6 +77,22 @@ function buildEventJsonLd(ev, canonicalUrl, description) {
   return data;
 }
 
+const isValidExternalUrl = (raw) => {
+  if (!raw || raw === '#') return false;
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+const openExternalRegistrationLink = (raw) => {
+  if (!isValidExternalUrl(raw)) return false;
+  window.location.assign(raw);
+  return true;
+};
+
 /* ── bg → gradient (unchanged) ── */
 const BG_GRADIENT = {
   bg1: 'from-indigo-100 via-violet-50  to-blue-50',
@@ -464,6 +480,12 @@ export default function EventDetails() {
   const cfg     = ev ? (ENTRY_CONFIG[ev.entryType] || ENTRY_CONFIG.prize) : null;
 
   const handleRegister = async () => {
+    const registrationLink = ev?.registrationUrl || ev?.website || '';
+
+    if (openExternalRegistrationLink(registrationLink)) return;
+
+    showToast('Registration link is unavailable or invalid for this event.', 'error');
+
     if (registered) return;
     if (!requireAuth()) return;
     setRegistering(true);
