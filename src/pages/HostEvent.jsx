@@ -73,10 +73,13 @@ function Input({ label, required, hint, error, prefix, className = '', ...props 
   );
 }
 
-function Textarea({ label, required, hint, error, ...props }) {
+function Textarea({ label, required, hint, error, className = '', ...props }) {
   return (
     <Field label={label} required={required} hint={hint} error={error}>
-      <textarea className={`${inputBase} resize-y min-h-[110px] ${error ? 'border-red focus:border-red focus:shadow-[0_0_0_3px_rgba(220,38,38,0.08)]' : 'border-[#CBCBC6]'} ${props.className || ''}`} {...props} />
+      <textarea
+        className={`${inputBase} resize-y overflow-x-hidden min-h-[110px] ${error ? 'border-red focus:border-red focus:shadow-[0_0_0_3px_rgba(220,38,38,0.08)]' : 'border-[#CBCBC6]'} ${className}`}
+        {...props}
+      />
     </Field>
   );
 }
