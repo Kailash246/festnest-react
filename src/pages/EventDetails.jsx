@@ -93,6 +93,29 @@ const openExternalRegistrationLink = (raw) => {
   return true;
 };
 
+const normaliseMultilineText = (text) =>
+  String(text || '')
+    .replace(/\r\n/g, '\n')
+    .split(/\n{2,}/)
+    .map(block => block.trimEnd())
+    .filter((block, index, blocks) => block.trim() !== '' || blocks.length === 1 || index === 0 || index === blocks.length - 1);
+
+function MultilineText({ text, className = '' }) {
+  const blocks = normaliseMultilineText(text);
+
+  if (!blocks.length) return null;
+
+  return (
+    <div className={`space-y-4 md:space-y-5 ${className}`.trim()}>
+      {blocks.map((block, index) => (
+        <p key={index} className="whitespace-pre-wrap break-words leading-relaxed md:leading-8">
+          {block}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 /* ── bg → gradient (unchanged) ── */
 const BG_GRADIENT = {
   bg1: 'from-indigo-100 via-violet-50  to-blue-50',
@@ -558,8 +581,8 @@ export default function EventDetails() {
     pool:   ev.prizeDetails || '',
   };
   const hasPrizes     = Object.values(prizes).some(Boolean) || ev.badgeClass === 'badge-prize';
-  const eligibility   = ev.eligibility || '';
-  const rules         = ev.rules       || '';
+  const eligibility   = sanitizeText(ev.eligibility || '');
+  const rules         = sanitizeText(ev.rules || '');
   const perks         = ev.perks       || '';
   const pocName       = ev.pocName     || '';
   const pocPhone      = ev.pocPhone    || ev.phone   || '';
@@ -686,10 +709,13 @@ export default function EventDetails() {
           {safeAbout && (
             <div className="mb-6">
               <SectionHeading>About this Event</SectionHeading>
-              <p className="text-[14px] md:text-[15px] text-text-2 leading-relaxed">
-                {showFullAbout ? safeAbout : aboutShort}
-                {!showFullAbout && safeAbout.length > 240 && '…'}
-              </p>
+              <MultilineText
+                text={showFullAbout ? safeAbout : aboutShort}
+                className="text-[14px] md:text-[15px] text-text-2"
+              />
+              {!showFullAbout && safeAbout.length > 240 && (
+                <span className="text-[14px] md:text-[15px] text-text-2">…</span>
+              )}
               {safeAbout.length > 240 && (
                 <button onClick={() => setShowFullAbout(v => !v)}
                   className="text-[13px] font-semibold text-primary mt-2 hover:underline">
@@ -757,13 +783,13 @@ export default function EventDetails() {
                       {eligibility && (
                         <div className="bg-surface rounded-lg p-4 border border-border">
                           <div className="text-[11px] font-bold tracking-wider uppercase text-text-4 mb-2">Who can participate</div>
-                          <p className="text-[14px] text-text-2 leading-relaxed">{eligibility}</p>
+                          <MultilineText text={eligibility} className="text-[14px] text-text-2" />
                         </div>
                       )}
                       {rules && (
                         <div className="bg-surface rounded-lg p-4 border border-border">
                           <div className="text-[11px] font-bold tracking-wider uppercase text-text-4 mb-2">Rules</div>
-                          <p className="text-[14px] text-text-2 leading-relaxed whitespace-pre-line">{rules}</p>
+                          <MultilineText text={rules} className="text-[14px] text-text-2" />
                         </div>
                       )}
                     </div>
