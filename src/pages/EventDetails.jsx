@@ -96,19 +96,22 @@ const openExternalRegistrationLink = (raw) => {
 const normaliseMultilineText = (text) =>
   String(text || '')
     .replace(/\r\n/g, '\n')
-    .split(/\n{2,}/)
-    .map(block => block.trimEnd())
-    .filter((block, index, blocks) => block.trim() !== '' || blocks.length === 1 || index === 0 || index === blocks.length - 1);
+    .trim();
 
 function MultilineText({ text, className = '' }) {
-  const blocks = normaliseMultilineText(text);
+  const content = normaliseMultilineText(text);
 
-  if (!blocks.length) return null;
+  if (!content) return null;
+
+  const blocks = content
+    .split(/\n\s*\n+/)
+    .map(block => block.trimEnd())
+    .filter(Boolean);
 
   return (
-    <div className={`space-y-4 md:space-y-5 ${className}`.trim()}>
+    <div className={`space-y-3 md:space-y-4 ${className}`.trim()}>
       {blocks.map((block, index) => (
-        <p key={index} className="whitespace-pre-wrap break-words leading-relaxed md:leading-8">
+        <p key={index} className="m-0 whitespace-pre-wrap break-words leading-6 md:leading-7">
           {block}
         </p>
       ))}
