@@ -76,7 +76,7 @@ function Input({ label, required, hint, error, prefix, className = '', ...props 
 function Textarea({ label, required, hint, error, ...props }) {
   return (
     <Field label={label} required={required} hint={hint} error={error}>
-      <textarea className={`${inputBase} resize-none min-h-[110px] ${error ? 'border-red' : 'border-[#CBCBC6]'}`} {...props} />
+      <textarea className={`${inputBase} resize-y min-h-[110px] ${error ? 'border-red focus:border-red focus:shadow-[0_0_0_3px_rgba(220,38,38,0.08)]' : 'border-[#CBCBC6]'} ${props.className || ''}`} {...props} />
     </Field>
   );
 }
@@ -703,7 +703,8 @@ export default function HostEvent() {
 
                 <Textarea id="host-description" label="Description" required
                   placeholder="Describe your event — what will participants do, learn, or win?"
-                  rows={4} maxLength={5000} value={f.description} onChange={e => upd('description', e.target.value)}
+                  rows={8} maxLength={5000} value={f.description} onChange={e => upd('description', e.target.value)}
+                  className="min-h-[240px] md:min-h-[280px] py-4 px-4 leading-7 text-[14px] whitespace-pre-wrap break-words"
                   error={errors.description} />
 
                 {/* Mode */}
