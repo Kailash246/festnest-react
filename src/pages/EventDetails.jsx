@@ -420,9 +420,6 @@ function PriceCard({ ev, cfg, registering, registered, isSaved, toggleSave, hand
             Share
           </motion.button>
         </div>
-        <div className="text-center text-[12px] text-text-3 pt-1 flex items-center justify-center gap-1">
-          <Users size={12} strokeWidth={1.8} /> {(ev.registrationCount||0).toLocaleString('en-IN')} students already registered
-        </div>
       </div>
     </motion.div>
   );
