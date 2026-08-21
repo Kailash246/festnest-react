@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
@@ -200,11 +200,11 @@ function UploadZone({ id, label, hint, accept, Icon: UpIcon, file, onFile, onRem
 }
 
 /* ─── Navigation buttons ─────────────────────────────── */
-function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, nextLabel }) {
+function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, nextLabel, submitAllowed = true }) {
   return (
     <div className="flex gap-3 pt-2">
       {step > 1 && (
-        <button onClick={onBack}
+        <button type="button" onClick={onBack}
           className="flex items-center gap-2 px-5 py-[13px] border-[1.5px] border-[#CBCBC6] rounded-md
             text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all duration-150">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
@@ -212,17 +212,19 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
         </button>
       )}
       {step < totalSteps ? (
-        <motion.button whileTap={{ scale: 0.98 }} onClick={onNext}
+        <motion.button type="button" whileTap={{ scale: 0.98 }} onClick={onNext}
           className="flex-1 py-[13px] bg-primary text-white rounded-md text-[14px] font-bold
             flex items-center justify-center gap-2 hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.30)] transition-all duration-150">
           {nextLabel || 'Continue'}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
         </motion.button>
       ) : (
-        <motion.button whileTap={{ scale: 0.98 }} onClick={onSubmit} disabled={submitting}
-          className="flex-1 py-[13px] bg-[#16A34A] text-white rounded-md text-[14px] font-bold
+        <motion.button type="button" whileTap={{ scale: 0.98 }} onClick={onSubmit} disabled={submitting}
+          aria-disabled={!submitAllowed}
+          className={`flex-1 py-[13px] bg-[#16A34A] text-white rounded-md text-[14px] font-bold
             flex items-center justify-center gap-2 hover:bg-[#15803D] hover:shadow-[0_4px_14px_rgba(22,163,74,0.30)]
-            transition-all duration-150 disabled:opacity-60">
+            transition-all duration-150 disabled:opacity-60
+            ${!submitAllowed ? 'opacity-55 cursor-not-allowed hover:bg-[#16A34A] hover:shadow-none' : ''}`}>
           {submitting
             ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             : <><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg> Submit Event for Review</>
@@ -279,6 +281,7 @@ export default function HostEvent() {
   const [submitting,setSubmitting]= useState(false);
   const [done,      setDone]      = useState(false);
   const [hasPrize,  setHasPrize]  = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors,    setErrors]    = useState({});
   const [draftBanner, setDraftBanner] = useState(null); // detected draft waiting for resume/discard
   const [draftSaved,  setDraftSaved]  = useState(false); // transient "Draft saved" indicator
@@ -364,6 +367,7 @@ export default function HostEvent() {
     totalPrize: 3, regFee: 3, regLink: 3,
     pocName: 4, phone: 4, email: 4, website: 4,
     poster: 5, brochure: 5,
+    termsAgreement: 5,
   };
 
   // Pure: compute the errors for a single step. Does not touch state.
@@ -416,6 +420,7 @@ export default function HostEvent() {
         if (brochureFile.type !== 'application/pdf') errs.brochure = 'Brochure must be a PDF file';
         else if (brochureFile.size > 10 * 1024 * 1024) errs.brochure = 'Brochure size cannot exceed 10 MB';
       }
+      if (!termsAccepted) errs.termsAgreement = 'Please agree to the Terms of Hosting and Privacy Policy to continue.';
     }
     return errs;
   };
@@ -544,7 +549,7 @@ export default function HostEvent() {
             className="px-8 py-3.5 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
             Back to Home
           </button>
-          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
+          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setTermsAccepted(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
             className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-md text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
             Post Another Event
           </button>
@@ -1040,7 +1045,44 @@ export default function HostEvent() {
                   Draft autosaved
                 </div>
               )}
-              <NavButtons step={step} totalSteps={5} onBack={goBack} onSubmit={submit} submitting={submitting} />
+              <div className={`rounded-md border-[1.5px] px-4 py-3.5 ${errors.termsAgreement ? 'border-red bg-red-bg/40' : 'border-[#E4E4E0] bg-white'}`}>
+                <div className="flex items-start gap-3">
+                  <input
+                    id="host-termsAgreement"
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={e => {
+                      setTermsAccepted(e.target.checked);
+                      if (e.target.checked) setErrors(current => ({ ...current, termsAgreement: '' }));
+                    }}
+                    aria-describedby={errors.termsAgreement ? 'host-termsAgreement-error' : undefined}
+                    className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-[#CBCBC6] text-primary accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                  />
+                  <label htmlFor="host-termsAgreement" className="cursor-pointer text-[13px] leading-relaxed text-text-2">
+                    I agree to FestNest's{' '}
+                    <Link to="/terms" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
+                      Terms of Hosting
+                    </Link>{' '}and{' '}
+                    <Link to="/privacy" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
+                      Privacy Policy
+                    </Link>.
+                  </label>
+                </div>
+                {errors.termsAgreement && (
+                  <p id="host-termsAgreement-error" className="text-[12px] text-red mt-2 flex items-center gap-1" role="alert">
+                    <AlertTriangle size={12} strokeWidth={2} className="flex-shrink-0" />
+                    {errors.termsAgreement}
+                  </p>
+                )}
+              </div>
+              <NavButtons
+                step={step}
+                totalSteps={5}
+                onBack={goBack}
+                onSubmit={submit}
+                submitting={submitting}
+                submitAllowed={termsAccepted}
+              />
             </motion.div>
           )}
 
