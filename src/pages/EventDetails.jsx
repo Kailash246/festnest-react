@@ -468,7 +468,8 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
         <span className="mb-3 flex-shrink-0 text-[11px] font-medium text-text-4 md:hidden">Swipe to browse</span>
       </div>
       <div ref={carouselRef}
-        className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar"
+        className="flex gap-3 overflow-x-auto pb-2 no-scrollbar"
+        style={{ scrollSnapType: isInteracting || pointerDownRef.current ? 'x mandatory' : 'none' }}
         onMouseEnter={() => { setIsHovered(true); pauseForInteraction(); }}
         onMouseLeave={() => { setIsHovered(false); resumeAfterInteraction(); }}
         onPointerDown={handlePointerDown}
