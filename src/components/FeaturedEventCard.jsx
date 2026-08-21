@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { isEventExpired } from './EventCard';
 
 const ENTRY_PILL = {
   free:  'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]',
@@ -13,8 +14,9 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
   if (!ev) return null;
 
   const slug      = ev.slug || ev.id;
-  const pillStyle = ENTRY_PILL[ev.entryType] || ENTRY_PILL.free;
-  const pillLabel = ENTRY_LABEL[ev.entryType] || 'Free';
+  const expired   = isEventExpired(ev);
+  const pillStyle = expired ? 'bg-[#FEE2E2] text-[#991B1B] border-[#FECACA]' : (ENTRY_PILL[ev.entryType] || ENTRY_PILL.free);
+  const pillLabel = expired ? 'Expired' : (ENTRY_LABEL[ev.entryType] || 'Free');
 
   return (
     <motion.div

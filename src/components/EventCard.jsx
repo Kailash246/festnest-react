@@ -82,6 +82,43 @@ function getPrizeAmount(event) {
   return main && main !== '—' ? main : null;
 }
 
+function parseEventDate(value) {
+  if (!value) return null;
+
+  const asDate = new Date(value);
+  if (!isNaN(asDate.getTime())) return asDate;
+
+  const match = String(value).trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+  if (!match) return null;
+
+  const [, day, monthText, year] = match;
+  const monthIndex = new Date(`${monthText} 1, ${year}`).getMonth();
+  const date = new Date(Number(year), monthIndex, Number(day));
+  return isNaN(date.getTime()) ? null : date;
+}
+
+export function isEventExpired(event) {
+  if (!event) return false;
+
+  const now = new Date();
+  const start = parseEventDate(event.startDate || event.date?.start || event.date);
+  const end = parseEventDate(event.endDate || event.date?.end || '');
+
+  if (end) {
+    const endAt = new Date(end);
+    endAt.setHours(23, 59, 59, 999);
+    return endAt < now;
+  }
+
+  if (start) {
+    const startAt = new Date(start);
+    startAt.setHours(23, 59, 59, 999);
+    return startAt < now;
+  }
+
+  return false;
+}
+
 const PrizeBadge = ({ amount, featured }) => (
   <motion.span
     whileHover={{ scale: 1.04 }}
@@ -127,8 +164,9 @@ export default function EventCard({ event, onDelete, featured }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleting,    setDeleting]    = useState(false);
   const [detailHover, setDetailHover] = useState(false);
+  const expired = isEventExpired(event);
   const hasPrize   = event.entryType === 'prize' || event.badgeClass === 'badge-prize';
-  const prizeAmount = hasPrize ? getPrizeAmount(event) : null;
+  const prizeAmount = !expired && hasPrize ? getPrizeAmount(event) : null;
   // Only apply premium style when the parent explicitly opts in via featured={true}
   const isFeaturedCard = featured === true;
 
@@ -286,7 +324,19 @@ export default function EventCard({ event, onDelete, featured }) {
           }}>
             {event.name}
           </h3>
-          {hasPrize && prizeAmount && <PrizeBadge amount={prizeAmount} featured={isFeaturedCard} />}
+          {expired ? (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              background: '#FEE2E2', color: '#991B1B', border: '1px solid #FECACA',
+              borderRadius: 999, fontSize: 10, fontWeight: 800,
+              padding: '3px 8px', letterSpacing: '0.04em', whiteSpace: 'nowrap',
+              textTransform: 'uppercase', flexShrink: 0,
+            }}>
+              Expired
+            </span>
+          ) : prizeAmount ? (
+            <PrizeBadge amount={prizeAmount} featured={isFeaturedCard} />
+          ) : null}
         </div>
 
         {/* 2. Location — college + city, once */}
