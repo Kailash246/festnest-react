@@ -350,8 +350,116 @@ function CompetitionDetails({ competition, index, onClose }) {
   );
 }
 
-function CompetitionSection({ competitions, onOpen }) {
+function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const carouselRef = useRef(null);
+  const manualScrollTimeoutRef = useRef(null);
+  const pointerDownRef = useRef(false);
+  const focusedRef = useRef(false);
+  const autoScrollingRef = useRef(false);
+  const autoScrollUntilRef = useRef(0);
+  const reducedMotionRef = useRef(false);
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => {
+      reducedMotionRef.current = media.matches;
+      setPrefersReducedMotion(media.matches);
+    };
+    updatePreference();
+    media.addEventListener?.('change', updatePreference);
+    return () => media.removeEventListener?.('change', updatePreference);
+  }, []);
+
+  useEffect(() => () => clearTimeout(manualScrollTimeoutRef.current), []);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel || competitions.length < 2 || prefersReducedMotion || selectedCompetitionIsOpen) return undefined;
+
+    let frameId;
+    let previousTime;
+    const pixelsPerSecond = 18;
+    const getLoopWidth = () => {
+      const cardWidth = carousel.firstElementChild?.getBoundingClientRect().width || 0;
+      return competitions.length * (cardWidth + 12);
+    };
+
+    const animate = time => {
+      if (previousTime === undefined) previousTime = time;
+      const elapsed = Math.min(time - previousTime, 50);
+      previousTime = time;
+
+      const canAutoScroll = !isHovered && !isInteracting && !pointerDownRef.current && !focusedRef.current;
+      if (canAutoScroll) {
+        const loopWidth = getLoopWidth();
+        autoScrollingRef.current = true;
+        autoScrollUntilRef.current = performance.now() + 80;
+        carousel.scrollLeft += pixelsPerSecond * elapsed / 1000;
+        if (loopWidth > 0 && carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth;
+        autoScrollingRef.current = false;
+      }
+      frameId = window.requestAnimationFrame(animate);
+    };
+
+    frameId = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [competitions.length, isHovered, isInteracting, prefersReducedMotion, selectedCompetitionIsOpen]);
+
+  const pauseForInteraction = () => setIsInteracting(true);
+  const resumeAfterInteraction = () => {
+    clearTimeout(manualScrollTimeoutRef.current);
+    manualScrollTimeoutRef.current = setTimeout(() => {
+      if (!pointerDownRef.current && !focusedRef.current) setIsInteracting(false);
+    }, 450);
+  };
+
+  const handleScroll = event => {
+    const carousel = event.currentTarget;
+    const cardWidth = carousel.firstElementChild?.getBoundingClientRect().width || 0;
+    const loopWidth = competitions.length * (cardWidth + 12);
+    if (loopWidth > 0 && carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth;
+    if (loopWidth > 0 && carousel.scrollLeft < 0) carousel.scrollLeft += loopWidth;
+
+    const index = Math.round(carousel.scrollLeft / (cardWidth + 12)) % competitions.length;
+    setActiveIndex(index < 0 ? index + competitions.length : index);
+
+    if (autoScrollingRef.current || performance.now() < autoScrollUntilRef.current) return;
+
+    pauseForInteraction();
+    clearTimeout(manualScrollTimeoutRef.current);
+    manualScrollTimeoutRef.current = setTimeout(() => {
+      if (!pointerDownRef.current && !focusedRef.current) setIsInteracting(false);
+    }, 450);
+  };
+
+  const handlePointerDown = event => {
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    pointerDownRef.current = true;
+    pauseForInteraction();
+  };
+  const handlePointerUp = () => {
+    pointerDownRef.current = false;
+    resumeAfterInteraction();
+  };
+  const handleFocus = () => {
+    focusedRef.current = true;
+    pauseForInteraction();
+  };
+  const handleBlur = event => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      focusedRef.current = false;
+      resumeAfterInteraction();
+    }
+  };
+  const handleWheel = () => {
+    pauseForInteraction();
+    resumeAfterInteraction();
+  };
+
   if (!competitions.length) return null;
   return (
     <div className="mb-6 min-w-0">
@@ -359,16 +467,24 @@ function CompetitionSection({ competitions, onOpen }) {
         <SectionHeading>Individual Competitions</SectionHeading>
         <span className="mb-3 flex-shrink-0 text-[11px] font-medium text-text-4 md:hidden">Swipe to browse</span>
       </div>
-      <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar md:grid md:grid-cols-2 md:overflow-visible"
-        onScroll={e => {
-          const cardWidth = e.currentTarget.firstElementChild?.getBoundingClientRect().width || 1;
-          setActiveIndex(Math.min(competitions.length - 1, Math.round(e.currentTarget.scrollLeft / (cardWidth + 12))));
-        }}>
-        {competitions.map((competition, index) => (
-          <button type="button" key={competition._id || `${competition.name}-${index}`} onClick={() => onOpen(index)}
-            className="w-[min(84vw,290px)] flex-shrink-0 snap-start rounded-lg border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_4px_12px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 md:w-auto">
+      <div ref={carouselRef}
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar"
+        onMouseEnter={() => { setIsHovered(true); pauseForInteraction(); }}
+        onMouseLeave={() => { setIsHovered(false); resumeAfterInteraction(); }}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onWheel={handleWheel}
+        onScroll={handleScroll}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        tabIndex={-1}>
+        {(competitions.length > 1 ? [...competitions, ...competitions] : competitions).map((competition, index) => {
+          const competitionIndex = index % competitions.length;
+          return <button type="button" key={`${competition._id || competition.name}-${index}`} onClick={() => onOpen(competitionIndex)}
+            className="w-[min(84vw,290px)] flex-shrink-0 snap-start rounded-lg border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_4px_12px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 md:w-[290px]">
             <div className="mb-3 flex items-start gap-3">
-              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[11px] font-bold text-primary">{index + 1}</span>
+              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[11px] font-bold text-primary">{competitionIndex + 1}</span>
               <div className="min-w-0 flex-1">
                 <div className="font-display text-[15px] font-bold leading-snug text-text-1">{competition.name}</div>
                 {competition.eligibility && <div className="mt-1 line-clamp-1 text-[11px] font-semibold text-primary">{competition.eligibility}</div>}
@@ -379,8 +495,8 @@ function CompetitionSection({ competitions, onOpen }) {
               <div><div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Venue</div><div className="mt-0.5 truncate text-[12px] font-semibold text-text-1">{competition.venue || 'See details'}</div></div>
             </div>
             <div className="mt-4 text-[12px] font-bold text-primary">Tap for details <span aria-hidden>→</span></div>
-          </button>
-        ))}
+          </button>;
+        })}
       </div>
       {competitions.length > 1 && (
         <div className="mt-3 flex justify-center gap-1.5 md:hidden" aria-label={`${competitions.length} competitions available`}>
@@ -860,7 +976,11 @@ export default function EventDetails() {
             />
           )}
 
-          <CompetitionSection competitions={individualCompetitions} onOpen={setSelectedCompetition} />
+          <CompetitionSection
+            competitions={individualCompetitions}
+            onOpen={setSelectedCompetition}
+            selectedCompetitionIsOpen={selectedCompetition !== null}
+          />
 
           {/* Highlights / What You Get */}
           {ev.highlights?.length > 0 && (
