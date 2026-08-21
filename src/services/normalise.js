@@ -32,6 +32,7 @@ export function normaliseEvent(ev) {
       perks:       base.perks       ?? ev.perks        ?? '',
       mode:        base.mode        ?? ev.mode         ?? '',
       competitions: base.competitions ?? ev.competitions ?? [],
+      hostedBy:    base.hostedBy    ?? ev.hostedBy    ?? '',
       endDate:     base.endDate     ?? ev.date?.end    ?? ev.endDate ?? '',
       registrationUrl: base.registrationUrl ?? ev.registrationUrl ?? '#',
     };
@@ -115,6 +116,7 @@ export function normaliseEvent(ev) {
     perks:       ev.perks       || '',
     mode:        ev.mode        || '',
     competitions: Array.isArray(ev.competitions) ? ev.competitions : [],
+    hostedBy:     ev.hostedBy || '',
   };
 }
 

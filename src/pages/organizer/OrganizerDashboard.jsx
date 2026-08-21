@@ -315,7 +315,7 @@ const EMPTY_COMPETITION = {
   venue: '', teamSize: '', format: '', duration: '', rules: '', registrationLink: '',
 };
 
-function CompetitionManager({ eventKey, eventName, showToast }) {
+export function CompetitionManager({ eventKey, eventName, showToast }) {
   const [competitions, setCompetitions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);

@@ -11,6 +11,7 @@ import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
 import FeaturedEventCard from '../components/FeaturedEventCard';
+import { CompetitionManager } from './organizer/OrganizerDashboard';
 import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { sanitizeText } from '../utils/sanitize';
 
@@ -542,7 +543,7 @@ export default function EventDetails() {
   const { id }   = useParams();
   const navigate     = useNavigate();
   const navType      = useNavigationType();
-  const { savedEvents, toggleSave, showToast, requireAuth } = useApp();
+  const { savedEvents, toggleSave, showToast, requireAuth, currentUser, isAdmin } = useApp();
 
   const [ev,            setEv]            = useState(null);
   const [related,       setRelated]       = useState([]);
@@ -711,6 +712,11 @@ export default function EventDetails() {
   const individualCompetitions = Array.isArray(ev.competitions)
     ? ev.competitions.filter(item => item && competitionValue(item.name))
     : [];
+  const ownerId = typeof ev.hostedBy === 'object' ? ev.hostedBy?._id : ev.hostedBy;
+  const currentUserId = currentUser?._id || currentUser?.id;
+  const canManageCompetitions = Boolean(
+    (ownerId && currentUserId && String(ownerId) === String(currentUserId)) || isAdmin
+  );
 
   /* ── SEO ── */
   const canonicalUrl = `${SITE_URL}/event/${ev.slug || ev.id}`;
@@ -844,6 +850,14 @@ export default function EventDetails() {
                 </button>
               )}
             </div>
+          )}
+
+          {canManageCompetitions && (
+            <CompetitionManager
+              eventKey={ev.slug || ev.id}
+              eventName={ev.name}
+              showToast={showToast}
+            />
           )}
 
           <CompetitionSection competitions={individualCompetitions} onOpen={setSelectedCompetition} />
