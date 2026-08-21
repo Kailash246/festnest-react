@@ -6,7 +6,7 @@ import {
   LayoutDashboard, CalendarDays, Lightbulb, Clock, CheckCircle2, XCircle,
   Filter, Star, Plus, User, Camera, Target, Trophy, Link2, ClipboardList,
   PenLine, Phone, FileText, MapPin, Tag, Users, IndianRupee, Mail,
-  Code2, Music4, Wrench, Mic, Zap, PartyPopper, Search,
+  Code2, Music4, Wrench, Mic, Zap, PartyPopper, Search, X, Trash2,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { users as usersApi, events as eventsApi } from '../../services/api';
@@ -258,7 +258,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
               <div className="flex gap-2 pt-1">
                 {ev.status === 'approved' && ev.linkedEvent && (
                   <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-                    onClick={() => onView(ev.linkedEvent)}
+                    onClick={() => onView(ev.linkedEvent.slug || ev.linkedEvent._id || ev.linkedEvent)}
                     className="flex-1 py-2.5 bg-primary text-white rounded-lg text-[12px] font-bold
                                hover:bg-primary-dark transition-all flex items-center justify-center gap-1.5">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -289,6 +289,14 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
                 </motion.button>
               </div>
 
+              {ev.status === 'approved' && ev.linkedEvent && (
+                <CompetitionManager
+                  eventKey={ev.linkedEvent.slug || ev.linkedEvent._id || ev.linkedEvent}
+                  eventName={ev.eventName}
+                  showToast={showToast}
+                />
+              )}
+
               <div className="text-[10px] text-text-4 text-center pt-0.5">
                 Submitted {new Date(ev.createdAt).toLocaleString('en-IN', {
                   day: 'numeric', month: 'short', year: 'numeric'
@@ -299,6 +307,130 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
         )}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+const EMPTY_COMPETITION = {
+  name: '', description: '', eligibility: '', registrationFee: '', prizeDetails: '',
+  venue: '', teamSize: '', format: '', duration: '', rules: '', registrationLink: '',
+};
+
+function CompetitionManager({ eventKey, eventName, showToast }) {
+  const [competitions, setCompetitions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState(EMPTY_COMPETITION);
+  const [saving, setSaving] = useState(false);
+
+  const loadCompetitions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await eventsApi.get(eventKey);
+      setCompetitions(response.data?.event?.competitions || []);
+    } catch (error) {
+      showToast(error.message || 'Could not load competitions', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [eventKey, showToast]);
+
+  useEffect(() => { loadCompetitions(); }, [loadCompetitions]);
+
+  const openEditor = competition => {
+    setEditingId(competition?._id || null);
+    setForm(competition ? { ...EMPTY_COMPETITION, ...competition } : { ...EMPTY_COMPETITION });
+    setEditorOpen(true);
+  };
+
+  const save = async event => {
+    event.preventDefault();
+    if (!form.name.trim()) return showToast('Competition name is required', 'error');
+    setSaving(true);
+    try {
+      if (editingId) await eventsApi.updateCompetition(eventKey, editingId, form);
+      else await eventsApi.addCompetition(eventKey, form);
+      setEditorOpen(false);
+      await loadCompetitions();
+      showToast(editingId ? 'Competition updated' : 'Competition added', 'success');
+    } catch (error) {
+      showToast(error.message || 'Could not save competition', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async id => {
+    if (!window.confirm('Delete this competition?')) return;
+    try {
+      await eventsApi.deleteCompetition(eventKey, id);
+      setCompetitions(current => current.filter(item => item._id !== id));
+      showToast('Competition deleted', 'success');
+    } catch (error) {
+      showToast(error.message || 'Could not delete competition', 'error');
+    }
+  };
+
+  const update = (key, value) => setForm(current => ({ ...current, [key]: value }));
+
+  return (
+    <div className="border-t border-border pt-4">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Individual Competitions</div>
+          <div className="text-[12px] text-text-3 mt-0.5">Manage sub-events inside {eventName}</div>
+        </div>
+        <span className="text-[11px] font-semibold text-text-4">{competitions.length}</span>
+      </div>
+
+      {loading ? <div className="h-20 rounded-lg bg-surface-2 animate-pulse" /> : (
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {competitions.map((competition, index) => (
+            <div key={competition._id} className="flex items-start gap-2.5 rounded-lg border border-border bg-surface p-3">
+              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[11px] font-bold text-primary">{index + 1}</div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[13px] font-bold text-text-1">{competition.name}</div>
+                <div className="mt-1 truncate text-[11px] text-text-3">{competition.registrationFee || 'Free'}{competition.venue ? ` · ${competition.venue}` : ''}</div>
+                <div className="mt-2 flex gap-3">
+                  <button type="button" onClick={() => openEditor(competition)} className="text-[11px] font-semibold text-primary hover:underline">Edit</button>
+                  <button type="button" onClick={() => remove(competition._id)} className="text-[11px] font-semibold text-red hover:underline">Delete</button>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button type="button" onClick={() => openEditor()} className="flex min-h-[104px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#C7D2FE] bg-primary-xlight p-3 text-center text-primary transition-colors hover:border-primary hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+            <Plus size={20} strokeWidth={2.2} />
+            <span className="mt-1 text-[12px] font-bold">Add Competition</span>
+            <span className="mt-0.5 text-[10px] text-primary/70">Create a sub-event card</span>
+          </button>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {editorOpen && (
+          <motion.div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/45 p-0 md:items-center md:p-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditorOpen(false)}>
+            <motion.form onSubmit={save} onClick={event => event.stopPropagation()} initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} className="flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white md:max-w-[620px] md:rounded-xl" role="dialog" aria-modal="true" aria-labelledby="competition-form-title">
+              <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+                <div className="min-w-0 flex-1"><h3 id="competition-form-title" className="font-display text-[18px] font-bold text-text-1">{editingId ? 'Edit Competition' : 'Add Competition'}</h3><p className="text-[12px] text-text-3">For {eventName}</p></div>
+                <button type="button" onClick={() => setEditorOpen(false)} aria-label="Close competition form" className="flex h-8 w-8 items-center justify-center rounded-md bg-surface-2 text-text-2"><X size={17} /></button>
+              </div>
+              <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-5">
+                {[
+                  ['name', 'Competition Name', true], ['description', 'Description'], ['eligibility', 'Eligibility'], ['registrationFee', 'Registration Fee'],
+                  ['prizeDetails', 'Prize Details'], ['venue', 'Venue'], ['teamSize', 'Team Size'], ['format', 'Format'], ['duration', 'Duration / Match Format'],
+                  ['registrationLink', 'Registration Link'], ['rules', 'Rules / Additional Details'],
+                ].map(([key, label, required]) => (
+                  <label key={key} className="block text-[12px] font-semibold text-text-1">{label}{required && <span className="ml-1 text-red">*</span>}
+                    {key === 'description' || key === 'rules' ? <textarea value={form[key]} onChange={event => update(key, event.target.value)} rows={key === 'rules' ? 4 : 3} maxLength={key === 'rules' ? 1500 : 1000} className="mt-1.5 w-full resize-y rounded-md border-[1.5px] border-[#CBCBC6] px-3 py-2.5 text-[13px] font-normal outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" /> : <input required={required} value={form[key]} onChange={event => update(key, event.target.value)} maxLength={key === 'name' ? 120 : 500} className="mt-1.5 w-full rounded-md border-[1.5px] border-[#CBCBC6] px-3 py-2.5 text-[13px] font-normal outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" />}
+                  </label>
+                ))}
+              </div>
+              <div className="flex gap-3 border-t border-border bg-white px-5 py-3"><button type="button" onClick={() => setEditorOpen(false)} className="flex-1 rounded-md border-[1.5px] border-border py-2.5 text-[13px] font-semibold text-text-2">Cancel</button><button type="submit" disabled={saving} className="flex-1 rounded-md bg-primary py-2.5 text-[13px] font-bold text-white disabled:opacity-60">{saving ? 'Saving…' : editingId ? 'Save Changes' : 'Add Competition'}</button></div>
+            </motion.form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

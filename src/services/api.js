@@ -169,6 +169,9 @@ export const events = {
   register:          (slug) => post(`/events/${slug}/register`),
   cancelRegistration:(slug) => del(`/events/${slug}/register`),
   host:              (fd)   => post('/events/host', fd),
+  addCompetition:    (eventId, body) => post(`/events/${eventId}/competitions`, body),
+  updateCompetition: (eventId, id, body) => patch(`/events/${eventId}/competitions/${id}`, body),
+  deleteCompetition: (eventId, id) => del(`/events/${eventId}/competitions/${id}`),
   stats:             ()    => get('/events/stats'),
 };
 

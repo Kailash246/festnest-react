@@ -27,11 +27,6 @@ const MODES = [
   { id: 'Hybrid',  label: 'Hybrid',  Icon: Layers,    desc: 'Both formats'    },
 ];
 
-const emptyCompetition = () => ({
-  name: '', description: '', eligibility: '', registrationFee: '', prizeDetails: '',
-  venue: '', teamSize: '', format: '', duration: '', rules: '', registrationLink: '',
-});
-
 const STEPS = [
   { n: 1, label: 'Basic Info',   Icon: ClipboardList },
   { n: 2, label: 'Date & Venue', Icon: MapPin },
@@ -249,11 +244,11 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
 const DRAFT_KEY = 'fn_host_draft';
 const DRAFT_TTL = 60 * 60 * 1000; // 60 minutes
 
-function persistDraft(step, f, competitions = []) {
+function persistDraft(step, f) {
   try {
     const empty = !f.title && !f.description && !f.category && !f.college && !f.startDate;
     if (empty) return;
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), step, f, competitions }));
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), step, f }));
   } catch {}
 }
 function retrieveDraft() {
@@ -286,7 +281,6 @@ export default function HostEvent() {
   const [submitting,setSubmitting]= useState(false);
   const [done,      setDone]      = useState(false);
   const [hasPrize,  setHasPrize]  = useState(false);
-  const [competitions, setCompetitions] = useState([]);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors,    setErrors]    = useState({});
   const [draftBanner, setDraftBanner] = useState(null); // detected draft waiting for resume/discard
@@ -332,13 +326,13 @@ export default function HostEvent() {
   useEffect(() => {
     clearTimeout(draftAutoRef.current);
     draftAutoRef.current = setTimeout(() => {
-      persistDraft(step, f, competitions);
+      persistDraft(step, f);
       setDraftSaved(true);
       clearTimeout(draftIndicRef.current);
       draftIndicRef.current = setTimeout(() => setDraftSaved(false), 2000);
     }, 800);
     return () => clearTimeout(draftAutoRef.current);
-  }, [f, competitions, step]);
+  }, [f, step]);
 
   // When posterFile changes, create a stable preview URL
   useEffect(() => {
@@ -357,10 +351,6 @@ export default function HostEvent() {
     const dot = v.indexOf('.');
     if (dot !== -1) v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, '');
     upd(k, v);
-  };
-
-  const updateCompetition = (index, key, value) => {
-    setCompetitions(current => current.map((item, i) => i === index ? { ...item, [key]: value } : item));
   };
 
   /* ── Validation rules ── */
@@ -516,7 +506,6 @@ export default function HostEvent() {
       fd.append('pocEmail',        f.email);
       fd.append('website',         f.website);
       fd.append('perks',           f.perks);
-      fd.append('individualCompetitions', JSON.stringify(competitions));
       if (posterFile)   fd.append('bannerImage', posterFile);
       if (brochureFile) fd.append('brochure',    brochureFile);
 
@@ -644,7 +633,6 @@ export default function HostEvent() {
                   onClick={() => {
                     setF(draftBanner.f);
                     setHasPrize(!!draftBanner.f.totalPrize);
-                    setCompetitions(Array.isArray(draftBanner.competitions) ? draftBanner.competitions : []);
                     setStep(draftBanner.step);
                     setDraftBanner(null);
                     showToast('Draft restored ✓', 'success');

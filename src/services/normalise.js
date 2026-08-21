@@ -31,7 +31,7 @@ export function normaliseEvent(ev) {
       rules:       base.rules       ?? ev.rules        ?? '',
       perks:       base.perks       ?? ev.perks        ?? '',
       mode:        base.mode        ?? ev.mode         ?? '',
-      individualCompetitions: base.individualCompetitions ?? ev.individualCompetitions ?? [],
+      competitions: base.competitions ?? ev.competitions ?? [],
       endDate:     base.endDate     ?? ev.date?.end    ?? ev.endDate ?? '',
       registrationUrl: base.registrationUrl ?? ev.registrationUrl ?? '#',
     };
@@ -114,7 +114,7 @@ export function normaliseEvent(ev) {
     rules:       ev.rules       || '',
     perks:       ev.perks       || '',
     mode:        ev.mode        || '',
-    individualCompetitions: Array.isArray(ev.individualCompetitions) ? ev.individualCompetitions : [],
+    competitions: Array.isArray(ev.competitions) ? ev.competitions : [],
   };
 }
 

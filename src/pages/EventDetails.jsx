@@ -708,8 +708,8 @@ export default function EventDetails() {
   const website       = ev.website     || ev.registrationUrl || '';
   const mode          = ev.mode        || '';
   const brochureUrl   = ev.brochureUrl || '';
-  const individualCompetitions = Array.isArray(ev.individualCompetitions)
-    ? ev.individualCompetitions.filter(item => item && competitionValue(item.name))
+  const individualCompetitions = Array.isArray(ev.competitions)
+    ? ev.competitions.filter(item => item && competitionValue(item.name))
     : [];
 
   /* ── SEO ── */
