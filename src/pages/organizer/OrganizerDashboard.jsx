@@ -897,8 +897,9 @@ export default function OrganizerDashboard() {
   const { isLoggedIn, currentUser, requireAuth, showToast } = useApp();
 
   const isOrganizer  = currentUser?.role === 'organizer';
+  const isAdmin      = currentUser?.role === 'admin';
   const isSuperAdmin = currentUser?.role === 'superadmin';
-  const canAccess    = isOrganizer || isSuperAdmin;
+  const canAccess    = isOrganizer || isAdmin || isSuperAdmin;
 
   const [activeTab,       setActiveTab]       = useState('overview');
   const [events,          setEvents]          = useState([]);
