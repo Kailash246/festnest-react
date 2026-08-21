@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react
 import { createPortal } from 'react-dom';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import EventCard from '../components/EventCard';
+import EventCard, { sortEventsByStatus } from '../components/EventCard';
 import Seo from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
@@ -130,12 +130,15 @@ export default function Explore() {
     return true;
   });
 
+  let sortFn = (a, b) => a.deadlineDays - b.deadlineDays;
   switch (sheetFilters.sort) {
-    case 'Oldest':          filtered.sort((a, b) => b.deadlineDays - a.deadlineDays); break;
-    case 'Most Registered': filtered.sort((a, b) => b.registrationCount - a.registrationCount); break;
-    case 'Deadline Soon':   filtered.sort((a, b) => a.deadlineDays - b.deadlineDays); break;
-    default: break;
+    case 'Oldest':          sortFn = (a, b) => b.deadlineDays - a.deadlineDays; break;
+    case 'Most Registered': sortFn = (a, b) => b.registrationCount - a.registrationCount; break;
+    case 'Deadline Soon':   sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
+    default:                sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
   }
+  filtered.sort(sortFn);
+  filtered = sortEventsByStatus(filtered, sortFn);
 
   /* Category counts from loaded data */
   const catCounts = allEvents.reduce((acc, ev) => {

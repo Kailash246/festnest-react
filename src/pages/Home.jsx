@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin, PartyPopper, Compass } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import EventCard from '../components/EventCard';
+import EventCard, { isEventExpired, sortEventsByStatus } from '../components/EventCard';
 import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
@@ -119,13 +119,17 @@ function applyFilters(events, chipCategory, sheetFilters, searchVal) {
     else if (sheetFilters.entry === 'Prize Pool') result = result.filter(ev => ev.entryType === 'prize');
   }
   if (sheetFilters.city) result = result.filter(ev => ev.city === sheetFilters.city);
+
+  let sortFn = (a, b) => a.deadlineDays - b.deadlineDays;
   switch (sheetFilters.sort) {
-    case 'Oldest':          result.sort((a, b) => b.deadlineDays - a.deadlineDays); break;
-    case 'Most Registered': result.sort((a, b) => b.registrationCount - a.registrationCount); break;
-    case 'Deadline Soon':   result.sort((a, b) => a.deadlineDays - b.deadlineDays); break;
-    default:                result.sort((a, b) => a.deadlineDays - b.deadlineDays); break;
+    case 'Oldest':          sortFn = (a, b) => b.deadlineDays - a.deadlineDays; break;
+    case 'Most Registered': sortFn = (a, b) => b.registrationCount - a.registrationCount; break;
+    case 'Deadline Soon':   sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
+    default:                sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
   }
-  return result;
+
+  result.sort(sortFn);
+  return sortEventsByStatus(result, sortFn);
 }
 
 /* ─────────────────────────────────────────
@@ -215,11 +219,15 @@ export default function Home() {
     sheetFilters.city
   );
   const _filtered = applyFilters(allEvents, chipCategory, sheetFilters, searchVal);
+  const expiredEvents = _filtered.filter(ev => isEventExpired(ev));
+  const activeVisible = _filtered.filter(ev => !isEventExpired(ev));
+
   const displayedEvents = isFiltered
     ? _filtered
     : [
-        ..._filtered.filter(ev => ev.isFeatured).sort((a, b) => a.featuredOrder - b.featuredOrder),
-        ..._filtered.filter(ev => !ev.isFeatured),
+        ...activeVisible.filter(ev => ev.isFeatured).sort((a, b) => a.featuredOrder - b.featuredOrder),
+        ...activeVisible.filter(ev => !ev.isFeatured),
+        ...expiredEvents,
       ];
 
   const activeSheetCount = [sheetFilters.category, sheetFilters.entry, sheetFilters.city].filter(Boolean).length;

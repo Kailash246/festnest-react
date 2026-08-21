@@ -119,6 +119,23 @@ export function isEventExpired(event) {
   return false;
 }
 
+export function sortEventsByStatus(events, comparator) {
+  const active = [];
+  const expired = [];
+
+  events.forEach(event => {
+    if (event && isEventExpired(event)) expired.push(event);
+    else active.push(event);
+  });
+
+  if (comparator) {
+    active.sort(comparator);
+    expired.sort(comparator);
+  }
+
+  return [...active, ...expired];
+}
+
 const PrizeBadge = ({ amount, featured }) => (
   <motion.span
     whileHover={{ scale: 1.04 }}
