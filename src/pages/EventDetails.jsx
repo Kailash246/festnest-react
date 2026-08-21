@@ -5,6 +5,7 @@ import {
   Users, AlertTriangle, HelpCircle, CalendarDays, Clock, MapPin,
   Monitor, Globe, Building2, Trophy, IndianRupee, Gift, ScrollText, Phone,
   Star, FileText, Download,
+  X, ExternalLink,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
@@ -280,6 +281,115 @@ const SectionHeading = ({ children }) => (
   <h2 className="font-display font-bold text-[17px] text-text-1 tracking-snug mb-3">{children}</h2>
 );
 
+const competitionValue = value => String(value || '').trim();
+
+function CompetitionDetails({ competition, index, onClose }) {
+  const rows = [
+    ['Eligibility', competition.eligibility],
+    ['Format', competition.format],
+    ['Team Size', competition.teamSize],
+    ['Registration Fee', competition.registrationFee || 'Free'],
+    ['Prize Details', competition.prizeDetails],
+    ['Venue', competition.venue],
+    ['Duration / Match Format', competition.duration],
+  ].filter(([, value]) => competitionValue(value));
+
+  return (
+    <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-0 md:items-center md:p-5"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+      role="presentation">
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+        onClick={e => e.stopPropagation()}
+        className="flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.18)] md:max-w-[560px] md:rounded-xl md:shadow-[0_12px_40px_rgba(0,0,0,0.2)]"
+        role="dialog" aria-modal="true" aria-labelledby="competition-dialog-title">
+        <div className="flex-shrink-0 border-b border-border px-5 pb-4 pt-3 md:pt-5">
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[#CBCBC6] md:hidden" />
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[13px] font-bold text-primary">{index + 1}</div>
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-primary">Competition details</div>
+              <h3 id="competition-dialog-title" className="mt-1 font-display text-[20px] font-bold leading-tight text-text-1">{competition.name}</h3>
+            </div>
+            <button type="button" onClick={onClose} aria-label="Close competition details"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-surface-2 text-text-2 hover:bg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+          {competition.description && <MultilineText text={sanitizeText(competition.description)} className="mb-5 text-[14px] text-text-2" />}
+          <div className="divide-y divide-border rounded-lg border border-border">
+            {rows.map(([label, value]) => (
+              <div key={label} className="flex items-start justify-between gap-5 px-4 py-3 text-[13px]">
+                <span className="font-semibold text-text-3">{label}</span>
+                <span className="max-w-[62%] text-right font-semibold leading-snug text-text-1">{sanitizeText(value)}</span>
+              </div>
+            ))}
+          </div>
+          {competition.rules && (
+            <div className="mt-5">
+              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-text-4">Additional details / rules</div>
+              <MultilineText text={sanitizeText(competition.rules)} className="text-[14px] text-text-2" />
+            </div>
+          )}
+          {isValidExternalUrl(competition.registrationLink) && (
+            <button type="button" onClick={() => openExternalRegistrationLink(competition.registrationLink)}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-primary py-3 text-[14px] font-bold text-white hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+              Register for this competition <ExternalLink size={15} />
+            </button>
+          )}
+        </div>
+        <div className="flex-shrink-0 border-t border-border bg-white px-5 py-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] md:pb-3">
+          <button type="button" onClick={onClose} className="w-full rounded-md border-[1.5px] border-border py-2.5 text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Close</button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function CompetitionSection({ competitions, onOpen }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  if (!competitions.length) return null;
+  return (
+    <div className="mb-6 min-w-0">
+      <div className="flex items-end justify-between gap-3">
+        <SectionHeading>Individual Competitions</SectionHeading>
+        <span className="mb-3 flex-shrink-0 text-[11px] font-medium text-text-4 md:hidden">Swipe to browse</span>
+      </div>
+      <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar md:grid md:grid-cols-2 md:overflow-visible"
+        onScroll={e => {
+          const cardWidth = e.currentTarget.firstElementChild?.getBoundingClientRect().width || 1;
+          setActiveIndex(Math.min(competitions.length - 1, Math.round(e.currentTarget.scrollLeft / (cardWidth + 12))));
+        }}>
+        {competitions.map((competition, index) => (
+          <button type="button" key={competition._id || `${competition.name}-${index}`} onClick={() => onOpen(index)}
+            className="w-[min(84vw,290px)] flex-shrink-0 snap-start rounded-lg border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_4px_12px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 md:w-auto">
+            <div className="mb-3 flex items-start gap-3">
+              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[11px] font-bold text-primary">{index + 1}</span>
+              <div className="min-w-0 flex-1">
+                <div className="font-display text-[15px] font-bold leading-snug text-text-1">{competition.name}</div>
+                {competition.eligibility && <div className="mt-1 line-clamp-1 text-[11px] font-semibold text-primary">{competition.eligibility}</div>}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 border-t border-border pt-3">
+              <div><div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Fee</div><div className="mt-0.5 truncate text-[12px] font-semibold text-text-1">{competition.registrationFee || 'Free'}</div></div>
+              <div><div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Venue</div><div className="mt-0.5 truncate text-[12px] font-semibold text-text-1">{competition.venue || 'See details'}</div></div>
+            </div>
+            <div className="mt-4 text-[12px] font-bold text-primary">Tap for details <span aria-hidden>→</span></div>
+          </button>
+        ))}
+      </div>
+      {competitions.length > 1 && (
+        <div className="mt-3 flex justify-center gap-1.5 md:hidden" aria-label={`${competitions.length} competitions available`}>
+          {competitions.map((competition, index) => <span key={competition._id || `${competition.name}-dot-${index}`} className={`h-1.5 rounded-full transition-all ${index === activeIndex ? 'w-5 bg-primary' : 'w-1.5 bg-border'}`} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── Prize podium card ── */
 const PrizePodium = ({ prizes }) => {
   const { first, second, third, total, pool } = prizes;
@@ -452,6 +562,7 @@ export default function EventDetails() {
   const [featuredEvs,     setFeaturedEvs]     = useState([]);
   const [featuredLoading, setFeaturedLoading] = useState(true);
   const [lightboxOpen,    setLightboxOpen]    = useState(false);
+  const [selectedCompetition, setSelectedCompetition] = useState(null);
 
   const heroRef = useRef(null);
   const { scrollY }   = useScroll();
@@ -493,6 +604,13 @@ export default function EventDetails() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [lightboxOpen]);
+
+  useEffect(() => {
+    if (selectedCompetition === null) return;
+    const onKey = e => { if (e.key === 'Escape') setSelectedCompetition(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedCompetition]);
 
   // After the user toggles save, trust the context Set (it's optimistically updated and
   // synced to the backend). Before any toggle, if the context Set is still loading (empty),
@@ -590,6 +708,9 @@ export default function EventDetails() {
   const website       = ev.website     || ev.registrationUrl || '';
   const mode          = ev.mode        || '';
   const brochureUrl   = ev.brochureUrl || '';
+  const individualCompetitions = Array.isArray(ev.individualCompetitions)
+    ? ev.individualCompetitions.filter(item => item && competitionValue(item.name))
+    : [];
 
   /* ── SEO ── */
   const canonicalUrl = `${SITE_URL}/event/${ev.slug || ev.id}`;
@@ -724,6 +845,8 @@ export default function EventDetails() {
               )}
             </div>
           )}
+
+          <CompetitionSection competitions={individualCompetitions} onOpen={setSelectedCompetition} />
 
           {/* Highlights / What You Get */}
           {ev.highlights?.length > 0 && (
@@ -1002,6 +1125,17 @@ export default function EventDetails() {
           </motion.button>
         </div>
       </div>
+
+      {/* ══ COMPETITION DETAILS ══ */}
+      <AnimatePresence>
+        {selectedCompetition !== null && individualCompetitions[selectedCompetition] && (
+          <CompetitionDetails
+            competition={individualCompetitions[selectedCompetition]}
+            index={selectedCompetition}
+            onClose={() => setSelectedCompetition(null)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ══ IMAGE LIGHTBOX ══ */}
       <AnimatePresence>

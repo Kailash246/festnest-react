@@ -27,6 +27,11 @@ const MODES = [
   { id: 'Hybrid',  label: 'Hybrid',  Icon: Layers,    desc: 'Both formats'    },
 ];
 
+const emptyCompetition = () => ({
+  name: '', description: '', eligibility: '', registrationFee: '', prizeDetails: '',
+  venue: '', teamSize: '', format: '', duration: '', rules: '', registrationLink: '',
+});
+
 const STEPS = [
   { n: 1, label: 'Basic Info',   Icon: ClipboardList },
   { n: 2, label: 'Date & Venue', Icon: MapPin },
@@ -244,11 +249,11 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
 const DRAFT_KEY = 'fn_host_draft';
 const DRAFT_TTL = 60 * 60 * 1000; // 60 minutes
 
-function persistDraft(step, f) {
+function persistDraft(step, f, competitions = []) {
   try {
     const empty = !f.title && !f.description && !f.category && !f.college && !f.startDate;
     if (empty) return;
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), step, f }));
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), step, f, competitions }));
   } catch {}
 }
 function retrieveDraft() {
@@ -281,6 +286,7 @@ export default function HostEvent() {
   const [submitting,setSubmitting]= useState(false);
   const [done,      setDone]      = useState(false);
   const [hasPrize,  setHasPrize]  = useState(false);
+  const [competitions, setCompetitions] = useState([]);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors,    setErrors]    = useState({});
   const [draftBanner, setDraftBanner] = useState(null); // detected draft waiting for resume/discard
@@ -326,13 +332,13 @@ export default function HostEvent() {
   useEffect(() => {
     clearTimeout(draftAutoRef.current);
     draftAutoRef.current = setTimeout(() => {
-      persistDraft(step, f);
+      persistDraft(step, f, competitions);
       setDraftSaved(true);
       clearTimeout(draftIndicRef.current);
       draftIndicRef.current = setTimeout(() => setDraftSaved(false), 2000);
     }, 800);
     return () => clearTimeout(draftAutoRef.current);
-  }, [f, step]);
+  }, [f, competitions, step]);
 
   // When posterFile changes, create a stable preview URL
   useEffect(() => {
@@ -351,6 +357,10 @@ export default function HostEvent() {
     const dot = v.indexOf('.');
     if (dot !== -1) v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, '');
     upd(k, v);
+  };
+
+  const updateCompetition = (index, key, value) => {
+    setCompetitions(current => current.map((item, i) => i === index ? { ...item, [key]: value } : item));
   };
 
   /* ── Validation rules ── */
@@ -506,6 +516,7 @@ export default function HostEvent() {
       fd.append('pocEmail',        f.email);
       fd.append('website',         f.website);
       fd.append('perks',           f.perks);
+      fd.append('individualCompetitions', JSON.stringify(competitions));
       if (posterFile)   fd.append('bannerImage', posterFile);
       if (brochureFile) fd.append('brochure',    brochureFile);
 
@@ -549,7 +560,7 @@ export default function HostEvent() {
             className="px-8 py-3.5 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
             Back to Home
           </button>
-          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setTermsAccepted(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
+          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setCompetitions([]); setTermsAccepted(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
             className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-md text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
             Post Another Event
           </button>
@@ -633,6 +644,7 @@ export default function HostEvent() {
                   onClick={() => {
                     setF(draftBanner.f);
                     setHasPrize(!!draftBanner.f.totalPrize);
+                    setCompetitions(Array.isArray(draftBanner.competitions) ? draftBanner.competitions : []);
                     setStep(draftBanner.step);
                     setDraftBanner(null);
                     showToast('Draft restored ✓', 'success');
@@ -863,6 +875,68 @@ export default function HostEvent() {
                 <Textarea label="Rules"
                   placeholder="Important rules, dos and don'ts..."
                   rows={3} value={f.rules} onChange={e => upd('rules', e.target.value)} />
+              </SectionCard>
+
+              <SectionCard icon={<Trophy size={16} strokeWidth={1.8} className="text-primary" />} title="Individual Competitions" sub="Optional — add the competitions inside your main event">
+                {competitions.length === 0 ? (
+                  <div className="rounded-md border border-dashed border-[#CBCBC6] bg-[#FAFAF9] px-4 py-5 text-center">
+                    <div className="text-[13px] font-semibold text-text-2">No individual competitions added</div>
+                    <div className="text-[12px] text-text-3 mt-1">Keep this empty for a single-format event.</div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {competitions.map((competition, index) => (
+                      <div key={index} className="rounded-lg border border-[#E4E4E0] bg-[#FAFAF9] p-4 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-light text-[11px] font-bold text-primary">{index + 1}</div>
+                          <div className="flex-1 text-[13px] font-bold text-text-1">Competition {index + 1}</div>
+                          <button type="button" onClick={() => setCompetitions(current => current.filter((_, i) => i !== index))}
+                            className="rounded-md px-2 py-1 text-[12px] font-semibold text-red hover:bg-red-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red/30">
+                            Remove
+                          </button>
+                        </div>
+                        <Input label="Competition Name" required maxLength={120} placeholder="e.g. Solo Dance"
+                          value={competition.name} onChange={e => updateCompetition(index, 'name', e.target.value)} />
+                        <Textarea label="Short Description" rows={2} maxLength={1000} placeholder="What will participants do?"
+                          value={competition.description} onChange={e => updateCompetition(index, 'description', e.target.value)} />
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <Input label="Eligibility / Category" maxLength={300} placeholder="e.g. Open to all"
+                            value={competition.eligibility} onChange={e => updateCompetition(index, 'eligibility', e.target.value)} />
+                          <Input label="Registration Fee" maxLength={40} placeholder='e.g. ₹300 or Free'
+                            value={competition.registrationFee} onChange={e => updateCompetition(index, 'registrationFee', e.target.value)} />
+                          <Input label="Venue" maxLength={160} placeholder="e.g. Main Auditorium"
+                            value={competition.venue} onChange={e => updateCompetition(index, 'venue', e.target.value)} />
+                          <Input label="Team Size" maxLength={80} placeholder="e.g. Solo or 5–8"
+                            value={competition.teamSize} onChange={e => updateCompetition(index, 'teamSize', e.target.value)} />
+                          <Input label="Format / Type" maxLength={120} placeholder="e.g. Knockout, Solo"
+                            value={competition.format} onChange={e => updateCompetition(index, 'format', e.target.value)} />
+                          <Input label="Duration / Match Format" maxLength={120} placeholder="e.g. 4 rounds"
+                            value={competition.duration} onChange={e => updateCompetition(index, 'duration', e.target.value)} />
+                        </div>
+                        <Input label="Prize Details" maxLength={300} placeholder="e.g. ₹8,000 for winner"
+                          value={competition.prizeDetails} onChange={e => updateCompetition(index, 'prizeDetails', e.target.value)} />
+                        <Input label="Registration Link" type="url" maxLength={500} placeholder="https://..."
+                          value={competition.registrationLink} onChange={e => updateCompetition(index, 'registrationLink', e.target.value)} />
+                        <Textarea label="Additional Details / Rules" rows={2} maxLength={1500}
+                          value={competition.rules} onChange={e => updateCompetition(index, 'rules', e.target.value)} />
+                        {competitions.length > 1 && (
+                          <div className="flex gap-2 pt-1">
+                            <button type="button" disabled={index === 0}
+                              onClick={() => setCompetitions(current => { const next = [...current]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next; })}
+                              className="rounded-md border border-border px-3 py-1.5 text-[12px] font-semibold text-text-2 disabled:opacity-40">Move up</button>
+                            <button type="button" disabled={index === competitions.length - 1}
+                              onClick={() => setCompetitions(current => { const next = [...current]; [next[index], next[index + 1]] = [next[index + 1], next[index]]; return next; })}
+                              className="rounded-md border border-border px-3 py-1.5 text-[12px] font-semibold text-text-2 disabled:opacity-40">Move down</button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <button type="button" onClick={() => setCompetitions(current => [...current, emptyCompetition()])}
+                  className="w-full rounded-md border-[1.5px] border-primary bg-primary-light py-2.5 text-[13px] font-bold text-primary hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                  + Add Competition
+                </button>
               </SectionCard>
 
               {draftSaved && (
