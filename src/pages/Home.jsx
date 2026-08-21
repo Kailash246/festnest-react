@@ -184,7 +184,9 @@ export default function Home() {
     Promise.all([eventsApi.trending(), eventsApi.urgent()])
       .then(([tr, ur]) => {
         const t = normaliseEvents(tr.data.events);
-        const u = normaliseEvents(ur.data.events);
+        const u = normaliseEvents(ur.data.events)
+          .filter(ev => !isEventExpired(ev) && (ev.deadlineDays ?? 0) > 0)
+          .sort((a, b) => (a.deadlineDays ?? 0) - (b.deadlineDays ?? 0));
         setTrending(t);
         setUrgent(u);
         secEvents = { trending: t, urgent: u };
@@ -420,7 +422,7 @@ export default function Home() {
 
       {secLoading ? <SkeletonHScroll count={4} wide /> : (
         <div className="flex gap-3 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
-          {urgent.map((ev) => (
+          {urgent.filter(ev => !isEventExpired(ev) && (ev.deadlineDays ?? 0) > 0).map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
               onClick={() => {
                 sessionStorage.setItem('feed_scroll_origin', pathname);
