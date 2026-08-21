@@ -195,7 +195,7 @@ export default function MobileDrawer() {
             {/* Footer */}
             <div className="flex-shrink-0 border-t border-[#E4E4E0] px-3 py-3
                             pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
-              <div className="pb-3 text-center">
+              <div className="hidden">
                 <p className="text-[11px] font-medium text-[#6B6B67] leading-snug">
                   Built by Students, for Students <span aria-label="love" role="img">❤️</span>
                 </p>
