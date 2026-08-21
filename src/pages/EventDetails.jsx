@@ -266,12 +266,12 @@ const StatPill = ({ icon, value, label }) => (
 );
 
 /* ── InfoCell ── */
-const InfoCell = ({ icon, label, value, accent }) => (
-  <div className={`rounded-md p-4 flex flex-col gap-1.5 border ${accent ? 'bg-primary-light border-[#C7D2FE]' : 'bg-surface border-border'}`}>
+const InfoCell = ({ icon, label, value, accent, className = '', valueClassName = '' }) => (
+  <div className={`rounded-md p-4 flex flex-col gap-1.5 border ${accent ? 'bg-primary-light border-[#C7D2FE]' : 'bg-surface border-border'} ${className}`}>
     <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider uppercase text-text-4">
       <span className="flex-shrink-0">{icon}</span>{label}
     </div>
-    <div className={`text-[13px] font-semibold leading-snug ${accent ? 'text-primary' : 'text-text-1'}`}>{value}</div>
+    <div className={`text-[13px] font-semibold leading-snug ${accent ? 'text-primary' : 'text-text-1'} ${valueClassName}`}>{value}</div>
   </div>
 );
 
@@ -699,13 +699,13 @@ export default function EventDetails() {
           )}
 
           {/* Info grid */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {ev.startDate && <InfoCell icon={<CalendarDays size={13} strokeWidth={1.8} />} label="Date"    value={ev.startDate} />}
-            {ev.time      && <InfoCell icon={<Clock size={13} strokeWidth={1.8} />}        label="Time"    value={ev.time} />}
-            {ev.venue     && <InfoCell icon={<MapPin size={13} strokeWidth={1.8} />}       label="Venue"   value={ev.venue} accent />}
-            {ev.teamSize  && <InfoCell icon={<Users size={13} strokeWidth={1.8} />}        label="Team"    value={ev.teamSize} />}
-            {ev.endDate   && <InfoCell icon={<CalendarDays size={13} strokeWidth={1.8} />} label="End Date" value={ev.endDate} />}
+          <div className="grid grid-cols-1 gap-3 mb-6 md:grid-cols-2">
+            {ev.startDate && <InfoCell icon={<CalendarDays size={13} strokeWidth={1.8} />} label="Date" value={ev.startDate} />}
             {mode         && <InfoCell icon={mode==='Online' ? <Monitor size={13} strokeWidth={1.8} /> : mode==='Hybrid' ? <Globe size={13} strokeWidth={1.8} /> : <Building2 size={13} strokeWidth={1.8} />} label="Mode" value={mode} />}
+            {ev.venue     && <InfoCell icon={<MapPin size={13} strokeWidth={1.8} />} label="Venue" value={ev.venue} accent className="md:col-span-2" valueClassName="break-words [overflow-wrap:anywhere]" />}
+            {ev.time      && <InfoCell icon={<Clock size={13} strokeWidth={1.8} />} label="Time" value={ev.time} />}
+            {ev.teamSize  && <InfoCell icon={<Users size={13} strokeWidth={1.8} />} label="Team" value={ev.teamSize} />}
+            {ev.endDate   && <InfoCell icon={<CalendarDays size={13} strokeWidth={1.8} />} label="End Date" value={ev.endDate} />}
           </div>
 
           {/* About */}
