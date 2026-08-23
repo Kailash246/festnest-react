@@ -397,7 +397,9 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
       if (canAutoScroll) {
         const loopWidth = getLoopWidth();
         autoScrollingRef.current = true;
-        autoScrollUntilRef.current = performance.now() + 80;
+        // Native scroll events can be delivered after the frame that changed
+        // scrollLeft; keep them classified as automatic for this short window.
+        autoScrollUntilRef.current = performance.now() + 250;
         carousel.scrollLeft += pixelsPerSecond * elapsed / 1000;
         if (loopWidth > 0 && carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth;
         autoScrollingRef.current = false;
@@ -437,7 +439,8 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
   };
 
   const handlePointerDown = event => {
-    event.currentTarget.setPointerCapture?.(event.pointerId);
+    // Capture touch/pen drags, but leave mouse clicks on native button cards untouched.
+    if (event.pointerType !== 'mouse') event.currentTarget.setPointerCapture?.(event.pointerId);
     pointerDownRef.current = true;
     pauseForInteraction();
   };
@@ -469,7 +472,10 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
       </div>
       <div ref={carouselRef}
         className="flex gap-3 overflow-x-auto pb-2 no-scrollbar"
-        style={{ scrollSnapType: isInteracting || pointerDownRef.current ? 'x mandatory' : 'none' }}
+        style={{
+          scrollBehavior: 'auto',
+          scrollSnapType: isInteracting || pointerDownRef.current ? 'x mandatory' : 'none',
+        }}
         onMouseEnter={() => { setIsHovered(true); pauseForInteraction(); }}
         onMouseLeave={() => { setIsHovered(false); resumeAfterInteraction(); }}
         onPointerDown={handlePointerDown}
