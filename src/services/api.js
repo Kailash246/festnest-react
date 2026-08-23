@@ -123,7 +123,9 @@ function statusFallback(status) {
 
 const get   = (path, opts)       => request(path, { method: 'GET', ...opts });
 const post  = (path, body, opts) => request(path, { method: 'POST',   body: body instanceof FormData ? body : JSON.stringify(body), ...opts });
-const patch = (path, body, opts) => request(path, { method: 'PATCH',  body: JSON.stringify(body), ...opts });
+// Preserve multipart bodies for endpoints such as live-event edits. JSON
+// stringifying FormData produces `{}`, which silently drops every field.
+const patch = (path, body, opts) => request(path, { method: 'PATCH',  body: body instanceof FormData ? body : JSON.stringify(body), ...opts });
 const del   = (path, body, opts) => request(path, { method: 'DELETE', body: body ? JSON.stringify(body) : undefined, ...opts });
 
 /* ─── Auth ───────────────────────────────────────────────── */
