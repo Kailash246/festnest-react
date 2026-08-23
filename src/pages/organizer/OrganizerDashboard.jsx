@@ -315,7 +315,7 @@ const EMPTY_COMPETITION = {
   venue: '', teamSize: '', format: '', duration: '', rules: '', registrationLink: '',
 };
 
-export function CompetitionManager({ eventKey, eventName, showToast }) {
+export function CompetitionManager({ eventKey, eventName, showToast, onCompetitionsChanged }) {
   const [competitions, setCompetitions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -352,6 +352,7 @@ export function CompetitionManager({ eventKey, eventName, showToast }) {
       else await eventsApi.addCompetition(eventKey, form);
       setEditorOpen(false);
       await loadCompetitions();
+      onCompetitionsChanged?.();
       showToast(editingId ? 'Competition updated' : 'Competition added', 'success');
     } catch (error) {
       showToast(error.message || 'Could not save competition', 'error');
@@ -365,6 +366,7 @@ export function CompetitionManager({ eventKey, eventName, showToast }) {
     try {
       await eventsApi.deleteCompetition(eventKey, id);
       setCompetitions(current => current.filter(item => item._id !== id));
+      onCompetitionsChanged?.();
       showToast('Competition deleted', 'success');
     } catch (error) {
       showToast(error.message || 'Could not delete competition', 'error');

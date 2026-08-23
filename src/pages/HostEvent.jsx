@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
@@ -200,7 +200,7 @@ function UploadZone({ id, label, hint, accept, Icon: UpIcon, file, onFile, onRem
 }
 
 /* ─── Navigation buttons ─────────────────────────────── */
-function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, nextLabel, submitAllowed = true }) {
+function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, nextLabel, submitAllowed = true, submitLabel = 'Submit Event for Review' }) {
   return (
     <div className="flex gap-3 pt-2">
       {step > 1 && (
@@ -227,7 +227,7 @@ function NavButtons({ step, totalSteps, onBack, onNext, onSubmit, submitting, ne
             ${!submitAllowed ? 'opacity-55 cursor-not-allowed hover:bg-[#16A34A] hover:shadow-none' : ''}`}>
           {submitting
             ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-            : <><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg> Submit Event for Review</>
+            : <><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg> {submitLabel}</>
           }
         </motion.button>
       )}
@@ -275,11 +275,14 @@ function minsLeft(savedAt) {
 ═══════════════════════════════════════════════════════ */
 export default function HostEvent() {
   const navigate   = useNavigate();
-  const { showToast, requireAuth, isLoggedIn } = useApp();
+  const { id: editEventId } = useParams();
+  const isEditMode = Boolean(editEventId);
+  const { showToast, requireAuth, isLoggedIn, currentUser } = useApp();
 
   const [step,      setStep]      = useState(1);
   const [submitting,setSubmitting]= useState(false);
   const [done,      setDone]      = useState(false);
+  const [editLoading, setEditLoading] = useState(isEditMode);
   const [hasPrize,  setHasPrize]  = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors,    setErrors]    = useState({});
@@ -299,9 +302,10 @@ export default function HostEvent() {
 
   // Detect an existing draft on first render
   useEffect(() => {
+    if (isEditMode) return;
     const d = retrieveDraft();
     if (d) setDraftBanner(d);
-  }, []);
+  }, [isEditMode]);
 
   /* ── Form state ── */
   const [f, setF] = useState({
@@ -324,6 +328,7 @@ export default function HostEvent() {
 
   // Auto-save draft whenever form content or step changes (debounced 800ms)
   useEffect(() => {
+    if (isEditMode) return undefined;
     clearTimeout(draftAutoRef.current);
     draftAutoRef.current = setTimeout(() => {
       persistDraft(step, f);
@@ -332,7 +337,49 @@ export default function HostEvent() {
       draftIndicRef.current = setTimeout(() => setDraftSaved(false), 2000);
     }, 800);
     return () => clearTimeout(draftAutoRef.current);
-  }, [f, step]);
+  }, [f, step, isEditMode]);
+
+  // Reuse this form for live-event edits. The server remains authoritative:
+  // it rechecks ownership and approval before accepting the PATCH.
+  useEffect(() => {
+    if (!isEditMode) return undefined;
+    let cancelled = false;
+    eventsApi.get(editEventId)
+      .then(response => {
+        const event = response.data?.event;
+        const ownerId = typeof event?.hostedBy === 'object' ? event.hostedBy?._id : event?.hostedBy;
+        const userId = currentUser?._id || currentUser?.id;
+        if (!event || !ownerId || !userId || String(ownerId) !== String(userId) || event.isActive === false || event.isApproved === false) {
+          throw new Error('You are not allowed to edit this event.');
+        }
+        if (cancelled) return;
+        const asDateInput = value => {
+          if (!value) return '';
+          const date = new Date(value);
+          return Number.isNaN(date.getTime()) ? String(value).slice(0, 10) : date.toISOString().slice(0, 10);
+        };
+        const price = String(event.price?.display || '');
+        const isPaid = event.entryType === 'paid';
+        const hasExistingPrize = event.entryType === 'prize' || Boolean(event.totalPrize);
+        setF({
+          title: event.name || '', description: event.about || '', category: event.category || '', mode: event.mode || 'Offline',
+          startDate: asDateInput(event.date?.start), endDate: asDateInput(event.date?.end), college: event.college || '', cityState: event.city || '', venue: event.venue || '',
+          prize1: event.prize1 || '', prize2: event.prize2 || '', prize3: event.prize3 || '', totalPrize: event.totalPrize || '',
+          regFee: isPaid ? price.replace(/[^0-9.]/g, '') : 'Free', regLink: event.registrationUrl || '', perks: event.perks || '',
+          eligibility: event.eligibility || '', rules: event.rules || '', pocName: event.pocName || '', phone: event.pocPhone || '', email: event.pocEmail || '', website: event.website || '',
+        });
+        setHasPrize(hasExistingPrize);
+        setEditLoading(false);
+      })
+      .catch(error => {
+        if (!cancelled) {
+          setEditLoading(false);
+          showToast(error.message || 'Unable to load this event for editing.', 'error');
+          navigate(`/event/${editEventId}`, { replace: true });
+        }
+      });
+    return () => { cancelled = true; };
+  }, [isEditMode, editEventId, currentUser, navigate, showToast]);
 
   // When posterFile changes, create a stable preview URL
   useEffect(() => {
@@ -386,7 +433,8 @@ export default function HostEvent() {
         errs.endDate = 'End date cannot be before the start date';
       if (!f.college.trim())                       errs.college   = 'College / Organization is required';
       else if (f.college.trim().length > 100)      errs.college   = 'Organizer name cannot exceed 100 characters';
-      if (f.cityState && f.cityState.length > 200) errs.cityState = 'Location cannot exceed 200 characters';
+      if (!f.cityState.trim())                     errs.cityState = 'City / State is required';
+      else if (f.cityState.length > 200)           errs.cityState = 'Location cannot exceed 200 characters';
     }
     if (s === 3) {
       if (hasPrize) {
@@ -420,7 +468,7 @@ export default function HostEvent() {
         if (brochureFile.type !== 'application/pdf') errs.brochure = 'Brochure must be a PDF file';
         else if (brochureFile.size > 10 * 1024 * 1024) errs.brochure = 'Brochure size cannot exceed 10 MB';
       }
-      if (!termsAccepted) errs.termsAgreement = 'Please agree to the Terms of Hosting and Privacy Policy to continue.';
+      if (!isEditMode && !termsAccepted) errs.termsAgreement = 'Please agree to the Terms of Hosting and Privacy Policy to continue.';
     }
     return errs;
   };
@@ -509,9 +557,15 @@ export default function HostEvent() {
       if (posterFile)   fd.append('bannerImage', posterFile);
       if (brochureFile) fd.append('brochure',    brochureFile);
 
-      await eventsApi.host(fd);
-      purgeDraft();
-      setDone(true);
+      if (isEditMode) {
+        const response = await eventsApi.update(editEventId, fd);
+        showToast('Event updated successfully.', 'success');
+        navigate(`/event/${response.data?.event?.slug || editEventId}`, { replace: true });
+      } else {
+        await eventsApi.host(fd);
+        purgeDraft();
+        setDone(true);
+      }
     } catch (e) {
       showToast(e.message || 'Submission failed — please try again', 'error');
     } finally {
@@ -549,13 +603,22 @@ export default function HostEvent() {
             className="px-8 py-3.5 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
             Back to Home
           </button>
-          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setCompetitions([]); setTermsAccepted(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
+          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setTermsAccepted(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
             className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-md text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
             Post Another Event
           </button>
         </div>
       </motion.div>
     </motion.div>
+  );
+
+  if (editLoading) return (
+    <div className="flex min-h-[70vh] items-center justify-center bg-[#F8F8F6]">
+      <div className="text-center">
+        <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <p className="text-[13px] font-medium text-text-3">Loading event details…</p>
+      </div>
+    </div>
   );
 
   /* ── Header banner ── */
@@ -568,10 +631,10 @@ export default function HostEvent() {
           <span className="text-white/80 text-[13px] font-semibold tracking-wide uppercase">FestNest</span>
         </div>
         <h1 className="font-display font-bold text-[22px] md:text-[26px] text-white tracking-tight leading-tight mb-1">
-          Post Your Event
+          {isEditMode ? 'Edit Event' : 'Post Your Event'}
         </h1>
         <p className="text-white/75 text-[14px]">
-          Reach <span className="text-white font-bold">48,000+</span> students across India.
+          {isEditMode ? 'Update your live event details. Changes are published immediately.' : <>Reach <span className="text-white font-bold">48,000+</span> students across India.</>}
         </p>
       </div>
     </div>
@@ -596,9 +659,9 @@ export default function HostEvent() {
       className="bg-[#F8F8F6] min-h-screen w-full overflow-x-hidden">
 
       <Seo
-        title="Post Your Event"
-        description="Hosting a hackathon, fest, or workshop? Submit your college event to FestNest and reach 48,000+ students across India for free."
-        canonical="/host"
+        title={isEditMode ? 'Edit Event' : 'Post Your Event'}
+        description={isEditMode ? 'Update your live FestNest event.' : 'Hosting a hackathon, fest, or workshop? Submit your college event to FestNest and reach 48,000+ students across India for free.'}
+        canonical={isEditMode ? `/event/${editEventId}/edit` : '/host'}
       />
 
       <div className="px-4 pt-6 pb-24 md:px-6 md:pt-10
@@ -612,7 +675,7 @@ export default function HostEvent() {
 
           {/* ── Draft restore banner ── */}
           <AnimatePresence>
-            {draftBanner && (
+            {!isEditMode && draftBanner && (
               <motion.div
                 key="draft-banner"
                 initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
@@ -989,7 +1052,7 @@ export default function HostEvent() {
               </SectionCard>
 
               {/* Pre-submit checklist */}
-              <div className="bg-white border border-[#E4E4E0] rounded-lg p-5 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+              {!isEditMode && <div className="bg-white border border-[#E4E4E0] rounded-lg p-5 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-6 h-6 rounded-full bg-[#F0FDF4] flex items-center justify-center">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1011,7 +1074,7 @@ export default function HostEvent() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div>}
 
               {/* Event summary card */}
               <div className="bg-primary-light border border-[#C7D2FE] rounded-lg p-5">
@@ -1045,7 +1108,7 @@ export default function HostEvent() {
                   Draft autosaved
                 </div>
               )}
-              <div className={`rounded-md border-[1.5px] px-4 py-3.5 ${errors.termsAgreement ? 'border-red bg-red-bg/40' : 'border-[#E4E4E0] bg-white'}`}>
+              {!isEditMode && <div className={`rounded-md border-[1.5px] px-4 py-3.5 ${errors.termsAgreement ? 'border-red bg-red-bg/40' : 'border-[#E4E4E0] bg-white'}`}>
                 <div className="flex items-start gap-3">
                   <input
                     id="host-termsAgreement"
@@ -1074,14 +1137,15 @@ export default function HostEvent() {
                     {errors.termsAgreement}
                   </p>
                 )}
-              </div>
+              </div>}
               <NavButtons
                 step={step}
                 totalSteps={5}
                 onBack={goBack}
                 onSubmit={submit}
                 submitting={submitting}
-                submitAllowed={termsAccepted}
+                submitAllowed={isEditMode || termsAccepted}
+                submitLabel={isEditMode ? 'Save Changes' : 'Submit Event for Review'}
               />
             </motion.div>
           )}

@@ -110,6 +110,7 @@ export default function App() {
               <Route path="/college"       element={<MyCollege />} />
               <Route path="/leaderboard"   element={<Leaderboard />} />
               <Route path="/host"          element={<HostEvent />} />
+              <Route path="/event/:id/edit" element={<HostEvent />} />
               <Route path="/about"         element={<AboutFounder />} />
               <Route path="/support"       element={<Support />} />
               <Route path="/discover"      element={<HubPage />} />
@@ -121,7 +122,7 @@ export default function App() {
               <Route path="/blog/how-to-win-startup-pitch-competition"               element={<WinningPitch />} />
               <Route path="/blog/best-colleges-for-inter-college-competitions-india" element={<TopColleges />} />
               <Route path="/blog/best-college-events-india-2025"                     element={<BestCollegeEvents />} />
-              <Route path="/event/:id"     element={<EventDetails />} />
+              <Route path="/event/:id"      element={<EventDetails />} />
               <Route path="/admin"         element={<AdminDashboard />} />
               <Route path="/organizer"    element={<OrganizerDashboard />} />
               <Route path="*"             element={<Navigate to="/home" replace />} />

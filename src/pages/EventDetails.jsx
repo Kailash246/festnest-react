@@ -666,7 +666,7 @@ export default function EventDetails() {
   const { id }   = useParams();
   const navigate     = useNavigate();
   const navType      = useNavigationType();
-  const { savedEvents, toggleSave, showToast, requireAuth, currentUser, isAdmin } = useApp();
+  const { savedEvents, toggleSave, showToast, requireAuth, currentUser } = useApp();
 
   const [ev,            setEv]            = useState(null);
   const [related,       setRelated]       = useState([]);
@@ -837,9 +837,10 @@ export default function EventDetails() {
     : [];
   const ownerId = typeof ev.hostedBy === 'object' ? ev.hostedBy?._id : ev.hostedBy;
   const currentUserId = currentUser?._id || currentUser?.id;
-  const canManageCompetitions = Boolean(
-    (ownerId && currentUserId && String(ownerId) === String(currentUserId)) || isAdmin
-  );
+  const isLiveEvent = ev.isActive !== false && ev.isApproved !== false;
+  const isEventOwner = Boolean(ownerId && currentUserId && String(ownerId) === String(currentUserId));
+  const canEditEvent = isEventOwner && isLiveEvent;
+  const canManageCompetitions = canEditEvent;
 
   /* ── SEO ── */
   const canonicalUrl = `${SITE_URL}/event/${ev.slug || ev.id}`;
@@ -887,6 +888,14 @@ export default function EventDetails() {
             Back
           </motion.button>
           <div className="flex items-center gap-2">
+            {canEditEvent && (
+              <motion.button whileTap={{ scale: 0.94 }} onClick={() => navigate(`/event/${ev.slug || ev.id}/edit`)}
+                className="flex h-10 items-center gap-1.5 rounded-full border border-white/60 bg-white/80 px-3 text-[12px] font-bold text-primary shadow-[0_1px_4px_rgba(0,0,0,0.1)] backdrop-blur-sm transition-all hover:bg-white"
+                aria-label="Edit event">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Edit Event
+              </motion.button>
+            )}
             <motion.button whileTap={{ scale: 0.9 }} onClick={() => {
                 if (navigator.share) {
                   navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
@@ -980,6 +989,11 @@ export default function EventDetails() {
               eventKey={ev.slug || ev.id}
               eventName={ev.name}
               showToast={showToast}
+              onCompetitionsChanged={() => {
+                eventsApi.get(ev.slug || ev.id)
+                  .then(response => setEv(normaliseEvent(response.data?.event)))
+                  .catch(() => {});
+              }}
             />
           )}
 

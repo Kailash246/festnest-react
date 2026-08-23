@@ -33,6 +33,8 @@ export function normaliseEvent(ev) {
       mode:        base.mode        ?? ev.mode         ?? '',
       competitions: base.competitions ?? ev.competitions ?? [],
       hostedBy:    base.hostedBy    ?? ev.hostedBy    ?? '',
+      isActive:    base.isActive    ?? ev.isActive    ?? true,
+      isApproved:  base.isApproved  ?? ev.isApproved  ?? true,
       endDate:     base.endDate     ?? ev.date?.end    ?? ev.endDate ?? '',
       registrationUrl: base.registrationUrl ?? ev.registrationUrl ?? '#',
     };
@@ -117,6 +119,8 @@ export function normaliseEvent(ev) {
     mode:        ev.mode        || '',
     competitions: Array.isArray(ev.competitions) ? ev.competitions : [],
     hostedBy:     ev.hostedBy || '',
+    isActive:     ev.isActive !== false,
+    isApproved:   ev.isApproved !== false,
   };
 }
 
