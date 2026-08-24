@@ -359,14 +359,10 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
   const manualScrollTimeoutRef = useRef(null);
   const pointerDownRef = useRef(false);
   const focusedRef = useRef(false);
-  const autoScrollingRef = useRef(false);
-  const autoScrollUntilRef = useRef(0);
-  const reducedMotionRef = useRef(false);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const updatePreference = () => {
-      reducedMotionRef.current = media.matches;
       setPrefersReducedMotion(media.matches);
     };
     updatePreference();
@@ -396,13 +392,8 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
       const canAutoScroll = !isHovered && !isInteracting && !pointerDownRef.current && !focusedRef.current;
       if (canAutoScroll) {
         const loopWidth = getLoopWidth();
-        autoScrollingRef.current = true;
-        // Native scroll events can be delivered after the frame that changed
-        // scrollLeft; keep them classified as automatic for this short window.
-        autoScrollUntilRef.current = performance.now() + 250;
         carousel.scrollLeft += pixelsPerSecond * elapsed / 1000;
         if (loopWidth > 0 && carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth;
-        autoScrollingRef.current = false;
       }
       frameId = window.requestAnimationFrame(animate);
     };
@@ -429,13 +420,8 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
     const index = Math.round(carousel.scrollLeft / (cardWidth + 12)) % competitions.length;
     setActiveIndex(index < 0 ? index + competitions.length : index);
 
-    if (autoScrollingRef.current || performance.now() < autoScrollUntilRef.current) return;
-
-    pauseForInteraction();
-    clearTimeout(manualScrollTimeoutRef.current);
-    manualScrollTimeoutRef.current = setTimeout(() => {
-      if (!pointerDownRef.current && !focusedRef.current) setIsInteracting(false);
-    }, 450);
+    // Scroll events are also emitted by the animation itself. Interaction is
+    // paused explicitly by pointer, touch, focus, and wheel handlers below.
   };
 
   const handlePointerDown = event => {
@@ -476,7 +462,7 @@ function CompetitionSection({ competitions, onOpen, selectedCompetitionIsOpen })
           scrollBehavior: 'auto',
           scrollSnapType: isInteracting || pointerDownRef.current ? 'x mandatory' : 'none',
         }}
-        onMouseEnter={() => { setIsHovered(true); pauseForInteraction(); }}
+        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => { setIsHovered(false); resumeAfterInteraction(); }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
