@@ -422,7 +422,7 @@ export default function Home() {
 
       {secLoading ? <SkeletonHScroll count={4} wide /> : (
         <div className="flex gap-3 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
-          {urgent.filter(ev => !isEventExpired(ev) && (ev.deadlineDays ?? 0) > 0).map((ev) => (
+          {urgent.map((ev) => (
             <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
               onClick={() => {
                 sessionStorage.setItem('feed_scroll_origin', pathname);
@@ -438,7 +438,7 @@ export default function Home() {
               <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
                 <div className="flex items-center gap-[5px] text-[10px] font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-md w-fit mb-[5px] tracking-normal">
                   <span className="w-[5px] h-[5px] bg-red rounded-full animate-pulse-fast flex-shrink-0" />
-                  {ev.deadlineDays} days left
+                  {ev.endingSoonDays === 0 ? 'Ends today' : `${ev.endingSoonDays} ${ev.endingSoonDays === 1 ? 'day' : 'days'} left`}
                 </div>
                 <div className="font-display font-bold text-[12px] text-text-1 leading-snug mb-[3px] truncate">{ev.name}</div>
                 <div className="text-[11px] text-text-3">{ev.college} · {ev.city}</div>

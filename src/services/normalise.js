@@ -72,6 +72,7 @@ export function normaliseEvent(ev) {
     endDate:      fmtDate(ev.date?.end      || ev.endDate    || ''),
     time:         ev.date?.time        || ev.time       || '',
     deadlineDays: ev.date?.deadlineDays ?? ev.deadlineDays ?? 0,
+    endingSoonDays: ev.endingSoonDays,
 
     // ── Badge (nested → flat) ──────────────────────────────────────────
     badgeText:  ev.badge?.text  || ev.badgeText  || '',
