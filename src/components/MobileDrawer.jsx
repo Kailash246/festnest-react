@@ -10,7 +10,7 @@ const getInitials = (name) =>
 
 const ROLE_LABEL = { user: 'Student', organizer: 'Organizer', admin: 'Admin', superadmin: 'Super Admin' };
 import {
-  House, Compass, Bell, Bookmark, GraduationCap, User, PlusCircle,
+  House, Compass, Bell, Bookmark, User, PlusCircle,
   Code2, Music4, Wrench, Trophy, LogOut,
   Info, HelpCircle, ClipboardList, ShieldCheck, MessageCircle,
 } from 'lucide-react';
@@ -157,7 +157,6 @@ export default function MobileDrawer() {
                 badgeStyle="bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA]" />
               <Btn onClick={() => goProtected('/saved')}   Icon={Bookmark}   label="Saved Events"
                 badge={savedCount > 0 ? savedCount : undefined} />
-              <Btn onClick={() => go('/college')}       Icon={GraduationCap} label="My College" />
               <Btn onClick={() => goProtected('/profile')} Icon={User}       label="My Profile" />
 
               {/* Organizer-only — placed right after Profile */}
