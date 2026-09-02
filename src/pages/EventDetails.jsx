@@ -755,104 +755,139 @@ return (
     />
 
     {/* ══ HERO ══ */}
-    <div ref={heroRef}
-      className={`relative w-full overflow-hidden aspect-[4/3] md:aspect-auto md:min-h-[420px] bg-gradient-to-br ${BG_GRADIENT[ev.bg] || BG_GRADIENT.bg1}`}>
-
-      {ev.imageUrl
-        ? <img src={ev.imageUrl} alt={ev.name} onClick={() => setLightboxOpen(true)}
-            className="absolute inset-0 w-full h-full object-cover cursor-zoom-in" />
-        : (
-          <motion.div style={{ y: emojiY, opacity: heroOpacity }}
-            className="absolute inset-0 flex items-center justify-center text-[160px] md:text-[220px] select-none pointer-events-none" aria-hidden>
+    <div ref={heroRef} className="relative w-full bg-white md:bg-transparent md:overflow-hidden md:min-h-[420px]">
+      {/* Poster Image / Emoji Banner */}
+      <div className={`relative w-full aspect-[16/9] sm:aspect-[2/1] md:aspect-auto md:absolute md:inset-0 md:h-full bg-gradient-to-br ${BG_GRADIENT[ev.bg] || BG_GRADIENT.bg1} overflow-hidden`}>
+        {ev.imageUrl ? (
+          <img
+            src={ev.imageUrl}
+            alt={ev.name}
+            onClick={() => setLightboxOpen(true)}
+            className="w-full h-full object-cover cursor-zoom-in"
+          />
+        ) : (
+          <motion.div
+            style={{ y: emojiY, opacity: heroOpacity }}
+            className="absolute inset-0 flex items-center justify-center text-[100px] sm:text-[140px] md:text-[220px] select-none pointer-events-none"
+            aria-hidden
+          >
             {ev.emoji}
           </motion.div>
         )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/20 md:from-black/80 md:via-black/30 md:to-black/10 pointer-events-none" />
 
-      {/* Top bar — Back / Edit / Share / Save (IDENTICAL logic) */}
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 md:px-10 md:pt-6 z-10">
-        <motion.button whileTap={{ scale: 0.92 }} onClick={handleBack}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-white/80 backdrop-blur-sm text-[13px] font-medium text-text-1 border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
-          Back
-        </motion.button>
-        <div className="flex items-center gap-2">
-          {canEditEvent && (
-            <motion.button whileTap={{ scale: 0.94 }} onClick={() => navigate(`/event/${ev.slug || ev.id}/edit`)}
-              className="flex h-10 items-center gap-1.5 rounded-full border border-white/60 bg-white/80 px-3 text-[12px] font-bold text-primary shadow-[0_1px_4px_rgba(0,0,0,0.1)] backdrop-blur-sm transition-all hover:bg-white"
-              aria-label="Edit event">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              Edit Event
+        {/* Top bar — Back / Edit / Share / Save */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 pt-3 sm:px-4 sm:pt-4 md:px-10 md:pt-6 z-20">
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            onClick={handleBack}
+            className="flex items-center gap-1.5 px-3 py-1.5 md:py-2 rounded-full md:rounded-md bg-white/90 md:bg-white/80 backdrop-blur-md text-[12px] md:text-[13px] font-medium text-text-1 border border-white/60 shadow-sm hover:bg-white transition-all"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 md:w-4 md:h-4"><path d="m15 18-6-6 6-6"/></svg>
+            Back
+          </motion.button>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {canEditEvent && (
+              <motion.button
+                whileTap={{ scale: 0.94 }}
+                onClick={() => navigate(`/event/${ev.slug || ev.id}/edit`)}
+                className="flex h-8 sm:h-9 md:h-10 items-center gap-1 sm:gap-1.5 rounded-full border border-white/60 bg-white/90 md:bg-white/80 px-2.5 sm:px-3 text-[11px] sm:text-[12px] font-bold text-primary shadow-sm backdrop-blur-md transition-all hover:bg-white"
+                aria-label="Edit event"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                <span className="hidden sm:inline">Edit Event</span>
+                <span className="sm:hidden">Edit</span>
+              </motion.button>
+            )}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
+                } else {
+                  navigator.clipboard?.writeText(window.location.href).catch(() => {});
+                  showToast('Link copied! 📋', 'success');
+                }
+              }}
+              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/90 md:bg-white/80 backdrop-blur-md flex items-center justify-center border border-white/60 shadow-sm hover:bg-white transition-all text-text-2"
+              aria-label="Share"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 md:w-[17px] md:h-[17px]"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </motion.button>
-          )}
-          <motion.button whileTap={{ scale: 0.9 }} onClick={() => {
-              if (navigator.share) {
-                navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
-              } else {
-                navigator.clipboard?.writeText(window.location.href).catch(() => {});
-                showToast('Link copied! 📋', 'success');
-              }
-            }}
-            className="w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.1)] hover:bg-white transition-all text-text-2" aria-label="Share">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          </motion.button>
-          <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.08 }} onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
-            className={`w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center border shadow-[0_1px_4px_rgba(0,0,0,0.1)] transition-all
-              ${isSaved ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-white/80 text-text-2 border-white/60 hover:bg-white'}`}
-            aria-label={isSaved ? 'Remove from saved' : 'Save event'}>
-            <svg viewBox="0 0 24 24" fill={isSaved?'currentColor':'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-          </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.08 }}
+              onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
+              className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full backdrop-blur-md flex items-center justify-center border shadow-sm transition-all
+                ${isSaved ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-white/90 md:bg-white/80 text-text-2 border-white/60 hover:bg-white'}`}
+              aria-label={isSaved ? 'Remove from saved' : 'Save event'}
+            >
+              <svg viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 md:w-[17px] md:h-[17px]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+            </motion.button>
+          </div>
         </div>
       </div>
 
-      {/* Hero bottom — badges + title + quick info pills */}
-      <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 md:px-10 md:pb-8 z-10">
+      {/* Hero Bottom / Content Block */}
+      <div className="relative px-4 pt-4 pb-4 md:absolute md:bottom-0 md:left-0 md:right-0 md:px-10 md:pb-8 md:pt-0 z-10">
         {/* Category + status badges */}
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold text-primary shadow-sm">{ev.category}</span>
-          <span className={`rounded-full px-3 py-1 text-[11px] font-bold shadow-sm ${registrationStatus === 'Registration closing soon' ? 'bg-[#FEF3C7] text-[#92400E]' : registrationStatus === 'Event ended' ? 'bg-white/80 text-text-2' : 'bg-[#DCFCE7] text-[#15803D]'}`}>{registrationStatus}</span>
+        <div className="mb-2 md:mb-3 flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-primary-light text-primary border border-[#C7D2FE] md:bg-white/90 md:text-primary md:border-transparent px-2.5 py-0.5 md:px-3 md:py-1 text-[11px] font-bold shadow-sm">
+            {ev.category}
+          </span>
+          <span className={`rounded-full px-2.5 py-0.5 md:px-3 md:py-1 text-[11px] font-bold shadow-sm ${
+            registrationStatus === 'Registration closing soon'
+              ? 'bg-[#FEF3C7] text-[#92400E]'
+              : registrationStatus === 'Event ended'
+              ? 'bg-surface-2 text-text-2 border border-border md:bg-white/80 md:border-transparent'
+              : 'bg-[#DCFCE7] text-[#15803D]'
+          }`}>
+            {registrationStatus}
+          </span>
         </div>
+
         {/* Title */}
-        <h1 className="font-heading font-bold text-white text-[26px] md:text-[40px] leading-tight tracking-tight mb-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+        <h1 className="font-heading font-bold text-text-1 md:text-white text-[22px] sm:text-[26px] md:text-[40px] leading-tight tracking-tight mb-1 drop-shadow-none md:drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] break-words">
           {ev.name}
         </h1>
-        <p className="text-white/80 text-[14px] font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)] mb-4">
+        <p className="text-text-3 md:text-white/80 text-[13px] md:text-[14px] font-medium drop-shadow-none md:drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)] mb-3.5 md:mb-4">
           {ev.college} · {ev.city}
         </p>
-        {/* Quick info pills (moved from below hero to inside hero) */}
-        <div className="flex flex-wrap gap-2">
+
+        {/* Quick info pills (grid on mobile, flex row on desktop) */}
+        <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:gap-2">
           {ev.startDate && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/15 backdrop-blur-sm border border-white/20 text-white">
-              <CalendarDays size={14} className="flex-shrink-0" />
-              <div>
-                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-white/60">Date</div>
-                <div className="text-[13px] font-semibold">{ev.endDate ? `${ev.startDate} – ${ev.endDate}` : ev.startDate}</div>
+            <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
+              <CalendarDays size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />
+              <div className="min-w-0">
+                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Date</div>
+                <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{ev.endDate ? `${ev.startDate} – ${ev.endDate}` : ev.startDate}</div>
               </div>
             </div>
           )}
           {ev.venue && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/15 backdrop-blur-sm border border-white/20 text-white">
-              <MapPin size={14} className="flex-shrink-0" />
-              <div>
-                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-white/60">Venue</div>
-                <div className="text-[13px] font-semibold">{ev.venue}</div>
+            <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
+              <MapPin size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />
+              <div className="min-w-0">
+                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Venue</div>
+                <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{ev.venue}</div>
               </div>
             </div>
           )}
           {mode && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/15 backdrop-blur-sm border border-white/20 text-white">
-              {mode === 'Online' ? <Monitor size={14} /> : <Building2 size={14} />}
-              <div>
-                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-white/60">Mode</div>
-                <div className="text-[13px] font-semibold">{mode}</div>
+            <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
+              {mode === 'Online' ? <Monitor size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" /> : <Building2 size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />}
+              <div className="min-w-0">
+                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Mode</div>
+                <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{mode}</div>
               </div>
             </div>
           )}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/15 backdrop-blur-sm border border-white/20 text-white">
-            <IndianRupee size={14} className="flex-shrink-0" />
-            <div>
-              <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-white/60">Entry</div>
-              <div className="text-[13px] font-semibold">{ev.price || 'Free'}</div>
+          <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
+            <IndianRupee size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />
+            <div className="min-w-0">
+              <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Entry</div>
+              <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{ev.price || 'Free'}</div>
             </div>
           </div>
         </div>
