@@ -269,14 +269,14 @@ const PrizePodium = ({ prizes }) => {
   ].filter(p => p.value);
 
   return (
-    <div className="mb-6">
+    <div className="mb-5">
       <SectionHeading><span className="flex items-center gap-2"><Trophy size={17} strokeWidth={1.8} className="text-amber-500" /> Prize Pool</span></SectionHeading>
       {podium.length > 0 && (
-        <div className={`grid gap-3 mb-3 ${podium.length === 1 ? 'grid-cols-1' : podium.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-3">
           {podium.map(({ rankLabel, label, value, bg, text }) => (
-            <div key={label} className={`border rounded-lg p-4 text-center ${bg}`}>
-              <div className={`text-[14px] font-bold mb-1 ${text}`}>{rankLabel}</div>
-              <div className={`font-mono font-bold text-[16px] ${text}`}>₹{Number(value.replace(/,/g,'')).toLocaleString('en-IN')}</div>
+            <div key={label} className={`border rounded-lg p-3 sm:p-4 text-center ${bg}`}>
+              <div className={`text-[13px] sm:text-[14px] font-bold mb-0.5 ${text}`}>{rankLabel}</div>
+              <div className={`font-mono font-bold text-[16px] sm:text-[18px] ${text}`}>₹{Number(value.replace(/,/g,'')).toLocaleString('en-IN')}</div>
               <div className="text-[11px] text-text-3 mt-0.5">{label}</div>
             </div>
           ))}
@@ -288,7 +288,7 @@ const PrizePodium = ({ prizes }) => {
             <IndianRupee size={18} strokeWidth={1.8} className="text-primary" />
             <span className="text-[13px] font-semibold text-primary">Total Prize Pool</span>
           </div>
-          <span className="font-mono font-bold text-[18px] text-primary">₹{total || pool}</span>
+          <span className="font-mono font-bold text-[16px] sm:text-[18px] text-primary">₹{total || pool}</span>
         </div>
       )}
     </div>
@@ -298,45 +298,50 @@ const PrizePodium = ({ prizes }) => {
 const RelatedCard = ({ ev, onClick }) => (
   <motion.button whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.10)' }} whileTap={{ scale: 0.97 }}
     onClick={onClick}
-    className="flex-shrink-0 w-[180px] bg-surface border border-border rounded-md overflow-hidden text-left cursor-pointer transition-all duration-base">
-    <div className={`w-full h-[90px] flex items-center justify-center text-[40px] ${ev.bg}`}>
+    className="flex-shrink-0 w-[160px] sm:w-[180px] bg-surface border border-border rounded-md overflow-hidden text-left cursor-pointer transition-all duration-base">
+    <div className={`w-full h-[85px] sm:h-[90px] flex items-center justify-center text-[36px] sm:text-[40px] ${ev.bg}`}>
       {ev.imageUrl ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" /> : ev.emoji}
     </div>
-    <div className="p-3">
+    <div className="p-2.5 sm:p-3">
       <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-0.5">{ev.category}</div>
-      <div className="font-heading font-bold text-[13px] text-text-1 leading-snug tracking-snug"
+      <div className="font-heading font-bold text-[12px] sm:text-[13px] text-text-1 leading-snug tracking-snug"
         style={{display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{ev.name}</div>
-      <div className="text-[11px] text-text-3 mt-1">{ev.city}</div>
+      <div className="text-[11px] text-text-3 mt-1 truncate">{ev.city}</div>
     </div>
   </motion.button>
 );
 
 function SectionNav({ items, activeId }) {
   return (
-    <nav aria-label="Event sections" className="sticky top-0 z-30 mb-7 border-y border-border bg-white/95 backdrop-blur md:top-[64px]">
-      <div className="mx-auto flex max-w-[1280px] gap-1 overflow-x-auto px-4 py-2 no-scrollbar md:px-8">
-        {items.map(item => (
-          <a
-            key={item}
-            href={`#${item.toLowerCase()}`}
-            onClick={(e) => {
-              e.preventDefault();
-              const el = document.getElementById(item.toLowerCase());
-              if (el) {
-                const offset = window.innerWidth >= 768 ? 130 : 70;
-                const y = el.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top: y, behavior: 'smooth' });
-              }
-            }}
-            className={`whitespace-nowrap rounded-md px-3 py-1.5 text-[12px] font-semibold transition-colors ${
-              activeId === item.toLowerCase()
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-text-3 hover:bg-primary-light hover:text-primary'
-            }`}
-          >
-            {item}
-          </a>
-        ))}
+    <nav aria-label="Event sections" className="sticky top-0 z-30 mb-6 border-y border-border bg-white/95 backdrop-blur-md md:top-[64px] w-full max-w-full overflow-hidden">
+      <div className="mx-auto flex max-w-[1280px] items-center gap-1.5 overflow-x-auto px-4 py-2 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8">
+        {items.map(item => {
+          const id = item.toLowerCase();
+          const isActive = activeId === id;
+          return (
+            <a
+              key={item}
+              href={`#${id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById(id);
+                if (el) {
+                  const offset = window.innerWidth >= 768 ? 130 : 70;
+                  const y = el.getBoundingClientRect().top + window.scrollY - offset;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+              }}
+              className={`flex-shrink-0 whitespace-nowrap rounded-lg px-3.5 py-2 text-[13px] font-semibold transition-all duration-fast flex items-center justify-center min-h-[38px] select-none ${
+                isActive
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-text-3 hover:bg-primary-light hover:text-primary active:bg-primary-light'
+              }`}
+            >
+              {item}
+            </a>
+          );
+        })}
+        <div className="w-4 flex-shrink-0" aria-hidden="true" />
       </div>
     </nav>
   );
@@ -898,10 +903,10 @@ return (
     <SectionNav items={navItems} activeId={activeSection} />
 
     {/* ══ MAIN CONTENT ══ */}
-    <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] px-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-9 md:px-8">
+    <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] w-full max-w-full overflow-x-hidden px-4 sm:px-6 md:px-8 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-9">
 
       {/* ── LEFT COLUMN ── */}
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-5 sm:gap-6 md:gap-7 min-w-0 w-full">
 
         {/* Tags */}
         {ev.tags?.length > 0 && (
@@ -916,11 +921,11 @@ return (
 
         {/* ── ABOUT THIS EVENT ── */}
         {safeAbout && (
-          <section id="about" ref={setSectionRef('about')} className="scroll-mt-28 rounded-xl border border-border bg-white p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+          <section id="about" ref={setSectionRef('about')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
             <SectionHeading number={1}>About this Event</SectionHeading>
             <MultilineText
               text={showFullAbout ? safeAbout : aboutShort}
-              className="text-[14px] md:text-[15px] text-text-2"
+              className="text-[14px] md:text-[15px] text-text-2 break-words"
             />
             {!showFullAbout && safeAbout.length > 240 && (
               <span className="text-[14px] md:text-[15px] text-text-2">…</span>
@@ -950,27 +955,26 @@ return (
 
         {/* ── COMPETITIONS & ACTIVITIES ── */}
         {individualCompetitions.length > 0 && (
-          <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-28 rounded-xl border border-border bg-white p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+          <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
             <SectionHeading number={2}>Competitions & Activities</SectionHeading>
-            {/* Reuse existing CompetitionSection content inline but styled inside the card */}
             <div className="text-[12px] font-medium text-text-4 mb-3">{individualCompetitions.length} available</div>
-            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar md:grid md:grid-cols-2 md:overflow-visible">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {individualCompetitions.map((competition, competitionIndex) => (
                 <button type="button" key={competition._id || competition.name} onClick={() => setSelectedCompetition(competitionIndex)}
-                  className="w-[min(84vw,310px)] flex-shrink-0 rounded-xl border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_6px_16px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 md:w-auto">
+                  className="w-full rounded-xl border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_6px_16px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
                   <div className="mb-3 flex items-start gap-3">
-                    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[12px] font-bold text-primary">{competitionIndex + 1}</span>
+                    <span className="flex h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[12px] font-bold text-primary">{competitionIndex + 1}</span>
                     <div className="min-w-0 flex-1">
-                      <div className="font-heading text-[15px] font-bold leading-snug text-text-1">{competition.name}</div>
+                      <div className="font-heading text-[15px] font-bold leading-snug text-text-1 break-words">{competition.name}</div>
                       {competition.eligibility && <div className="mt-1 line-clamp-1 text-[11px] font-semibold text-primary">{competition.eligibility}</div>}
                     </div>
                   </div>
-                  {competition.description && <p className="mb-3 line-clamp-2 text-[12px] leading-relaxed text-text-3">{sanitizeText(competition.description)}</p>}
+                  {competition.description && <p className="mb-3 line-clamp-2 text-[12px] leading-relaxed text-text-3 break-words">{sanitizeText(competition.description)}</p>}
                   <div className="grid grid-cols-2 gap-2 border-t border-border pt-3">
                     <div><div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Fee</div><div className="mt-0.5 truncate text-[12px] font-semibold text-text-1">{competition.registrationFee || 'Free'}</div></div>
                     <div><div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Venue</div><div className="mt-0.5 truncate text-[12px] font-semibold text-text-1">{competition.venue || 'See details'}</div></div>
                   </div>
-                  <div className="mt-4 text-[12px] font-bold text-primary">Tap for details <span aria-hidden>→</span></div>
+                  <div className="mt-3 text-[12px] font-bold text-primary flex items-center gap-1">Tap for details <span aria-hidden="true">→</span></div>
                 </button>
               ))}
             </div>
@@ -979,7 +983,7 @@ return (
 
         {/* ── PERKS & PRIZES (unified section) ── */}
         {(perks || hasPrizes || ev.highlights?.length > 0) && (
-          <section id="benefits" ref={setSectionRef('benefits')} className="scroll-mt-28 rounded-xl border border-border bg-white p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+          <section id="benefits" ref={setSectionRef('benefits')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
             <SectionHeading number={3}>
               <span className="flex items-center gap-2"><Gift size={18} strokeWidth={1.8} className="text-primary" /> Perks & Prizes</span>
             </SectionHeading>
@@ -992,9 +996,9 @@ return (
                   {ev.highlights.map((h, i) => (
                     <motion.div key={h} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.16, delay: i * 0.04 }}
-                      className="flex items-center gap-3 px-4 py-3 bg-surface rounded-lg border border-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:border-primary-mid hover:shadow-[0_2px_8px_rgba(79,70,229,0.09)] transition-all duration-fast">
-                      <span className="text-[20px] flex-shrink-0">{h.slice(0, 2)}</span>
-                      <span className="text-[13px] font-medium text-text-1 leading-snug">{h.slice(2).trim()}</span>
+                      className="flex items-center gap-3 px-3.5 py-2.5 sm:px-4 sm:py-3 bg-surface rounded-lg border border-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:border-primary-mid hover:shadow-[0_2px_8px_rgba(79,70,229,0.09)] transition-all duration-fast min-w-0">
+                      <span className="text-[18px] sm:text-[20px] flex-shrink-0">{h.slice(0, 2)}</span>
+                      <span className="text-[13px] font-medium text-text-1 leading-snug break-words">{h.slice(2).trim()}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -1008,7 +1012,7 @@ return (
                 <div className="flex flex-wrap gap-2">
                   {perks.split(',').map(p => p.trim()).filter(Boolean).map(perk => (
                     <span key={perk}
-                      className="px-3 py-1.5 text-[13px] font-medium bg-surface-2 border border-border rounded-md text-text-2">
+                      className="px-3 py-1.5 text-[13px] font-medium bg-surface-2 border border-border rounded-md text-text-2 break-words">
                       {perk}
                     </span>
                   ))}
@@ -1023,16 +1027,16 @@ return (
 
         {/* ── ELIGIBILITY & RULES ── */}
         {(eligibility || rules) && (
-          <section className="scroll-mt-28 rounded-xl border border-border bg-white shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden" aria-labelledby="rules-heading">
+          <section className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden" aria-labelledby="rules-heading">
             <button
               onClick={() => setRulesOpen(o => !o)}
-              className="flex items-center justify-between w-full px-5 py-4 text-left group">
+              className="flex items-center justify-between w-full p-4 sm:p-5 text-left group">
               <div className="flex items-center gap-2">
                 <ScrollText size={17} strokeWidth={1.8} className="text-text-3 flex-shrink-0" />
-                <span id="rules-heading" className="font-heading font-bold text-[17px] text-text-1">Eligibility & Rules</span>
+                <span id="rules-heading" className="font-heading font-bold text-[16px] sm:text-[17px] text-text-1">Eligibility & Rules</span>
               </div>
               <motion.div animate={{ rotate: rulesOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                <ChevronDown size={20} className="text-text-3" />
+                <ChevronDown size={18} className="text-text-3 flex-shrink-0" />
               </motion.div>
             </button>
             <AnimatePresence>
@@ -1040,17 +1044,17 @@ return (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
                   className="overflow-hidden">
-                  <div className="space-y-4 px-5 pb-5">
+                  <div className="space-y-3 sm:space-y-4 px-4 sm:px-5 pb-4 sm:pb-5">
                     {eligibility && (
-                      <div className="bg-surface rounded-lg p-4 border border-border">
-                        <div className="text-[11px] font-bold tracking-wider uppercase text-text-4 mb-2">Who can participate</div>
-                        <MultilineText text={eligibility} className="text-[14px] text-text-2" />
+                      <div className="bg-surface rounded-lg p-3.5 sm:p-4 border border-border">
+                        <div className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-text-4 mb-1.5 sm:mb-2">Who can participate</div>
+                        <MultilineText text={eligibility} className="text-[13px] sm:text-[14px] text-text-2 break-words" />
                       </div>
                     )}
                     {rules && (
-                      <div className="bg-surface rounded-lg p-4 border border-border">
-                        <div className="text-[11px] font-bold tracking-wider uppercase text-text-4 mb-2">Rules</div>
-                        <MultilineText text={rules} className="text-[14px] text-text-2" />
+                      <div className="bg-surface rounded-lg p-3.5 sm:p-4 border border-border">
+                        <div className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-text-4 mb-1.5 sm:mb-2">Rules</div>
+                        <MultilineText text={rules} className="text-[13px] sm:text-[14px] text-text-2 break-words" />
                       </div>
                     )}
                   </div>
@@ -1062,20 +1066,22 @@ return (
 
         {/* ── ORGANIZER ── */}
         {ev.orgName && (
-          <section id="organizer" ref={setSectionRef('organizer')} className="scroll-mt-28 rounded-xl border border-border bg-white p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+          <section id="organizer" ref={setSectionRef('organizer')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
             <SectionHeading number={4}>Organiser</SectionHeading>
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-surface-2 flex items-center justify-center text-[28px] flex-shrink-0 border border-border">
-                {ev.orgLogo}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-[16px] text-text-1 mb-0.5">{ev.orgName}</div>
-                <div className="text-[13px] text-text-3">{ev.orgLocation}</div>
-                {ev.orgSub && <div className="text-[12px] text-text-4 mt-0.5">{ev.orgSub}</div>}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-surface-2 flex items-center justify-center text-[24px] sm:text-[28px] flex-shrink-0 border border-border">
+                  {ev.orgLogo}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-[15px] sm:text-[16px] text-text-1 mb-0.5 break-words">{ev.orgName}</div>
+                  <div className="text-[12px] sm:text-[13px] text-text-3 truncate">{ev.orgLocation}</div>
+                  {ev.orgSub && <div className="text-[11px] sm:text-[12px] text-text-4 mt-0.5 truncate">{ev.orgSub}</div>}
+                </div>
               </div>
               <motion.button whileTap={{ scale: 0.94 }}
                 onClick={() => { setFollowed(f => !f); showToast(followed ? 'Unfollowed' : `Following ${ev.orgName} ✓`, 'success'); }}
-                className={`flex-shrink-0 px-4 py-2.5 rounded-lg text-[13px] font-semibold border transition-all duration-fast
+                className={`self-start sm:self-center flex-shrink-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-lg text-[12px] sm:text-[13px] font-semibold border transition-all duration-fast min-h-[38px]
                   ${followed ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-primary-light text-primary border-[#C7D2FE] hover:bg-primary hover:text-white'}`}>
                 {followed ? '✓ Following' : '+ Follow'}
               </motion.button>
@@ -1087,17 +1093,19 @@ return (
         {brochureUrl && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.22 }}
-            className="rounded-xl border border-[#FED7AA] bg-[#FFF7ED] p-4 shadow-[0_1px_6px_rgba(180,83,9,0.07)]">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-[#B45309]/10 flex items-center justify-center flex-shrink-0">
-                <FileText size={24} strokeWidth={1.6} className="text-[#B45309]" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-[14px] text-text-1 leading-snug">Event Brochure</div>
-                <div className="text-[12px] text-text-3 mt-0.5">PDF · Official document</div>
+            className="rounded-xl border border-[#FED7AA] bg-[#FFF7ED] p-3.5 sm:p-4 shadow-[0_1px_6px_rgba(180,83,9,0.07)]">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#B45309]/10 flex items-center justify-center flex-shrink-0">
+                  <FileText size={22} strokeWidth={1.6} className="text-[#B45309]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-[13px] sm:text-[14px] text-text-1 leading-snug truncate">Event Brochure</div>
+                  <div className="text-[11px] sm:text-[12px] text-text-3 mt-0.5 truncate">PDF · Official document</div>
+                </div>
               </div>
               <button onClick={handleDownloadBrochure}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[12px] font-semibold text-[#B45309] bg-white border border-[#FED7AA] hover:bg-[#B45309] hover:text-white transition-all duration-fast flex-shrink-0">
+                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[12px] font-semibold text-[#B45309] bg-white border border-[#FED7AA] hover:bg-[#B45309] hover:text-white transition-all duration-fast flex-shrink-0 min-h-[36px]">
                 <Download size={13} strokeWidth={2.2} />
                 <span>Download</span>
               </button>
@@ -1107,57 +1115,57 @@ return (
 
         {/* ── CONTACT INFORMATION ── */}
         {(pocName || pocPhone || pocEmail || website) && (
-          <section id="contact" ref={setSectionRef('contact')} className="scroll-mt-28 rounded-xl border border-border bg-white p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+          <section id="contact" ref={setSectionRef('contact')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
             <SectionHeading>
               <span className="flex items-center gap-2"><Phone size={17} strokeWidth={1.8} className="text-text-2" /> Contact Information</span>
             </SectionHeading>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               {pocName && (
-                <div className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border">
+                <div className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border min-w-0">
                   <div className="w-9 h-9 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
                     <UserRound size={16} className="text-primary" />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Point of Contact</div>
-                    <div className="text-[14px] font-semibold text-text-1">{pocName}</div>
+                    <div className="text-[13px] sm:text-[14px] font-semibold text-text-1 truncate">{pocName}</div>
                   </div>
                 </div>
               )}
               {pocPhone && (
                 <a href={`tel:${pocPhone}`}
-                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-[#16A34A] hover:shadow-[0_2px_8px_rgba(22,163,74,0.1)] transition-all group">
+                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-[#16A34A] hover:shadow-[0_2px_8px_rgba(22,163,74,0.1)] transition-all group min-w-0">
                   <div className="w-9 h-9 rounded-lg bg-green-bg flex items-center justify-center flex-shrink-0">
                     <Phone size={16} className="text-[#16A34A]" />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Phone</div>
-                    <div className="text-[14px] font-semibold text-text-1 group-hover:text-[#16A34A] transition-colors">{pocPhone}</div>
+                    <div className="text-[13px] sm:text-[14px] font-semibold text-text-1 group-hover:text-[#16A34A] transition-colors truncate">{pocPhone}</div>
                   </div>
                   <ChevronDown size={14} className="text-text-3 -rotate-90 flex-shrink-0" />
                 </a>
               )}
               {pocEmail && (
                 <a href={`mailto:${pocEmail}`}
-                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-primary hover:shadow-[0_2px_8px_rgba(79,70,229,0.1)] transition-all group">
+                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-primary hover:shadow-[0_2px_8px_rgba(79,70,229,0.1)] transition-all group min-w-0">
                   <div className="w-9 h-9 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
                     <Mail size={16} className="text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Email</div>
-                    <div className="text-[14px] font-semibold text-text-1 group-hover:text-primary transition-colors truncate">{pocEmail}</div>
+                    <div className="text-[13px] sm:text-[14px] font-semibold text-text-1 group-hover:text-primary transition-colors truncate break-all">{pocEmail}</div>
                   </div>
                   <ChevronDown size={14} className="text-text-3 -rotate-90 flex-shrink-0" />
                 </a>
               )}
               {website && website !== '#' && (
                 <a href={website} target="_blank" rel="noreferrer"
-                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-[#B45309] hover:shadow-[0_2px_8px_rgba(180,83,9,0.1)] transition-all group">
+                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-[#B45309] hover:shadow-[0_2px_8px_rgba(180,83,9,0.1)] transition-all group min-w-0">
                   <div className="w-9 h-9 rounded-lg bg-[#FFF7ED] flex items-center justify-center flex-shrink-0">
                     <Globe size={16} className="text-[#B45309]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Website</div>
-                    <div className="text-[14px] font-semibold text-[#B45309] truncate">{website.replace(/^https?:\/\//, '')}</div>
+                    <div className="text-[13px] sm:text-[14px] font-semibold text-[#B45309] truncate break-all">{website.replace(/^https?:\/\//, '')}</div>
                   </div>
                   <ExternalLink size={14} className="text-text-3 flex-shrink-0" />
                 </a>
@@ -1168,9 +1176,9 @@ return (
 
         {/* ── FAQ ── */}
         {faqItems.length > 0 && (
-          <section id="faq" ref={setSectionRef('faq')} className="scroll-mt-28 rounded-xl border border-border bg-white p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]" aria-labelledby="faq-heading">
+          <section id="faq" ref={setSectionRef('faq')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]" aria-labelledby="faq-heading">
             <SectionHeading number={5}>Frequently Asked Questions</SectionHeading>
-            <div className="rounded-lg border border-border overflow-hidden">
+            <div className="rounded-lg border border-border overflow-hidden divide-y divide-border">
               {faqItems.map(([question, answer]) => (
                 <FaqItem key={question} question={question} answer={answer} />
               ))}
@@ -1182,7 +1190,7 @@ return (
         {featuredEvs.length > 0 && (
           <div className="md:hidden">
             <SectionHeading><span className="flex items-center gap-2"><Star size={17} strokeWidth={1.8} className="text-amber-500" /> Featured Events</span></SectionHeading>
-            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {featuredEvs.slice(0, 4).map(f => (
                 <RelatedCard key={f.id} ev={f} onClick={() => navigate(`/event/${f.id}`)} />
               ))}
@@ -1192,9 +1200,9 @@ return (
 
         {/* ── Related ── */}
         {related.length > 0 && (
-          <div>
+          <div className="scroll-mt-24 md:scroll-mt-28">
             <SectionHeading>More {ev.category}s</SectionHeading>
-            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {related.map(r => <RelatedCard key={r.id} ev={r} onClick={() => navigate(`/event/${r.id}`)} />)}
             </div>
           </div>
