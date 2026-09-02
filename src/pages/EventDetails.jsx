@@ -903,6 +903,7 @@ return (
     <SectionNav items={navItems} activeId={activeSection} />
 
     {/* ══ MAIN CONTENT ══ */}
+    {/* ══ MAIN CONTENT ══ */}
     <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] w-full max-w-full overflow-x-hidden px-4 sm:px-6 md:px-8 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-9">
 
       {/* ── LEFT COLUMN ── */}
@@ -955,13 +956,13 @@ return (
 
         {/* ── COMPETITIONS & ACTIVITIES ── */}
         {individualCompetitions.length > 0 && (
-          <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+          <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden w-full max-w-full">
             <SectionHeading number={2}>Competitions & Activities</SectionHeading>
             <div className="text-[12px] font-medium text-text-4 mb-3">{individualCompetitions.length} available</div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full max-w-full">
               {individualCompetitions.map((competition, competitionIndex) => (
                 <button type="button" key={competition._id || competition.name} onClick={() => setSelectedCompetition(competitionIndex)}
-                  className="w-full rounded-xl border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_6px_16px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                  className="w-[270px] sm:w-[310px] md:w-[330px] flex-shrink-0 rounded-xl border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_6px_16px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
                   <div className="mb-3 flex items-start gap-3">
                     <span className="flex h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[12px] font-bold text-primary">{competitionIndex + 1}</span>
                     <div className="min-w-0 flex-1">
@@ -977,6 +978,7 @@ return (
                   <div className="mt-3 text-[12px] font-bold text-primary flex items-center gap-1">Tap for details <span aria-hidden="true">→</span></div>
                 </button>
               ))}
+              <div className="w-2 sm:w-4 flex-shrink-0" aria-hidden="true" />
             </div>
           </section>
         )}
