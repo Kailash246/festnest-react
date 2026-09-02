@@ -5,7 +5,7 @@ import {
   Users, AlertTriangle, HelpCircle, CalendarDays, Clock, MapPin,
   Monitor, Globe, Building2, Trophy, IndianRupee, Gift, ScrollText, Phone,
   Star, FileText, Download, Bookmark, Share2, CheckCircle2, ChevronDown,
-  X, ExternalLink, Mail, UserRound,
+  X, ExternalLink, Mail, UserRound, ArrowRight, Sparkles, Check,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
@@ -104,9 +104,9 @@ function MultilineText({ text, className = '' }) {
     .map(block => block.trimEnd())
     .filter(Boolean);
   return (
-    <div className={`space-y-3 md:space-y-4 ${className}`.trim()}>
+    <div className={`space-y-3.5 md:space-y-4 ${className}`.trim()}>
       {blocks.map((block, index) => (
-        <p key={index} className="m-0 whitespace-pre-wrap break-words leading-6 md:leading-7">
+        <p key={index} className="m-0 whitespace-pre-wrap break-words leading-relaxed">
           {block}
         </p>
       ))}
@@ -115,23 +115,21 @@ function MultilineText({ text, className = '' }) {
 }
 
 const BG_GRADIENT = {
-  bg1: 'from-indigo-100 via-violet-50  to-blue-50',
-  bg2: 'from-orange-100 via-amber-50   to-yellow-50',
-  bg3: 'from-teal-100  via-cyan-50     to-emerald-50',
-  bg4: 'from-green-100 via-emerald-50  to-teal-50',
-  bg5: 'from-fuchsia-100 via-purple-50 to-pink-50',
-  bg6: 'from-rose-100  via-pink-50     to-red-50',
-  bg7: 'from-yellow-100 via-amber-50   to-orange-50',
-  bg8: 'from-blue-100  via-sky-50      to-indigo-50',
+  bg1: 'from-indigo-600 via-indigo-700 to-slate-900',
+  bg2: 'from-amber-500 via-orange-600 to-stone-900',
+  bg3: 'from-teal-600 via-cyan-700 to-slate-900',
+  bg4: 'from-emerald-600 via-teal-700 to-slate-900',
+  bg5: 'from-fuchsia-600 via-purple-700 to-slate-900',
+  bg6: 'from-rose-600 via-pink-700 to-stone-900',
+  bg7: 'from-amber-600 via-yellow-700 to-stone-900',
+  bg8: 'from-blue-600 via-indigo-700 to-slate-900',
 };
 
 const ENTRY_CONFIG = {
-  free:  { label: 'Register Free', color: 'bg-[#16A34A] hover:bg-[#15803D]', shadow: 'hover:shadow-[0_4px_14px_rgba(22,163,74,0.35)]',  pill: 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]' },
-  paid:  { label: 'Book Tickets',  color: 'bg-[#B45309] hover:bg-[#92400E]', shadow: 'hover:shadow-[0_4px_14px_rgba(180,83,9,0.35)]',   pill: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]' },
+  free:  { label: 'Register Free', color: 'bg-[#16A34A] hover:bg-[#15803D]', shadow: 'hover:shadow-[0_4px_16px_rgba(22,163,74,0.35)]',  pill: 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]' },
+  paid:  { label: 'Book Tickets',  color: 'bg-[#B45309] hover:bg-[#92400E]', shadow: 'hover:shadow-[0_4px_16px_rgba(180,83,9,0.35)]',   pill: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]' },
   prize: { label: 'Register Now',  color: 'bg-primary hover:bg-primary-dark', shadow: 'hover:shadow-indigo', pill: 'bg-primary-light text-primary border-[#C7D2FE]' },
 };
-
-const SECTION_IDS = ['overview', 'about', 'competitions', 'benefits', 'organizer', 'faq', 'contact'];
 
 const DetailSkeleton = () => {
   const S = ({ h = '', w = '', className = '', style }) => (
@@ -139,55 +137,55 @@ const DetailSkeleton = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white pb-[80px] md:pb-12">
-      <S style={{ paddingTop: '56.25%', borderRadius: 0 }} className="w-full md:hidden" />
-      <S className="hidden md:block w-full h-[420px]" style={{ borderRadius: 0 }} />
-      <div className="px-4 md:px-10 mt-4 mb-6 md:max-w-[1280px] md:mx-auto">
-        <div className="flex gap-3 flex-wrap">
-          {[120, 100, 90, 80].map((px, i) => (
-            <S key={i} h="h-8" className="rounded-lg flex-shrink-0" style={{ width: px }} />
-          ))}
-        </div>
+    <div className="min-h-screen bg-white pb-24 md:pb-16">
+      {/* Hero skeleton */}
+      <div className="w-full bg-slate-100 aspect-[16/9] sm:aspect-[21/9] md:h-[400px]">
+        <S className="w-full h-full" style={{ borderRadius: 0 }} />
       </div>
-      <div className="sticky top-0 z-30 mb-7 border-y border-border bg-white/95 py-2 hidden md:block">
-         <S h="h-8" className="w-[80%] mx-auto" />
-      </div>
-      <div className="px-4 md:px-8 md:max-w-[1280px] md:mx-auto md:grid md:grid-cols-[minmax(0,1fr)_360px] md:gap-9 md:items-start">
-        <div className="flex flex-col gap-7">
-          <S h="h-40" w="w-full" className="rounded-xl" />
-          <S h="h-48" w="w-full" className="rounded-xl" />
-          <S h="h-32" w="w-full" className="rounded-xl" />
-          <S h="h-24" w="w-full" className="rounded-xl" />
-          <S h="h-40" w="w-full" className="rounded-xl" />
+
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_360px] gap-8 md:gap-12 items-start">
+          <div className="space-y-8">
+            <div className="space-y-3">
+              <S h="h-4" w="w-24" className="rounded-full" />
+              <S h="h-9" w="w-4/5" className="rounded-lg" />
+              <S h="h-4" w="w-1/2" className="rounded-md" />
+            </div>
+            <S h="h-14" w="w-full" className="rounded-xl" />
+            <div className="space-y-4 pt-4">
+              <S h="h-6" w="w-32" className="rounded-md" />
+              <S h="h-28" w="w-full" className="rounded-lg" />
+            </div>
+            <div className="space-y-4 pt-4">
+              <S h="h-6" w="w-40" className="rounded-md" />
+              <div className="flex gap-3 overflow-hidden">
+                <S h="h-36" w="w-64" className="rounded-xl flex-shrink-0" />
+                <S h="h-36" w="w-64" className="rounded-xl flex-shrink-0" />
+              </div>
+            </div>
+          </div>
+          <div className="hidden md:block sticky top-24">
+            <S h="h-[420px]" w="w-full" className="rounded-2xl" />
+          </div>
         </div>
-        <div className="hidden md:flex md:flex-col md:gap-5 sticky top-[130px]">
-          <S h="h-[400px]" w="w-full" className="rounded-xl" />
-        </div>
-      </div>
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 md:hidden z-50">
-        <S h="h-12" w="w-full" className="rounded-lg" />
       </div>
     </div>
   );
 };
 
-const InfoCell = ({ icon, label, value, accent, className = '', valueClassName = '' }) => (
-  <div className={`rounded-md p-3 sm:p-4 flex min-w-0 flex-col gap-1.5 border overflow-hidden ${accent ? 'bg-primary-light border-[#C7D2FE]' : 'bg-surface border-border'} ${className}`}>
-    <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider uppercase text-text-4">
-      <span className="flex-shrink-0">{icon}</span>{label}
+const SectionHeader = ({ kicker, title, action }) => (
+  <div className="flex items-end justify-between gap-4 mb-4 pb-2 border-b border-border/50">
+    <div>
+      {kicker && (
+        <div className="text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-primary mb-1">
+          {kicker}
+        </div>
+      )}
+      <h2 className="font-heading font-bold text-[20px] sm:text-[22px] md:text-[24px] text-text-1 tracking-tight">
+        {title}
+      </h2>
     </div>
-    <div className={`text-[13px] font-semibold leading-snug ${accent ? 'text-primary' : 'text-text-1'} ${valueClassName}`}>{value}</div>
-  </div>
-);
-
-const SectionHeading = ({ children, number }) => (
-  <div className="flex items-center gap-3 mb-4">
-    {number && (
-      <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary-light border border-[#C7D2FE] flex items-center justify-center text-[12px] font-bold font-mono text-primary tracking-wide">
-        {String(number).padStart(2, '0')}
-      </span>
-    )}
-    <h2 className="font-heading font-bold text-[19px] text-text-1 tracking-snug">{children}</h2>
+    {action}
   </div>
 );
 
@@ -205,54 +203,58 @@ function CompetitionDetails({ competition, index, onClose }) {
   ].filter(([, value]) => competitionValue(value));
 
   return (
-    <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-0 md:items-center md:p-5"
+    <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/50 backdrop-blur-sm p-0 md:items-center md:p-5"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
       role="presentation">
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 280 }}
         onClick={e => e.stopPropagation()}
-        className="flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.18)] md:max-w-[560px] md:rounded-xl md:shadow-[0_12px_40px_rgba(0,0,0,0.2)]"
+        className="flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl md:max-w-[560px] md:rounded-2xl"
         role="dialog" aria-modal="true" aria-labelledby="competition-dialog-title">
         <div className="flex-shrink-0 border-b border-border px-5 pb-4 pt-3 md:pt-5">
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[#CBCBC6] md:hidden" />
           <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[13px] font-bold text-primary">{index + 1}</div>
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary-light text-[13px] font-bold text-primary font-mono">{index + 1}</div>
             <div className="min-w-0 flex-1">
               <div className="text-[10px] font-bold uppercase tracking-wider text-primary">Competition details</div>
-              <h3 id="competition-dialog-title" className="mt-1 font-heading text-[20px] font-bold leading-tight text-text-1">{competition.name}</h3>
+              <h3 id="competition-dialog-title" className="mt-0.5 font-heading text-[18px] sm:text-[20px] font-bold leading-tight text-text-1">{competition.name}</h3>
             </div>
             <button type="button" onClick={onClose} aria-label="Close competition details"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-surface-2 text-text-2 hover:bg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
-              <X size={18} />
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-surface-2 text-text-3 hover:text-text-1 hover:bg-surface-3 transition-colors">
+              <X size={17} />
             </button>
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-          {competition.description && <MultilineText text={sanitizeText(competition.description)} className="mb-5 text-[14px] text-text-2" />}
-          <div className="divide-y divide-border rounded-lg border border-border">
-            {rows.map(([label, value]) => (
-              <div key={label} className="flex items-start justify-between gap-5 px-4 py-3 text-[13px]">
-                <span className="font-semibold text-text-3">{label}</span>
-                <span className="max-w-[62%] text-right font-semibold leading-snug text-text-1">{sanitizeText(value)}</span>
-              </div>
-            ))}
-          </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 space-y-5">
+          {competition.description && (
+            <MultilineText text={sanitizeText(competition.description)} className="text-[14px] text-text-2 leading-relaxed" />
+          )}
+          {rows.length > 0 && (
+            <div className="divide-y divide-border/70 rounded-xl bg-surface-2/60 border border-border/70 overflow-hidden">
+              {rows.map(([label, value]) => (
+                <div key={label} className="flex items-start justify-between gap-4 px-4 py-3 text-[13px]">
+                  <span className="font-semibold text-text-3">{label}</span>
+                  <span className="max-w-[65%] text-right font-medium text-text-1 leading-snug">{sanitizeText(value)}</span>
+                </div>
+              ))}
+            </div>
+          )}
           {competition.rules && (
-            <div className="mt-5">
-              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-text-4">Additional details / rules</div>
-              <MultilineText text={sanitizeText(competition.rules)} className="text-[14px] text-text-2" />
+            <div>
+              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-text-4 font-mono">Additional Rules / Guidelines</div>
+              <MultilineText text={sanitizeText(competition.rules)} className="text-[13.5px] text-text-2 bg-surface-2/40 p-3.5 rounded-xl border border-border/60" />
             </div>
           )}
           {isValidExternalUrl(competition.registrationLink) && (
             <button type="button" onClick={() => openExternalRegistrationLink(competition.registrationLink)}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-primary py-3 text-[14px] font-bold text-white hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-[14px] font-bold text-white shadow-indigo hover:bg-primary-dark transition-all">
               Register for this competition <ExternalLink size={15} />
             </button>
           )}
         </div>
         <div className="flex-shrink-0 border-t border-border bg-white px-5 py-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] md:pb-3">
-          <button type="button" onClick={onClose} className="w-full rounded-md border-[1.5px] border-border py-2.5 text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Close</button>
+          <button type="button" onClick={onClose} className="w-full rounded-xl border border-border py-2.5 text-[13px] font-semibold text-text-2 hover:bg-surface-2 transition-colors">Close</button>
         </div>
       </motion.div>
     </motion.div>
@@ -263,32 +265,40 @@ const PrizePodium = ({ prizes }) => {
   const { first, second, third, total, pool } = prizes;
   if (!first && !second && !third && !total && !pool) return null;
   const podium = [
-    { rankLabel: '1st', label: '1st Prize', value: first,  bg: 'bg-[#FFFBEB] border-[#FDE68A]', text: 'text-[#B45309]' },
-    { rankLabel: '2nd', label: '2nd Prize', value: second, bg: 'bg-[#F8FAFC] border-[#CBD5E1]', text: 'text-[#475569]' },
-    { rankLabel: '3rd', label: '3rd Prize', value: third,  bg: 'bg-[#FFF7ED] border-[#FED7AA]', text: 'text-[#9A3412]' },
+    { rankLabel: '1st', label: '1st Place', value: first,  badgeBg: 'bg-amber-100 text-amber-900 border-amber-300', bg: 'bg-gradient-to-b from-amber-50/80 to-white border-amber-200/80', text: 'text-amber-900', ring: 'ring-amber-400/20' },
+    { rankLabel: '2nd', label: '2nd Place', value: second, badgeBg: 'bg-slate-100 text-slate-800 border-slate-300', bg: 'bg-gradient-to-b from-slate-50/80 to-white border-slate-200/80', text: 'text-slate-800', ring: 'ring-slate-400/20' },
+    { rankLabel: '3rd', label: '3rd Place', value: third,  badgeBg: 'bg-orange-100 text-orange-900 border-orange-300', bg: 'bg-gradient-to-b from-orange-50/80 to-white border-orange-200/80', text: 'text-orange-900', ring: 'ring-orange-400/20' },
   ].filter(p => p.value);
 
   return (
-    <div className="mb-5">
-      <SectionHeading><span className="flex items-center gap-2"><Trophy size={17} strokeWidth={1.8} className="text-amber-500" /> Prize Pool</span></SectionHeading>
+    <div className="space-y-3">
       {podium.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-3">
-          {podium.map(({ rankLabel, label, value, bg, text }) => (
-            <div key={label} className={`border rounded-lg p-3 sm:p-4 text-center ${bg}`}>
-              <div className={`text-[13px] sm:text-[14px] font-bold mb-0.5 ${text}`}>{rankLabel}</div>
-              <div className={`font-mono font-bold text-[16px] sm:text-[18px] ${text}`}>₹{Number(value.replace(/,/g,'')).toLocaleString('en-IN')}</div>
-              <div className="text-[11px] text-text-3 mt-0.5">{label}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {podium.map(({ rankLabel, label, value, badgeBg, bg, text, ring }) => (
+            <div key={label} className={`relative overflow-hidden rounded-xl border p-4 text-left transition-all ${bg} ring-1 ${ring}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-bold font-mono border ${badgeBg}`}>
+                  {rankLabel}
+                </span>
+                <Trophy size={16} className="text-text-4" />
+              </div>
+              <div className={`font-mono font-bold text-[20px] sm:text-[22px] tracking-tight ${text}`}>
+                ₹{Number(value.replace(/,/g,'')).toLocaleString('en-IN')}
+              </div>
+              <div className="text-[11px] font-medium text-text-3 mt-0.5">{label}</div>
             </div>
           ))}
         </div>
       )}
       {(total || pool) && (
-        <div className="flex items-center justify-between px-4 py-3 bg-primary-light border border-[#C7D2FE] rounded-lg">
-          <div className="flex items-center gap-2">
-            <IndianRupee size={18} strokeWidth={1.8} className="text-primary" />
-            <span className="text-[13px] font-semibold text-primary">Total Prize Pool</span>
+        <div className="flex items-center justify-between px-4 py-3.5 bg-primary-xlight/60 border border-primary/20 rounded-xl text-primary">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-white">
+              <Sparkles size={15} />
+            </span>
+            <span className="text-[13px] font-bold tracking-wide uppercase font-mono">Total Prize Pool</span>
           </div>
-          <span className="font-mono font-bold text-[16px] sm:text-[18px] text-primary">₹{total || pool}</span>
+          <span className="font-mono font-bold text-[18px] sm:text-[20px] text-primary">₹{total || pool}</span>
         </div>
       )}
     </div>
@@ -296,25 +306,33 @@ const PrizePodium = ({ prizes }) => {
 };
 
 const RelatedCard = ({ ev, onClick }) => (
-  <motion.button whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.10)' }} whileTap={{ scale: 0.97 }}
+  <motion.button whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
     onClick={onClick}
-    className="flex-shrink-0 w-[160px] sm:w-[180px] bg-surface border border-border rounded-md overflow-hidden text-left cursor-pointer transition-all duration-base">
-    <div className={`w-full h-[85px] sm:h-[90px] flex items-center justify-center text-[36px] sm:text-[40px] ${ev.bg}`}>
-      {ev.imageUrl ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" /> : ev.emoji}
+    className="group flex-shrink-0 w-[180px] sm:w-[200px] text-left cursor-pointer transition-all">
+    <div className={`w-full h-[100px] sm:h-[110px] rounded-xl overflow-hidden mb-2.5 relative border border-border/60 bg-gradient-to-br ${BG_GRADIENT[ev.bg] || 'from-indigo-600 to-slate-900'} flex items-center justify-center`}>
+      {ev.imageUrl ? (
+        <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      ) : (
+        <span className="text-[36px] sm:text-[42px] select-none">{ev.emoji}</span>
+      )}
+      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase font-mono">
+        {ev.category}
+      </span>
     </div>
-    <div className="p-2.5 sm:p-3">
-      <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-0.5">{ev.category}</div>
-      <div className="font-heading font-bold text-[12px] sm:text-[13px] text-text-1 leading-snug tracking-snug"
-        style={{display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{ev.name}</div>
-      <div className="text-[11px] text-text-3 mt-1 truncate">{ev.city}</div>
+    <div className="font-heading font-bold text-[13px] text-text-1 leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+      {ev.name}
+    </div>
+    <div className="text-[11px] text-text-3 mt-1 truncate flex items-center gap-1">
+      <MapPin size={11} className="flex-shrink-0 text-text-4" />
+      {ev.city}
     </div>
   </motion.button>
 );
 
 function SectionNav({ items, activeId }) {
   return (
-    <nav aria-label="Event sections" className="sticky top-0 z-30 mb-6 border-y border-border bg-white/95 backdrop-blur-md md:top-[64px] w-full max-w-full overflow-hidden">
-      <div className="mx-auto flex max-w-[1280px] items-center gap-1.5 overflow-x-auto px-4 py-2 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8">
+    <nav aria-label="Event sections" className="sticky top-0 z-30 mb-8 border-y border-border/80 bg-white/95 backdrop-blur-md md:top-[64px] w-full max-w-full">
+      <div className="mx-auto flex max-w-[1280px] items-center gap-1 sm:gap-2 overflow-x-auto px-4 py-2.5 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8">
         {items.map(item => {
           const id = item.toLowerCase();
           const isActive = activeId === id;
@@ -326,15 +344,15 @@ function SectionNav({ items, activeId }) {
                 e.preventDefault();
                 const el = document.getElementById(id);
                 if (el) {
-                  const offset = window.innerWidth >= 768 ? 130 : 70;
+                  const offset = window.innerWidth >= 768 ? 130 : 80;
                   const y = el.getBoundingClientRect().top + window.scrollY - offset;
                   window.scrollTo({ top: y, behavior: 'smooth' });
                 }
               }}
-              className={`flex-shrink-0 whitespace-nowrap rounded-lg px-3.5 py-2 text-[13px] font-semibold transition-all duration-fast flex items-center justify-center min-h-[38px] select-none ${
+              className={`flex-shrink-0 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] font-semibold transition-all duration-fast select-none ${
                 isActive
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-text-3 hover:bg-primary-light hover:text-primary active:bg-primary-light'
+                  ? 'bg-text-1 text-white shadow-sm'
+                  : 'text-text-3 hover:text-text-1 hover:bg-surface-2 active:bg-surface-3'
               }`}
             >
               {item}
@@ -350,12 +368,12 @@ function SectionNav({ items, activeId }) {
 function FaqItem({ question, answer }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-border last:border-b-0">
+    <div className="border-b border-border/70 last:border-b-0 transition-colors">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-4 text-left text-[14px] font-semibold text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left font-heading text-[15px] font-bold text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       >
-        {question}
+        <span>{question}</span>
         <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown size={17} className="flex-shrink-0 text-text-3" />
         </motion.div>
@@ -369,7 +387,7 @@ function FaqItem({ question, answer }) {
             transition={{ duration: 0.22 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 text-[13px] leading-relaxed text-text-3">
+            <div className="pb-4 text-[14px] leading-relaxed text-text-2">
               <MultilineText text={answer} />
             </div>
           </motion.div>
@@ -410,29 +428,29 @@ function ActionPanel({ ev, cfg, registering, registered, isSaved, onToggleSave, 
   
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}
-      className="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
+      className="bg-white border border-border/80 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
       
       {/* Countdown header — dark bg with countdown timer */}
       {countdown && ev.deadlineDays > 0 && (
-        <div className="bg-[#1E1B4B] text-white px-5 pt-5 pb-5 relative overflow-hidden">
-          <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(79,70,229,0.4),transparent_65%)] pointer-events-none" />
+        <div className="bg-[#111110] text-white px-5 pt-4 pb-4 relative overflow-hidden">
+          <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(79,70,229,0.35),transparent_65%)] pointer-events-none" />
           <div className="relative">
-            <div className="text-[10px] font-bold font-mono tracking-[0.16em] uppercase text-white/60 mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#A5F3FC] animate-pulse" />
-              Registration closes in
+            <div className="text-[10px] font-bold font-mono tracking-[0.16em] uppercase text-white/60 mb-2.5 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Registration Closes In
             </div>
             <div className="grid grid-cols-4 gap-2">
               {[
                 { v: countdown.d, l: 'Days' },
-                { v: countdown.h, l: 'Hrs' },
-                { v: countdown.m, l: 'Min' },
-                { v: countdown.s, l: 'Sec' },
+                { v: countdown.h, l: 'Hours' },
+                { v: countdown.m, l: 'Mins' },
+                { v: countdown.s, l: 'Secs' },
               ].map(({ v, l }) => (
-                <div key={l} className="text-center">
-                  <div className="font-mono font-bold text-[28px] leading-none tabular-nums text-white">
+                <div key={l} className="text-center rounded-lg bg-white/5 py-1.5 border border-white/10">
+                  <div className="font-mono font-bold text-[22px] leading-none tabular-nums text-white">
                     {String(v).padStart(2, '0')}
                   </div>
-                  <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-white/50 mt-1.5">{l}</div>
+                  <div className="text-[8.5px] font-mono tracking-[0.12em] uppercase text-white/50 mt-1">{l}</div>
                 </div>
               ))}
             </div>
@@ -441,51 +459,47 @@ function ActionPanel({ ev, cfg, registering, registered, isSaved, onToggleSave, 
       )}
 
       {/* Price section */}
-      <div className={`px-5 pt-5 pb-4 border-b border-border
-        ${ev.entryType==='free'  ? 'bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]'
-        : ev.entryType==='paid'  ? 'bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7]'
-                                  : 'bg-gradient-to-br from-primary-xlight to-primary-light'}`}>
-        <div className="text-[11px] font-bold tracking-wider uppercase text-text-4 mb-1">Entry Fee</div>
-        <div className={`font-mono font-bold text-[32px] leading-none mb-1
-          ${ev.entryType==='free' ? 'text-[#16A34A]' : ev.entryType==='paid' ? 'text-[#B45309]' : 'text-primary'}`}>
-          {ev.price}
+      <div className="p-5 border-b border-border/80">
+        <div className="flex items-baseline justify-between mb-1">
+          <div className="text-[11px] font-bold font-mono tracking-wider uppercase text-text-4">Entry Fee</div>
+          {ev.deadlineDays > 0 && ev.deadlineDays <= 6 && (
+            <span className={`text-[11px] font-bold font-mono px-2 py-0.5 rounded-md ${ev.deadlineDays <= 3 ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>
+              {ev.deadlineDays}d remaining
+            </span>
+          )}
         </div>
-        <div className="text-[13px] text-text-3">{ev.priceNote}</div>
-      </div>
-
-      {/* Event quick details */}
-      <div className="px-5 py-4 flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-[12px] font-semibold text-[#16A34A]">
-          <CheckCircle2 size={15} /> {registered ? 'Registration confirmed' : 'Registration open'}
-        </div>
-        {/* The urgency badge from original */}
-        {ev.deadlineDays > 0 && ev.deadlineDays <= 12 && (
-          <div className={`flex items-center gap-2 px-3 py-2.5 rounded-md text-[13px] font-semibold
-            ${ev.deadlineDays<=3 ? 'bg-red-bg text-red border border-red-border'
-            : ev.deadlineDays<=6 ? 'bg-amber-bg text-amber border border-amber-border'
-                                  : 'bg-green-bg text-[#16A34A] border border-green-border'}`}>
-            {ev.deadlineDays<=3 ? <AlertTriangle size={15} strokeWidth={2} className="flex-shrink-0" /> : ev.deadlineDays<=6 ? <Clock size={15} strokeWidth={2} className="flex-shrink-0" /> : <span className="w-2 h-2 rounded-full bg-[#16A34A] flex-shrink-0" />}
-            Closes in {ev.deadlineDays} day{ev.deadlineDays>1?'s':''}
+        <div className="flex items-baseline gap-2">
+          <div className={`font-mono font-bold text-[32px] leading-none ${ev.entryType==='free' ? 'text-[#16A34A]' : ev.entryType==='paid' ? 'text-[#B45309]' : 'text-primary'}`}>
+            {ev.price}
           </div>
-        )}
-        {[
-          {Icon:CalendarDays, label:ev.startDate},
-          {Icon:MapPin,       label:ev.venue},
-          {Icon:Users,        label:ev.teamSize},
-        ].map(({Icon:LIcon,label}) => label ? (
-            <div key={label} className="flex items-start gap-2.5 text-[13px] text-text-2">
-              <LIcon size={14} strokeWidth={1.8} className="flex-shrink-0 mt-0.5 text-text-3" />
-              <span className="leading-snug">{label}</span>
-            </div>
-          ) : null)}
+          {ev.priceNote && <span className="text-[13px] text-text-3 font-medium">({ev.priceNote})</span>}
+        </div>
       </div>
 
-      {/* CTAs — IDENTICAL logic to original PriceCard */}
-      <div className="px-5 pb-5 flex flex-col gap-2.5">
-        <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
+      {/* Key Quick Specs */}
+      <div className="p-5 space-y-3 bg-surface-2/30 border-b border-border/80">
+        {[
+          { Icon: CalendarDays, label: 'Date', value: ev.endDate ? `${ev.startDate} – ${ev.endDate}` : ev.startDate },
+          { Icon: MapPin, label: 'Venue', value: ev.venue || ev.city },
+          { Icon: Users, label: 'Team Size', value: ev.teamSize },
+        ].map(({ Icon: LIcon, label, value }) => value ? (
+          <div key={label} className="flex items-start gap-3 text-[13px]">
+            <LIcon size={15} className="flex-shrink-0 text-text-4 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <span className="text-text-4 text-[11px] font-medium block uppercase tracking-wider">{label}</span>
+              <span className="text-text-1 font-semibold leading-tight break-words">{value}</span>
+            </div>
+          </div>
+        ) : null)}
+      </div>
+
+      {/* CTAs */}
+      <div className="p-5 space-y-2.5">
+        <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
           onClick={handleRegister} disabled={registering || registered}
-          className={`w-full py-[14px] rounded-md font-sans text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
-            ${registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`}`}>
+          className={`w-full py-3.5 rounded-xl font-heading text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-70 shadow-sm ${
+            registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`
+          }`}>
           <AnimatePresence mode="wait">
             {registering ? (
               <motion.span key="s" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
@@ -493,26 +507,27 @@ function ActionPanel({ ev, cfg, registering, registered, isSaved, onToggleSave, 
               </motion.span>
             ) : registered ? (
               <motion.span key="d" initial={{scale:0.6,opacity:0}} animate={{scale:1,opacity:1}} className="flex items-center gap-2">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><polyline points="20 6 9 17 4 12"/></svg>
+                <Check size={18} strokeWidth={2.5} />
                 You're Registered!
               </motion.span>
             ) : (
               <motion.span key="c" initial={{opacity:0}} animate={{opacity:1}} className="flex items-center gap-2">
                 {cfg.label}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m9 18 6-6-6-6"/></svg>
+                <ArrowRight size={17} />
               </motion.span>
             )}
           </AnimatePresence>
         </motion.button>
 
         <div className="flex gap-2">
-          <motion.button whileTap={{scale:0.94}} onClick={onToggleSave}
-            className={`flex-1 py-3 rounded-md border-[1.5px] text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all duration-fast
-              ${isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:border-primary hover:text-primary hover:bg-primary-xlight'}`}>
+          <motion.button whileTap={{scale:0.95}} onClick={onToggleSave}
+            className={`flex-1 py-2.5 rounded-xl border text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+              isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:bg-surface-2'
+            }`}>
             <Bookmark size={15} fill={isSaved ? 'currentColor' : 'none'} />
             {isSaved ? 'Saved' : 'Save'}
           </motion.button>
-          <motion.button whileTap={{scale:0.94}} onClick={() => {
+          <motion.button whileTap={{scale:0.95}} onClick={() => {
               if (navigator.share) {
                 navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
               } else {
@@ -520,7 +535,7 @@ function ActionPanel({ ev, cfg, registering, registered, isSaved, onToggleSave, 
                 showToast('Link copied! 📋', 'success');
               }
             }}
-            className="flex-1 py-3 rounded-md border-[1.5px] border-border text-[13px] font-semibold text-text-2 flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary hover:bg-primary-xlight transition-all">
+            className="flex-1 py-2.5 rounded-xl border border-border text-[13px] font-semibold text-text-2 flex items-center justify-center gap-1.5 hover:bg-surface-2 transition-all">
             <Share2 size={15} />
             Share
           </motion.button>
@@ -558,7 +573,7 @@ export default function EventDetails() {
   const emojiY        = useTransform(scrollY, [0, 300], [0, 60]);
   const heroOpacity   = useTransform(scrollY, [0, 200], [1, 0.6]);
 
-  // --- Section refs for IntersectionObserver ---
+  // Section refs for IntersectionObserver
   const sectionRefs = useRef({});
   const setSectionRef = useCallback((id) => (el) => {
     if (el) sectionRefs.current[id] = el;
@@ -583,9 +598,9 @@ export default function EventDetails() {
 
     entries.forEach(([, el]) => observer.observe(el));
     return () => observer.disconnect();
-  }); // intentionally no deps — re-runs when refs change after data loads
+  });
 
-  /* Fetch featured events (non-blocking, excludes the current event) */
+  /* Fetch featured events */
   useEffect(() => {
     setFeaturedEvs([]);
     setFeaturedLoading(true);
@@ -683,21 +698,21 @@ export default function EventDetails() {
   if (error || !ev) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
       <Seo title={error ? 'Could not load event' : 'Event not found'} noindex />
-      {error ? <AlertTriangle size={72} strokeWidth={1.3} className="text-amber mb-4" /> : <HelpCircle size={72} strokeWidth={1.3} className="text-text-3 mb-4" />}
+      {error ? <AlertTriangle size={72} strokeWidth={1.3} className="text-amber-500 mb-4" /> : <HelpCircle size={72} strokeWidth={1.3} className="text-text-3 mb-4" />}
       <h2 className="font-heading font-bold text-[22px] text-text-1 tracking-tight mb-2">
         {error ? 'Could not load event' : 'Event not found'}
       </h2>
       <p className="text-[14px] text-text-3 mb-6">{error || 'This event may have ended or been removed.'}</p>
       <div className="flex gap-3">
-        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
-        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-md text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
+        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-xl text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
+        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-xl text-[14px] font-semibold hover:bg-surface-2 transition-colors">← Back to Home</button>
       </div>
     </div>
   );
 
-  // --- Derived values (ALL IDENTICAL TO ORIGINAL) ---
+  // Derived values
   const safeAbout  = sanitizeText(ev.about || '');
-  const aboutShort = safeAbout.slice(0, 240);
+  const aboutShort = safeAbout.slice(0, 280);
   const prizes = {
     first:  ev.prize1  || ev.prizeFirst  || '',
     second: ev.prize2  || ev.prizeSecond || '',
@@ -727,7 +742,7 @@ export default function EventDetails() {
   const registrationStatus = !isLiveEvent ? 'Event ended' : ev.deadlineDays > 0 && ev.deadlineDays <= 3 ? 'Registration closing soon' : 'Registration open';
   const faqItems = [
     eligibility && ['Who can participate?', eligibility],
-    ev.price && ['Is there an entry fee?', `${ev.price}${ev.priceNote ? ` ${ev.priceNote}` : ''}`],
+    ev.price && ['Is there an entry fee?', `${ev.price}${ev.priceNote ? ` (${ev.priceNote})` : ''}`],
     ev.deadlineDays > 0 && ['When does registration close?', `Registration closes in ${ev.deadlineDays} day${ev.deadlineDays === 1 ? '' : 's'}.`],
     mode && ['What is the event mode?', mode],
     ev.venue && ['Where is the venue?', ev.venue],
@@ -742,586 +757,628 @@ export default function EventDetails() {
   );
   const eventJsonLd = buildEventJsonLd(ev, canonicalUrl, seoDescription);
 
-  // Build nav items dynamically (only show sections that have content)
-  const navItems = ['Overview', safeAbout && 'About', individualCompetitions.length && 'Competitions', (perks || hasPrizes || ev.highlights?.length) && 'Benefits', ev.orgName && 'Organizer', faqItems.length && 'FAQ', (pocPhone || pocEmail || website) && 'Contact'].filter(Boolean);
+  // Dynamic nav items
+  const navItems = ['Overview', safeAbout && 'About', individualCompetitions.length && 'Competitions', (perks || hasPrizes || ev.highlights?.length) && 'Benefits', (eligibility || rules) && 'Rules', ev.orgName && 'Organizer', faqItems.length && 'FAQ', (pocPhone || pocEmail || website) && 'Contact'].filter(Boolean);
 
-return (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-    transition={{ duration: 0.22 }}
-    className="min-h-screen bg-white w-full overflow-x-hidden pb-[120px] md:pb-12">
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      className="min-h-screen bg-white w-full overflow-x-hidden pb-28 md:pb-16">
 
-    <Seo
-      rawTitle={`${ev.name} — ${ev.college} | FestNest`}
-      description={seoDescription}
-      canonical={canonicalUrl}
-      image={ev.imageUrl || DEFAULT_OG_IMAGE}
-      type="article"
-      jsonLd={eventJsonLd}
-    />
+      <Seo
+        rawTitle={`${ev.name} — ${ev.college} | FestNest`}
+        description={seoDescription}
+        canonical={canonicalUrl}
+        image={ev.imageUrl || DEFAULT_OG_IMAGE}
+        type="article"
+        jsonLd={eventJsonLd}
+      />
 
-    {/* ══ HERO ══ */}
-    <div ref={heroRef} className="relative w-full bg-white md:bg-transparent md:overflow-hidden md:min-h-[420px]">
-      {/* Poster Image / Emoji Banner */}
-      <div className={`relative w-full aspect-[16/9] sm:aspect-[2/1] md:aspect-auto md:absolute md:inset-0 md:h-full bg-gradient-to-br ${BG_GRADIENT[ev.bg] || BG_GRADIENT.bg1} overflow-hidden`}>
-        {ev.imageUrl ? (
-          <img
-            src={ev.imageUrl}
-            alt={ev.name}
-            onClick={() => setLightboxOpen(true)}
-            className="w-full h-full object-cover cursor-zoom-in"
-          />
-        ) : (
-          <motion.div
-            style={{ y: emojiY, opacity: heroOpacity }}
-            className="absolute inset-0 flex items-center justify-center text-[100px] sm:text-[140px] md:text-[220px] select-none pointer-events-none"
-            aria-hidden
-          >
-            {ev.emoji}
-          </motion.div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/20 md:from-black/80 md:via-black/30 md:to-black/10 pointer-events-none" />
-
-        {/* Top bar — Back / Edit / Share / Save */}
-        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 pt-3 sm:px-4 sm:pt-4 md:px-10 md:pt-6 z-20">
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={handleBack}
-            className="flex items-center gap-1.5 px-3 py-1.5 md:py-2 rounded-full md:rounded-md bg-white/90 md:bg-white/80 backdrop-blur-md text-[12px] md:text-[13px] font-medium text-text-1 border border-white/60 shadow-sm hover:bg-white transition-all"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 md:w-4 md:h-4"><path d="m15 18-6-6 6-6"/></svg>
-            Back
-          </motion.button>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {canEditEvent && (
-              <motion.button
-                whileTap={{ scale: 0.94 }}
-                onClick={() => navigate(`/event/${ev.slug || ev.id}/edit`)}
-                className="flex h-8 sm:h-9 md:h-10 items-center gap-1 sm:gap-1.5 rounded-full border border-white/60 bg-white/90 md:bg-white/80 px-2.5 sm:px-3 text-[11px] sm:text-[12px] font-bold text-primary shadow-sm backdrop-blur-md transition-all hover:bg-white"
-                aria-label="Edit event"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                <span className="hidden sm:inline">Edit Event</span>
-                <span className="sm:hidden">Edit</span>
-              </motion.button>
-            )}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
-                } else {
-                  navigator.clipboard?.writeText(window.location.href).catch(() => {});
-                  showToast('Link copied! 📋', 'success');
-                }
-              }}
-              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/90 md:bg-white/80 backdrop-blur-md flex items-center justify-center border border-white/60 shadow-sm hover:bg-white transition-all text-text-2"
-              aria-label="Share"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 md:w-[17px] md:h-[17px]"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              whileHover={{ scale: 1.08 }}
-              onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
-              className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full backdrop-blur-md flex items-center justify-center border shadow-sm transition-all
-                ${isSaved ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-white/90 md:bg-white/80 text-text-2 border-white/60 hover:bg-white'}`}
-              aria-label={isSaved ? 'Remove from saved' : 'Save event'}
-            >
-              <svg viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 md:w-[17px] md:h-[17px]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-            </motion.button>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Bottom / Content Block */}
-      <div className="relative px-4 pt-4 pb-4 md:absolute md:bottom-0 md:left-0 md:right-0 md:px-10 md:pb-8 md:pt-0 z-10">
-        {/* Category + status badges */}
-        <div className="mb-2 md:mb-3 flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-primary-light text-primary border border-[#C7D2FE] md:bg-white/90 md:text-primary md:border-transparent px-2.5 py-0.5 md:px-3 md:py-1 text-[11px] font-bold shadow-sm">
-            {ev.category}
-          </span>
-          <span className={`rounded-full px-2.5 py-0.5 md:px-3 md:py-1 text-[11px] font-bold shadow-sm ${
-            registrationStatus === 'Registration closing soon'
-              ? 'bg-[#FEF3C7] text-[#92400E]'
-              : registrationStatus === 'Event ended'
-              ? 'bg-surface-2 text-text-2 border border-border md:bg-white/80 md:border-transparent'
-              : 'bg-[#DCFCE7] text-[#15803D]'
-          }`}>
-            {registrationStatus}
-          </span>
-        </div>
-
-        {/* Title */}
-        <h1 className="font-heading font-bold text-text-1 md:text-white text-[22px] sm:text-[26px] md:text-[40px] leading-tight tracking-tight mb-1 drop-shadow-none md:drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] break-words">
-          {ev.name}
-        </h1>
-        <p className="text-text-3 md:text-white/80 text-[13px] md:text-[14px] font-medium drop-shadow-none md:drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)] mb-3.5 md:mb-4">
-          {ev.college} · {ev.city}
-        </p>
-
-        {/* Quick info pills (grid on mobile, flex row on desktop) */}
-        <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:gap-2">
-          {ev.startDate && (
-            <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
-              <CalendarDays size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />
-              <div className="min-w-0">
-                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Date</div>
-                <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{ev.endDate ? `${ev.startDate} – ${ev.endDate}` : ev.startDate}</div>
-              </div>
-            </div>
-          )}
-          {ev.venue && (
-            <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
-              <MapPin size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />
-              <div className="min-w-0">
-                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Venue</div>
-                <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{ev.venue}</div>
-              </div>
-            </div>
-          )}
-          {mode && (
-            <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
-              {mode === 'Online' ? <Monitor size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" /> : <Building2 size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />}
-              <div className="min-w-0">
-                <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Mode</div>
-                <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{mode}</div>
-              </div>
-            </div>
-          )}
-          <div className="flex items-start md:items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-lg bg-surface border border-border text-text-1 md:bg-white/15 md:backdrop-blur-sm md:border-white/20 md:text-white min-w-0">
-            <IndianRupee size={14} className="flex-shrink-0 text-primary md:text-white mt-0.5 md:mt-0" />
-            <div className="min-w-0">
-              <div className="text-[9px] font-mono tracking-[0.14em] uppercase text-text-4 md:text-white/60">Entry</div>
-              <div className="text-[12px] md:text-[13px] font-semibold leading-snug break-words">{ev.price || 'Free'}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* ══ SECTION NAVIGATION ══ */}
-    <SectionNav items={navItems} activeId={activeSection} />
-
-    {/* ══ MAIN CONTENT ══ */}
-    {/* ══ MAIN CONTENT ══ */}
-    <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] w-full max-w-full overflow-x-hidden px-4 sm:px-6 md:px-8 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-9">
-
-      {/* ── LEFT COLUMN ── */}
-      <div className="flex flex-col gap-5 sm:gap-6 md:gap-7 min-w-0 w-full">
-
-        {/* Tags */}
-        {ev.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {ev.tags.map(tag => (
-              <span key={tag} className="px-3 py-1.5 text-[12px] font-semibold bg-surface border border-border rounded-full text-text-2 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* ── ABOUT THIS EVENT ── */}
-        {safeAbout && (
-          <section id="about" ref={setSectionRef('about')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-            <SectionHeading number={1}>About this Event</SectionHeading>
-            <MultilineText
-              text={showFullAbout ? safeAbout : aboutShort}
-              className="text-[14px] md:text-[15px] text-text-2 break-words"
+      {/* ══ HERO BANNER ══ */}
+      <div ref={heroRef} className="relative w-full bg-slate-950 overflow-hidden">
+        {/* Background Image / Ambient Glow */}
+        <div className={`relative w-full aspect-[16/9] sm:aspect-[21/9] md:h-[440px] bg-gradient-to-br ${BG_GRADIENT[ev.bg] || 'from-indigo-900 to-slate-950'}`}>
+          {ev.imageUrl ? (
+            <img
+              src={ev.imageUrl}
+              alt={ev.name}
+              onClick={() => setLightboxOpen(true)}
+              className="w-full h-full object-cover opacity-90 cursor-zoom-in"
             />
-            {!showFullAbout && safeAbout.length > 240 && (
-              <span className="text-[14px] md:text-[15px] text-text-2">…</span>
-            )}
-            {safeAbout.length > 240 && (
-              <button onClick={() => setShowFullAbout(v => !v)}
-                className="text-[13px] font-semibold text-primary mt-2 hover:underline block">
-                {showFullAbout ? 'Show less ↑' : 'Read more ↓'}
-              </button>
-            )}
-          </section>
-        )}
+          ) : (
+            <motion.div
+              style={{ y: emojiY, opacity: heroOpacity }}
+              className="absolute inset-0 flex items-center justify-center text-[110px] sm:text-[150px] md:text-[220px] select-none pointer-events-none"
+              aria-hidden
+            >
+              {ev.emoji}
+            </motion.div>
+          )}
 
-        {/* ── COMPETITION MANAGER (owner only) ── */}
-        {canManageCompetitions && (
-          <CompetitionManager
-            eventKey={ev.slug || ev.id}
-            eventName={ev.name}
-            showToast={showToast}
-            onCompetitionsChanged={() => {
-              eventsApi.get(ev.slug || ev.id)
-                .then(response => setEv(normaliseEvent(response.data?.event)))
-                .catch(() => {});
-            }}
-          />
-        )}
+          {/* Vignette Overlay for cinematic contrast */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/30 pointer-events-none" />
 
-        {/* ── COMPETITIONS & ACTIVITIES ── */}
-        {individualCompetitions.length > 0 && (
-          <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden w-full max-w-full">
-            <SectionHeading number={2}>Competitions & Activities</SectionHeading>
-            <div className="text-[12px] font-medium text-text-4 mb-3">{individualCompetitions.length} available</div>
-            <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full max-w-full">
-              {individualCompetitions.map((competition, competitionIndex) => (
-                <button type="button" key={competition._id || competition.name} onClick={() => setSelectedCompetition(competitionIndex)}
-                  className="w-[270px] sm:w-[310px] md:w-[330px] flex-shrink-0 rounded-xl border border-border bg-surface p-4 text-left shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-0.5 hover:border-primary-mid hover:shadow-[0_6px_16px_rgba(79,70,229,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
-                  <div className="mb-3 flex items-start gap-3">
-                    <span className="flex h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[12px] font-bold text-primary">{competitionIndex + 1}</span>
+          {/* Floating Top Bar (Back, Edit, Share, Save) */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 md:px-8 md:pt-6 z-20">
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={handleBack}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-md text-[13px] font-medium text-white border border-white/20 transition-all shadow-sm"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
+              <span>Back</span>
+            </motion.button>
+
+            <div className="flex items-center gap-2">
+              {canEditEvent && (
+                <motion.button
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => navigate(`/event/${ev.slug || ev.id}/edit`)}
+                  className="flex h-9 items-center gap-1.5 rounded-full border border-white/20 bg-black/50 hover:bg-black/75 px-3 text-[12px] font-bold text-white shadow-sm backdrop-blur-md transition-all"
+                  aria-label="Edit event"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  <span className="hidden sm:inline">Edit Event</span>
+                  <span className="sm:hidden">Edit</span>
+                </motion.button>
+              )}
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
+                  } else {
+                    navigator.clipboard?.writeText(window.location.href).catch(() => {});
+                    showToast('Link copied! 📋', 'success');
+                  }
+                }}
+                className="w-9 h-9 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-sm transition-all"
+                aria-label="Share"
+              >
+                <Share2 size={16} />
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
+                className={`w-9 h-9 rounded-full backdrop-blur-md flex items-center justify-center border shadow-sm transition-all ${
+                  isSaved
+                    ? 'bg-primary text-white border-primary shadow-indigo'
+                    : 'bg-black/50 hover:bg-black/75 text-white border-white/20'
+                }`}
+                aria-label={isSaved ? 'Remove from saved' : 'Save event'}
+              >
+                <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Bottom Hero Meta Overlay for Desktop / Tablet */}
+          <div className="hidden md:block absolute bottom-0 left-0 right-0 px-8 pb-8 z-10 max-w-[1280px] mx-auto">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="rounded-full bg-white/20 backdrop-blur-md border border-white/25 px-3 py-0.5 text-[11px] font-mono font-bold tracking-wider uppercase text-white">
+                {ev.category}
+              </span>
+              <span className={`rounded-full px-3 py-0.5 text-[11px] font-bold font-mono tracking-wide ${
+                registrationStatus === 'Registration closing soon'
+                  ? 'bg-amber-400/90 text-amber-950'
+                  : registrationStatus === 'Event ended'
+                  ? 'bg-white/20 text-white/70'
+                  : 'bg-emerald-400/90 text-emerald-950'
+              }`}>
+                {registrationStatus}
+              </span>
+            </div>
+            <h1 className="font-heading font-bold text-white text-[32px] lg:text-[44px] leading-tight tracking-tight max-w-4xl break-words drop-shadow-md">
+              {ev.name}
+            </h1>
+            <p className="text-white/80 text-[15px] font-medium mt-1 flex items-center gap-1.5">
+              <Building2 size={15} className="text-white/60 flex-shrink-0" />
+              <span>{ev.college}</span>
+              <span className="text-white/40">·</span>
+              <span>{ev.city}</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile Header Block (Directly below banner image with dark-to-light theme bridge) */}
+        <div className="md:hidden px-4 pt-4 pb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-2.5">
+            <span className="rounded-md bg-primary-light text-primary border border-primary/20 px-2.5 py-0.5 text-[11px] font-mono font-bold uppercase">
+              {ev.category}
+            </span>
+            <span className={`rounded-md px-2.5 py-0.5 text-[11px] font-bold font-mono ${
+              registrationStatus === 'Registration closing soon'
+                ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                : registrationStatus === 'Event ended'
+                ? 'bg-surface-2 text-text-3 border border-border'
+                : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+            }`}>
+              {registrationStatus}
+            </span>
+          </div>
+          <h1 className="font-heading font-bold text-text-1 text-[24px] sm:text-[28px] leading-tight tracking-tight break-words">
+            {ev.name}
+          </h1>
+          <p className="text-text-3 text-[13px] font-medium mt-1.5 flex items-center gap-1">
+            <Building2 size={14} className="text-text-4 flex-shrink-0" />
+            <span className="truncate">{ev.college} · {ev.city}</span>
+          </p>
+        </div>
+      </div>
+
+      {/* ══ SECTION NAVIGATION ══ */}
+      <SectionNav items={navItems} activeId={activeSection} />
+
+      {/* ══ MAIN PAGE FLOW ══ */}
+      <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 md:grid md:grid-cols-[minmax(0,1fr)_360px] lg:grid-cols-[minmax(0,1fr)_380px] md:gap-10 lg:gap-14 md:items-start">
+
+        {/* ── LEFT COLUMN (Spacious, breathing sections) ── */}
+        <div className="flex flex-col gap-10 sm:gap-12 min-w-0 w-full">
+
+          {/* 0. KEY LOGISTICS STRIP (Unboxed, clean visual info system) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 p-3.5 sm:p-4 rounded-2xl bg-surface-2/60 border border-border/70">
+            {ev.startDate && (
+              <div className="flex items-start gap-2.5 min-w-0">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
+                  <CalendarDays size={16} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Date</span>
+                  <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{ev.endDate ? `${ev.startDate} – ${ev.endDate}` : ev.startDate}</span>
+                </div>
+              </div>
+            )}
+            {ev.venue && (
+              <div className="flex items-start gap-2.5 min-w-0">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
+                  <MapPin size={16} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Venue</span>
+                  <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{ev.venue}</span>
+                </div>
+              </div>
+            )}
+            {mode && (
+              <div className="flex items-start gap-2.5 min-w-0">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
+                  {mode === 'Online' ? <Monitor size={16} /> : <Building2 size={16} />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Mode</span>
+                  <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{mode}</span>
+                </div>
+              </div>
+            )}
+            <div className="flex items-start gap-2.5 min-w-0">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
+                <IndianRupee size={16} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Entry</span>
+                <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{ev.price || 'Free'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tags */}
+          {ev.tags?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 -mt-4">
+              {ev.tags.map(tag => (
+                <span key={tag} className="px-3 py-1 text-[12px] font-medium bg-surface-2 text-text-2 rounded-full hover:bg-surface-3 transition-colors">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* 1. ABOUT THIS EVENT */}
+          {safeAbout && (
+            <section id="about" ref={setSectionRef('about')} className="scroll-mt-28">
+              <SectionHeader kicker="01 · OVERVIEW" title="About this Event" />
+              <div className="prose prose-slate max-w-none text-[15px] sm:text-[16px] text-text-2 leading-relaxed font-body">
+                <MultilineText text={showFullAbout ? safeAbout : aboutShort} />
+              </div>
+              {!showFullAbout && safeAbout.length > 280 && (
+                <span className="text-text-3">… </span>
+              )}
+              {safeAbout.length > 280 && (
+                <button
+                  type="button"
+                  onClick={() => setShowFullAbout(v => !v)}
+                  className="mt-3 inline-flex items-center gap-1 text-[13px] font-bold text-primary hover:text-primary-dark transition-colors"
+                >
+                  {showFullAbout ? 'Show less ↑' : 'Read full description ↓'}
+                </button>
+              )}
+            </section>
+          )}
+
+          {/* ── COMPETITION MANAGER (Owner controls) ── */}
+          {canManageCompetitions && (
+            <div className="p-4 rounded-2xl border border-primary/30 bg-primary-xlight/40">
+              <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary mb-2">Organizer Controls</div>
+              <CompetitionManager
+                eventKey={ev.slug || ev.id}
+                eventName={ev.name}
+                showToast={showToast}
+                onCompetitionsChanged={() => {
+                  eventsApi.get(ev.slug || ev.id)
+                    .then(response => setEv(normaliseEvent(response.data?.event)))
+                    .catch(() => {});
+                }}
+              />
+            </div>
+          )}
+
+          {/* 2. COMPETITIONS & ACTIVITIES (Horizontal Preview Rail) */}
+          {individualCompetitions.length > 0 && (
+            <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-28 w-full max-w-full overflow-hidden">
+              <SectionHeader
+                kicker="02 · ACTIVITIES"
+                title="Competitions & Tracks"
+                action={
+                  <span className="text-[12px] font-mono font-bold text-text-4">
+                    {individualCompetitions.length} total
+                  </span>
+                }
+              />
+              <p className="text-[13px] text-text-3 -mt-2 mb-4">Swipe or scroll horizontally to explore all competitions.</p>
+
+              <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-4 pt-1 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full max-w-full">
+                {individualCompetitions.map((competition, competitionIndex) => (
+                  <button
+                    type="button"
+                    key={competition._id || competition.name}
+                    onClick={() => setSelectedCompetition(competitionIndex)}
+                    className="group relative w-[275px] sm:w-[310px] md:w-[330px] flex-shrink-0 rounded-2xl border border-border/80 bg-white p-4 sm:p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                  >
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <span className="flex h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-xl bg-primary-light font-mono text-[12px] font-bold text-primary">
+                        {competitionIndex + 1}
+                      </span>
+                      {competition.eligibility && (
+                        <span className="truncate max-w-[170px] rounded-md bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-text-3">
+                          {competition.eligibility}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-heading text-[16px] sm:text-[17px] font-bold leading-snug text-text-1 group-hover:text-primary transition-colors break-words">
+                      {competition.name}
+                    </h3>
+                    {competition.description && (
+                      <p className="mt-2 line-clamp-2 text-[12.5px] leading-relaxed text-text-3 break-words">
+                        {sanitizeText(competition.description)}
+                      </p>
+                    )}
+                    <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3 text-[12px]">
+                      <div>
+                        <span className="text-[10px] font-mono uppercase text-text-4 block">Fee</span>
+                        <span className="font-semibold text-text-1">{competition.registrationFee || 'Free'}</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 font-bold text-primary text-[12px] group-hover:translate-x-0.5 transition-transform">
+                        Details <ArrowRight size={13} />
+                      </span>
+                    </div>
+                  </button>
+                ))}
+                <div className="w-4 flex-shrink-0" aria-hidden="true" />
+              </div>
+            </section>
+          )}
+
+          {/* 3. BENEFITS & PRIZES */}
+          {(perks || hasPrizes || ev.highlights?.length > 0) && (
+            <section id="benefits" ref={setSectionRef('benefits')} className="scroll-mt-28 space-y-6">
+              <SectionHeader kicker="03 · REWARDS" title="Perks & Prize Pool" />
+
+              {/* Prize Showcase */}
+              {hasPrizes && <PrizePodium prizes={prizes} />}
+
+              {/* What You Get / Highlights */}
+              {ev.highlights?.length > 0 && (
+                <div className="space-y-2.5 pt-2">
+                  <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-text-4">Key Highlights</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {ev.highlights.map((h, i) => (
+                      <div key={h} className="flex items-center gap-3 p-3 rounded-xl bg-surface-2/60 border border-border/60">
+                        <span className="text-[20px] flex-shrink-0">{h.slice(0, 2)}</span>
+                        <span className="text-[13.5px] font-medium text-text-1 leading-snug break-words">{h.slice(2).trim()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Other Perks Chips */}
+              {perks && (
+                <div className="space-y-2 pt-1">
+                  <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-text-4">Additional Perks</div>
+                  <div className="flex flex-wrap gap-2">
+                    {perks.split(',').map(p => p.trim()).filter(Boolean).map(perk => (
+                      <span key={perk} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 text-[13px] font-medium text-text-2 border border-border/50">
+                        <CheckCircle2 size={14} className="text-emerald-600" />
+                        {perk}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* 4. ELIGIBILITY & RULES */}
+          {(eligibility || rules) && (
+            <section id="rules" ref={setSectionRef('rules')} className="scroll-mt-28">
+              <SectionHeader kicker="04 · GUIDELINES" title="Eligibility & Rules" />
+              <div className="divide-y divide-border/70 border-y border-border/70">
+                {eligibility && (
+                  <div className="py-4">
+                    <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary mb-1">Who Can Participate</div>
+                    <MultilineText text={eligibility} className="text-[14px] text-text-2" />
+                  </div>
+                )}
+                {rules && (
+                  <div className="py-4">
+                    <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary mb-1">General Rules</div>
+                    <MultilineText text={rules} className="text-[14px] text-text-2" />
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* 5. ORGANIZER & CONTACT */}
+          <div className="space-y-8">
+            {ev.orgName && (
+              <section id="organizer" ref={setSectionRef('organizer')} className="scroll-mt-28">
+                <SectionHeader kicker="05 · HOST" title="Organized By" />
+                <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-surface-2/50 border border-border/70">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-[24px] flex-shrink-0 border border-border/80 shadow-sm">
+                      {ev.orgLogo}
+                    </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-heading text-[15px] font-bold leading-snug text-text-1 break-words">{competition.name}</div>
-                      {competition.eligibility && <div className="mt-1 line-clamp-1 text-[11px] font-semibold text-primary">{competition.eligibility}</div>}
+                      <div className="font-heading font-bold text-[16px] text-text-1 break-words">{ev.orgName}</div>
+                      <div className="text-[12px] text-text-3 truncate">{ev.orgLocation}</div>
+                      {ev.orgSub && <div className="text-[11px] text-text-4 truncate">{ev.orgSub}</div>}
                     </div>
                   </div>
-                  {competition.description && <p className="mb-3 line-clamp-2 text-[12px] leading-relaxed text-text-3 break-words">{sanitizeText(competition.description)}</p>}
-                  <div className="grid grid-cols-2 gap-2 border-t border-border pt-3">
-                    <div><div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Fee</div><div className="mt-0.5 truncate text-[12px] font-semibold text-text-1">{competition.registrationFee || 'Free'}</div></div>
-                    <div><div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Venue</div><div className="mt-0.5 truncate text-[12px] font-semibold text-text-1">{competition.venue || 'See details'}</div></div>
+                  <motion.button whileTap={{ scale: 0.94 }}
+                    onClick={() => { setFollowed(f => !f); showToast(followed ? 'Unfollowed' : `Following ${ev.orgName} ✓`, 'success'); }}
+                    className={`flex-shrink-0 px-4 py-2 rounded-xl text-[12px] font-bold transition-all ${
+                      followed ? 'bg-text-1 text-white' : 'bg-white border border-border text-text-1 hover:bg-surface-2'
+                    }`}>
+                    {followed ? '✓ Following' : '+ Follow'}
+                  </motion.button>
+                </div>
+              </section>
+            )}
+
+            {/* Brochure Document */}
+            {brochureUrl && (
+              <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-800 flex-shrink-0">
+                    <FileText size={20} />
                   </div>
-                  <div className="mt-3 text-[12px] font-bold text-primary flex items-center gap-1">Tap for details <span aria-hidden="true">→</span></div>
+                  <div className="min-w-0">
+                    <div className="font-heading font-bold text-[14px] text-text-1 truncate">Event Brochure</div>
+                    <div className="text-[11px] font-mono text-text-3">PDF Document · Official</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDownloadBrochure}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-bold text-amber-900 bg-white border border-amber-300 hover:bg-amber-100 transition-colors flex-shrink-0 shadow-sm"
+                >
+                  <Download size={14} />
+                  <span>Download</span>
                 </button>
-              ))}
-              <div className="w-2 sm:w-4 flex-shrink-0" aria-hidden="true" />
+              </div>
+            )}
+
+            {/* Quick Contact Actions */}
+            {(pocName || pocPhone || pocEmail || website) && (
+              <section id="contact" ref={setSectionRef('contact')} className="scroll-mt-28">
+                <SectionHeader kicker="06 · HELP" title="Contact & Inquiries" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {pocName && (
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60">
+                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-text-3 flex-shrink-0 border border-border/60">
+                        <UserRound size={15} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[10px] font-mono uppercase text-text-4 block">Point of Contact</span>
+                        <span className="text-[13.5px] font-semibold text-text-1 truncate block">{pocName}</span>
+                      </div>
+                    </div>
+                  )}
+                  {pocPhone && (
+                    <a href={`tel:${pocPhone}`} className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60 hover:border-emerald-400 hover:bg-emerald-50/40 transition-all group">
+                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-emerald-600 flex-shrink-0 border border-border/60 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                        <Phone size={15} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[10px] font-mono uppercase text-text-4 block">Phone Support</span>
+                        <span className="text-[13.5px] font-semibold text-text-1 group-hover:text-emerald-800 truncate block">{pocPhone}</span>
+                      </div>
+                    </a>
+                  )}
+                  {pocEmail && (
+                    <a href={`mailto:${pocEmail}`} className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60 hover:border-primary hover:bg-primary-xlight/40 transition-all group">
+                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-primary flex-shrink-0 border border-border/60 group-hover:bg-primary group-hover:text-white transition-colors">
+                        <Mail size={15} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[10px] font-mono uppercase text-text-4 block">Email Helpdesk</span>
+                        <span className="text-[13.5px] font-semibold text-text-1 group-hover:text-primary truncate block break-all">{pocEmail}</span>
+                      </div>
+                    </a>
+                  )}
+                  {website && website !== '#' && (
+                    <a href={website} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60 hover:border-primary hover:bg-primary-xlight/40 transition-all group">
+                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-primary flex-shrink-0 border border-border/60 group-hover:bg-primary group-hover:text-white transition-colors">
+                        <Globe size={15} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[10px] font-mono uppercase text-text-4 block">Official Website</span>
+                        <span className="text-[13.5px] font-semibold text-text-1 group-hover:text-primary truncate block">{website.replace(/^https?:\/\//, '')}</span>
+                      </div>
+                      <ExternalLink size={14} className="text-text-4 flex-shrink-0" />
+                    </a>
+                  )}
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* 6. FAQS */}
+          {faqItems.length > 0 && (
+            <section id="faq" ref={setSectionRef('faq')} className="scroll-mt-28">
+              <SectionHeader kicker="07 · FAQS" title="Frequently Asked Questions" />
+              <div className="border-t border-border/70">
+                {faqItems.map(([question, answer]) => (
+                  <FaqItem key={question} question={question} answer={answer} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Mobile Featured Events */}
+          {featuredEvs.length > 0 && (
+            <div className="md:hidden space-y-4 pt-4 border-t border-border/70">
+              <SectionHeader kicker="DISCOVER" title="Featured on FestNest" />
+              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {featuredEvs.slice(0, 4).map(f => (
+                  <RelatedCard key={f.id} ev={f} onClick={() => navigate(`/event/${f.id}`)} />
+                ))}
+              </div>
             </div>
-          </section>
-        )}
+          )}
 
-        {/* ── PERKS & PRIZES (unified section) ── */}
-        {(perks || hasPrizes || ev.highlights?.length > 0) && (
-          <section id="benefits" ref={setSectionRef('benefits')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-            <SectionHeading number={3}>
-              <span className="flex items-center gap-2"><Gift size={18} strokeWidth={1.8} className="text-primary" /> Perks & Prizes</span>
-            </SectionHeading>
+          {/* Related Category Events */}
+          {related.length > 0 && (
+            <div className="space-y-4 pt-4 border-t border-border/70">
+              <SectionHeader kicker="EXPLORE" title={`More ${ev.category} Events`} />
+              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {related.map(r => <RelatedCard key={r.id} ev={r} onClick={() => navigate(`/event/${r.id}`)} />)}
+              </div>
+            </div>
+          )}
+        </div>
 
-            {/* Highlights / What You Get */}
-            {ev.highlights?.length > 0 && (
-              <div className="mb-5">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-2">What you get</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {ev.highlights.map((h, i) => (
-                    <motion.div key={h} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.16, delay: i * 0.04 }}
-                      className="flex items-center gap-3 px-3.5 py-2.5 sm:px-4 sm:py-3 bg-surface rounded-lg border border-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:border-primary-mid hover:shadow-[0_2px_8px_rgba(79,70,229,0.09)] transition-all duration-fast min-w-0">
-                      <span className="text-[18px] sm:text-[20px] flex-shrink-0">{h.slice(0, 2)}</span>
-                      <span className="text-[13px] font-medium text-text-1 leading-snug break-words">{h.slice(2).trim()}</span>
-                    </motion.div>
+        {/* ── RIGHT COLUMN (Desktop Sticky Sidebar) ── */}
+        <div className="hidden md:flex md:flex-col md:gap-6 sticky top-[130px]">
+          <ActionPanel
+            ev={ev}
+            cfg={cfg}
+            registering={registering}
+            registered={registered}
+            isSaved={isSaved}
+            onToggleSave={() => { setUserToggled(true); toggleSave(ev.id); }}
+            handleRegister={handleRegister}
+            showToast={showToast}
+          />
+
+          {/* Featured on FestNest Desktop Sidebar */}
+          {(featuredLoading || featuredEvs.length > 0) && (
+            <div className="space-y-3 pt-2">
+              <div className="text-[11px] font-mono font-bold tracking-[0.14em] uppercase text-text-4 px-1">
+                More Events
+              </div>
+              {featuredLoading ? (
+                <div className="space-y-3">
+                  {[0, 1].map(i => (
+                    <div key={i} className="rounded-2xl overflow-hidden border border-border bg-white p-3 space-y-2">
+                      <div className="skeleton w-full h-24 rounded-lg" />
+                      <div className="skeleton h-4 w-3/4" />
+                    </div>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                featuredEvs.slice(0, 2).map(f => (
+                  <FeaturedEventCard key={f.id} event={f} className="w-full" />
+                ))
+              )}
+            </div>
+          )}
+        </div>
+      </div>
 
-            {/* Other Perks */}
-            {perks && (
-              <div className="mb-5">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-2">Other perks</div>
-                <div className="flex flex-wrap gap-2">
-                  {perks.split(',').map(p => p.trim()).filter(Boolean).map(perk => (
-                    <span key={perk}
-                      className="px-3 py-1.5 text-[13px] font-medium bg-surface-2 border border-border rounded-md text-text-2 break-words">
-                      {perk}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+      {/* ══ MOBILE STICKY BOTTOM BAR ══ */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[50] bg-white/95 backdrop-blur-lg border-t border-border/80 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">
+            <div className={`font-mono font-bold text-[22px] leading-none ${ev.entryType==='free' ? 'text-[#16A34A]' : ev.entryType==='paid' ? 'text-[#B45309]' : 'text-primary'}`}>
+              {ev.price}
+            </div>
+            <div className="text-[10.5px] font-medium text-text-3 mt-0.5">{ev.priceNote || 'Per entry'}</div>
+          </div>
 
-            {/* Prize Podium */}
-            {hasPrizes && <PrizePodium prizes={prizes} />}
-          </section>
-        )}
-
-        {/* ── ELIGIBILITY & RULES ── */}
-        {(eligibility || rules) && (
-          <section className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden" aria-labelledby="rules-heading">
-            <button
-              onClick={() => setRulesOpen(o => !o)}
-              className="flex items-center justify-between w-full p-4 sm:p-5 text-left group">
-              <div className="flex items-center gap-2">
-                <ScrollText size={17} strokeWidth={1.8} className="text-text-3 flex-shrink-0" />
-                <span id="rules-heading" className="font-heading font-bold text-[16px] sm:text-[17px] text-text-1">Eligibility & Rules</span>
-              </div>
-              <motion.div animate={{ rotate: rulesOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                <ChevronDown size={18} className="text-text-3 flex-shrink-0" />
-              </motion.div>
-            </button>
-            <AnimatePresence>
-              {rulesOpen && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
-                  className="overflow-hidden">
-                  <div className="space-y-3 sm:space-y-4 px-4 sm:px-5 pb-4 sm:pb-5">
-                    {eligibility && (
-                      <div className="bg-surface rounded-lg p-3.5 sm:p-4 border border-border">
-                        <div className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-text-4 mb-1.5 sm:mb-2">Who can participate</div>
-                        <MultilineText text={eligibility} className="text-[13px] sm:text-[14px] text-text-2 break-words" />
-                      </div>
-                    )}
-                    {rules && (
-                      <div className="bg-surface rounded-lg p-3.5 sm:p-4 border border-border">
-                        <div className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-text-4 mb-1.5 sm:mb-2">Rules</div>
-                        <MultilineText text={rules} className="text-[13px] sm:text-[14px] text-text-2 break-words" />
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
+          <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
+            onClick={handleRegister} disabled={registering || registered}
+            className={`flex-1 py-3.5 rounded-xl font-heading text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-70 shadow-sm ${
+              registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`
+            }`}>
+            <AnimatePresence mode="wait">
+              {registering ? (
+                <motion.span key="s" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                </motion.span>
+              ) : registered ? (
+                <motion.span key="d" initial={{scale:0.6,opacity:0}} animate={{scale:1,opacity:1}} className="flex items-center gap-1.5">
+                  <Check size={17} strokeWidth={2.5} />
+                  Registered!
+                </motion.span>
+              ) : (
+                <motion.span key="c" initial={{opacity:0}} animate={{opacity:1}} className="flex items-center gap-1.5">
+                  {cfg.label}
+                  <ArrowRight size={16} />
+                </motion.span>
               )}
             </AnimatePresence>
-          </section>
-        )}
+          </motion.button>
+        </div>
+      </div>
 
-        {/* ── ORGANIZER ── */}
-        {ev.orgName && (
-          <section id="organizer" ref={setSectionRef('organizer')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-            <SectionHeading number={4}>Organiser</SectionHeading>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-              <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-surface-2 flex items-center justify-center text-[24px] sm:text-[28px] flex-shrink-0 border border-border">
-                  {ev.orgLogo}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-[15px] sm:text-[16px] text-text-1 mb-0.5 break-words">{ev.orgName}</div>
-                  <div className="text-[12px] sm:text-[13px] text-text-3 truncate">{ev.orgLocation}</div>
-                  {ev.orgSub && <div className="text-[11px] sm:text-[12px] text-text-4 mt-0.5 truncate">{ev.orgSub}</div>}
-                </div>
-              </div>
-              <motion.button whileTap={{ scale: 0.94 }}
-                onClick={() => { setFollowed(f => !f); showToast(followed ? 'Unfollowed' : `Following ${ev.orgName} ✓`, 'success'); }}
-                className={`self-start sm:self-center flex-shrink-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-lg text-[12px] sm:text-[13px] font-semibold border transition-all duration-fast min-h-[38px]
-                  ${followed ? 'bg-primary text-white border-primary shadow-indigo' : 'bg-primary-light text-primary border-[#C7D2FE] hover:bg-primary hover:text-white'}`}>
-                {followed ? '✓ Following' : '+ Follow'}
-              </motion.button>
-            </div>
-          </section>
+      {/* ══ COMPETITION DETAILS MODAL ══ */}
+      <AnimatePresence>
+        {selectedCompetition !== null && individualCompetitions[selectedCompetition] && (
+          <CompetitionDetails
+            competition={individualCompetitions[selectedCompetition]}
+            index={selectedCompetition}
+            onClose={() => setSelectedCompetition(null)}
+          />
         )}
+      </AnimatePresence>
 
-        {/* ── BROCHURE ── */}
-        {brochureUrl && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22 }}
-            className="rounded-xl border border-[#FED7AA] bg-[#FFF7ED] p-3.5 sm:p-4 shadow-[0_1px_6px_rgba(180,83,9,0.07)]">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#B45309]/10 flex items-center justify-center flex-shrink-0">
-                  <FileText size={22} strokeWidth={1.6} className="text-[#B45309]" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-[13px] sm:text-[14px] text-text-1 leading-snug truncate">Event Brochure</div>
-                  <div className="text-[11px] sm:text-[12px] text-text-3 mt-0.5 truncate">PDF · Official document</div>
-                </div>
-              </div>
-              <button onClick={handleDownloadBrochure}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[12px] font-semibold text-[#B45309] bg-white border border-[#FED7AA] hover:bg-[#B45309] hover:text-white transition-all duration-fast flex-shrink-0 min-h-[36px]">
-                <Download size={13} strokeWidth={2.2} />
-                <span>Download</span>
-              </button>
-            </div>
+      {/* ══ IMAGE LIGHTBOX ══ */}
+      <AnimatePresence>
+        {lightboxOpen && ev.imageUrl && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLightboxOpen(false)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 cursor-zoom-out"
+            role="dialog" aria-modal="true" aria-label={`${ev.name} image`}>
+            <motion.button whileTap={{ scale: 0.9 }}
+              onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white hover:bg-white/20 transition-all"
+              aria-label="Close image">
+              <X size={20} />
+            </motion.button>
+            <motion.img
+              initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              src={ev.imageUrl} alt={ev.name}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl cursor-default" />
           </motion.div>
         )}
+      </AnimatePresence>
 
-        {/* ── CONTACT INFORMATION ── */}
-        {(pocName || pocPhone || pocEmail || website) && (
-          <section id="contact" ref={setSectionRef('contact')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-            <SectionHeading>
-              <span className="flex items-center gap-2"><Phone size={17} strokeWidth={1.8} className="text-text-2" /> Contact Information</span>
-            </SectionHeading>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-              {pocName && (
-                <div className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
-                    <UserRound size={16} className="text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Point of Contact</div>
-                    <div className="text-[13px] sm:text-[14px] font-semibold text-text-1 truncate">{pocName}</div>
-                  </div>
-                </div>
-              )}
-              {pocPhone && (
-                <a href={`tel:${pocPhone}`}
-                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-[#16A34A] hover:shadow-[0_2px_8px_rgba(22,163,74,0.1)] transition-all group min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-green-bg flex items-center justify-center flex-shrink-0">
-                    <Phone size={16} className="text-[#16A34A]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Phone</div>
-                    <div className="text-[13px] sm:text-[14px] font-semibold text-text-1 group-hover:text-[#16A34A] transition-colors truncate">{pocPhone}</div>
-                  </div>
-                  <ChevronDown size={14} className="text-text-3 -rotate-90 flex-shrink-0" />
-                </a>
-              )}
-              {pocEmail && (
-                <a href={`mailto:${pocEmail}`}
-                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-primary hover:shadow-[0_2px_8px_rgba(79,70,229,0.1)] transition-all group min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
-                    <Mail size={16} className="text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Email</div>
-                    <div className="text-[13px] sm:text-[14px] font-semibold text-text-1 group-hover:text-primary transition-colors truncate break-all">{pocEmail}</div>
-                  </div>
-                  <ChevronDown size={14} className="text-text-3 -rotate-90 flex-shrink-0" />
-                </a>
-              )}
-              {website && website !== '#' && (
-                <a href={website} target="_blank" rel="noreferrer"
-                  className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:border-[#B45309] hover:shadow-[0_2px_8px_rgba(180,83,9,0.1)] transition-all group min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-[#FFF7ED] flex items-center justify-center flex-shrink-0">
-                    <Globe size={16} className="text-[#B45309]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[10px] text-text-4 uppercase tracking-wide font-bold">Website</div>
-                    <div className="text-[13px] sm:text-[14px] font-semibold text-[#B45309] truncate break-all">{website.replace(/^https?:\/\//, '')}</div>
-                  </div>
-                  <ExternalLink size={14} className="text-text-3 flex-shrink-0" />
-                </a>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ── FAQ ── */}
-        {faqItems.length > 0 && (
-          <section id="faq" ref={setSectionRef('faq')} className="scroll-mt-24 md:scroll-mt-28 rounded-xl border border-border bg-white p-4 sm:p-5 md:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)]" aria-labelledby="faq-heading">
-            <SectionHeading number={5}>Frequently Asked Questions</SectionHeading>
-            <div className="rounded-lg border border-border overflow-hidden divide-y divide-border">
-              {faqItems.map(([question, answer]) => (
-                <FaqItem key={question} question={question} answer={answer} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── Featured Events — mobile/tablet only ── */}
-        {featuredEvs.length > 0 && (
-          <div className="md:hidden">
-            <SectionHeading><span className="flex items-center gap-2"><Star size={17} strokeWidth={1.8} className="text-amber-500" /> Featured Events</span></SectionHeading>
-            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {featuredEvs.slice(0, 4).map(f => (
-                <RelatedCard key={f.id} ev={f} onClick={() => navigate(`/event/${f.id}`)} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Related ── */}
-        {related.length > 0 && (
-          <div className="scroll-mt-24 md:scroll-mt-28">
-            <SectionHeading>More {ev.category}s</SectionHeading>
-            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {related.map(r => <RelatedCard key={r.id} ev={r} onClick={() => navigate(`/event/${r.id}`)} />)}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── RIGHT COLUMN (desktop) ── */}
-      <div className="hidden md:flex md:flex-col md:gap-5 sticky top-[130px]">
-        <ActionPanel ev={ev} cfg={cfg} registering={registering} registered={registered}
-          isSaved={isSaved} onToggleSave={() => { setUserToggled(true); toggleSave(ev.id); }} handleRegister={handleRegister} showToast={showToast} />
-
-        {/* Featured Events sidebar */}
-        {(featuredLoading || featuredEvs.length > 0) && (
-          <div className="flex flex-col gap-4">
-            <div className="text-[11px] font-bold tracking-[0.07em] uppercase text-text-3 px-0.5">
-              Featured on FestNest
-            </div>
-            {featuredLoading ? (
-              <>
-                {[0, 1].map(i => (
-                  <div key={i} className="rounded-[18px] overflow-hidden border border-border bg-white">
-                    <div className="skeleton w-full" style={{ paddingTop: '56.25%', borderRadius: 0 }} />
-                    <div className="p-4 space-y-2">
-                      <div className="skeleton h-3 w-16" />
-                      <div className="skeleton h-4 w-3/4" />
-                      <div className="skeleton h-3 w-1/2" />
-                      <div className="skeleton h-9 mt-2" />
-                    </div>
-                  </div>
-                ))}
-              </>
-            ) : (
-              featuredEvs.slice(0, 2).map(f => (
-                <FeaturedEventCard key={f.id} event={f} className="w-full" />
-              ))
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-
-    {/* ══ MOBILE STICKY CTA ══ */}
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-[50] bg-white/97 backdrop-blur-[20px] border-t border-border px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
-      <div className="flex items-center gap-3">
-        <div className="flex-shrink-0">
-          <div className={`font-mono font-bold text-[22px] leading-none ${ev.entryType==='free'?'text-[#16A34A]':ev.entryType==='paid'?'text-[#B45309]':'text-primary'}`}>
-            {ev.price}
-          </div>
-          <div className="text-[11px] text-text-3 mt-0.5">{ev.priceNote}</div>
-        </div>
-        {ev.deadlineDays > 0 && ev.deadlineDays <= 6 && (
-          <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold
-            ${ev.deadlineDays<=3 ? 'bg-red-bg text-red border border-red-border' : 'bg-amber-bg text-amber border border-amber-border'}`}>
-            {ev.deadlineDays}d left
-          </div>
-        )}
-        <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
-          onClick={handleRegister} disabled={registering || registered}
-          className={`flex-1 py-[14px] rounded-md font-body text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-70
-            ${registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`}`}>
-          <AnimatePresence mode="wait">
-            {registering ? (
-              <motion.span key="s" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-              </motion.span>
-            ) : registered ? (
-              <motion.span key="d" initial={{scale:0.6,opacity:0}} animate={{scale:1,opacity:1}} className="flex items-center gap-2">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg>
-                Registered!
-              </motion.span>
-            ) : (
-              <motion.span key="c" initial={{opacity:0}} animate={{opacity:1}} className="flex items-center gap-2">
-                {cfg.label}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
-      </div>
-    </div>
-
-    {/* ══ COMPETITION DETAILS MODAL ══ */}
-    <AnimatePresence>
-      {selectedCompetition !== null && individualCompetitions[selectedCompetition] && (
-        <CompetitionDetails
-          competition={individualCompetitions[selectedCompetition]}
-          index={selectedCompetition}
-          onClose={() => setSelectedCompetition(null)}
-        />
-      )}
-    </AnimatePresence>
-
-    {/* ══ IMAGE LIGHTBOX ══ */}
-    <AnimatePresence>
-      {lightboxOpen && ev.imageUrl && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          onClick={() => setLightboxOpen(false)}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-zoom-out"
-          role="dialog" aria-modal="true" aria-label={`${ev.name} image`}>
-          <motion.button whileTap={{ scale: 0.9 }}
-            onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/25 text-white hover:bg-white/25 transition-all"
-            aria-label="Close image">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </motion.button>
-          <motion.img
-            initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            src={ev.imageUrl} alt={ev.name}
-            onClick={(e) => e.stopPropagation()}
-            className="max-w-full max-h-full object-contain rounded-md shadow-2xl cursor-default" />
-        </motion.div>
-      )}
-    </AnimatePresence>
-
-  </motion.div>
-);
+    </motion.div>
+  );
 }
