@@ -121,177 +121,42 @@ const ENTRY_CONFIG = {
 };
 
 const DetailSkeleton = () => {
+  const S = ({ h = '', w = '', className = '', style }) => (
+    <div className={['skeleton', h, w, className].filter(Boolean).join(' ')} style={style} />
+  );
+
   return (
-    <div className="min-h-screen bg-white pb-16">
-      {/* Hero Skeleton (Light Theme) */}
-      <div className="w-full bg-[#FAFAF9] border-b border-border pt-6 pb-12 md:pb-16 px-4 sm:px-6 md:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          {/* Breadcrumb Skeleton */}
-          <div className="skeleton h-4 w-44 mb-6 rounded" />
-
-          {/* Two-Column Hero Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] items-center gap-8 lg:gap-12">
-            {/* Left Column */}
-            <div className="flex flex-col items-start min-w-0 space-y-4">
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2.5 mb-1">
-                <div className="skeleton h-6 w-28 rounded-full" />
-                <div className="skeleton h-6 w-20 rounded-full" />
-              </div>
-
-              {/* Title */}
-              <div className="space-y-2.5 w-full">
-                <div className="skeleton h-9 sm:h-11 w-3/4 rounded-lg" />
-                <div className="skeleton h-9 sm:h-11 w-1/2 rounded-lg" />
-              </div>
-
-              {/* Subtitle / Host */}
-              <div className="skeleton h-4 w-60 rounded" />
-
-              {/* Description */}
-              <div className="space-y-2 w-full max-w-xl pt-1">
-                <div className="skeleton h-4 w-full rounded" />
-                <div className="skeleton h-4 w-5/6 rounded" />
-                <div className="skeleton h-4 w-4/6 rounded" />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-2">
-                <div className="skeleton h-12 w-36 rounded-lg" />
-                <div className="skeleton h-12 w-24 rounded-lg" />
-                <div className="skeleton h-12 w-24 rounded-lg" />
-              </div>
-            </div>
-
-            {/* Right Column: Poster */}
-            <div className="w-full">
-              <div className="skeleton aspect-[16/10] w-full rounded-2xl border border-border" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 7-Column Information Strip Skeleton */}
-      <div className="w-full border-b border-border bg-white overflow-x-auto no-scrollbar shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
-        <div className="mx-auto max-w-[1280px] flex divide-x divide-border min-w-max">
-          {[1, 2, 3, 4, 5, 6, 7].map(i => (
-            <div key={i} className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
-              <div className="skeleton w-4 h-4 rounded-full flex-shrink-0 mt-0.5" />
-              <div className="space-y-1.5 flex-1">
-                <div className="skeleton h-2.5 w-12 rounded" />
-                <div className="skeleton h-3.5 w-20 rounded" />
-                <div className="skeleton h-2.5 w-16 rounded" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Sticky Section Nav Skeleton */}
-      <div className="border-b border-border bg-white/95 px-4 sm:px-6 md:px-8 py-2.5 mb-7">
-        <div className="mx-auto max-w-[1280px] flex gap-2 overflow-x-auto no-scrollbar">
-          {[80, 70, 110, 75, 65, 90, 80].map((w, i) => (
-            <div key={i} className="skeleton h-8 rounded-lg flex-shrink-0" style={{ width: `${w}px` }} />
-          ))}
-        </div>
-      </div>
-
-      {/* Main Content + Sidebar Grid Skeleton */}
-      <div className="mx-auto max-w-[1280px] w-full px-4 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1fr_360px] lg:gap-9 items-start">
-        {/* Left Column */}
-        <div className="flex flex-col gap-8 min-w-0 w-full">
-          {/* Mobile Ticket Card Placeholder */}
-          <div className="lg:hidden rounded-xl border border-border bg-white p-5 space-y-4 shadow-sm">
-            <div className="skeleton h-28 w-full rounded-lg" />
-            <div className="skeleton h-12 w-full rounded-lg" />
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            <div className="skeleton h-7 w-20 rounded-full" />
-            <div className="skeleton h-7 w-24 rounded-full" />
-            <div className="skeleton h-7 w-16 rounded-full" />
-          </div>
-
-          {/* About Section */}
-          <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-sm space-y-3">
-            <div className="skeleton h-6 w-44 rounded-md mb-4" />
-            <div className="skeleton h-4 w-full rounded" />
-            <div className="skeleton h-4 w-full rounded" />
-            <div className="skeleton h-4 w-3/4 rounded" />
-          </div>
-
-          {/* Competitions Section */}
+    <div className="min-h-screen bg-white pb-[80px] md:pb-12">
+      <div className="w-full bg-[#0B0819] py-10 md:py-16 px-4 md:px-8">
+        <div className="mx-auto max-w-[1280px] grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8">
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="skeleton h-6 w-36 rounded-md" />
-              <div className="flex gap-2">
-                <div className="skeleton w-8 h-8 rounded-full" />
-                <div className="skeleton w-8 h-8 rounded-full" />
-              </div>
-            </div>
-            <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="w-[270px] sm:w-[290px] flex-shrink-0 rounded-xl border border-border bg-white p-4 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div className="skeleton h-5 w-20 rounded" />
-                    <div className="skeleton h-7 w-7 rounded" />
-                  </div>
-                  <div className="skeleton h-5 w-3/4 rounded" />
-                  <div className="skeleton h-3.5 w-full rounded" />
-                  <div className="skeleton h-3.5 w-2/3 rounded" />
-                  <div className="skeleton h-2 w-full rounded-full mt-4" />
-                </div>
-              ))}
+            <S h="h-5" w="w-48" className="bg-white/10" />
+            <S h="h-10" w="w-3/4" className="bg-white/10" />
+            <S h="h-6" w="w-1/2" className="bg-white/10" />
+            <S h="h-20" w="w-full" className="bg-white/10" />
+            <div className="flex gap-3 pt-2">
+              <S h="h-12" w="w-36" className="rounded-lg bg-white/20" />
+              <S h="h-12" w="w-24" className="rounded-lg bg-white/10" />
             </div>
           </div>
-
-          {/* Prizes & Perks Section */}
-          <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-sm space-y-4">
-            <div className="skeleton h-6 w-36 rounded-md mb-2" />
-            <div className="skeleton h-16 w-full rounded-lg" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="skeleton h-12 rounded-lg" />
-              ))}
-            </div>
-          </div>
+          <S h="h-[280px] md:h-[340px]" w="w-full" className="rounded-2xl bg-white/10" />
         </div>
-
-        {/* Right Column: Desktop Sticky Sidebar */}
-        <div className="hidden lg:flex lg:flex-col lg:gap-6 sticky top-[84px]">
-          {/* Ticket Card */}
-          <div className="rounded-xl border border-border bg-white overflow-hidden shadow-sm">
-            <div className="p-5 bg-surface-2 border-b border-border space-y-3">
-              <div className="skeleton h-5 w-40 rounded" />
-              <div className="grid grid-cols-4 gap-2">
-                <div className="skeleton h-14 rounded-lg" />
-                <div className="skeleton h-14 rounded-lg" />
-                <div className="skeleton h-14 rounded-lg" />
-                <div className="skeleton h-14 rounded-lg" />
-              </div>
-            </div>
-            <div className="p-5 space-y-4">
-              <div className="skeleton h-8 w-28 rounded" />
-              <div className="space-y-2">
-                <div className="skeleton h-4 w-full rounded" />
-                <div className="skeleton h-4 w-3/4 rounded" />
-              </div>
-              <div className="skeleton h-12 w-full rounded-lg mt-2" />
-              <div className="flex gap-2">
-                <div className="skeleton h-10 flex-1 rounded-lg" />
-                <div className="skeleton h-10 flex-1 rounded-lg" />
-              </div>
-            </div>
-          </div>
-
-          {/* Featured Event Card */}
-          <div className="rounded-xl border border-border bg-white p-4 space-y-3 shadow-sm">
-            <div className="skeleton h-4 w-28 rounded" />
-            <div className="skeleton h-32 w-full rounded-lg" />
-            <div className="skeleton h-5 w-3/4 rounded" />
-            <div className="skeleton h-4 w-1/2 rounded" />
-          </div>
+      </div>
+      <div className="border-y border-border bg-white py-4 px-4 md:px-8">
+        <div className="mx-auto max-w-[1280px] grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7].map(i => (
+            <S key={i} h="h-12" className="rounded-md" />
+          ))}
+        </div>
+      </div>
+      <div className="px-4 md:px-8 md:max-w-[1280px] md:mx-auto md:grid md:grid-cols-[minmax(0,1fr)_360px] md:gap-9 md:items-start mt-8">
+        <div className="flex flex-col gap-7">
+          <S h="h-40" w="w-full" className="rounded-xl" />
+          <S h="h-64" w="w-full" className="rounded-xl" />
+          <S h="h-40" w="w-full" className="rounded-xl" />
+        </div>
+        <div className="hidden md:flex md:flex-col md:gap-5 sticky top-[90px]">
+          <S h="h-[440px]" w="w-full" className="rounded-xl" />
         </div>
       </div>
     </div>
@@ -377,20 +242,26 @@ const PrizePodium = ({ prizes }) => {
   const { first, second, third } = prizes;
   if (!first && !second && !third) return null;
   const podium = [
-    { rankLabel: '1st', label: '1st Prize', value: first,  bg: 'bg-[#FFFBEB] border-[#FDE68A]', text: 'text-[#B45309]' },
-    { rankLabel: '2nd', label: '2nd Prize', value: second, bg: 'bg-[#F8FAFC] border-[#CBD5E1]', text: 'text-[#475569]' },
-    { rankLabel: '3rd', label: '3rd Prize', value: third,  bg: 'bg-[#FFF7ED] border-[#FED7AA]', text: 'text-[#9A3412]' },
+    { rankLabel: '1st Place', label: 'Winner', value: first, badge: 'bg-amber-400/20 text-amber-300 border-amber-400/40', glow: 'border-amber-400/30 bg-amber-500/10' },
+    { rankLabel: '2nd Place', label: '1st Runner Up', value: second, badge: 'bg-slate-300/20 text-slate-200 border-slate-300/40', glow: 'border-slate-300/30 bg-slate-400/10' },
+    { rankLabel: '3rd Place', label: '2nd Runner Up', value: third, badge: 'bg-orange-400/20 text-orange-300 border-orange-400/40', glow: 'border-orange-400/30 bg-orange-500/10' },
   ].filter(p => p.value);
 
   return (
-    <div className="mt-4 pt-4 border-t border-border">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">Prize Breakdown</div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-        {podium.map(({ rankLabel, label, value, bg, text }) => (
-          <div key={label} className={`border rounded-lg p-3 sm:p-4 text-center ${bg}`}>
-            <div className={`text-[13px] sm:text-[14px] font-bold mb-0.5 ${text}`}>{rankLabel}</div>
-            <div className={`font-mono font-bold text-[16px] sm:text-[18px] ${text}`}>₹{Number(String(value).replace(/,/g,'')).toLocaleString('en-IN')}</div>
-            <div className="text-[11px] text-text-3 mt-0.5">{label}</div>
+    <div>
+      <div className="text-[11px] font-bold font-mono uppercase tracking-[0.16em] text-white/60 mb-3">
+        Prize Breakdown by Rank
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {podium.map(({ rankLabel, label, value, badge, glow }) => (
+          <div key={label} className={`border rounded-xl p-3.5 sm:p-4 text-center backdrop-blur-sm ${glow}`}>
+            <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border mb-1.5 ${badge}`}>
+              {rankLabel}
+            </span>
+            <div className="font-mono font-black text-[20px] sm:text-[24px] text-white leading-tight">
+              ₹{Number(String(value).replace(/,/g,'')).toLocaleString('en-IN')}
+            </div>
+            <div className="text-[11px] text-white/60 mt-1">{label}</div>
           </div>
         ))}
       </div>
@@ -926,7 +797,7 @@ export default function EventDetails() {
     pool:   ev.prizeDetails || '',
   };
   const hasPrizes     = Object.values(prizes).some(Boolean) || ev.badgeClass === 'badge-prize';
-  const displayTotalPrize = prizes.total || prizes.pool || (hasPrizes ? '12,00,000' : '');
+  const displayTotalPrize = prizes.total || prizes.pool || ev.totalPrize || ev.prize || '5,00,000';
   const eligibility   = sanitizeText(ev.eligibility || '');
   const rules         = sanitizeText(ev.rules || '');
   const eligibilityList = eligibility ? eligibility.split('\n').map(s => s.trim()).filter(Boolean) : [];
@@ -1504,54 +1375,129 @@ export default function EventDetails() {
 
           {/* ── PRIZES & PERKS ── */}
           {(hasPrizes || perks || ev.highlights?.length > 0) && (
-            <section id="prizes" ref={setSectionRef('prizes')} className="scroll-mt-28">
+            <section id="prizes" ref={setSectionRef('prizes')} className="scroll-mt-28 space-y-6">
               <SectionHeading>Prizes & Perks</SectionHeading>
 
-              {/* Total Prize Pool Banner Card */}
+              {/* 1. HEROIC TOTAL PRIZE POOL SHOWCASE */}
               {displayTotalPrize && (
-                <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] mb-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center flex-shrink-0">
-                        <Trophy size={24} strokeWidth={1.8} />
+                <div className="relative overflow-hidden rounded-2xl bg-[#0B0819] text-white border border-white/10 shadow-[0_12px_36px_rgba(15,23,42,0.15)] p-6 sm:p-8">
+                  {/* Subtle ambient lighting glows */}
+                  <div aria-hidden="true" className="absolute -top-16 -right-16 w-60 h-60 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+                  <div aria-hidden="true" className="absolute -bottom-16 -left-16 w-60 h-60 bg-indigo-600/25 rounded-full blur-3xl pointer-events-none" />
+                  <div aria-hidden="true" className="absolute top-1/2 right-1/4 w-40 h-40 bg-purple-500/15 rounded-full blur-2xl pointer-events-none" />
+
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    {/* Left: Trophy & Amount */}
+                    <div className="flex items-center gap-5 sm:gap-6 min-w-0">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white flex items-center justify-center flex-shrink-0 shadow-[0_8px_24px_rgba(245,158,11,0.35)] border border-amber-300/40">
+                        <Trophy size={32} className="text-white drop-shadow-md sm:w-10 sm:h-10" strokeWidth={2.2} />
                       </div>
-                      <div>
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Total Prize Pool</div>
-                        <div className="font-mono font-bold text-[24px] sm:text-[28px] text-text-1 leading-tight">
+
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[11px] font-bold font-mono tracking-[0.16em] uppercase text-amber-300">
+                            Total Prize Pool
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold uppercase tracking-wider">
+                            Grand Rewards
+                          </span>
+                        </div>
+                        <div className="font-mono font-black text-[34px] sm:text-[44px] lg:text-[50px] leading-none tracking-tight text-white drop-shadow-sm">
                           ₹{displayTotalPrize}
                         </div>
+                        <p className="text-[12px] sm:text-[13px] text-white/70 mt-1.5 leading-snug">
+                          Cash rewards, trophies and certificates for outstanding performers
+                        </p>
                       </div>
                     </div>
 
+                    {/* Right: Expand Breakdown CTA */}
                     {(prizes.first || prizes.second || prizes.third) && (
                       <button
                         type="button"
                         onClick={() => setShowPrizeBreakdown(v => !v)}
-                        className="px-4 py-2 rounded-lg border border-border bg-white text-[13px] font-bold text-primary hover:bg-primary-light hover:border-primary-mid transition-all flex items-center gap-1.5"
+                        className="self-start md:self-center px-4 py-2.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/15 text-[13px] font-bold text-white backdrop-blur-sm transition-all duration-200 flex items-center gap-2 flex-shrink-0 shadow-sm hover:border-amber-400/50 cursor-pointer"
                       >
-                        {showPrizeBreakdown ? 'Hide Breakdown ↑' : 'View Prize Details →'}
+                        <Trophy size={14} className="text-amber-400" />
+                        {showPrizeBreakdown ? 'Hide Breakdown ↑' : 'View Breakdown →'}
                       </button>
                     )}
                   </div>
 
                   {/* Expandable Podium Breakdown */}
-                  {showPrizeBreakdown && <PrizePodium prizes={prizes} />}
+                  {showPrizeBreakdown && (
+                    <div className="relative z-10 mt-6 pt-6 border-t border-white/15">
+                      <PrizePodium prizes={prizes} />
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* Additional Perks 4-Card Grid */}
-              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">Additional Perks</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* 2. ENGAGING ADDITIONAL PERKS GRID */}
+              <div>
+                <div className="flex items-center justify-between mb-3 px-0.5">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-text-4">
+                    Included Benefits & Perks
+                  </div>
+                  <span className="text-[12px] font-semibold text-primary">All participants</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                   {[
-                    { icon: Briefcase, label: 'Internship Opportunities' },
-                    { icon: Gift,      label: 'Goodies & Swag' },
-                    { icon: Award,     label: 'Certificates' },
-                    { icon: Globe,     label: 'Exposure & Networking' },
-                  ].map(({ icon: Icon, label }) => (
-                    <div key={label} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-surface-2">
-                      <Icon size={18} className="text-primary flex-shrink-0" />
-                      <span className="text-[13px] font-medium text-text-1 leading-snug">{label}</span>
+                    {
+                      icon: Briefcase,
+                      title: 'Internship Opportunities',
+                      desc: 'Interview fast-tracks with hiring partners',
+                      color: 'bg-indigo-50 text-indigo-600 border-indigo-200/80 hover:border-indigo-400',
+                      badge: 'Career',
+                    },
+                    {
+                      icon: Gift,
+                      title: 'Goodies & Swag',
+                      desc: 'Official merchandise kits & partner vouchers',
+                      color: 'bg-pink-50 text-pink-600 border-pink-200/80 hover:border-pink-400',
+                      badge: 'Rewards',
+                    },
+                    {
+                      icon: Award,
+                      title: 'Certificates',
+                      desc: 'Verified certificates of participation & merit',
+                      color: 'bg-amber-50 text-amber-700 border-amber-200/80 hover:border-amber-400',
+                      badge: 'Official',
+                    },
+                    {
+                      icon: Globe,
+                      title: 'Exposure & Networking',
+                      desc: 'Connect with tech mentors, alumni & peers',
+                      color: 'bg-emerald-50 text-emerald-700 border-emerald-200/80 hover:border-emerald-400',
+                      badge: 'Community',
+                    },
+                  ].map(({ icon: Icon, title, desc, color, badge }) => (
+                    <div
+                      key={title}
+                      className="group relative rounded-xl border border-border p-4 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color.split(' ').slice(0, 2).join(' ')} group-hover:scale-105 transition-transform`}>
+                            <Icon size={20} strokeWidth={2} />
+                          </div>
+                          <span className="text-[10px] font-bold font-mono tracking-wider uppercase px-2 py-0.5 rounded-md bg-surface-2 text-text-3 border border-border">
+                            {badge}
+                          </span>
+                        </div>
+                        <h4 className="text-[14px] font-bold text-text-1 group-hover:text-primary transition-colors leading-snug">
+                          {title}
+                        </h4>
+                        <p className="text-[12px] text-text-3 leading-relaxed mt-1">
+                          {desc}
+                        </p>
+                      </div>
+
+                      <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600">
+                        <CheckCircle2 size={13} className="text-emerald-500" />
+                        <span>Included for all teams</span>
+                      </div>
                     </div>
                   ))}
                 </div>
