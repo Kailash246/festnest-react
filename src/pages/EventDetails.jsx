@@ -925,8 +925,20 @@ export default function EventDetails() {
     total:  ev.totalPrize || '',
     pool:   ev.prizeDetails || '',
   };
-  const hasPrizes     = Object.values(prizes).some(Boolean) || ev.badgeClass === 'badge-prize';
-  const displayTotalPrize = prizes.total || prizes.pool || (hasPrizes ? '12,00,000' : '');
+  const computedSum = [prizes.first, prizes.second, prizes.third]
+    .map(p => Number(String(p).replace(/[^0-9.]/g, '')))
+    .filter(n => !isNaN(n) && n > 0)
+    .reduce((a, b) => a + b, 0);
+
+  const displayTotalPrize = prizes.total
+    ? String(prizes.total).replace(/^₹\s*/, '')
+    : prizes.pool
+    ? String(prizes.pool).replace(/^₹\s*/, '')
+    : computedSum > 0
+    ? computedSum.toLocaleString('en-IN')
+    : '';
+
+  const hasPrizes = Boolean(displayTotalPrize || prizes.first || prizes.second || prizes.third) || ev.badgeClass === 'badge-prize';
   const eligibility   = sanitizeText(ev.eligibility || '');
   const rules         = sanitizeText(ev.rules || '');
   const eligibilityList = eligibility ? eligibility.split('\n').map(s => s.trim()).filter(Boolean) : [];
@@ -1278,7 +1290,7 @@ export default function EventDetails() {
             <Trophy size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Prize Pool</div>
-              <div className="text-[14px] font-bold text-text-1 leading-snug">₹{displayTotalPrize || '50,000'}</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{displayTotalPrize ? `₹${displayTotalPrize}` : 'Exciting Prizes'}</div>
               <div className="text-[12px] text-text-3 mt-0.5">Total winnings</div>
             </div>
           </div>
@@ -1507,27 +1519,46 @@ export default function EventDetails() {
             <section id="prizes" ref={setSectionRef('prizes')} className="scroll-mt-28">
               <SectionHeading>Prizes & Perks</SectionHeading>
 
-              {/* Total Prize Pool Banner Card */}
+              {/* Redesigned Dynamic Blue-Violet Prize Pool Banner Card */}
               {displayTotalPrize && (
-                <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] mb-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center flex-shrink-0">
-                        <Trophy size={24} strokeWidth={1.8} />
+                <div className="relative overflow-hidden rounded-xl border border-indigo-100/90 bg-gradient-to-r from-[#EEF2FF] via-[#F5F3FF] to-[#EDE9FE] p-4 sm:p-5 shadow-[0_2px_12px_rgba(79,70,229,0.06)] mb-4">
+                  {/* Subtle background glow accents */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-purple-400/15 blur-2xl pointer-events-none"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-indigo-400/15 blur-2xl pointer-events-none"
+                  />
+
+                  <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    {/* Left: Icon + Label + Big Bold Amount + Description */}
+                    <div className="flex items-start gap-3.5 min-w-0">
+                      <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm border border-primary/15">
+                        <Trophy size={22} strokeWidth={2.2} />
                       </div>
-                      <div>
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Total Prize Pool</div>
-                        <div className="font-mono font-bold text-[24px] sm:text-[28px] text-text-1 leading-tight">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] sm:text-[11px] font-bold font-mono tracking-[0.14em] uppercase text-primary">
+                            TOTAL PRIZE POOL
+                          </span>
+                        </div>
+                        <div className="font-mono font-black text-[28px] sm:text-[36px] leading-tight tracking-tight text-text-1 mt-0.5">
                           ₹{displayTotalPrize}
                         </div>
+                        <p className="text-[12px] text-text-3 font-medium mt-0.5">
+                          Total rewards & cash prizes for top performers
+                        </p>
                       </div>
                     </div>
 
+                    {/* Right: Expand Breakdown CTA (if individual podium prizes exist) */}
                     {(prizes.first || prizes.second || prizes.third) && (
                       <button
                         type="button"
                         onClick={() => setShowPrizeBreakdown(v => !v)}
-                        className="px-4 py-2 rounded-lg border border-border bg-white text-[13px] font-bold text-primary hover:bg-primary-light hover:border-primary-mid transition-all flex items-center gap-1.5"
+                        className="self-start sm:self-center px-4 py-2 rounded-lg border border-indigo-200/90 bg-white/90 hover:bg-white text-[12px] sm:text-[13px] font-bold text-primary shadow-sm hover:shadow transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                       >
                         {showPrizeBreakdown ? 'Hide Breakdown ↑' : 'View Prize Details →'}
                       </button>
@@ -1535,7 +1566,11 @@ export default function EventDetails() {
                   </div>
 
                   {/* Expandable Podium Breakdown */}
-                  {showPrizeBreakdown && <PrizePodium prizes={prizes} />}
+                  {showPrizeBreakdown && (
+                    <div className="relative z-10 mt-4 pt-4 border-t border-indigo-100">
+                      <PrizePodium prizes={prizes} />
+                    </div>
+                  )}
                 </div>
               )}
 
