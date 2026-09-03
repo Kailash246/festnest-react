@@ -755,6 +755,7 @@ export default function EventDetails() {
   const [registered,    setRegistered]    = useState(false);
   const [followed,      setFollowed]      = useState(false);
   const [showFullAbout, setShowFullAbout] = useState(false);
+  const [showFullRules, setShowFullRules] = useState(false);
   const [showPrizeBreakdown, setShowPrizeBreakdown] = useState(false);
   const [serverSaved,   setServerSaved]   = useState(null);
   const [userToggled,   setUserToggled]   = useState(false);
@@ -928,6 +929,20 @@ export default function EventDetails() {
   const displayTotalPrize = prizes.total || prizes.pool || (hasPrizes ? '12,00,000' : '');
   const eligibility   = sanitizeText(ev.eligibility || '');
   const rules         = sanitizeText(ev.rules || '');
+  const eligibilityList = eligibility ? eligibility.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const rulesList = rules ? rules.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const totalRulesCount = eligibilityList.length + rulesList.length;
+  const RULES_PREVIEW_LIMIT = 3;
+  const hasMoreRules = totalRulesCount > RULES_PREVIEW_LIMIT;
+
+  const visibleEligibility = showFullRules
+    ? eligibilityList
+    : eligibilityList.slice(0, RULES_PREVIEW_LIMIT);
+
+  const remainingRulesBudget = Math.max(0, RULES_PREVIEW_LIMIT - visibleEligibility.length);
+  const visibleRules = showFullRules
+    ? rulesList
+    : rulesList.slice(0, remainingRulesBudget);
   const perks         = ev.perks       || '';
   const pocName       = ev.pocName     || '';
   const pocPhone      = ev.pocPhone    || ev.phone   || '';
@@ -1549,25 +1564,37 @@ export default function EventDetails() {
             <section id="rules" ref={setSectionRef('rules')} className="scroll-mt-28">
               <SectionHeading>Eligibility & Rules</SectionHeading>
               <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] space-y-5">
-                {eligibility && (
+                {visibleEligibility.length > 0 && (
                   <div>
                     <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2">Who can participate</h3>
                     <ul className="space-y-1.5 text-[14px] text-text-2 list-disc list-inside">
-                      {eligibility.split('\n').filter(Boolean).map((item, idx) => (
+                      {visibleEligibility.map((item, idx) => (
                         <li key={idx} className="leading-relaxed">{item.replace(/^[-*•]\s*/, '')}</li>
                       ))}
                     </ul>
                   </div>
                 )}
 
-                {rules && (
-                  <div className="pt-4 border-t border-border">
+                {visibleRules.length > 0 && (
+                  <div className={visibleEligibility.length > 0 ? "pt-4 border-t border-border" : ""}>
                     <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2">General Rules</h3>
                     <ul className="space-y-1.5 text-[14px] text-text-2 list-disc list-inside">
-                      {rules.split('\n').filter(Boolean).map((item, idx) => (
+                      {visibleRules.map((item, idx) => (
                         <li key={idx} className="leading-relaxed">{item.replace(/^[-*•]\s*/, '')}</li>
                       ))}
                     </ul>
+                  </div>
+                )}
+
+                {hasMoreRules && (
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowFullRules(v => !v)}
+                      className="text-[13px] font-bold text-primary hover:underline inline-flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded"
+                    >
+                      {showFullRules ? 'Show less ↑' : 'Read more ↓'}
+                    </button>
                   </div>
                 )}
               </div>
