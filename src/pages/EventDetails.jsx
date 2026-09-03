@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useNavigationType, Link } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, AlertTriangle, HelpCircle, CalendarDays, Clock, MapPin,
-  Monitor, Globe, Building2, Trophy, IndianRupee, Gift, ScrollText, Phone,
-  Star, FileText, Download, Bookmark, Share2, CheckCircle2, ChevronDown,
+  Monitor, Globe, Building2, Trophy, IndianRupee, Gift, Phone,
+  FileText, Download, Bookmark, Share2, CheckCircle2,
   ChevronLeft, ChevronRight, X, ExternalLink, Mail, UserRound, Sparkles,
   ArrowRight, Award, Briefcase,
 } from 'lucide-react';
@@ -299,30 +299,311 @@ function SectionNav({ items, activeId }) {
   );
 }
 
-function useCountdown(deadlineDays) {
-  const [target] = useState(() => {
-    if (!deadlineDays || deadlineDays <= 0) return null;
-    return Date.now() + deadlineDays * 86400000;
+/* ══════════════════════════════════════════════════════
+   COUNTDOWN & DATE PARSING HELPERS (IST Timezone)
+══════════════════════════════════════════════════════ */
+const INDIA_OFFSET = (5 * 60 + 30) * 60 * 1000;
+
+export function parseDateIST(str, timeStr) {
+  if (!str) return null;
+  const strTrim = String(str).trim();
+
+  // 1. ISO format: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss
+  const isoMatch = strTrim.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  let year, month, day;
+  let hours = 23, minutes = 59, seconds = 59;
+
+  if (isoMatch) {
+    year = Number(isoMatch[1]);
+    month = Number(isoMatch[2]) - 1;
+    day = Number(isoMatch[3]);
+    if (isoMatch[4] !== undefined) {
+      hours = Number(isoMatch[4]);
+      minutes = Number(isoMatch[5] || 0);
+      seconds = Number(isoMatch[6] || 0);
+      return new Date(Date.UTC(year, month, day, hours, minutes, seconds) - INDIA_OFFSET);
+    }
+  } else {
+    // 2. Date ranges or human-readable formats: "18–19 May 2025", "18-19 May 2025", "18 Oct 2026"
+    const rangeMatch = strTrim.match(/^(\d{1,2})(?:[\s\u2013\u2014\-]+(\d{1,2}))?\s+([A-Za-z]+)(?:\s+(\d{4}))?/);
+    if (rangeMatch) {
+      day = Number(rangeMatch[1]);
+      const monthDate = new Date(rangeMatch[3] + ' 1, 2000');
+      if (isNaN(monthDate.getTime())) return null;
+      month = monthDate.getMonth();
+      year = rangeMatch[4] ? Number(rangeMatch[4]) : new Date().getFullYear();
+    } else {
+      const d = new Date(str);
+      if (!isNaN(d.getTime())) return d;
+      return null;
+    }
+  }
+
+  // Parse time if supplied (e.g. "9:00 AM onwards", "10:00 AM – 11:00 PM", "18:00")
+  if (timeStr) {
+    const timeMatch = String(timeStr).match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+    if (timeMatch) {
+      let h = Number(timeMatch[1]);
+      const m = timeMatch[2] ? Number(timeMatch[2]) : 0;
+      const ampm = timeMatch[3] ? timeMatch[3].toLowerCase() : null;
+      if (ampm === 'pm' && h < 12) h += 12;
+      if (ampm === 'am' && h === 12) h = 0;
+      hours = h;
+      minutes = m;
+      seconds = 0;
+    }
+  }
+
+  const utcMillis = Date.UTC(year, month, day, hours, minutes, seconds) - INDIA_OFFSET;
+  return new Date(utcMillis);
+}
+
+export function getEventDeadline(ev) {
+  if (!ev) return null;
+  const now = Date.now();
+
+  // 1. Explicit registration deadline / deadline field
+  const explicit = ev.registrationDeadline || ev.deadline || ev.date?.deadline || ev.deadlineDate;
+  if (explicit) {
+    const p = parseDateIST(explicit, ev.time);
+    if (p) return p;
+  }
+
+  // 2. Start date if in the future
+  const startRaw = ev.date?.start || ev.rawStartDate || ev.startDate || '';
+  const parsedStart = parseDateIST(startRaw, ev.time);
+
+  if (parsedStart && parsedStart.getTime() > now) {
+    return parsedStart;
+  }
+
+  // 3. deadlineDays (positive number of days until closing)
+  const deadlineDays = typeof ev.deadlineDays === 'number'
+    ? ev.deadlineDays
+    : typeof ev.date?.deadlineDays === 'number'
+    ? ev.date.deadlineDays
+    : null;
+
+  if (deadlineDays !== null && deadlineDays > 0) {
+    const nowIST = new Date(now + INDIA_OFFSET);
+    const targetYear = nowIST.getUTCFullYear();
+    const targetMonth = nowIST.getUTCMonth();
+    const targetDate = nowIST.getUTCDate() + deadlineDays;
+
+    let hours = 23, minutes = 59, seconds = 59;
+    if (ev.time) {
+      const timeMatch = String(ev.time).match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+      if (timeMatch) {
+        let h = Number(timeMatch[1]);
+        const m = timeMatch[2] ? Number(timeMatch[2]) : 0;
+        const ampm = timeMatch[3] ? timeMatch[3].toLowerCase() : null;
+        if (ampm === 'pm' && h < 12) h += 12;
+        if (ampm === 'am' && h === 12) h = 0;
+        hours = h;
+        minutes = m;
+        seconds = 0;
+      }
+    }
+    const utcMillis = Date.UTC(targetYear, targetMonth, targetDate, hours, minutes, seconds) - INDIA_OFFSET;
+    return new Date(utcMillis);
+  }
+
+  // 4. If parsedStart exists but is in the past and deadlineDays <= 0
+  if (parsedStart) return parsedStart;
+
+  // 5. Fallback to end date if available
+  const endRaw = ev.date?.end || ev.rawEndDate || ev.endDate || '';
+  const parsedEnd = parseDateIST(endRaw, ev.time);
+  if (parsedEnd) return parsedEnd;
+
+  return null;
+}
+
+function calculateRemaining(target) {
+  if (!target) return { d: 0, h: 0, m: 0, s: 0, isExpired: true, totalSeconds: 0 };
+  const diff = target.getTime() - Date.now();
+  if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0, isExpired: true, totalSeconds: 0 };
+
+  const totalSeconds = Math.floor(diff / 1000);
+  return {
+    d: Math.floor(totalSeconds / 86400),
+    h: Math.floor((totalSeconds % 86400) / 3600),
+    m: Math.floor((totalSeconds % 3600) / 60),
+    s: totalSeconds % 60,
+    isExpired: false,
+    totalSeconds,
+  };
+}
+
+function useCountdown(ev) {
+  const [remaining, setRemaining] = useState(() => {
+    const target = getEventDeadline(ev);
+    return calculateRemaining(target);
   });
-  const [remaining, setRemaining] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
-    if (!target) return;
-    const tick = () => {
-      const diff = Math.max(0, target - Date.now());
-      setRemaining({
-        d: Math.floor(diff / 86400000),
-        h: Math.floor((diff % 86400000) / 3600000),
-        m: Math.floor((diff % 3600000) / 60000),
-        s: Math.floor((diff % 60000) / 1000),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [target]);
+    const target = getEventDeadline(ev);
+    setRemaining(calculateRemaining(target));
 
-  return target ? remaining : null;
+    if (!target) return;
+    if (target.getTime() <= Date.now()) return;
+
+    const tick = () => {
+      const rem = calculateRemaining(target);
+      setRemaining(rem);
+      if (rem.isExpired) {
+        clearInterval(timerId);
+      }
+    };
+
+    const timerId = setInterval(tick, 1000);
+    return () => clearInterval(timerId);
+  }, [ev?.slug, ev?.id, ev?.startDate, ev?.date?.start, ev?.deadlineDays, ev?.time]);
+
+  return remaining;
+}
+
+/* ══════════════════════════════════════════════════════
+   REUSABLE TICKET & COUNTDOWN CARD (Mobile & Desktop)
+══════════════════════════════════════════════════════ */
+function TicketCountdownCard({
+  ev,
+  cfg,
+  countdown,
+  registering,
+  registered,
+  isSaved,
+  onToggleSave,
+  handleRegister,
+  showToast,
+  isMobile = false,
+}) {
+  const isExpired = countdown?.isExpired;
+
+  return (
+    <div className={`rounded-xl border border-border bg-white overflow-hidden ${
+      isMobile ? 'shadow-md' : 'shadow-[0_4px_24px_rgba(0,0,0,0.06)]'
+    }`}>
+      {/* Dark Countdown Header */}
+      <div className="bg-[#0B0819] text-white p-5 relative overflow-hidden">
+        <div aria-hidden="true" className="absolute -top-12 -right-12 w-32 h-32 bg-purple-600/20 rounded-full blur-2xl pointer-events-none" />
+        <h3 className="font-heading font-bold text-[18px] mb-3 text-white">
+          {isExpired ? 'Registration Closed' : 'Book Your Tickets'}
+        </h3>
+
+        {/* 4 Countdown Boxes */}
+        <div className="grid grid-cols-4 gap-2 mb-3">
+          {[
+            { v: countdown?.d ?? 0,  l: 'DAYS' },
+            { v: countdown?.h ?? 0,  l: 'HRS' },
+            { v: countdown?.m ?? 0,  l: 'MINS' },
+            { v: countdown?.s ?? 0,  l: 'SECS' },
+          ].map(({ v, l }) => (
+            <div key={l} className="bg-white/10 rounded-lg py-2.5 text-center border border-white/10">
+              <div className="font-mono font-black text-[22px] leading-none text-white tabular-nums">
+                {String(v).padStart(2, '0')}
+              </div>
+              <div className="text-[8px] font-mono tracking-wider text-white/50 mt-1">{l}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-[11px] text-center min-h-[16px]">
+          {isExpired ? (
+            <span className="text-rose-300 font-semibold flex items-center justify-center gap-1.5">
+              <Clock size={13} /> Registration has ended
+            </span>
+          ) : countdown && !countdown.isExpired ? (
+            <span className="text-white/60">
+              Registration closes in {countdown.d}d {countdown.h}h {countdown.m}m {countdown.s}s
+            </span>
+          ) : (
+            <span className="text-white/60">Registration closing soon</span>
+          )}
+        </div>
+      </div>
+
+      {/* White Body */}
+      <div className="p-5 space-y-4">
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Entry Fee</div>
+          <div className="flex items-baseline gap-2 mt-0.5">
+            <span className="font-mono font-bold text-[28px] text-text-1">{ev.price || 'Free'}</span>
+            <span className="text-[13px] text-text-3">/ team</span>
+          </div>
+        </div>
+
+        <div className="space-y-2.5 pt-2 border-t border-border text-[13px] text-text-2">
+          <div className="flex items-start gap-2.5">
+            <CalendarDays size={15} className="text-primary flex-shrink-0 mt-0.5" />
+            <span>{ev.startDate || 'TBA'} {ev.endDate ? `to ${ev.endDate}` : ''}</span>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <MapPin size={15} className="text-primary flex-shrink-0 mt-0.5" />
+            <span className="leading-snug">{ev.venue || ev.college}, {ev.city}</span>
+          </div>
+        </div>
+
+        {/* Primary Action Button */}
+        <motion.button
+          whileHover={!isExpired && !registering && !registered ? { scale: 1.01 } : {}}
+          whileTap={!isExpired && !registering && !registered ? { scale: 0.97 } : {}}
+          onClick={handleRegister}
+          disabled={registering || registered || isExpired}
+          className={`w-full py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-75 ${
+            registered
+              ? 'bg-[#16A34A]'
+              : isExpired
+              ? 'bg-zinc-600 cursor-not-allowed shadow-none'
+              : `${cfg?.color || 'bg-primary hover:bg-primary-dark'} shadow-indigo`
+          }`}
+        >
+          {registering ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          ) : registered ? (
+            <>
+              <CheckCircle2 size={17} /> Registered!
+            </>
+          ) : isExpired ? (
+            <>Registration Closed</>
+          ) : (
+            <>
+              {cfg?.label || 'Book Tickets'} <ArrowRight size={16} />
+            </>
+          )}
+        </motion.button>
+
+        {/* Secondary Buttons */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onToggleSave}
+            className={`flex-1 py-2.5 rounded-lg border text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+              isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:border-primary hover:text-primary'
+            }`}
+          >
+            <Bookmark size={15} fill={isSaved ? 'currentColor' : 'none'} />
+            {isSaved ? 'Saved' : 'Save'}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
+              } else {
+                navigator.clipboard?.writeText(window.location.href).catch(() => {});
+                showToast('Link copied! 📋', 'success');
+              }
+            }}
+            className="flex-1 py-2.5 rounded-lg border border-border text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-1.5"
+          >
+            <Share2 size={15} />
+            Share
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function EventDetails() {
@@ -339,12 +620,11 @@ export default function EventDetails() {
   const [registered,    setRegistered]    = useState(false);
   const [followed,      setFollowed]      = useState(false);
   const [showFullAbout, setShowFullAbout] = useState(false);
-  const [rulesOpen,     setRulesOpen]     = useState(true);
   const [showPrizeBreakdown, setShowPrizeBreakdown] = useState(false);
   const [serverSaved,   setServerSaved]   = useState(null);
   const [userToggled,   setUserToggled]   = useState(false);
   const [featuredEvs,     setFeaturedEvs]     = useState([]);
-  const [featuredLoading, setFeaturedLoading] = useState(true);
+  const [, setFeaturedLoading] = useState(true);
   const [lightboxOpen,    setLightboxOpen]    = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState(null);
   const [activeSection,  setActiveSection] = useState('overview');
@@ -425,10 +705,17 @@ export default function EventDetails() {
     ? savedEvents.has(id)
     : (savedEvents.has(id) || serverSaved === true);
   const cfg     = ev ? (ENTRY_CONFIG[ev.entryType] || ENTRY_CONFIG.prize) : null;
-  const countdown = useCountdown(ev?.deadlineDays);
+
+  // Real-time dynamic countdown
+  const countdown = useCountdown(ev);
+
+  const ownerId = typeof ev?.hostedBy === 'object' ? ev?.hostedBy?._id : ev?.hostedBy;
+  const currentUserId = currentUser?._id || currentUser?.id;
+  const isLiveEvent = ev?.isActive !== false && ev?.isApproved !== false;
+  const isExpired = countdown?.isExpired || !isLiveEvent;
 
   const handleRegister = async () => {
-    if (registered) return;
+    if (registered || isExpired) return;
     if (!requireAuth()) return;
     const registrationLink = ev?.registrationUrl || ev?.website || '';
     if (openExternalRegistrationLink(registrationLink)) return;
@@ -516,13 +803,16 @@ export default function EventDetails() {
   const individualCompetitions = Array.isArray(ev.competitions)
     ? ev.competitions.filter(item => item && competitionValue(item.name))
     : [];
-  const ownerId = typeof ev.hostedBy === 'object' ? ev.hostedBy?._id : ev.hostedBy;
-  const currentUserId = currentUser?._id || currentUser?.id;
-  const isLiveEvent = ev.isActive !== false && ev.isApproved !== false;
+
   const isEventOwner = Boolean(ownerId && currentUserId && String(ownerId) === String(currentUserId));
   const canEditEvent = isEventOwner && isLiveEvent;
   const canManageCompetitions = canEditEvent;
-  const registrationStatus = !isLiveEvent ? 'Event ended' : ev.deadlineDays > 0 && ev.deadlineDays <= 3 ? 'Closing soon' : 'Registration open';
+
+  const registrationStatus = isExpired
+    ? 'Event ended'
+    : (countdown && !countdown.isExpired && countdown.d <= 3) || (ev.deadlineDays > 0 && ev.deadlineDays <= 3)
+    ? 'Closing soon'
+    : 'Registration open';
 
   const canonicalUrl = `${SITE_URL}/event/${ev.slug || ev.id}`;
   const seoDescription = (
@@ -646,10 +936,16 @@ export default function EventDetails() {
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3">
                 <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
-                  onClick={handleRegister} disabled={registering || registered}
-                  className={`px-6 py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-75 shadow-indigo ${
-                    registered ? 'bg-[#16A34A]' : `${cfg?.color || 'bg-primary hover:bg-primary-dark'}`
+                  whileHover={!isExpired && !registering && !registered ? { scale: 1.01 } : {}}
+                  whileTap={!isExpired && !registering && !registered ? { scale: 0.97 } : {}}
+                  onClick={handleRegister}
+                  disabled={registering || registered || isExpired}
+                  className={`px-6 py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-75 ${
+                    registered
+                      ? 'bg-[#16A34A]'
+                      : isExpired
+                      ? 'bg-zinc-600 cursor-not-allowed shadow-none'
+                      : `${cfg?.color || 'bg-primary hover:bg-primary-dark'} shadow-indigo`
                   }`}
                 >
                   {registering ? (
@@ -658,6 +954,8 @@ export default function EventDetails() {
                     <>
                       <CheckCircle2 size={17} /> Registered!
                     </>
+                  ) : isExpired ? (
+                    <>Registration Closed</>
                   ) : (
                     <>
                       {cfg?.label || 'Book Tickets'} <ArrowRight size={16} />
@@ -809,9 +1107,19 @@ export default function EventDetails() {
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Deadline</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">
-                {ev.deadlineDays > 0 ? `${ev.deadlineDays} days left` : '10 Oct 2026'}
+                {isExpired
+                  ? 'Closed'
+                  : countdown && !countdown.isExpired
+                  ? countdown.d > 0
+                    ? `${countdown.d}d ${countdown.h}h left`
+                    : `${countdown.h}h ${countdown.m}m left`
+                  : ev.deadlineDays > 0
+                  ? `${ev.deadlineDays} days left`
+                  : 'Closing soon'}
               </div>
-              <div className="text-[12px] text-text-3 mt-0.5">Registration closes</div>
+              <div className="text-[12px] text-text-3 mt-0.5">
+                {isExpired ? 'Registration ended' : 'Registration closes'}
+              </div>
             </div>
           </div>
 
@@ -836,6 +1144,22 @@ export default function EventDetails() {
 
         {/* ── LEFT COLUMN (≈2/3 width) ── */}
         <div className="flex flex-col gap-8 min-w-0 w-full">
+
+          {/* Mobile Ticket & Countdown Card (Visible only on < lg screens) */}
+          <div className="lg:hidden">
+            <TicketCountdownCard
+              ev={ev}
+              cfg={cfg}
+              countdown={countdown}
+              registering={registering}
+              registered={registered}
+              isSaved={isSaved}
+              onToggleSave={() => { setUserToggled(true); toggleSave(ev.id); }}
+              handleRegister={handleRegister}
+              showToast={showToast}
+              isMobile
+            />
+          </div>
 
           {/* Tags */}
           {ev.tags?.length > 0 && (
@@ -1309,106 +1633,17 @@ export default function EventDetails() {
         <div className="hidden lg:flex lg:flex-col lg:gap-6 sticky top-[84px]">
 
           {/* 1. TICKET CARD WITH LIVE COUNTDOWN */}
-          <div className="rounded-xl border border-border bg-white overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-            {/* Dark Countdown Header */}
-            <div className="bg-[#0B0819] text-white p-5 relative overflow-hidden">
-              <div aria-hidden="true" className="absolute -top-12 -right-12 w-32 h-32 bg-purple-600/20 rounded-full blur-2xl pointer-events-none" />
-              <h3 className="font-heading font-bold text-[18px] mb-3 text-white">Book Your Tickets</h3>
-
-              {/* 4 Countdown Boxes */}
-              <div className="grid grid-cols-4 gap-2 mb-3">
-                {[
-                  { v: countdown ? countdown.d : 5,  l: 'DAYS' },
-                  { v: countdown ? countdown.h : 23, l: 'HRS' },
-                  { v: countdown ? countdown.m : 53, l: 'MINS' },
-                  { v: countdown ? countdown.s : 11, l: 'SECS' },
-                ].map(({ v, l }) => (
-                  <div key={l} className="bg-white/10 rounded-lg py-2.5 text-center border border-white/10">
-                    <div className="font-mono font-black text-[22px] leading-none text-white tabular-nums">
-                      {String(v).padStart(2, '0')}
-                    </div>
-                    <div className="text-[8px] font-mono tracking-wider text-white/50 mt-1">{l}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="text-[11px] text-white/60 text-center">
-                {ev.deadlineDays > 0 ? `Registration closes in ${ev.deadlineDays} days` : 'Registration closing soon'}
-              </div>
-            </div>
-
-            {/* White Body */}
-            <div className="p-5 space-y-4">
-              <div>
-                <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Entry Fee</div>
-                <div className="flex items-baseline gap-2 mt-0.5">
-                  <span className="font-mono font-bold text-[28px] text-text-1">{ev.price || 'Free'}</span>
-                  <span className="text-[13px] text-text-3">/ team</span>
-                </div>
-              </div>
-
-              <div className="space-y-2.5 pt-2 border-t border-border text-[13px] text-text-2">
-                <div className="flex items-start gap-2.5">
-                  <CalendarDays size={15} className="text-primary flex-shrink-0 mt-0.5" />
-                  <span>{ev.startDate || 'TBA'} {ev.endDate ? `to ${ev.endDate}` : ''}</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <MapPin size={15} className="text-primary flex-shrink-0 mt-0.5" />
-                  <span className="leading-snug">{ev.venue || ev.college}, {ev.city}</span>
-                </div>
-              </div>
-
-              {/* Primary Action Button */}
-              <motion.button
-                whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
-                onClick={handleRegister} disabled={registering || registered}
-                className={`w-full py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-75 shadow-indigo ${
-                  registered ? 'bg-[#16A34A]' : `${cfg?.color || 'bg-primary hover:bg-primary-dark'}`
-                }`}
-              >
-                {registering ? (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                ) : registered ? (
-                  <>
-                    <CheckCircle2 size={17} /> Registered!
-                  </>
-                ) : (
-                  <>
-                    {cfg?.label || 'Book Tickets'} <ArrowRight size={16} />
-                  </>
-                )}
-              </motion.button>
-
-              {/* Secondary Buttons */}
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
-                  className={`flex-1 py-2.5 rounded-lg border text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:border-primary hover:text-primary'
-                  }`}
-                >
-                  <Bookmark size={15} fill={isSaved ? 'currentColor' : 'none'} />
-                  {isSaved ? 'Saved' : 'Save'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
-                    } else {
-                      navigator.clipboard?.writeText(window.location.href).catch(() => {});
-                      showToast('Link copied! 📋', 'success');
-                    }
-                  }}
-                  className="flex-1 py-2.5 rounded-lg border border-border text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-1.5"
-                >
-                  <Share2 size={15} />
-                  Share
-                </button>
-              </div>
-            </div>
-          </div>
+          <TicketCountdownCard
+            ev={ev}
+            cfg={cfg}
+            countdown={countdown}
+            registering={registering}
+            registered={registered}
+            isSaved={isSaved}
+            onToggleSave={() => { setUserToggled(true); toggleSave(ev.id); }}
+            handleRegister={handleRegister}
+            showToast={showToast}
+          />
 
           {/* 2. FEATURED EVENT CARD */}
           {sidebarFeaturedEvent && (
@@ -1511,18 +1746,27 @@ export default function EventDetails() {
             </div>
             <div className="text-[11px] text-text-3 mt-0.5">{ev.priceNote || 'per team'}</div>
           </div>
-          {ev.deadlineDays > 0 && ev.deadlineDays <= 6 && (
-            <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold ${
-              ev.deadlineDays <= 3 ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-amber-50 text-amber-600 border border-amber-200'
-            }`}>
-              {ev.deadlineDays}d left
+          {isExpired ? (
+            <div className="flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold bg-zinc-100 text-zinc-600 border border-zinc-300">
+              Closed
             </div>
-          )}
+          ) : countdown && !countdown.isExpired ? (
+            <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold ${
+              countdown.d <= 3 ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-primary-light text-primary border border-primary/20'
+            }`}>
+              {countdown.d > 0 ? `${countdown.d}d ${countdown.h}h left` : `${countdown.h}h ${countdown.m}m left`}
+            </div>
+          ) : null}
           <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={handleRegister} disabled={registering || registered}
-            className={`flex-1 py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-75 shadow-indigo ${
-              registered ? 'bg-[#16A34A]' : `${cfg?.color || 'bg-primary'}`
+            whileTap={!isExpired && !registering && !registered ? { scale: 0.97 } : {}}
+            onClick={handleRegister}
+            disabled={registering || registered || isExpired}
+            className={`flex-1 py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-75 ${
+              registered
+                ? 'bg-[#16A34A]'
+                : isExpired
+                ? 'bg-zinc-600 cursor-not-allowed shadow-none'
+                : `${cfg?.color || 'bg-primary'} shadow-indigo`
             }`}
           >
             {registering ? (
@@ -1531,6 +1775,8 @@ export default function EventDetails() {
               <>
                 <CheckCircle2 size={16} /> Registered!
               </>
+            ) : isExpired ? (
+              <>Registration Closed</>
             ) : (
               <>
                 {cfg?.label || 'Book Tickets'} <ArrowRight size={15} />
