@@ -17,8 +17,9 @@ export default {
 
       /* ── Typography ── */
       fontFamily: {
-        display: ['Syne', 'sans-serif'],
-        body:    ['DM Sans', 'sans-serif'],
+        sans:    ['Geist', 'sans-serif'],
+        mono:    ['Geist Mono', 'monospace'],
+        heading: ['Space Grotesk', 'sans-serif'],
       },
       fontSize: {
         'xxs':  ['11px',  { lineHeight: '1.5' }],

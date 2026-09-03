@@ -27,7 +27,7 @@ const IconYoutube   = ({ className }) => <svg className={className} viewBox="0 0
 const Logo = ({ light }) => (
   <div className="flex items-center gap-2.5">
     <BrandMark className="w-9 h-9" />
-    <span className={`font-display font-bold text-[21px] tracking-tight ${light ? 'text-white' : 'text-text-1'}`}>
+    <span className={`font-heading font-bold text-[21px] tracking-tight ${light ? 'text-white' : 'text-text-1'}`}>
       FestNest
     </span>
   </div>
@@ -101,7 +101,7 @@ const MiniCard = ({ icon: Icon, bg, title, sub, badge, badgeColor, style, cls })
         </span>
       )}
     </div>
-    <div className="font-display font-bold text-[13px] text-text-1 leading-snug">{title}</div>
+    <div className="font-heading font-bold text-[13px] text-text-1 leading-snug">{title}</div>
     <div className="text-[11px] text-text-3 mt-0.5">{sub}</div>
   </div>
 );
@@ -155,7 +155,7 @@ function Hero({ onEnter }) {
           </Reveal>
 
           <Reveal delay={0.05}>
-            <h1 className="font-display font-bold text-[52px] leading-[1.05] tracking-tight text-text-1 mb-6">
+            <h1 className="font-heading font-bold text-[52px] leading-[1.05] tracking-tight text-text-1 mb-6">
               Discover every<br />
               college event in<br />
               India. <span className="lp-gradient-text">In one place.</span>
@@ -219,7 +219,7 @@ function Hero({ onEnter }) {
                 <span className="text-white/80 text-[12px] font-semibold">Good afternoon 👋</span>
                 <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/40"/>)}</div>
               </div>
-              <div className="text-white font-display font-bold text-[22px] leading-tight">Find your next<br/>big moment</div>
+              <div className="text-white font-heading font-bold text-[22px] leading-tight">Find your next<br/>big moment</div>
               <div className="mt-4 bg-white/95 rounded-md px-3 py-2.5 flex items-center gap-2">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#8A8A85" strokeWidth="2" className="w-4 h-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 <span className="text-[12px] text-text-3">Search events…</span>
@@ -292,7 +292,7 @@ function LogoWall() {
         <div className="flex gap-4 lp-marquee w-max">
           {row.map((c, i) => (
             <div key={i} className="flex items-center gap-2.5 bg-white border border-border rounded-md px-5 py-3 whitespace-nowrap grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-primary-mid transition-all duration-300">
-              <span className="font-display font-bold text-[15px] text-text-2">{c}</span>
+              <span className="font-heading font-bold text-[15px] text-text-2">{c}</span>
             </div>
           ))}
         </div>
@@ -402,7 +402,7 @@ function StatsRow({ loading, stats }) {
               <div className="flex justify-center mb-2">
                 <Icon className="w-8 h-8 text-text-2" />
               </div>
-              <div className="font-display font-bold text-[40px] text-text-1 leading-none tracking-tight">
+              <div className="font-heading font-bold text-[40px] text-text-1 leading-none tracking-tight">
                 {value}
               </div>
               <div className="text-[14px] text-text-3 font-medium mt-2">{label}</div>
@@ -440,7 +440,7 @@ function Featured() {
               <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2 flex items-center gap-1.5">
                 <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> Featured
               </div>
-              <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">This week's spotlight</h2>
+              <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1">This week's spotlight</h2>
             </div>
             <button onClick={() => navigate('/explore')} className="text-[14px] font-semibold text-primary flex items-center gap-1">
               View all events
@@ -463,7 +463,7 @@ function Featured() {
                     </span>
                   </div>
                   <div className="p-5">
-                    <h3 className="font-display font-bold text-[20px] text-text-1 mb-1 group-hover:text-primary transition-colors">{ev.name}</h3>
+                    <h3 className="font-heading font-bold text-[20px] text-text-1 mb-1 group-hover:text-primary transition-colors">{ev.name}</h3>
                     <div className="flex items-center gap-1.5 text-[13px] text-text-3 mb-4">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                       {ev.college}
@@ -509,7 +509,7 @@ function Categories() {
       <Reveal>
         <div className="text-center mb-14">
           <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Categories</div>
-          <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1 mb-3">Find your kind of event</h2>
+          <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1 mb-3">Find your kind of event</h2>
           <p className="text-[17px] text-text-2 max-w-[520px] mx-auto">Whatever you're into, there's a community and a competition waiting.</p>
         </div>
       </Reveal>
@@ -529,7 +529,7 @@ function Categories() {
                   <div className={`w-14 h-14 rounded-lg bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 ${c.iconColor}`}>
                     <CatIcon className="w-6 h-6" />
                   </div>
-                  <h3 className="font-display font-bold text-[17px] text-text-1 mb-1">{c.name}</h3>
+                  <h3 className="font-heading font-bold text-[17px] text-text-1 mb-1">{c.name}</h3>
                 </div>
               </button>
             </Reveal>
@@ -633,7 +633,7 @@ function Showcase() {
         <Reveal>
           <div className="text-center mb-12">
             <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Product Tour</div>
-            <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">See FestNest in action</h2>
+            <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1">See FestNest in action</h2>
           </div>
         </Reveal>
 
@@ -652,7 +652,7 @@ function Showcase() {
         <Reveal delay={0.15}>
           <div className="grid grid-cols-[1fr_1.2fr] gap-10 items-center bg-white rounded-lg border border-border p-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
             <div>
-              <h3 className="font-display font-bold text-[26px] text-text-1 mb-3">{SHOWCASE.find(s => s.id === active).label}</h3>
+              <h3 className="font-heading font-bold text-[26px] text-text-1 mb-3">{SHOWCASE.find(s => s.id === active).label}</h3>
               <p className="text-[16px] text-text-2 leading-relaxed mb-6">{SHOWCASE.find(s => s.id === active).desc}</p>
               <div className="space-y-2.5">
                 {['Lightning fast', 'Mobile first', 'Always free for students'].map(f => (
@@ -698,7 +698,7 @@ function Features() {
       <Reveal>
         <div className="text-center mb-14">
           <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Why FestNest</div>
-          <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1 mb-3">Everything you need, nothing you don't</h2>
+          <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1 mb-3">Everything you need, nothing you don't</h2>
         </div>
       </Reveal>
 
@@ -711,7 +711,7 @@ function Features() {
                 <div className="w-14 h-14 rounded-lg bg-primary-light flex items-center justify-center mb-5 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 text-primary">
                   <FIcon className="w-6 h-6" />
                 </div>
-                <h3 className="font-display font-bold text-[18px] text-text-1 mb-2">{f.title}</h3>
+                <h3 className="font-heading font-bold text-[18px] text-text-1 mb-2">{f.title}</h3>
                 <p className="text-[14px] text-text-2 leading-relaxed">{f.desc}</p>
               </div>
             </Reveal>
@@ -739,7 +739,7 @@ function HowItWorks() {
         <Reveal>
           <div className="text-center mb-16">
             <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">How it works</div>
-            <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">Up and running in 4 steps</h2>
+            <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1">Up and running in 4 steps</h2>
           </div>
         </Reveal>
 
@@ -761,7 +761,7 @@ function HowItWorks() {
                       {s.n}
                     </div>
                   </div>
-                  <h3 className="font-display font-bold text-[17px] text-text-1 mb-2">{s.title}</h3>
+                  <h3 className="font-heading font-bold text-[17px] text-text-1 mb-2">{s.title}</h3>
                   <p className="text-[14px] text-text-2 leading-relaxed px-2">{s.desc}</p>
                 </div>
               </Reveal>
@@ -794,14 +794,14 @@ function Organizers() {
             <div className="absolute -inset-4 bg-gradient-to-br from-primary/10 to-[#7C3AED]/10 rounded-lg blur-2xl" />
             <div className="relative bg-white rounded-lg border border-border shadow-[0_24px_60px_rgba(0,0,0,0.12)] p-7">
               <div className="flex items-center justify-between mb-6">
-                <div className="font-display font-bold text-[18px] text-text-1">Organizer Dashboard</div>
+                <div className="font-heading font-bold text-[18px] text-text-1">Organizer Dashboard</div>
                 <div className="px-3 py-1 bg-green-bg text-green text-[11px] font-bold rounded-full">● Live</div>
               </div>
               <div className="grid grid-cols-3 gap-3 mb-5">
                 {ORG_STATS.map(([E, n, l]) => (
                   <div key={l} className="bg-surface-2 rounded-md p-3 text-center">
                     <div className="flex justify-center mb-1"><E className="w-5 h-5 text-text-2" /></div>
-                    <div className="font-display font-bold text-[20px] text-text-1 mt-1">{n}</div>
+                    <div className="font-heading font-bold text-[20px] text-text-1 mt-1">{n}</div>
                     <div className="text-[10px] text-text-3">{l}</div>
                   </div>
                 ))}
@@ -821,7 +821,7 @@ function Organizers() {
         <Reveal delay={0.1}>
           <div>
             <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-3">For Organizers</div>
-            <h2 className="font-display font-bold text-[40px] leading-[1.1] tracking-tight text-text-1 mb-5">
+            <h2 className="font-heading font-bold text-[40px] leading-[1.1] tracking-tight text-text-1 mb-5">
               Reach thousands of students with your event
             </h2>
             <p className="text-[17px] text-text-2 leading-relaxed mb-8">
@@ -835,7 +835,7 @@ function Organizers() {
                     <I className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-display font-bold text-[15px] text-text-1">{t}</div>
+                    <div className="font-heading font-bold text-[15px] text-text-1">{t}</div>
                     <div className="text-[14px] text-text-3">{d}</div>
                   </div>
                 </div>
@@ -879,7 +879,7 @@ function Comparison() {
         <Reveal>
           <div className="text-center mb-12">
             <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Why switch</div>
-            <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">FestNest vs the group chat chaos</h2>
+            <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1">FestNest vs the group chat chaos</h2>
           </div>
         </Reveal>
 
@@ -887,10 +887,10 @@ function Comparison() {
           <div className="bg-white rounded-lg border border-border overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
             <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr]">
               {/* Header */}
-              <div className="p-5 bg-surface-2 font-display font-bold text-[14px] text-text-3">Feature</div>
-              <div className="p-5 bg-primary text-center font-display font-bold text-[15px] text-white">FestNest</div>
-              <div className="p-5 bg-surface-2 text-center font-display font-bold text-[13px] text-text-3">WhatsApp</div>
-              <div className="p-5 bg-surface-2 text-center font-display font-bold text-[13px] text-text-3">Instagram</div>
+              <div className="p-5 bg-surface-2 font-heading font-bold text-[14px] text-text-3">Feature</div>
+              <div className="p-5 bg-primary text-center font-heading font-bold text-[15px] text-white">FestNest</div>
+              <div className="p-5 bg-surface-2 text-center font-heading font-bold text-[13px] text-text-3">WhatsApp</div>
+              <div className="p-5 bg-surface-2 text-center font-heading font-bold text-[13px] text-text-3">Instagram</div>
               {/* Rows */}
               {COMPARE_ROWS.map((row, i) => (
                 <div key={row[0]} className="contents">
@@ -931,7 +931,7 @@ function Testimonials() {
         <div className="flex items-end justify-between mb-12">
           <div>
             <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Loved by students</div>
-            <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">Don't just take our word for it</h2>
+            <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1">Don't just take our word for it</h2>
           </div>
           <div className="flex gap-2">
             {[['prev', prev, 'm15 18-6-6 6-6'], ['next', next, 'm9 18 6-6-6-6']].map(([k, fn, d]) => (
@@ -957,7 +957,7 @@ function Testimonials() {
                   <UserCircle className="w-7 h-7" />
                 </div>
                 <div>
-                  <div className="font-display font-bold text-[15px] text-text-1">{t.name}</div>
+                  <div className="font-heading font-bold text-[15px] text-text-1">{t.name}</div>
                   <div className="text-[13px] text-text-3">{t.role}</div>
                 </div>
               </div>
@@ -990,7 +990,7 @@ function WhyStudentsLove() {
       <Reveal>
         <div className="text-center mb-12">
           <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">Why FestNest</div>
-          <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">Why students love FestNest</h2>
+          <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1">Why students love FestNest</h2>
         </div>
       </Reveal>
       <Reveal delay={0.1}>
@@ -1002,7 +1002,7 @@ function WhyStudentsLove() {
                 <div className="w-14 h-14 rounded-lg bg-primary-light flex items-center justify-center mb-5 text-primary">
                   <WIcon className="w-6 h-6" />
                 </div>
-                <h3 className="font-display font-bold text-[20px] text-text-1 mb-3">{w.title}</h3>
+                <h3 className="font-heading font-bold text-[20px] text-text-1 mb-3">{w.title}</h3>
                 <p className="text-[15px] text-text-2 leading-relaxed">{w.desc}</p>
               </div>
             );
@@ -1032,7 +1032,7 @@ function FAQ() {
         <Reveal>
           <div className="text-center mb-12">
             <div className="text-[13px] font-bold tracking-wider uppercase text-primary mb-2">FAQ</div>
-            <h2 className="font-display font-bold text-[38px] tracking-tight text-text-1">Questions? Answered.</h2>
+            <h2 className="font-heading font-bold text-[38px] tracking-tight text-text-1">Questions? Answered.</h2>
           </div>
         </Reveal>
 
@@ -1042,7 +1042,7 @@ function FAQ() {
               <div className={`bg-white rounded-lg border transition-all duration-300 ${open === i ? 'border-primary shadow-[0_8px_30px_rgba(79,70,229,0.08)]' : 'border-border'}`}>
                 <button onClick={() => setOpen(open === i ? -1 : i)}
                   className="w-full flex items-center justify-between gap-4 p-5 text-left">
-                  <span className="font-display font-bold text-[16px] text-text-1">{q}</span>
+                  <span className="font-heading font-bold text-[16px] text-text-1">{q}</span>
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${open === i ? 'bg-primary text-white rotate-45' : 'bg-surface-3 text-text-2'}`}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   </div>
@@ -1079,7 +1079,7 @@ function FinalCTA({ onEnter }) {
           <div className="absolute inset-0 lp-grid-bg opacity-30" />
 
           <div className="relative max-w-[640px] mx-auto text-center">
-            <h2 className="font-display font-bold text-[44px] leading-[1.1] tracking-tight text-white mb-4">
+            <h2 className="font-heading font-bold text-[44px] leading-[1.1] tracking-tight text-white mb-4">
               Ready to discover your<br />next big opportunity?
             </h2>
             <p className="text-[18px] text-white/75 mb-9">
@@ -1150,7 +1150,7 @@ function Footer() {
           </div>
           {cols.map(([title, links]) => (
             <div key={title}>
-              <div className="font-display font-bold text-[14px] text-text-1 mb-4">{title}</div>
+              <div className="font-heading font-bold text-[14px] text-text-1 mb-4">{title}</div>
               <div className="space-y-2.5">
                 {links.map(([label, href]) => (
                   <button key={label} onClick={() => href !== '#' && navigate(href)}
