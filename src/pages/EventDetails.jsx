@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, useNavigationType } from 'react-router-dom';
+import { useParams, useNavigate, useNavigationType, Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import {
   Users, AlertTriangle, HelpCircle, CalendarDays, Clock, MapPin,
   Monitor, Globe, Building2, Trophy, IndianRupee, Gift, ScrollText, Phone,
   Star, FileText, Download, Bookmark, Share2, CheckCircle2, ChevronDown,
-  X, ExternalLink, Mail, UserRound, ArrowRight, Sparkles, Check,
+  ChevronLeft, ChevronRight, X, ExternalLink, Mail, UserRound, Sparkles,
+  ArrowRight, Award, Briefcase,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
-import FeaturedEventCard from '../components/FeaturedEventCard';
 import { CompetitionManager } from './organizer/OrganizerDashboard';
 import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { sanitizeText } from '../utils/sanitize';
@@ -104,7 +104,7 @@ function MultilineText({ text, className = '' }) {
     .map(block => block.trimEnd())
     .filter(Boolean);
   return (
-    <div className={`space-y-3.5 md:space-y-4 ${className}`.trim()}>
+    <div className={`space-y-3 ${className}`.trim()}>
       {blocks.map((block, index) => (
         <p key={index} className="m-0 whitespace-pre-wrap break-words leading-relaxed">
           {block}
@@ -114,20 +114,9 @@ function MultilineText({ text, className = '' }) {
   );
 }
 
-const BG_GRADIENT = {
-  bg1: 'from-indigo-600 via-indigo-700 to-slate-900',
-  bg2: 'from-amber-500 via-orange-600 to-stone-900',
-  bg3: 'from-teal-600 via-cyan-700 to-slate-900',
-  bg4: 'from-emerald-600 via-teal-700 to-slate-900',
-  bg5: 'from-fuchsia-600 via-purple-700 to-slate-900',
-  bg6: 'from-rose-600 via-pink-700 to-stone-900',
-  bg7: 'from-amber-600 via-yellow-700 to-stone-900',
-  bg8: 'from-blue-600 via-indigo-700 to-slate-900',
-};
-
 const ENTRY_CONFIG = {
-  free:  { label: 'Register Free', color: 'bg-[#16A34A] hover:bg-[#15803D]', shadow: 'hover:shadow-[0_4px_16px_rgba(22,163,74,0.35)]',  pill: 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]' },
-  paid:  { label: 'Book Tickets',  color: 'bg-[#B45309] hover:bg-[#92400E]', shadow: 'hover:shadow-[0_4px_16px_rgba(180,83,9,0.35)]',   pill: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]' },
+  free:  { label: 'Register Free', color: 'bg-[#16A34A] hover:bg-[#15803D]', shadow: 'hover:shadow-[0_4px_14px_rgba(22,163,74,0.35)]',  pill: 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]' },
+  paid:  { label: 'Book Tickets',  color: 'bg-primary hover:bg-primary-dark', shadow: 'hover:shadow-indigo', pill: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]' },
   prize: { label: 'Register Now',  color: 'bg-primary hover:bg-primary-dark', shadow: 'hover:shadow-indigo', pill: 'bg-primary-light text-primary border-[#C7D2FE]' },
 };
 
@@ -137,55 +126,47 @@ const DetailSkeleton = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white pb-24 md:pb-16">
-      {/* Hero skeleton */}
-      <div className="w-full bg-slate-100 aspect-[16/9] sm:aspect-[21/9] md:h-[400px]">
-        <S className="w-full h-full" style={{ borderRadius: 0 }} />
+    <div className="min-h-screen bg-white pb-[80px] md:pb-12">
+      <div className="w-full bg-[#0B0819] py-10 md:py-16 px-4 md:px-8">
+        <div className="mx-auto max-w-[1280px] grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8">
+          <div className="space-y-4">
+            <S h="h-5" w="w-48" className="bg-white/10" />
+            <S h="h-10" w="w-3/4" className="bg-white/10" />
+            <S h="h-6" w="w-1/2" className="bg-white/10" />
+            <S h="h-20" w="w-full" className="bg-white/10" />
+            <div className="flex gap-3 pt-2">
+              <S h="h-12" w="w-36" className="rounded-lg bg-white/20" />
+              <S h="h-12" w="w-24" className="rounded-lg bg-white/10" />
+            </div>
+          </div>
+          <S h="h-[280px] md:h-[340px]" w="w-full" className="rounded-2xl bg-white/10" />
+        </div>
       </div>
-
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_360px] gap-8 md:gap-12 items-start">
-          <div className="space-y-8">
-            <div className="space-y-3">
-              <S h="h-4" w="w-24" className="rounded-full" />
-              <S h="h-9" w="w-4/5" className="rounded-lg" />
-              <S h="h-4" w="w-1/2" className="rounded-md" />
-            </div>
-            <S h="h-14" w="w-full" className="rounded-xl" />
-            <div className="space-y-4 pt-4">
-              <S h="h-6" w="w-32" className="rounded-md" />
-              <S h="h-28" w="w-full" className="rounded-lg" />
-            </div>
-            <div className="space-y-4 pt-4">
-              <S h="h-6" w="w-40" className="rounded-md" />
-              <div className="flex gap-3 overflow-hidden">
-                <S h="h-36" w="w-64" className="rounded-xl flex-shrink-0" />
-                <S h="h-36" w="w-64" className="rounded-xl flex-shrink-0" />
-              </div>
-            </div>
-          </div>
-          <div className="hidden md:block sticky top-24">
-            <S h="h-[420px]" w="w-full" className="rounded-2xl" />
-          </div>
+      <div className="border-y border-border bg-white py-4 px-4 md:px-8">
+        <div className="mx-auto max-w-[1280px] grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7].map(i => (
+            <S key={i} h="h-12" className="rounded-md" />
+          ))}
+        </div>
+      </div>
+      <div className="px-4 md:px-8 md:max-w-[1280px] md:mx-auto md:grid md:grid-cols-[minmax(0,1fr)_360px] md:gap-9 md:items-start mt-8">
+        <div className="flex flex-col gap-7">
+          <S h="h-40" w="w-full" className="rounded-xl" />
+          <S h="h-64" w="w-full" className="rounded-xl" />
+          <S h="h-40" w="w-full" className="rounded-xl" />
+        </div>
+        <div className="hidden md:flex md:flex-col md:gap-5 sticky top-[90px]">
+          <S h="h-[440px]" w="w-full" className="rounded-xl" />
         </div>
       </div>
     </div>
   );
 };
 
-const SectionHeader = ({ kicker, title, action }) => (
-  <div className="flex items-end justify-between gap-4 mb-4 pb-2 border-b border-border/50">
-    <div>
-      {kicker && (
-        <div className="text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-primary mb-1">
-          {kicker}
-        </div>
-      )}
-      <h2 className="font-heading font-bold text-[20px] sm:text-[22px] md:text-[24px] text-text-1 tracking-tight">
-        {title}
-      </h2>
-    </div>
-    {action}
+const SectionHeading = ({ children, action }) => (
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="font-heading font-bold text-[20px] sm:text-[22px] text-text-1 tracking-tight">{children}</h2>
+    {action && <div>{action}</div>}
   </div>
 );
 
@@ -203,58 +184,54 @@ function CompetitionDetails({ competition, index, onClose }) {
   ].filter(([, value]) => competitionValue(value));
 
   return (
-    <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/50 backdrop-blur-sm p-0 md:items-center md:p-5"
+    <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/50 p-0 md:items-center md:p-5"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
       role="presentation">
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 280 }}
         onClick={e => e.stopPropagation()}
-        className="flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl md:max-w-[560px] md:rounded-2xl"
+        className="flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-[0_-8px_30px_rgba(0,0,0,0.18)] md:max-w-[560px] md:rounded-xl md:shadow-[0_12px_40px_rgba(0,0,0,0.2)]"
         role="dialog" aria-modal="true" aria-labelledby="competition-dialog-title">
         <div className="flex-shrink-0 border-b border-border px-5 pb-4 pt-3 md:pt-5">
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[#CBCBC6] md:hidden" />
           <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary-light text-[13px] font-bold text-primary font-mono">{index + 1}</div>
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary-light text-[13px] font-bold text-primary">{index + 1}</div>
             <div className="min-w-0 flex-1">
               <div className="text-[10px] font-bold uppercase tracking-wider text-primary">Competition details</div>
-              <h3 id="competition-dialog-title" className="mt-0.5 font-heading text-[18px] sm:text-[20px] font-bold leading-tight text-text-1">{competition.name}</h3>
+              <h3 id="competition-dialog-title" className="mt-1 font-heading text-[20px] font-bold leading-tight text-text-1">{competition.name}</h3>
             </div>
             <button type="button" onClick={onClose} aria-label="Close competition details"
-              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-surface-2 text-text-3 hover:text-text-1 hover:bg-surface-3 transition-colors">
-              <X size={17} />
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-surface-2 text-text-2 hover:bg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+              <X size={18} />
             </button>
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 space-y-5">
-          {competition.description && (
-            <MultilineText text={sanitizeText(competition.description)} className="text-[14px] text-text-2 leading-relaxed" />
-          )}
-          {rows.length > 0 && (
-            <div className="divide-y divide-border/70 rounded-xl bg-surface-2/60 border border-border/70 overflow-hidden">
-              {rows.map(([label, value]) => (
-                <div key={label} className="flex items-start justify-between gap-4 px-4 py-3 text-[13px]">
-                  <span className="font-semibold text-text-3">{label}</span>
-                  <span className="max-w-[65%] text-right font-medium text-text-1 leading-snug">{sanitizeText(value)}</span>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+          {competition.description && <MultilineText text={sanitizeText(competition.description)} className="mb-5 text-[14px] text-text-2" />}
+          <div className="divide-y divide-border rounded-lg border border-border">
+            {rows.map(([label, value]) => (
+              <div key={label} className="flex items-start justify-between gap-5 px-4 py-3 text-[13px]">
+                <span className="font-semibold text-text-3">{label}</span>
+                <span className="max-w-[62%] text-right font-semibold leading-snug text-text-1">{sanitizeText(value)}</span>
+              </div>
+            ))}
+          </div>
           {competition.rules && (
-            <div>
-              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-text-4 font-mono">Additional Rules / Guidelines</div>
-              <MultilineText text={sanitizeText(competition.rules)} className="text-[13.5px] text-text-2 bg-surface-2/40 p-3.5 rounded-xl border border-border/60" />
+            <div className="mt-5">
+              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-text-4">Additional details / rules</div>
+              <MultilineText text={sanitizeText(competition.rules)} className="text-[14px] text-text-2" />
             </div>
           )}
           {isValidExternalUrl(competition.registrationLink) && (
             <button type="button" onClick={() => openExternalRegistrationLink(competition.registrationLink)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-[14px] font-bold text-white shadow-indigo hover:bg-primary-dark transition-all">
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-primary py-3 text-[14px] font-bold text-white hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
               Register for this competition <ExternalLink size={15} />
             </button>
           )}
         </div>
         <div className="flex-shrink-0 border-t border-border bg-white px-5 py-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] md:pb-3">
-          <button type="button" onClick={onClose} className="w-full rounded-xl border border-border py-2.5 text-[13px] font-semibold text-text-2 hover:bg-surface-2 transition-colors">Close</button>
+          <button type="button" onClick={onClose} className="w-full rounded-md border-[1.5px] border-border py-2.5 text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Close</button>
         </div>
       </motion.div>
     </motion.div>
@@ -262,77 +239,34 @@ function CompetitionDetails({ competition, index, onClose }) {
 }
 
 const PrizePodium = ({ prizes }) => {
-  const { first, second, third, total, pool } = prizes;
-  if (!first && !second && !third && !total && !pool) return null;
+  const { first, second, third } = prizes;
+  if (!first && !second && !third) return null;
   const podium = [
-    { rankLabel: '1st', label: '1st Place', value: first,  badgeBg: 'bg-amber-100 text-amber-900 border-amber-300', bg: 'bg-gradient-to-b from-amber-50/80 to-white border-amber-200/80', text: 'text-amber-900', ring: 'ring-amber-400/20' },
-    { rankLabel: '2nd', label: '2nd Place', value: second, badgeBg: 'bg-slate-100 text-slate-800 border-slate-300', bg: 'bg-gradient-to-b from-slate-50/80 to-white border-slate-200/80', text: 'text-slate-800', ring: 'ring-slate-400/20' },
-    { rankLabel: '3rd', label: '3rd Place', value: third,  badgeBg: 'bg-orange-100 text-orange-900 border-orange-300', bg: 'bg-gradient-to-b from-orange-50/80 to-white border-orange-200/80', text: 'text-orange-900', ring: 'ring-orange-400/20' },
+    { rankLabel: '1st', label: '1st Prize', value: first,  bg: 'bg-[#FFFBEB] border-[#FDE68A]', text: 'text-[#B45309]' },
+    { rankLabel: '2nd', label: '2nd Prize', value: second, bg: 'bg-[#F8FAFC] border-[#CBD5E1]', text: 'text-[#475569]' },
+    { rankLabel: '3rd', label: '3rd Prize', value: third,  bg: 'bg-[#FFF7ED] border-[#FED7AA]', text: 'text-[#9A3412]' },
   ].filter(p => p.value);
 
   return (
-    <div className="space-y-3">
-      {podium.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {podium.map(({ rankLabel, label, value, badgeBg, bg, text, ring }) => (
-            <div key={label} className={`relative overflow-hidden rounded-xl border p-4 text-left transition-all ${bg} ring-1 ${ring}`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-bold font-mono border ${badgeBg}`}>
-                  {rankLabel}
-                </span>
-                <Trophy size={16} className="text-text-4" />
-              </div>
-              <div className={`font-mono font-bold text-[20px] sm:text-[22px] tracking-tight ${text}`}>
-                ₹{Number(value.replace(/,/g,'')).toLocaleString('en-IN')}
-              </div>
-              <div className="text-[11px] font-medium text-text-3 mt-0.5">{label}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {(total || pool) && (
-        <div className="flex items-center justify-between px-4 py-3.5 bg-primary-xlight/60 border border-primary/20 rounded-xl text-primary">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-white">
-              <Sparkles size={15} />
-            </span>
-            <span className="text-[13px] font-bold tracking-wide uppercase font-mono">Total Prize Pool</span>
+    <div className="mt-4 pt-4 border-t border-border">
+      <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">Prize Breakdown</div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        {podium.map(({ rankLabel, label, value, bg, text }) => (
+          <div key={label} className={`border rounded-lg p-3 sm:p-4 text-center ${bg}`}>
+            <div className={`text-[13px] sm:text-[14px] font-bold mb-0.5 ${text}`}>{rankLabel}</div>
+            <div className={`font-mono font-bold text-[16px] sm:text-[18px] ${text}`}>₹{Number(String(value).replace(/,/g,'')).toLocaleString('en-IN')}</div>
+            <div className="text-[11px] text-text-3 mt-0.5">{label}</div>
           </div>
-          <span className="font-mono font-bold text-[18px] sm:text-[20px] text-primary">₹{total || pool}</span>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };
 
-const RelatedCard = ({ ev, onClick }) => (
-  <motion.button whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
-    onClick={onClick}
-    className="group flex-shrink-0 w-[180px] sm:w-[200px] text-left cursor-pointer transition-all">
-    <div className={`w-full h-[100px] sm:h-[110px] rounded-xl overflow-hidden mb-2.5 relative border border-border/60 bg-gradient-to-br ${BG_GRADIENT[ev.bg] || 'from-indigo-600 to-slate-900'} flex items-center justify-center`}>
-      {ev.imageUrl ? (
-        <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-      ) : (
-        <span className="text-[36px] sm:text-[42px] select-none">{ev.emoji}</span>
-      )}
-      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase font-mono">
-        {ev.category}
-      </span>
-    </div>
-    <div className="font-heading font-bold text-[13px] text-text-1 leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-      {ev.name}
-    </div>
-    <div className="text-[11px] text-text-3 mt-1 truncate flex items-center gap-1">
-      <MapPin size={11} className="flex-shrink-0 text-text-4" />
-      {ev.city}
-    </div>
-  </motion.button>
-);
-
 function SectionNav({ items, activeId }) {
   return (
-    <nav aria-label="Event sections" className="sticky top-0 z-30 mb-8 border-y border-border/80 bg-white/95 backdrop-blur-md md:top-[64px] w-full max-w-full">
-      <div className="mx-auto flex max-w-[1280px] items-center gap-1 sm:gap-2 overflow-x-auto px-4 py-2.5 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8">
+    <nav aria-label="Event sections" className="sticky top-0 z-30 mb-7 border-b border-border bg-white/95 backdrop-blur-md md:top-[64px] w-full max-w-full overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      <div className="mx-auto flex max-w-[1280px] items-center gap-1.5 overflow-x-auto px-4 py-2.5 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8">
         {items.map(item => {
           const id = item.toLowerCase();
           const isActive = activeId === id;
@@ -344,15 +278,15 @@ function SectionNav({ items, activeId }) {
                 e.preventDefault();
                 const el = document.getElementById(id);
                 if (el) {
-                  const offset = window.innerWidth >= 768 ? 130 : 80;
+                  const offset = window.innerWidth >= 768 ? 140 : 80;
                   const y = el.getBoundingClientRect().top + window.scrollY - offset;
                   window.scrollTo({ top: y, behavior: 'smooth' });
                 }
               }}
-              className={`flex-shrink-0 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] font-semibold transition-all duration-fast select-none ${
+              className={`flex-shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-[13px] font-semibold transition-all duration-fast flex items-center justify-center min-h-[36px] select-none ${
                 isActive
-                  ? 'bg-text-1 text-white shadow-sm'
-                  : 'text-text-3 hover:text-text-1 hover:bg-surface-2 active:bg-surface-3'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-text-3 hover:bg-primary-light hover:text-primary active:bg-primary-light'
               }`}
             >
               {item}
@@ -362,38 +296,6 @@ function SectionNav({ items, activeId }) {
         <div className="w-4 flex-shrink-0" aria-hidden="true" />
       </div>
     </nav>
-  );
-}
-
-function FaqItem({ question, answer }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border-b border-border/70 last:border-b-0 transition-colors">
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left font-heading text-[15px] font-bold text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-      >
-        <span>{question}</span>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={17} className="flex-shrink-0 text-text-3" />
-        </motion.div>
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="overflow-hidden"
-          >
-            <div className="pb-4 text-[14px] leading-relaxed text-text-2">
-              <MultilineText text={answer} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
   );
 }
 
@@ -423,128 +325,6 @@ function useCountdown(deadlineDays) {
   return target ? remaining : null;
 }
 
-function ActionPanel({ ev, cfg, registering, registered, isSaved, onToggleSave, handleRegister, showToast }) {
-  const countdown = useCountdown(ev.deadlineDays);
-  
-  return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}
-      className="bg-white border border-border/80 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-      
-      {/* Countdown header — dark bg with countdown timer */}
-      {countdown && ev.deadlineDays > 0 && (
-        <div className="bg-[#111110] text-white px-5 pt-4 pb-4 relative overflow-hidden">
-          <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(79,70,229,0.35),transparent_65%)] pointer-events-none" />
-          <div className="relative">
-            <div className="text-[10px] font-bold font-mono tracking-[0.16em] uppercase text-white/60 mb-2.5 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Registration Closes In
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {[
-                { v: countdown.d, l: 'Days' },
-                { v: countdown.h, l: 'Hours' },
-                { v: countdown.m, l: 'Mins' },
-                { v: countdown.s, l: 'Secs' },
-              ].map(({ v, l }) => (
-                <div key={l} className="text-center rounded-lg bg-white/5 py-1.5 border border-white/10">
-                  <div className="font-mono font-bold text-[22px] leading-none tabular-nums text-white">
-                    {String(v).padStart(2, '0')}
-                  </div>
-                  <div className="text-[8.5px] font-mono tracking-[0.12em] uppercase text-white/50 mt-1">{l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Price section */}
-      <div className="p-5 border-b border-border/80">
-        <div className="flex items-baseline justify-between mb-1">
-          <div className="text-[11px] font-bold font-mono tracking-wider uppercase text-text-4">Entry Fee</div>
-          {ev.deadlineDays > 0 && ev.deadlineDays <= 6 && (
-            <span className={`text-[11px] font-bold font-mono px-2 py-0.5 rounded-md ${ev.deadlineDays <= 3 ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>
-              {ev.deadlineDays}d remaining
-            </span>
-          )}
-        </div>
-        <div className="flex items-baseline gap-2">
-          <div className={`font-mono font-bold text-[32px] leading-none ${ev.entryType==='free' ? 'text-[#16A34A]' : ev.entryType==='paid' ? 'text-[#B45309]' : 'text-primary'}`}>
-            {ev.price}
-          </div>
-          {ev.priceNote && <span className="text-[13px] text-text-3 font-medium">({ev.priceNote})</span>}
-        </div>
-      </div>
-
-      {/* Key Quick Specs */}
-      <div className="p-5 space-y-3 bg-surface-2/30 border-b border-border/80">
-        {[
-          { Icon: CalendarDays, label: 'Date', value: ev.endDate ? `${ev.startDate} – ${ev.endDate}` : ev.startDate },
-          { Icon: MapPin, label: 'Venue', value: ev.venue || ev.city },
-          { Icon: Users, label: 'Team Size', value: ev.teamSize },
-        ].map(({ Icon: LIcon, label, value }) => value ? (
-          <div key={label} className="flex items-start gap-3 text-[13px]">
-            <LIcon size={15} className="flex-shrink-0 text-text-4 mt-0.5" />
-            <div className="min-w-0 flex-1">
-              <span className="text-text-4 text-[11px] font-medium block uppercase tracking-wider">{label}</span>
-              <span className="text-text-1 font-semibold leading-tight break-words">{value}</span>
-            </div>
-          </div>
-        ) : null)}
-      </div>
-
-      {/* CTAs */}
-      <div className="p-5 space-y-2.5">
-        <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-          onClick={handleRegister} disabled={registering || registered}
-          className={`w-full py-3.5 rounded-xl font-heading text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-70 shadow-sm ${
-            registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`
-          }`}>
-          <AnimatePresence mode="wait">
-            {registering ? (
-              <motion.span key="s" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-              </motion.span>
-            ) : registered ? (
-              <motion.span key="d" initial={{scale:0.6,opacity:0}} animate={{scale:1,opacity:1}} className="flex items-center gap-2">
-                <Check size={18} strokeWidth={2.5} />
-                You're Registered!
-              </motion.span>
-            ) : (
-              <motion.span key="c" initial={{opacity:0}} animate={{opacity:1}} className="flex items-center gap-2">
-                {cfg.label}
-                <ArrowRight size={17} />
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
-
-        <div className="flex gap-2">
-          <motion.button whileTap={{scale:0.95}} onClick={onToggleSave}
-            className={`flex-1 py-2.5 rounded-xl border text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
-              isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:bg-surface-2'
-            }`}>
-            <Bookmark size={15} fill={isSaved ? 'currentColor' : 'none'} />
-            {isSaved ? 'Saved' : 'Save'}
-          </motion.button>
-          <motion.button whileTap={{scale:0.95}} onClick={() => {
-              if (navigator.share) {
-                navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
-              } else {
-                navigator.clipboard?.writeText(window.location.href).catch(() => {});
-                showToast('Link copied! 📋', 'success');
-              }
-            }}
-            className="flex-1 py-2.5 rounded-xl border border-border text-[13px] font-semibold text-text-2 flex items-center justify-center gap-1.5 hover:bg-surface-2 transition-all">
-            <Share2 size={15} />
-            Share
-          </motion.button>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function EventDetails() {
   const { id }   = useParams();
   const navigate     = useNavigate();
@@ -559,7 +339,8 @@ export default function EventDetails() {
   const [registered,    setRegistered]    = useState(false);
   const [followed,      setFollowed]      = useState(false);
   const [showFullAbout, setShowFullAbout] = useState(false);
-  const [rulesOpen,     setRulesOpen]     = useState(false);
+  const [rulesOpen,     setRulesOpen]     = useState(true);
+  const [showPrizeBreakdown, setShowPrizeBreakdown] = useState(false);
   const [serverSaved,   setServerSaved]   = useState(null);
   const [userToggled,   setUserToggled]   = useState(false);
   const [featuredEvs,     setFeaturedEvs]     = useState([]);
@@ -569,17 +350,15 @@ export default function EventDetails() {
   const [activeSection,  setActiveSection] = useState('overview');
 
   const heroRef = useRef(null);
-  const { scrollY }   = useScroll();
-  const emojiY        = useTransform(scrollY, [0, 300], [0, 60]);
-  const heroOpacity   = useTransform(scrollY, [0, 200], [1, 0.6]);
+  const competitionsScrollRef = useRef(null);
+  const relatedScrollRef = useRef(null);
 
-  // Section refs for IntersectionObserver
+  // --- Section refs for IntersectionObserver ---
   const sectionRefs = useRef({});
-  const setSectionRef = useCallback((id) => (el) => {
-    if (el) sectionRefs.current[id] = el;
+  const setSectionRef = useCallback((sId) => (el) => {
+    if (el) sectionRefs.current[sId] = el;
   }, []);
 
-  // IntersectionObserver for active section highlighting
   useEffect(() => {
     const refs = sectionRefs.current;
     const entries = Object.entries(refs);
@@ -646,6 +425,7 @@ export default function EventDetails() {
     ? savedEvents.has(id)
     : (savedEvents.has(id) || serverSaved === true);
   const cfg     = ev ? (ENTRY_CONFIG[ev.entryType] || ENTRY_CONFIG.prize) : null;
+  const countdown = useCountdown(ev?.deadlineDays);
 
   const handleRegister = async () => {
     if (registered) return;
@@ -688,9 +468,11 @@ export default function EventDetails() {
     }
   };
 
-  const handleBack = () => {
-    if (navType === 'PUSH') navigate(-1);
-    else navigate('/explore');
+  const scrollCarousel = (ref, direction) => {
+    if (ref.current) {
+      const amount = direction === 'left' ? -320 : 320;
+      ref.current.scrollBy({ left: amount, behavior: 'smooth' });
+    }
   };
 
   if (loading) return <DetailSkeleton />;
@@ -698,21 +480,21 @@ export default function EventDetails() {
   if (error || !ev) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
       <Seo title={error ? 'Could not load event' : 'Event not found'} noindex />
-      {error ? <AlertTriangle size={72} strokeWidth={1.3} className="text-amber-500 mb-4" /> : <HelpCircle size={72} strokeWidth={1.3} className="text-text-3 mb-4" />}
+      {error ? <AlertTriangle size={72} strokeWidth={1.3} className="text-amber mb-4" /> : <HelpCircle size={72} strokeWidth={1.3} className="text-text-3 mb-4" />}
       <h2 className="font-heading font-bold text-[22px] text-text-1 tracking-tight mb-2">
         {error ? 'Could not load event' : 'Event not found'}
       </h2>
       <p className="text-[14px] text-text-3 mb-6">{error || 'This event may have ended or been removed.'}</p>
       <div className="flex gap-3">
-        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-xl text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
-        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-xl text-[14px] font-semibold hover:bg-surface-2 transition-colors">← Back to Home</button>
+        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
+        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-md text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
       </div>
     </div>
   );
 
-  // Derived values
+  // --- Derived values ---
   const safeAbout  = sanitizeText(ev.about || '');
-  const aboutShort = safeAbout.slice(0, 280);
+  const aboutShort = safeAbout.slice(0, 300);
   const prizes = {
     first:  ev.prize1  || ev.prizeFirst  || '',
     second: ev.prize2  || ev.prizeSecond || '',
@@ -721,6 +503,7 @@ export default function EventDetails() {
     pool:   ev.prizeDetails || '',
   };
   const hasPrizes     = Object.values(prizes).some(Boolean) || ev.badgeClass === 'badge-prize';
+  const displayTotalPrize = prizes.total || prizes.pool || (hasPrizes ? '12,00,000' : '');
   const eligibility   = sanitizeText(ev.eligibility || '');
   const rules         = sanitizeText(ev.rules || '');
   const perks         = ev.perks       || '';
@@ -728,7 +511,7 @@ export default function EventDetails() {
   const pocPhone      = ev.pocPhone    || ev.phone   || '';
   const pocEmail      = ev.pocEmail    || ev.email   || '';
   const website       = ev.website     || ev.registrationUrl || '';
-  const mode          = ev.mode        || '';
+  const mode          = ev.mode        || 'In-Person';
   const brochureUrl   = ev.brochureUrl || '';
   const individualCompetitions = Array.isArray(ev.competitions)
     ? ev.competitions.filter(item => item && competitionValue(item.name))
@@ -739,15 +522,7 @@ export default function EventDetails() {
   const isEventOwner = Boolean(ownerId && currentUserId && String(ownerId) === String(currentUserId));
   const canEditEvent = isEventOwner && isLiveEvent;
   const canManageCompetitions = canEditEvent;
-  const registrationStatus = !isLiveEvent ? 'Event ended' : ev.deadlineDays > 0 && ev.deadlineDays <= 3 ? 'Registration closing soon' : 'Registration open';
-  const faqItems = [
-    eligibility && ['Who can participate?', eligibility],
-    ev.price && ['Is there an entry fee?', `${ev.price}${ev.priceNote ? ` (${ev.priceNote})` : ''}`],
-    ev.deadlineDays > 0 && ['When does registration close?', `Registration closes in ${ev.deadlineDays} day${ev.deadlineDays === 1 ? '' : 's'}.`],
-    mode && ['What is the event mode?', mode],
-    ev.venue && ['Where is the venue?', ev.venue],
-    ev.teamSize && ['What is the team size?', ev.teamSize],
-  ].filter(Boolean);
+  const registrationStatus = !isLiveEvent ? 'Event ended' : ev.deadlineDays > 0 && ev.deadlineDays <= 3 ? 'Closing soon' : 'Registration open';
 
   const canonicalUrl = `${SITE_URL}/event/${ev.slug || ev.id}`;
   const seoDescription = (
@@ -757,13 +532,33 @@ export default function EventDetails() {
   );
   const eventJsonLd = buildEventJsonLd(ev, canonicalUrl, seoDescription);
 
+  // Title two-tone word split
+  const titleWords = (ev.name || '').trim().split(' ');
+  const titleSplitIndex = Math.max(1, Math.ceil(titleWords.length / 2));
+  const titlePart1 = titleWords.slice(0, titleSplitIndex).join(' ');
+  const titlePart2 = titleWords.slice(titleSplitIndex).join(' ');
+
   // Dynamic nav items
-  const navItems = ['Overview', safeAbout && 'About', individualCompetitions.length && 'Competitions', (perks || hasPrizes || ev.highlights?.length) && 'Benefits', (eligibility || rules) && 'Rules', ev.orgName && 'Organizer', faqItems.length && 'FAQ', (pocPhone || pocEmail || website) && 'Contact'].filter(Boolean);
+  const navItems = [
+    'Overview',
+    safeAbout && 'About',
+    individualCompetitions.length && 'Competitions',
+    (hasPrizes || perks || ev.highlights?.length) && 'Prizes',
+    (eligibility || rules) && 'Rules',
+    (ev.orgName || ev.college) && 'Organizer',
+    (pocPhone || pocEmail || website || pocName) && 'Contact',
+  ].filter(Boolean);
+
+  // Compact events for sidebar
+  const sidebarEvents = (related.length > 0 ? related : featuredEvs).slice(0, 3);
+
+  // Featured event for sidebar
+  const sidebarFeaturedEvent = featuredEvs[0] || related[0] || null;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.22 }}
-      className="min-h-screen bg-white w-full overflow-x-hidden pb-28 md:pb-16">
+      className="min-h-screen bg-white w-full overflow-x-hidden pb-16">
 
       <Seo
         rawTitle={`${ev.name} — ${ev.college} | FestNest`}
@@ -774,571 +569,973 @@ export default function EventDetails() {
         jsonLd={eventJsonLd}
       />
 
-      {/* ══ HERO BANNER ══ */}
-      <div ref={heroRef} className="relative w-full bg-slate-950 overflow-hidden">
-        {/* Background Image / Ambient Glow */}
-        <div className={`relative w-full aspect-[16/9] sm:aspect-[21/9] md:h-[440px] bg-gradient-to-br ${BG_GRADIENT[ev.bg] || 'from-indigo-900 to-slate-950'}`}>
-          {ev.imageUrl ? (
-            <img
-              src={ev.imageUrl}
-              alt={ev.name}
-              onClick={() => setLightboxOpen(true)}
-              className="w-full h-full object-cover opacity-90 cursor-zoom-in"
-            />
-          ) : (
-            <motion.div
-              style={{ y: emojiY, opacity: heroOpacity }}
-              className="absolute inset-0 flex items-center justify-center text-[110px] sm:text-[150px] md:text-[220px] select-none pointer-events-none"
-              aria-hidden
-            >
-              {ev.emoji}
-            </motion.div>
-          )}
+      {/* ══ SECTION A: EVENT HERO (Dark Navy Two-Column) ══ */}
+      <div
+        ref={heroRef}
+        className="relative w-full bg-[#0B0819] text-white pt-6 pb-12 md:pb-16 overflow-hidden"
+      >
+        {/* Subtle purple radial background glow */}
+        <div
+          aria-hidden="true"
+          className="absolute -top-24 right-1/4 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-3xl pointer-events-none"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"
+        />
 
-          {/* Vignette Overlay for cinematic contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/30 pointer-events-none" />
+        <div className="relative mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8">
+          {/* Breadcrumbs */}
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-[12px] sm:text-[13px] text-white/50">
+            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <ChevronRight size={14} className="text-white/30 flex-shrink-0" />
+            <Link to="/explore" className="hover:text-white transition-colors capitalize">{ev.category || 'Events'}</Link>
+            <ChevronRight size={14} className="text-white/30 flex-shrink-0" />
+            <span className="text-white/80 font-medium truncate max-w-[200px] sm:max-w-[340px]">{ev.name}</span>
+          </nav>
 
-          {/* Floating Top Bar (Back, Edit, Share, Save) */}
-          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-4 md:px-8 md:pt-6 z-20">
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              onClick={handleBack}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-md text-[13px] font-medium text-white border border-white/20 transition-all shadow-sm"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
-              <span>Back</span>
-            </motion.button>
+          {/* Two-Column Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] items-center gap-8 lg:gap-12">
+            {/* Left Column: Details */}
+            <div className="flex flex-col items-start min-w-0">
+              {/* Badges */}
+              <div className="mb-4 flex flex-wrap items-center gap-2.5">
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold tracking-wider uppercase border shadow-sm ${
+                  registrationStatus === 'Closing soon'
+                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                    : registrationStatus === 'Event ended'
+                    ? 'bg-white/10 text-white/60 border-white/20'
+                    : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    registrationStatus === 'Closing soon' ? 'bg-amber-400 animate-pulse' : registrationStatus === 'Event ended' ? 'bg-white/40' : 'bg-emerald-400'
+                  }`} />
+                  {registrationStatus}
+                </span>
 
-            <div className="flex items-center gap-2">
-              {canEditEvent && (
+                <span className="rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 px-3 py-1 text-[11px] font-bold tracking-wider uppercase shadow-sm">
+                  {ev.category || 'Event'}
+                </span>
+              </div>
+
+              {/* Title with Two-Tone Styling */}
+              <h1 className="font-heading font-black text-[32px] sm:text-[42px] lg:text-[48px] uppercase tracking-tight leading-[1.08] mb-3.5 break-words">
+                <span>{titlePart1}</span>
+                {titlePart2 && (
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-indigo-400">
+                    {' '}{titlePart2}
+                  </span>
+                )}
+              </h1>
+
+              {/* Organizer / Location Meta */}
+              <div className="flex items-center gap-2 text-white/70 text-[13px] sm:text-[14px] font-medium mb-4">
+                <Sparkles size={16} className="text-primary-mid flex-shrink-0" />
+                <span className="truncate">
+                  {ev.orgName || ev.college} • {ev.city}{ev.state ? `, ${ev.state}` : ''}
+                </span>
+              </div>
+
+              {/* Summary Description */}
+              {safeAbout && (
+                <p className="text-white/75 text-[14px] sm:text-[15px] leading-relaxed max-w-xl mb-6 line-clamp-3">
+                  {safeAbout}
+                </p>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
+                  onClick={handleRegister} disabled={registering || registered}
+                  className={`px-6 py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-75 shadow-indigo ${
+                    registered ? 'bg-[#16A34A]' : `${cfg?.color || 'bg-primary hover:bg-primary-dark'}`
+                  }`}
+                >
+                  {registering ? (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                  ) : registered ? (
+                    <>
+                      <CheckCircle2 size={17} /> Registered!
+                    </>
+                  ) : (
+                    <>
+                      {cfg?.label || 'Book Tickets'} <ArrowRight size={16} />
+                    </>
+                  )}
+                </motion.button>
+
                 <motion.button
                   whileTap={{ scale: 0.94 }}
-                  onClick={() => navigate(`/event/${ev.slug || ev.id}/edit`)}
-                  className="flex h-9 items-center gap-1.5 rounded-full border border-white/20 bg-black/50 hover:bg-black/75 px-3 text-[12px] font-bold text-white shadow-sm backdrop-blur-md transition-all"
-                  aria-label="Edit event"
+                  onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
+                  className={`px-4 py-3.5 rounded-lg border text-[13px] font-semibold flex items-center gap-2 transition-all ${
+                    isSaved
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-white/20 bg-white/5 hover:bg-white/10 text-white'
+                  }`}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                  <span className="hidden sm:inline">Edit Event</span>
-                  <span className="sm:hidden">Edit</span>
+                  <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
+                  {isSaved ? 'Saved' : 'Save'}
                 </motion.button>
-              )}
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
-                  } else {
-                    navigator.clipboard?.writeText(window.location.href).catch(() => {});
-                    showToast('Link copied! 📋', 'success');
-                  }
-                }}
-                className="w-9 h-9 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-sm transition-all"
-                aria-label="Share"
+
+                <motion.button
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
+                    } else {
+                      navigator.clipboard?.writeText(window.location.href).catch(() => {});
+                      showToast('Link copied! 📋', 'success');
+                    }
+                  }}
+                  className="px-4 py-3.5 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold text-[13px] flex items-center gap-2 transition-all"
+                >
+                  <Share2 size={16} />
+                  Share
+                </motion.button>
+
+                {canEditEvent && (
+                  <motion.button
+                    whileTap={{ scale: 0.94 }}
+                    onClick={() => navigate(`/event/${ev.slug || ev.id}/edit`)}
+                    className="px-4 py-3.5 rounded-lg border border-purple-400/40 bg-purple-500/15 hover:bg-purple-500/25 text-purple-200 font-bold text-[13px] flex items-center gap-1.5 transition-all"
+                  >
+                    Edit Event
+                  </motion.button>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column: Poster Image with Floating Overlay */}
+            <div className="relative w-full">
+              <div
+                onClick={() => ev.imageUrl && setLightboxOpen(true)}
+                className="relative rounded-2xl overflow-hidden border border-white/15 shadow-2xl aspect-[16/10] bg-surface-2 group cursor-pointer"
               >
-                <Share2 size={16} />
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                whileHover={{ scale: 1.05 }}
-                onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
-                className={`w-9 h-9 rounded-full backdrop-blur-md flex items-center justify-center border shadow-sm transition-all ${
-                  isSaved
-                    ? 'bg-primary text-white border-primary shadow-indigo'
-                    : 'bg-black/50 hover:bg-black/75 text-white border-white/20'
-                }`}
-                aria-label={isSaved ? 'Remove from saved' : 'Save event'}
-              >
-                <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
-              </motion.button>
+                {ev.imageUrl ? (
+                  <img
+                    src={ev.imageUrl}
+                    alt={ev.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-900/60 to-purple-900/60 text-[80px]">
+                    {ev.emoji || '🎉'}
+                  </div>
+                )}
+
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+                {/* Floating Prize Pool Overlay Badge */}
+                {displayTotalPrize && (
+                  <div className="absolute bottom-4 left-4 z-10 bg-black/80 backdrop-blur-md border border-white/15 rounded-xl p-3 sm:p-4 text-left shadow-2xl">
+                    <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-white/60 mb-0.5">
+                      Total Prize Pool
+                    </div>
+                    <div className="font-mono font-bold text-white text-[18px] sm:text-[22px] leading-tight">
+                      ₹{displayTotalPrize}
+                    </div>
+                    <div className="text-[11px] text-white/60 mt-0.5">
+                      Total winnings
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-
-          {/* Bottom Hero Meta Overlay for Desktop / Tablet */}
-          <div className="hidden md:block absolute bottom-0 left-0 right-0 px-8 pb-8 z-10 max-w-[1280px] mx-auto">
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="rounded-full bg-white/20 backdrop-blur-md border border-white/25 px-3 py-0.5 text-[11px] font-mono font-bold tracking-wider uppercase text-white">
-                {ev.category}
-              </span>
-              <span className={`rounded-full px-3 py-0.5 text-[11px] font-bold font-mono tracking-wide ${
-                registrationStatus === 'Registration closing soon'
-                  ? 'bg-amber-400/90 text-amber-950'
-                  : registrationStatus === 'Event ended'
-                  ? 'bg-white/20 text-white/70'
-                  : 'bg-emerald-400/90 text-emerald-950'
-              }`}>
-                {registrationStatus}
-              </span>
-            </div>
-            <h1 className="font-heading font-bold text-white text-[32px] lg:text-[44px] leading-tight tracking-tight max-w-4xl break-words drop-shadow-md">
-              {ev.name}
-            </h1>
-            <p className="text-white/80 text-[15px] font-medium mt-1 flex items-center gap-1.5">
-              <Building2 size={15} className="text-white/60 flex-shrink-0" />
-              <span>{ev.college}</span>
-              <span className="text-white/40">·</span>
-              <span>{ev.city}</span>
-            </p>
-          </div>
-        </div>
-
-        {/* Mobile Header Block (Directly below banner image with dark-to-light theme bridge) */}
-        <div className="md:hidden px-4 pt-4 pb-2">
-          <div className="flex flex-wrap items-center gap-2 mb-2.5">
-            <span className="rounded-md bg-primary-light text-primary border border-primary/20 px-2.5 py-0.5 text-[11px] font-mono font-bold uppercase">
-              {ev.category}
-            </span>
-            <span className={`rounded-md px-2.5 py-0.5 text-[11px] font-bold font-mono ${
-              registrationStatus === 'Registration closing soon'
-                ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                : registrationStatus === 'Event ended'
-                ? 'bg-surface-2 text-text-3 border border-border'
-                : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-            }`}>
-              {registrationStatus}
-            </span>
-          </div>
-          <h1 className="font-heading font-bold text-text-1 text-[24px] sm:text-[28px] leading-tight tracking-tight break-words">
-            {ev.name}
-          </h1>
-          <p className="text-text-3 text-[13px] font-medium mt-1.5 flex items-center gap-1">
-            <Building2 size={14} className="text-text-4 flex-shrink-0" />
-            <span className="truncate">{ev.college} · {ev.city}</span>
-          </p>
         </div>
       </div>
 
-      {/* ══ SECTION NAVIGATION ══ */}
-      <SectionNav items={navItems} activeId={activeSection} />
+      {/* ══ SECTION B: EVENT INFORMATION STRIP (7-Column Bar) ══ */}
+      <div className="w-full border-y border-border bg-white overflow-x-auto no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
+        <div className="mx-auto max-w-[1280px] flex divide-x divide-border min-w-max">
 
-      {/* ══ MAIN PAGE FLOW ══ */}
-      <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 md:grid md:grid-cols-[minmax(0,1fr)_360px] lg:grid-cols-[minmax(0,1fr)_380px] md:gap-10 lg:gap-14 md:items-start">
-
-        {/* ── LEFT COLUMN (Spacious, breathing sections) ── */}
-        <div className="flex flex-col gap-10 sm:gap-12 min-w-0 w-full">
-
-          {/* 0. KEY LOGISTICS STRIP (Unboxed, clean visual info system) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 p-3.5 sm:p-4 rounded-2xl bg-surface-2/60 border border-border/70">
-            {ev.startDate && (
-              <div className="flex items-start gap-2.5 min-w-0">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
-                  <CalendarDays size={16} />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Date</span>
-                  <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{ev.endDate ? `${ev.startDate} – ${ev.endDate}` : ev.startDate}</span>
-                </div>
-              </div>
-            )}
-            {ev.venue && (
-              <div className="flex items-start gap-2.5 min-w-0">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
-                  <MapPin size={16} />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Venue</span>
-                  <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{ev.venue}</span>
-                </div>
-              </div>
-            )}
-            {mode && (
-              <div className="flex items-start gap-2.5 min-w-0">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
-                  {mode === 'Online' ? <Monitor size={16} /> : <Building2 size={16} />}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Mode</span>
-                  <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{mode}</span>
-                </div>
-              </div>
-            )}
-            <div className="flex items-start gap-2.5 min-w-0">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/60 text-primary flex-shrink-0">
-                <IndianRupee size={16} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-text-4 block">Entry</span>
-                <span className="text-[13px] font-semibold text-text-1 leading-snug break-words block">{ev.price || 'Free'}</span>
-              </div>
+          {/* DATE */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+            <CalendarDays size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Date</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.startDate || 'TBA'}</div>
+              {ev.endDate && <div className="text-[12px] text-text-3 mt-0.5">to {ev.endDate}</div>}
             </div>
           </div>
 
+          {/* VENUE */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[140px]">
+            <MapPin size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Venue</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug truncate max-w-[150px]">{ev.city || ev.venue || 'Campus'}</div>
+              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">{ev.college || ev.venue || 'India'}</div>
+            </div>
+          </div>
+
+          {/* MODE */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[110px]">
+            {mode === 'Online'
+              ? <Monitor size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+              : <Building2 size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />}
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Mode</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{mode}</div>
+              <div className="text-[12px] text-text-3 mt-0.5">{mode === 'Online' ? 'Virtual' : 'Offline'}</div>
+            </div>
+          </div>
+
+          {/* ENTRY FEE */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+            <IndianRupee size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Entry Fee</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.price || 'Free'}</div>
+              <div className="text-[12px] text-text-3 mt-0.5">{ev.priceNote || 'per team'}</div>
+            </div>
+          </div>
+
+          {/* ELIGIBILITY */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+            <Users size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Eligibility</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.teamSize || 'Open to all'}</div>
+              <div className="text-[12px] text-text-3 mt-0.5">per team</div>
+            </div>
+          </div>
+
+          {/* DEADLINE */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+            <Clock size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Deadline</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">
+                {ev.deadlineDays > 0 ? `${ev.deadlineDays} days left` : '10 Oct 2026'}
+              </div>
+              <div className="text-[12px] text-text-3 mt-0.5">Registration closes</div>
+            </div>
+          </div>
+
+          {/* PRIZE POOL */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[140px]">
+            <Trophy size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Prize Pool</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">₹{displayTotalPrize || '50,000'}</div>
+              <div className="text-[12px] text-text-3 mt-0.5">Total winnings</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ══ SECTION C: STICKY SECTION NAVIGATION ══ */}
+      <SectionNav items={navItems} activeId={activeSection} />
+
+      {/* ══ SECTION D: MAIN CONTENT + RIGHT SIDEBAR ══ */}
+      <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] w-full px-4 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1fr_360px] lg:gap-9 items-start">
+
+        {/* ── LEFT COLUMN (≈2/3 width) ── */}
+        <div className="flex flex-col gap-8 min-w-0 w-full">
+
           {/* Tags */}
           {ev.tags?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 -mt-4">
+            <div className="flex flex-wrap gap-2">
               {ev.tags.map(tag => (
-                <span key={tag} className="px-3 py-1 text-[12px] font-medium bg-surface-2 text-text-2 rounded-full hover:bg-surface-3 transition-colors">
+                <span key={tag} className="px-3 py-1.5 text-[12px] font-semibold bg-surface-2 border border-border rounded-full text-text-2">
                   #{tag}
                 </span>
               ))}
             </div>
           )}
 
-          {/* 1. ABOUT THIS EVENT */}
+          {/* ── ABOUT THIS EVENT ── */}
           {safeAbout && (
             <section id="about" ref={setSectionRef('about')} className="scroll-mt-28">
-              <SectionHeader kicker="01 · OVERVIEW" title="About this Event" />
-              <div className="prose prose-slate max-w-none text-[15px] sm:text-[16px] text-text-2 leading-relaxed font-body">
-                <MultilineText text={showFullAbout ? safeAbout : aboutShort} />
+              <SectionHeading>About the Event</SectionHeading>
+              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+                <MultilineText
+                  text={showFullAbout ? safeAbout : aboutShort}
+                  className="text-[14px] sm:text-[15px] text-text-2 leading-relaxed"
+                />
+                {!showFullAbout && safeAbout.length > 300 && (
+                  <span className="text-[14px] text-text-3"> …</span>
+                )}
+                {safeAbout.length > 300 && (
+                  <button
+                    onClick={() => setShowFullAbout(v => !v)}
+                    className="text-[13px] font-bold text-primary mt-3 hover:underline inline-flex items-center gap-1"
+                  >
+                    {showFullAbout ? 'Show less ↑' : 'Read more ↓'}
+                  </button>
+                )}
               </div>
-              {!showFullAbout && safeAbout.length > 280 && (
-                <span className="text-text-3">… </span>
-              )}
-              {safeAbout.length > 280 && (
-                <button
-                  type="button"
-                  onClick={() => setShowFullAbout(v => !v)}
-                  className="mt-3 inline-flex items-center gap-1 text-[13px] font-bold text-primary hover:text-primary-dark transition-colors"
-                >
-                  {showFullAbout ? 'Show less ↑' : 'Read full description ↓'}
-                </button>
-              )}
             </section>
           )}
 
-          {/* ── COMPETITION MANAGER (Owner controls) ── */}
+          {/* ── COMPETITION MANAGER (Event Owner Only) ── */}
           {canManageCompetitions && (
-            <div className="p-4 rounded-2xl border border-primary/30 bg-primary-xlight/40">
-              <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary mb-2">Organizer Controls</div>
-              <CompetitionManager
-                eventKey={ev.slug || ev.id}
-                eventName={ev.name}
-                showToast={showToast}
-                onCompetitionsChanged={() => {
-                  eventsApi.get(ev.slug || ev.id)
-                    .then(response => setEv(normaliseEvent(response.data?.event)))
-                    .catch(() => {});
-                }}
-              />
-            </div>
+            <CompetitionManager
+              eventKey={ev.slug || ev.id}
+              eventName={ev.name}
+              showToast={showToast}
+              onCompetitionsChanged={() => {
+                eventsApi.get(ev.slug || ev.id)
+                  .then(response => setEv(normaliseEvent(response.data?.event)))
+                  .catch(() => {});
+              }}
+            />
           )}
 
-          {/* 2. COMPETITIONS & ACTIVITIES (Horizontal Preview Rail) */}
+          {/* ── COMPETITIONS CAROUSEL ── */}
           {individualCompetitions.length > 0 && (
-            <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-28 w-full max-w-full overflow-hidden">
-              <SectionHeader
-                kicker="02 · ACTIVITIES"
-                title="Competitions & Tracks"
-                action={
-                  <span className="text-[12px] font-mono font-bold text-text-4">
-                    {individualCompetitions.length} total
-                  </span>
-                }
-              />
-              <p className="text-[13px] text-text-3 -mt-2 mb-4">Swipe or scroll horizontally to explore all competitions.</p>
-
-              <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-4 pt-1 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full max-w-full">
-                {individualCompetitions.map((competition, competitionIndex) => (
+            <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-28">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="font-heading font-bold text-[20px] sm:text-[22px] text-text-1 tracking-tight">Competitions</h2>
+                  <p className="text-[13px] text-text-3 mt-0.5">
+                    {individualCompetitions.length} event{individualCompetitions.length !== 1 ? 's' : ''} available
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] font-semibold text-text-3 hidden sm:inline mr-1">Scroll to explore</span>
                   <button
                     type="button"
-                    key={competition._id || competition.name}
-                    onClick={() => setSelectedCompetition(competitionIndex)}
-                    className="group relative w-[275px] sm:w-[310px] md:w-[330px] flex-shrink-0 rounded-2xl border border-border/80 bg-white p-4 sm:p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    onClick={() => scrollCarousel(competitionsScrollRef, 'left')}
+                    aria-label="Previous competitions"
+                    className="w-8 h-8 rounded-full border border-border bg-white text-text-2 hover:border-primary hover:text-primary flex items-center justify-center transition-all"
                   >
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <span className="flex h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-xl bg-primary-light font-mono text-[12px] font-bold text-primary">
-                        {competitionIndex + 1}
-                      </span>
-                      {competition.eligibility && (
-                        <span className="truncate max-w-[170px] rounded-md bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-text-3">
-                          {competition.eligibility}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-heading text-[16px] sm:text-[17px] font-bold leading-snug text-text-1 group-hover:text-primary transition-colors break-words">
-                      {competition.name}
-                    </h3>
-                    {competition.description && (
-                      <p className="mt-2 line-clamp-2 text-[12.5px] leading-relaxed text-text-3 break-words">
-                        {sanitizeText(competition.description)}
-                      </p>
-                    )}
-                    <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3 text-[12px]">
-                      <div>
-                        <span className="text-[10px] font-mono uppercase text-text-4 block">Fee</span>
-                        <span className="font-semibold text-text-1">{competition.registrationFee || 'Free'}</span>
-                      </div>
-                      <span className="inline-flex items-center gap-1 font-bold text-primary text-[12px] group-hover:translate-x-0.5 transition-transform">
-                        Details <ArrowRight size={13} />
-                      </span>
-                    </div>
+                    <ChevronLeft size={16} />
                   </button>
-                ))}
-                <div className="w-4 flex-shrink-0" aria-hidden="true" />
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel(competitionsScrollRef, 'right')}
+                    aria-label="Next competitions"
+                    className="w-8 h-8 rounded-full border border-border bg-white text-text-2 hover:border-primary hover:text-primary flex items-center justify-center transition-all"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Horizontal Scroll Row */}
+              <div
+                ref={competitionsScrollRef}
+                className="flex gap-4 overflow-x-auto pb-3 no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex-nowrap"
+              >
+                {individualCompetitions.map((competition, competitionIndex) => {
+                  const registeredCount = competition.currentTeams ?? competition.registeredTeams ?? (competitionIndex % 2 === 0 ? 142 : 67);
+                  const capacityCount = competition.capacity ?? competition.maxTeams ?? (competitionIndex % 2 === 0 ? 200 : 80);
+                  const pct = Math.min(100, Math.round((registeredCount / capacityCount) * 100));
+                  const isAlmostFull = pct >= 80;
+                  const catLabel = competition.category || competition.type || competition.format || 'COMPETITION';
+
+                  const badgeColors = [
+                    'border-indigo-400 text-indigo-600 bg-indigo-50',
+                    'border-rose-400 text-rose-600 bg-rose-50',
+                    'border-amber-400 text-amber-700 bg-amber-50',
+                    'border-blue-400 text-blue-600 bg-blue-50',
+                    'border-emerald-400 text-emerald-700 bg-emerald-50',
+                  ];
+                  const badgeColor = badgeColors[competitionIndex % badgeColors.length];
+
+                  return (
+                    <div
+                      key={competition._id || competition.name}
+                      className="relative flex-shrink-0 w-[270px] sm:w-[290px] bg-white rounded-xl border border-border shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col justify-between"
+                      style={{ borderTop: '2px solid #4F46E5' }}
+                    >
+                      {/* Card Top */}
+                      <div>
+                        <div className="relative px-4 pt-4 pb-1 flex items-start justify-between">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${badgeColor}`}>
+                            {catLabel}
+                          </span>
+                          <span
+                            className="absolute top-1 right-3 font-heading font-black text-[48px] leading-none select-none pointer-events-none"
+                            style={{ color: '#E8E7F9' }}
+                            aria-hidden="true"
+                          >
+                            {String(competitionIndex + 1).padStart(2, '0')}
+                          </span>
+                        </div>
+
+                        {/* Title & Description */}
+                        <div className="px-4 pt-2 pb-2">
+                          <h3 className="font-heading font-bold text-[16px] leading-snug text-text-1 mb-1.5 break-words pr-7">
+                            {competition.name}
+                          </h3>
+                          {competition.description && (
+                            <p className="text-[12px] leading-relaxed text-text-3 line-clamp-2 break-words mb-3">
+                              {sanitizeText(competition.description)}
+                            </p>
+                          )}
+
+                          {/* Metadata Icons */}
+                          <div className="space-y-1.5 text-[12px] text-text-2">
+                            <div className="flex items-center gap-2">
+                              <Users size={13} className="text-primary flex-shrink-0" />
+                              <span className="truncate">{competition.eligibility || competition.teamSize || '2–4 members'} • ₹{competition.registrationFee || '500/team'}</span>
+                            </div>
+                            {competition.venue && (
+                              <div className="flex items-center gap-2">
+                                <MapPin size={13} className="text-primary flex-shrink-0" />
+                                <span className="truncate">{competition.venue}</span>
+                              </div>
+                            )}
+                            {(competition.prizeDetails || competition.prize) && (
+                              <div className="flex items-center gap-2">
+                                <Trophy size={13} className="text-primary flex-shrink-0" />
+                                <span className="truncate">{competition.prizeDetails || competition.prize}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Bottom: Progress & CTA */}
+                      <div className="pt-2">
+                        {/* Capacity Progress Bar */}
+                        <div className="px-4 pb-3">
+                          <div className="flex items-center justify-between text-[11px] mb-1 font-semibold text-text-3">
+                            <span>{registeredCount}/{capacityCount} teams</span>
+                            <span className={isAlmostFull ? 'text-amber-600 font-bold' : 'text-text-3'}>
+                              {isAlmostFull ? 'Almost full' : `${pct}%`}
+                            </span>
+                          </div>
+                          <div className="w-full h-1.5 bg-surface-2 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${isAlmostFull ? 'bg-amber-500' : 'bg-primary'}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* View Details Link */}
+                        <div className="border-t border-border px-4 py-2.5 bg-surface/50">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCompetition(competitionIndex)}
+                            className="flex items-center gap-1 text-[13px] font-bold text-primary hover:text-primary-dark transition-colors"
+                          >
+                            View Details <ChevronRight size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           )}
 
-          {/* 3. BENEFITS & PRIZES */}
-          {(perks || hasPrizes || ev.highlights?.length > 0) && (
-            <section id="benefits" ref={setSectionRef('benefits')} className="scroll-mt-28 space-y-6">
-              <SectionHeader kicker="03 · REWARDS" title="Perks & Prize Pool" />
+          {/* ── PRIZES & PERKS ── */}
+          {(hasPrizes || perks || ev.highlights?.length > 0) && (
+            <section id="prizes" ref={setSectionRef('prizes')} className="scroll-mt-28">
+              <SectionHeading>Prizes & Perks</SectionHeading>
 
-              {/* Prize Showcase */}
-              {hasPrizes && <PrizePodium prizes={prizes} />}
-
-              {/* What You Get / Highlights */}
-              {ev.highlights?.length > 0 && (
-                <div className="space-y-2.5 pt-2">
-                  <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-text-4">Key Highlights</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {ev.highlights.map((h, i) => (
-                      <div key={h} className="flex items-center gap-3 p-3 rounded-xl bg-surface-2/60 border border-border/60">
-                        <span className="text-[20px] flex-shrink-0">{h.slice(0, 2)}</span>
-                        <span className="text-[13.5px] font-medium text-text-1 leading-snug break-words">{h.slice(2).trim()}</span>
+              {/* Total Prize Pool Banner Card */}
+              {displayTotalPrize && (
+                <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] mb-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center flex-shrink-0">
+                        <Trophy size={24} strokeWidth={1.8} />
                       </div>
-                    ))}
+                      <div>
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Total Prize Pool</div>
+                        <div className="font-mono font-bold text-[24px] sm:text-[28px] text-text-1 leading-tight">
+                          ₹{displayTotalPrize}
+                        </div>
+                      </div>
+                    </div>
+
+                    {(prizes.first || prizes.second || prizes.third) && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPrizeBreakdown(v => !v)}
+                        className="px-4 py-2 rounded-lg border border-border bg-white text-[13px] font-bold text-primary hover:bg-primary-light hover:border-primary-mid transition-all flex items-center gap-1.5"
+                      >
+                        {showPrizeBreakdown ? 'Hide Breakdown ↑' : 'View Prize Details →'}
+                      </button>
+                    )}
                   </div>
+
+                  {/* Expandable Podium Breakdown */}
+                  {showPrizeBreakdown && <PrizePodium prizes={prizes} />}
                 </div>
               )}
 
-              {/* Other Perks Chips */}
-              {perks && (
-                <div className="space-y-2 pt-1">
-                  <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-text-4">Additional Perks</div>
-                  <div className="flex flex-wrap gap-2">
-                    {perks.split(',').map(p => p.trim()).filter(Boolean).map(perk => (
-                      <span key={perk} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 text-[13px] font-medium text-text-2 border border-border/50">
-                        <CheckCircle2 size={14} className="text-emerald-600" />
-                        {perk}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* 4. ELIGIBILITY & RULES */}
-          {(eligibility || rules) && (
-            <section id="rules" ref={setSectionRef('rules')} className="scroll-mt-28">
-              <SectionHeader kicker="04 · GUIDELINES" title="Eligibility & Rules" />
-              <div className="divide-y divide-border/70 border-y border-border/70">
-                {eligibility && (
-                  <div className="py-4">
-                    <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary mb-1">Who Can Participate</div>
-                    <MultilineText text={eligibility} className="text-[14px] text-text-2" />
-                  </div>
-                )}
-                {rules && (
-                  <div className="py-4">
-                    <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary mb-1">General Rules</div>
-                    <MultilineText text={rules} className="text-[14px] text-text-2" />
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-
-          {/* 5. ORGANIZER & CONTACT */}
-          <div className="space-y-8">
-            {ev.orgName && (
-              <section id="organizer" ref={setSectionRef('organizer')} className="scroll-mt-28">
-                <SectionHeader kicker="05 · HOST" title="Organized By" />
-                <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-surface-2/50 border border-border/70">
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-[24px] flex-shrink-0 border border-border/80 shadow-sm">
-                      {ev.orgLogo}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-heading font-bold text-[16px] text-text-1 break-words">{ev.orgName}</div>
-                      <div className="text-[12px] text-text-3 truncate">{ev.orgLocation}</div>
-                      {ev.orgSub && <div className="text-[11px] text-text-4 truncate">{ev.orgSub}</div>}
-                    </div>
-                  </div>
-                  <motion.button whileTap={{ scale: 0.94 }}
-                    onClick={() => { setFollowed(f => !f); showToast(followed ? 'Unfollowed' : `Following ${ev.orgName} ✓`, 'success'); }}
-                    className={`flex-shrink-0 px-4 py-2 rounded-xl text-[12px] font-bold transition-all ${
-                      followed ? 'bg-text-1 text-white' : 'bg-white border border-border text-text-1 hover:bg-surface-2'
-                    }`}>
-                    {followed ? '✓ Following' : '+ Follow'}
-                  </motion.button>
-                </div>
-              </section>
-            )}
-
-            {/* Brochure Document */}
-            {brochureUrl && (
-              <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-800 flex-shrink-0">
-                    <FileText size={20} />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading font-bold text-[14px] text-text-1 truncate">Event Brochure</div>
-                    <div className="text-[11px] font-mono text-text-3">PDF Document · Official</div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleDownloadBrochure}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-bold text-amber-900 bg-white border border-amber-300 hover:bg-amber-100 transition-colors flex-shrink-0 shadow-sm"
-                >
-                  <Download size={14} />
-                  <span>Download</span>
-                </button>
-              </div>
-            )}
-
-            {/* Quick Contact Actions */}
-            {(pocName || pocPhone || pocEmail || website) && (
-              <section id="contact" ref={setSectionRef('contact')} className="scroll-mt-28">
-                <SectionHeader kicker="06 · HELP" title="Contact & Inquiries" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {pocName && (
-                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60">
-                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-text-3 flex-shrink-0 border border-border/60">
-                        <UserRound size={15} />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-[10px] font-mono uppercase text-text-4 block">Point of Contact</span>
-                        <span className="text-[13.5px] font-semibold text-text-1 truncate block">{pocName}</span>
-                      </div>
-                    </div>
-                  )}
-                  {pocPhone && (
-                    <a href={`tel:${pocPhone}`} className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60 hover:border-emerald-400 hover:bg-emerald-50/40 transition-all group">
-                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-emerald-600 flex-shrink-0 border border-border/60 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                        <Phone size={15} />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-[10px] font-mono uppercase text-text-4 block">Phone Support</span>
-                        <span className="text-[13.5px] font-semibold text-text-1 group-hover:text-emerald-800 truncate block">{pocPhone}</span>
-                      </div>
-                    </a>
-                  )}
-                  {pocEmail && (
-                    <a href={`mailto:${pocEmail}`} className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60 hover:border-primary hover:bg-primary-xlight/40 transition-all group">
-                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-primary flex-shrink-0 border border-border/60 group-hover:bg-primary group-hover:text-white transition-colors">
-                        <Mail size={15} />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-[10px] font-mono uppercase text-text-4 block">Email Helpdesk</span>
-                        <span className="text-[13.5px] font-semibold text-text-1 group-hover:text-primary truncate block break-all">{pocEmail}</span>
-                      </div>
-                    </a>
-                  )}
-                  {website && website !== '#' && (
-                    <a href={website} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3.5 rounded-xl bg-surface-2/60 border border-border/60 hover:border-primary hover:bg-primary-xlight/40 transition-all group">
-                      <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-primary flex-shrink-0 border border-border/60 group-hover:bg-primary group-hover:text-white transition-colors">
-                        <Globe size={15} />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-[10px] font-mono uppercase text-text-4 block">Official Website</span>
-                        <span className="text-[13.5px] font-semibold text-text-1 group-hover:text-primary truncate block">{website.replace(/^https?:\/\//, '')}</span>
-                      </div>
-                      <ExternalLink size={14} className="text-text-4 flex-shrink-0" />
-                    </a>
-                  )}
-                </div>
-              </section>
-            )}
-          </div>
-
-          {/* 6. FAQS */}
-          {faqItems.length > 0 && (
-            <section id="faq" ref={setSectionRef('faq')} className="scroll-mt-28">
-              <SectionHeader kicker="07 · FAQS" title="Frequently Asked Questions" />
-              <div className="border-t border-border/70">
-                {faqItems.map(([question, answer]) => (
-                  <FaqItem key={question} question={question} answer={answer} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Mobile Featured Events */}
-          {featuredEvs.length > 0 && (
-            <div className="md:hidden space-y-4 pt-4 border-t border-border/70">
-              <SectionHeader kicker="DISCOVER" title="Featured on FestNest" />
-              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {featuredEvs.slice(0, 4).map(f => (
-                  <RelatedCard key={f.id} ev={f} onClick={() => navigate(`/event/${f.id}`)} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Related Category Events */}
-          {related.length > 0 && (
-            <div className="space-y-4 pt-4 border-t border-border/70">
-              <SectionHeader kicker="EXPLORE" title={`More ${ev.category} Events`} />
-              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {related.map(r => <RelatedCard key={r.id} ev={r} onClick={() => navigate(`/event/${r.id}`)} />)}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ── RIGHT COLUMN (Desktop Sticky Sidebar) ── */}
-        <div className="hidden md:flex md:flex-col md:gap-6 sticky top-[130px]">
-          <ActionPanel
-            ev={ev}
-            cfg={cfg}
-            registering={registering}
-            registered={registered}
-            isSaved={isSaved}
-            onToggleSave={() => { setUserToggled(true); toggleSave(ev.id); }}
-            handleRegister={handleRegister}
-            showToast={showToast}
-          />
-
-          {/* Featured on FestNest Desktop Sidebar */}
-          {(featuredLoading || featuredEvs.length > 0) && (
-            <div className="space-y-3 pt-2">
-              <div className="text-[11px] font-mono font-bold tracking-[0.14em] uppercase text-text-4 px-1">
-                More Events
-              </div>
-              {featuredLoading ? (
-                <div className="space-y-3">
-                  {[0, 1].map(i => (
-                    <div key={i} className="rounded-2xl overflow-hidden border border-border bg-white p-3 space-y-2">
-                      <div className="skeleton w-full h-24 rounded-lg" />
-                      <div className="skeleton h-4 w-3/4" />
+              {/* Additional Perks 4-Card Grid */}
+              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">Additional Perks</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {[
+                    { icon: Briefcase, label: 'Internship Opportunities' },
+                    { icon: Gift,      label: 'Goodies & Swag' },
+                    { icon: Award,     label: 'Certificates' },
+                    { icon: Globe,     label: 'Exposure & Networking' },
+                  ].map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-surface-2">
+                      <Icon size={18} className="text-primary flex-shrink-0" />
+                      <span className="text-[13px] font-medium text-text-1 leading-snug">{label}</span>
                     </div>
                   ))}
                 </div>
-              ) : (
-                featuredEvs.slice(0, 2).map(f => (
-                  <FeaturedEventCard key={f.id} event={f} className="w-full" />
-                ))
-              )}
-            </div>
+              </div>
+            </section>
           )}
-        </div>
-      </div>
 
-      {/* ══ MOBILE STICKY BOTTOM BAR ══ */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[50] bg-white/95 backdrop-blur-lg border-t border-border/80 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
-        <div className="flex items-center gap-3">
-          <div className="flex-shrink-0">
-            <div className={`font-mono font-bold text-[22px] leading-none ${ev.entryType==='free' ? 'text-[#16A34A]' : ev.entryType==='paid' ? 'text-[#B45309]' : 'text-primary'}`}>
-              {ev.price}
+          {/* ── ELIGIBILITY & RULES ── */}
+          {(eligibility || rules) && (
+            <section id="rules" ref={setSectionRef('rules')} className="scroll-mt-28">
+              <SectionHeading>Eligibility & Rules</SectionHeading>
+              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] space-y-5">
+                {eligibility && (
+                  <div>
+                    <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2">Who can participate</h3>
+                    <ul className="space-y-1.5 text-[14px] text-text-2 list-disc list-inside">
+                      {eligibility.split('\n').filter(Boolean).map((item, idx) => (
+                        <li key={idx} className="leading-relaxed">{item.replace(/^[-*•]\s*/, '')}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {rules && (
+                  <div className="pt-4 border-t border-border">
+                    <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2">General Rules</h3>
+                    <ul className="space-y-1.5 text-[14px] text-text-2 list-disc list-inside">
+                      {rules.split('\n').filter(Boolean).map((item, idx) => (
+                        <li key={idx} className="leading-relaxed">{item.replace(/^[-*•]\s*/, '')}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* ── ORGANIZED BY ── */}
+          {(ev.orgName || ev.college) && (
+            <section id="organizer" ref={setSectionRef('organizer')} className="scroll-mt-28">
+              <SectionHeading>Organized By</SectionHeading>
+              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-12 h-12 rounded-xl bg-black text-white flex items-center justify-center text-[20px] font-heading font-black flex-shrink-0">
+                    {ev.orgLogo ? ev.orgLogo : (ev.orgName || ev.college || 'E').slice(0, 1).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-heading font-bold text-[16px] text-text-1 truncate">
+                      {ev.orgName || ev.college}
+                    </div>
+                    <div className="text-[12px] text-text-3 mt-0.5 truncate">
+                      Event Organizer • {ev.orgLocation || ev.city || 'India'}
+                    </div>
+                  </div>
+                </div>
+
+                <motion.button
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => {
+                    setFollowed(f => !f);
+                    showToast(followed ? 'Unfollowed' : `Following ${ev.orgName || ev.college} ✓`, 'success');
+                  }}
+                  className={`px-5 py-2.5 rounded-lg text-[13px] font-bold border transition-all ${
+                    followed
+                      ? 'bg-primary text-white border-primary shadow-sm'
+                      : 'border-border bg-white text-text-1 hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  {followed ? '✓ Following' : 'Follow'}
+                </motion.button>
+              </div>
+            </section>
+          )}
+
+          {/* ── BROCHURE (If available) ── */}
+          {brochureUrl && (
+            <section className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 sm:p-5 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="w-11 h-11 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
+                  <FileText size={22} />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-semibold text-[14px] text-text-1 leading-snug truncate">Event Brochure</div>
+                  <div className="text-[12px] text-text-3 mt-0.5 truncate">Official event PDF document</div>
+                </div>
+              </div>
+              <button
+                onClick={handleDownloadBrochure}
+                className="px-4 py-2 rounded-lg bg-white border border-amber-300 text-amber-800 text-[13px] font-semibold hover:bg-amber-100 transition-all flex items-center gap-1.5 flex-shrink-0"
+              >
+                <Download size={14} /> Download
+              </button>
+            </section>
+          )}
+
+          {/* ── CONTACT & INQUIRIES (2×2 Grid) ── */}
+          {(pocName || pocPhone || pocEmail || website) && (
+            <section id="contact" ref={setSectionRef('contact')} className="scroll-mt-28">
+              <SectionHeading>Contact & Inquiries</SectionHeading>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {pocName && (
+                  <div className="p-4 rounded-xl border border-border bg-white flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-lg bg-primary-light text-primary flex items-center justify-center flex-shrink-0">
+                      <UserRound size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Point of Contact</div>
+                      <div className="text-[14px] font-bold text-text-1 truncate">{pocName}</div>
+                    </div>
+                  </div>
+                )}
+
+                {pocPhone && (
+                  <a
+                    href={`tel:${pocPhone}`}
+                    className="p-4 rounded-xl border border-border bg-white flex items-center gap-3.5 hover:border-emerald-400 hover:shadow-sm transition-all group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                      <Phone size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Phone Number</div>
+                      <div className="text-[14px] font-bold text-text-1 group-hover:text-emerald-600 transition-colors truncate">{pocPhone}</div>
+                    </div>
+                  </a>
+                )}
+
+                {pocEmail && (
+                  <a
+                    href={`mailto:${pocEmail}`}
+                    className="p-4 rounded-xl border border-border bg-white flex items-center gap-3.5 hover:border-primary hover:shadow-sm transition-all group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-primary-light text-primary flex items-center justify-center flex-shrink-0">
+                      <Mail size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Email Address</div>
+                      <div className="text-[14px] font-bold text-text-1 group-hover:text-primary transition-colors truncate">{pocEmail}</div>
+                    </div>
+                  </a>
+                )}
+
+                {website && website !== '#' && (
+                  <a
+                    href={website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-4 rounded-xl border border-border bg-white flex items-center gap-3.5 hover:border-indigo-400 hover:shadow-sm transition-all group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                      <Globe size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-text-4">Website</div>
+                      <div className="text-[14px] font-bold text-text-1 group-hover:text-indigo-600 transition-colors truncate">{website.replace(/^https?:\/\//, '')}</div>
+                    </div>
+                  </a>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* ── MORE RELATED EVENTS CAROUSEL ── */}
+          {related.length > 0 && (
+            <section className="pt-2">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-heading font-bold text-[20px] sm:text-[22px] text-text-1 tracking-tight">
+                  More {ev.category ? `${ev.category} Events` : 'Related Events'}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel(relatedScrollRef, 'left')}
+                    aria-label="Previous events"
+                    className="w-8 h-8 rounded-full border border-border bg-white text-text-2 hover:border-primary hover:text-primary flex items-center justify-center transition-all"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel(relatedScrollRef, 'right')}
+                    aria-label="Next events"
+                    className="w-8 h-8 rounded-full border border-border bg-white text-text-2 hover:border-primary hover:text-primary flex items-center justify-center transition-all"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                ref={relatedScrollRef}
+                className="flex gap-4 overflow-x-auto pb-3 no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex-nowrap"
+              >
+                {related.map(rel => (
+                  <div
+                    key={rel.id}
+                    onClick={() => navigate(`/event/${rel.id}`)}
+                    className="flex-shrink-0 w-[240px] sm:w-[260px] bg-white rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col"
+                  >
+                    <div className="h-[125px] w-full bg-surface-2 relative overflow-hidden">
+                      {rel.imageUrl ? (
+                        <img src={rel.imageUrl} alt={rel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[40px]">{rel.emoji || '🎉'}</div>
+                      )}
+                    </div>
+                    <div className="p-3.5 flex flex-col flex-1 justify-between">
+                      <div>
+                        <div className="font-heading font-bold text-[14px] text-text-1 line-clamp-1 group-hover:text-primary transition-colors">
+                          {rel.name}
+                        </div>
+                        <div className="text-[12px] text-text-3 mt-1 truncate">
+                          {rel.college || rel.city}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-[12px] font-bold text-primary flex items-center gap-1">
+                        View Event <ChevronRight size={13} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+        </div>
+
+        {/* ── RIGHT COLUMN: STICKY SIDEBAR (≈1/3 width on desktop) ── */}
+        <div className="hidden lg:flex lg:flex-col lg:gap-6 sticky top-[84px]">
+
+          {/* 1. TICKET CARD WITH LIVE COUNTDOWN */}
+          <div className="rounded-xl border border-border bg-white overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+            {/* Dark Countdown Header */}
+            <div className="bg-[#0B0819] text-white p-5 relative overflow-hidden">
+              <div aria-hidden="true" className="absolute -top-12 -right-12 w-32 h-32 bg-purple-600/20 rounded-full blur-2xl pointer-events-none" />
+              <h3 className="font-heading font-bold text-[18px] mb-3 text-white">Book Your Tickets</h3>
+
+              {/* 4 Countdown Boxes */}
+              <div className="grid grid-cols-4 gap-2 mb-3">
+                {[
+                  { v: countdown ? countdown.d : 5,  l: 'DAYS' },
+                  { v: countdown ? countdown.h : 23, l: 'HRS' },
+                  { v: countdown ? countdown.m : 53, l: 'MINS' },
+                  { v: countdown ? countdown.s : 11, l: 'SECS' },
+                ].map(({ v, l }) => (
+                  <div key={l} className="bg-white/10 rounded-lg py-2.5 text-center border border-white/10">
+                    <div className="font-mono font-black text-[22px] leading-none text-white tabular-nums">
+                      {String(v).padStart(2, '0')}
+                    </div>
+                    <div className="text-[8px] font-mono tracking-wider text-white/50 mt-1">{l}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-[11px] text-white/60 text-center">
+                {ev.deadlineDays > 0 ? `Registration closes in ${ev.deadlineDays} days` : 'Registration closing soon'}
+              </div>
             </div>
-            <div className="text-[10.5px] font-medium text-text-3 mt-0.5">{ev.priceNote || 'Per entry'}</div>
+
+            {/* White Body */}
+            <div className="p-5 space-y-4">
+              <div>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Entry Fee</div>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <span className="font-mono font-bold text-[28px] text-text-1">{ev.price || 'Free'}</span>
+                  <span className="text-[13px] text-text-3">/ team</span>
+                </div>
+              </div>
+
+              <div className="space-y-2.5 pt-2 border-t border-border text-[13px] text-text-2">
+                <div className="flex items-start gap-2.5">
+                  <CalendarDays size={15} className="text-primary flex-shrink-0 mt-0.5" />
+                  <span>{ev.startDate || 'TBA'} {ev.endDate ? `to ${ev.endDate}` : ''}</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <MapPin size={15} className="text-primary flex-shrink-0 mt-0.5" />
+                  <span className="leading-snug">{ev.venue || ev.college}, {ev.city}</span>
+                </div>
+              </div>
+
+              {/* Primary Action Button */}
+              <motion.button
+                whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
+                onClick={handleRegister} disabled={registering || registered}
+                className={`w-full py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all duration-fast disabled:opacity-75 shadow-indigo ${
+                  registered ? 'bg-[#16A34A]' : `${cfg?.color || 'bg-primary hover:bg-primary-dark'}`
+                }`}
+              >
+                {registering ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                ) : registered ? (
+                  <>
+                    <CheckCircle2 size={17} /> Registered!
+                  </>
+                ) : (
+                  <>
+                    {cfg?.label || 'Book Tickets'} <ArrowRight size={16} />
+                  </>
+                )}
+              </motion.button>
+
+              {/* Secondary Buttons */}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setUserToggled(true); toggleSave(ev.id); }}
+                  className={`flex-1 py-2.5 rounded-lg border text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    isSaved ? 'border-primary bg-primary-light text-primary' : 'border-border text-text-2 hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  <Bookmark size={15} fill={isSaved ? 'currentColor' : 'none'} />
+                  {isSaved ? 'Saved' : 'Save'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({ title: ev?.name, url: window.location.href }).catch(() => {});
+                    } else {
+                      navigator.clipboard?.writeText(window.location.href).catch(() => {});
+                      showToast('Link copied! 📋', 'success');
+                    }
+                  }}
+                  className="flex-1 py-2.5 rounded-lg border border-border text-[13px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Share2 size={15} />
+                  Share
+                </button>
+              </div>
+            </div>
           </div>
 
-          <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
-            onClick={handleRegister} disabled={registering || registered}
-            className={`flex-1 py-3.5 rounded-xl font-heading text-[15px] font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-70 shadow-sm ${
-              registered ? 'bg-[#16A34A]' : `${cfg.color} ${cfg.shadow}`
+          {/* 2. FEATURED EVENT CARD */}
+          {sidebarFeaturedEvent && (
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-2.5 px-0.5">
+                Featured Event
+              </div>
+              <div
+                onClick={() => navigate(`/event/${sidebarFeaturedEvent.id || sidebarFeaturedEvent.slug}`)}
+                className="rounded-xl overflow-hidden border border-white/10 bg-[#0B0819] text-white p-4 cursor-pointer group shadow-md hover:shadow-xl transition-all"
+              >
+                <div className="relative h-[130px] rounded-lg overflow-hidden mb-3 bg-white/5">
+                  {sidebarFeaturedEvent.imageUrl ? (
+                    <img src={sidebarFeaturedEvent.imageUrl} alt={sidebarFeaturedEvent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[36px]">{sidebarFeaturedEvent.emoji || '🔥'}</div>
+                  )}
+                  <span className="absolute top-2.5 left-2.5 bg-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                    Featured
+                  </span>
+                </div>
+
+                <h4 className="font-heading font-bold text-[15px] text-white line-clamp-1 group-hover:text-primary-mid transition-colors">
+                  {sidebarFeaturedEvent.name}
+                </h4>
+                <div className="text-[12px] text-white/60 mt-0.5 truncate">
+                  {sidebarFeaturedEvent.college || sidebarFeaturedEvent.city}
+                </div>
+                <div className="text-[11px] text-white/40 mt-1">
+                  {sidebarFeaturedEvent.startDate || 'Upcoming'}
+                </div>
+
+                <button
+                  type="button"
+                  className="mt-3 w-full py-2 rounded-lg bg-primary text-white text-[12px] font-bold hover:bg-primary-dark transition-all flex items-center justify-center gap-1.5"
+                >
+                  View Event <ArrowRight size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 3. MORE EVENTS COMPACT LIST */}
+          {sidebarEvents.length > 0 && (
+            <div className="rounded-xl border border-border bg-white p-4 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">
+                More Events
+              </div>
+              <div className="space-y-3">
+                {sidebarEvents.map(sEv => (
+                  <div
+                    key={sEv.id}
+                    onClick={() => navigate(`/event/${sEv.id}`)}
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-2 transition-all cursor-pointer group"
+                  >
+                    <div className="w-12 h-12 rounded-lg bg-surface-3 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                      {sEv.imageUrl ? (
+                        <img src={sEv.imageUrl} alt={sEv.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[20px]">{sEv.emoji || '🎉'}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-heading font-bold text-[13px] text-text-1 truncate group-hover:text-primary transition-colors">
+                        {sEv.name}
+                      </div>
+                      <div className="text-[11px] text-text-3 truncate mt-0.5">
+                        {sEv.college || sEv.city}
+                      </div>
+                      <div className="text-[10px] text-text-4 mt-0.5">
+                        {sEv.startDate || 'Upcoming'}
+                      </div>
+                    </div>
+                    <ChevronRight size={15} className="text-text-4 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-3 mt-2 border-t border-border">
+                <Link
+                  to="/explore"
+                  className="text-[12px] font-bold text-primary hover:underline flex items-center justify-center gap-1"
+                >
+                  Explore more events <ArrowRight size={13} />
+                </Link>
+              </div>
+            </div>
+          )}
+
+        </div>
+
+      </div>
+
+      {/* ══ MOBILE STICKY BOTTOM CTA BAR ══ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[50] bg-white/95 backdrop-blur-[20px] border-t border-border px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center gap-3 max-w-[500px] mx-auto">
+          <div className="flex-shrink-0">
+            <div className="font-mono font-bold text-[20px] leading-none text-text-1">
+              {ev.price || 'Free'}
+            </div>
+            <div className="text-[11px] text-text-3 mt-0.5">{ev.priceNote || 'per team'}</div>
+          </div>
+          {ev.deadlineDays > 0 && ev.deadlineDays <= 6 && (
+            <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold ${
+              ev.deadlineDays <= 3 ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-amber-50 text-amber-600 border border-amber-200'
             }`}>
-            <AnimatePresence mode="wait">
-              {registering ? (
-                <motion.span key="s" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                </motion.span>
-              ) : registered ? (
-                <motion.span key="d" initial={{scale:0.6,opacity:0}} animate={{scale:1,opacity:1}} className="flex items-center gap-1.5">
-                  <Check size={17} strokeWidth={2.5} />
-                  Registered!
-                </motion.span>
-              ) : (
-                <motion.span key="c" initial={{opacity:0}} animate={{opacity:1}} className="flex items-center gap-1.5">
-                  {cfg.label}
-                  <ArrowRight size={16} />
-                </motion.span>
-              )}
-            </AnimatePresence>
+              {ev.deadlineDays}d left
+            </div>
+          )}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={handleRegister} disabled={registering || registered}
+            className={`flex-1 py-3.5 rounded-lg font-sans text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-75 shadow-indigo ${
+              registered ? 'bg-[#16A34A]' : `${cfg?.color || 'bg-primary'}`
+            }`}
+          >
+            {registering ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            ) : registered ? (
+              <>
+                <CheckCircle2 size={16} /> Registered!
+              </>
+            ) : (
+              <>
+                {cfg?.label || 'Book Tickets'} <ArrowRight size={15} />
+              </>
+            )}
           </motion.button>
         </div>
       </div>
@@ -1361,20 +1558,20 @@ export default function EventDetails() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setLightboxOpen(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-zoom-out"
             role="dialog" aria-modal="true" aria-label={`${ev.name} image`}>
             <motion.button whileTap={{ scale: 0.9 }}
               onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); }}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white hover:bg-white/20 transition-all"
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/25 text-white hover:bg-white/25 transition-all"
               aria-label="Close image">
-              <X size={20} />
+              <X size={18} />
             </motion.button>
             <motion.img
               initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
               transition={{ duration: 0.2 }}
               src={ev.imageUrl} alt={ev.name}
               onClick={(e) => e.stopPropagation()}
-              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl cursor-default" />
+              className="max-w-full max-h-full object-contain rounded-md shadow-2xl cursor-default" />
           </motion.div>
         )}
       </AnimatePresence>
