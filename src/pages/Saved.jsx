@@ -59,7 +59,7 @@ export default function Saved() {
         </h1>
         <p className="text-[14px] text-text-3">
           {loading ? 'Loading…' : savedList.length > 0
-            ? <><span className="font-mono">{savedList.length}</span> event{savedList.length > 1 ? 's' : ''} saved</>
+            ? `${savedList.length} event${savedList.length > 1 ? 's' : ''} saved`
             : '0 events saved'}
         </p>
       </div>
@@ -116,7 +116,7 @@ export default function Saved() {
                   </div>
                   <div className="p-4 flex-1 min-w-0">
                     <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-1">{ev.category}</div>
-                    <div className="font-heading font-bold text-[15px] text-text-1 tracking-snug mb-1 leading-snug">{ev.name}</div>
+                    <div className="font-sans font-bold text-[15px] text-text-1 tracking-snug mb-1 leading-snug">{ev.name}</div>
                     <div className="text-[12px] text-text-3 mb-3">{ev.college} · {ev.startDate}</div>
                     <div className="flex gap-2">
                       <button onClick={e => { e.stopPropagation(); navigate(`/event/${ev.id}`); }}

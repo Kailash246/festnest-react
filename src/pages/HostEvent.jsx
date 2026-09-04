@@ -36,7 +36,7 @@ const STEPS = [
 ];
 
 /* ─── Reusable field components ─────────────────────── */
-const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-md text-[14px] text-text-1 bg-white placeholder:text-text-4
+const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-md font-sans text-[14px] text-text-1 bg-white placeholder:text-text-4
   focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all duration-150 outline-none`;
 
 function Field({ label, required, hint, error, prefix, children }) {
@@ -1085,7 +1085,7 @@ export default function HostEvent() {
                     <EIcon size={24} strokeWidth={1.8} />
                   </div>); })()}
                   <div className="flex-1 min-w-0">
-                    <div className="font-heading font-bold text-[15px] text-text-1 truncate">{f.title || 'Your Event'}</div>
+                    <div className="font-sans font-bold text-[15px] text-text-1 truncate">{f.title || 'Your Event'}</div>
                     <div className="text-[12px] text-text-3">{f.college || 'Your College'} · {f.cityState || 'Location TBD'}</div>
                     {f.startDate && <div className="text-[12px] text-primary font-medium mt-0.5 flex items-center gap-1"><CalendarDays size={12} strokeWidth={1.8} /> {f.startDate}{f.endDate && ` → ${f.endDate}`}</div>}
                   </div>

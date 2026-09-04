@@ -69,7 +69,7 @@ export default function HubPage() {
                 <Icon size={21} strokeWidth={1.9} className="text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1 font-heading font-bold text-[15px] text-text-1 group-hover:text-primary transition-colors">
+                <div className="flex items-center gap-1 font-sans font-bold text-[15px] text-text-1 group-hover:text-primary transition-colors">
                   {label}
                   <ChevronRight size={15} strokeWidth={2.5} className="text-text-3 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 </div>

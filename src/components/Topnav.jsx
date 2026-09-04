@@ -36,6 +36,7 @@ export default function Topnav() {
         <button
           onClick={() => navigate('/landing')}
           className="flex items-center gap-1.5 flex-shrink-0
+                     font-display font-bold text-[18px] md:text-[20px]
                      font-heading font-bold text-[18px] md:text-[20px]
                      text-primary tracking-[-0.025em]"
           aria-label="FestNest landing page"
@@ -108,6 +109,7 @@ export default function Topnav() {
               aria-label="Profile"
               className="hidden md:flex w-9 h-9 rounded-full bg-primary-light border-2 border-primary
                          items-center justify-center overflow-hidden flex-shrink-0
+                         font-display font-bold text-[12px] text-primary
                          font-sans font-bold text-[12px] text-primary
                          hover:shadow-indigo transition-all duration-150"
             >

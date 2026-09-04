@@ -136,7 +136,7 @@ export default function MobileLanding() {
                 className={`${bg} rounded-lg p-4 flex items-center gap-3 text-left
                              hover:opacity-80 active:scale-[0.97] transition-all`}>
                 <Icon className="w-7 h-7 text-white/80 flex-shrink-0" />
-                <span className="font-heading font-bold text-[14px] text-text-1 leading-tight">{label}</span>
+                <span className="font-sans font-bold text-[14px] text-text-1 leading-tight">{label}</span>
               </button>
             ))}
           </div>

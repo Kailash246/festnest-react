@@ -70,7 +70,7 @@ export function DualList({ leftTitle, leftItems, rightTitle, rightItems }) {
   return (
     <div className="grid sm:grid-cols-2 gap-3 my-4">
       <div className="bg-green-bg border border-green-border rounded-lg p-4">
-        <div className="font-heading font-bold text-[13px] text-[#16A34A] mb-3 flex items-center gap-1.5">
+        <div className="font-sans font-bold text-[13px] text-[#16A34A] mb-3 flex items-center gap-1.5">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg>
           {leftTitle}
         </div>
@@ -84,7 +84,7 @@ export function DualList({ leftTitle, leftItems, rightTitle, rightItems }) {
         </ul>
       </div>
       <div className="bg-red-bg border border-red-border rounded-lg p-4">
-        <div className="font-heading font-bold text-[13px] text-red mb-3 flex items-center gap-1.5">
+        <div className="font-sans font-bold text-[13px] text-red mb-3 flex items-center gap-1.5">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="M18 6 6 18M6 6l12 12"/></svg>
           {rightTitle}
         </div>

@@ -107,7 +107,7 @@ export default function CityPage() {
             Events in {city}
           </h2>
           {!loading && !error && (
-            <span className="text-[10px] font-mono font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{events.length}</span>
+            <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{events.length}</span>
           )}
         </div>
       </div>

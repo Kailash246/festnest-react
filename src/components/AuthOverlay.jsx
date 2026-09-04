@@ -49,6 +49,7 @@ const Divider = ({ text }) => (
     <div className="flex-1 h-px bg-[#E4E4E0]"/>
   </div>
 );
+
 const inputCls = `w-full px-4 py-3 border-[1.5px] border-[#CBCBC6] rounded-md text-[15px] text-[#111110] bg-white placeholder:text-[#AEAEAD] focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all duration-150 outline-none`;
 // Applied on top of inputCls when a field has a validation error.
 const inputErrCls = `border-red-500 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.10)]`;
@@ -716,7 +717,7 @@ export default function AuthOverlay() {
                         <div className={`w-14 h-14 rounded-lg flex items-center justify-center mb-3 mx-auto transition-colors duration-150 ${role===r ? 'bg-primary text-white' : 'bg-primary-light text-primary'}`}>
                           <Icon className="w-7 h-7" strokeWidth={1.5} />
                         </div>
-                        <div className={`font-heading font-bold text-[14px] mb-1 ${role===r?'text-primary':'text-[#111110]'}`}>{title}</div>
+                        <div className={`font-sans font-bold text-[14px] mb-1 ${role===r?'text-primary':'text-[#111110]'}`}>{title}</div>
                         <div className="text-[11px] text-[#8A8A85] leading-relaxed">{sub}</div>
                       </motion.button>
                     ))}

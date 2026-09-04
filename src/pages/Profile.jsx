@@ -505,7 +505,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
                             : 'border-transparent text-text-3 hover:text-text-1'}`}>
               {t.label}
               {counts[t.id] > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold min-w-[18px] text-center
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold min-w-[18px] text-center
                                   ${tab === t.id ? 'bg-primary-light text-primary' : 'bg-surface-3 text-text-3'}`}>
                   {counts[t.id]}
                 </span>
@@ -677,7 +677,7 @@ function AboutOrgSection({ user, events = [] }) {
             <Building2 size={22} strokeWidth={1.8} className="text-[#7C3AED]" />
           </div>
           <div className="min-w-0">
-            <div className="font-heading font-bold text-[16px] text-text-1 truncate">
+            <div className="font-sans font-bold text-[16px] text-text-1 truncate">
               {orgName || <NotProvided />}
             </div>
             <div className="flex items-center gap-2 text-[12px] text-text-3 mt-0.5 flex-wrap">

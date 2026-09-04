@@ -139,7 +139,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1.5">
             <div className="flex-1 min-w-0">
-              <div className="font-heading font-bold text-[14px] text-text-1 leading-snug line-clamp-1">
+              <div className="font-sans font-bold text-[14px] text-text-1 leading-snug line-clamp-1">
                 {ev.eventName}
               </div>
               <div className="text-[11px] text-text-3 mt-0.5 truncate">{ev.college}</div>
@@ -991,7 +991,7 @@ export default function OrganizerDashboard() {
 
           {/* Title */}
           <div className="flex-1 min-w-0">
-            <div className="font-heading font-bold text-[15px] text-text-1 leading-none truncate">
+            <div className="font-sans font-bold text-[15px] text-text-1 leading-none truncate">
               Organizer Hub
             </div>
             <div className="text-[11px] text-text-3 truncate mt-0.5">

@@ -179,7 +179,7 @@ export default function Explore() {
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input value={query} onChange={e => setQuery(e.target.value)}
-            className="flex-1 text-[14px] text-text-1 bg-transparent outline-none placeholder:text-text-3"
+            className="flex-1 font-sans text-[14px] text-text-1 bg-transparent outline-none placeholder:text-text-3"
             placeholder="Search events, colleges, cities…" aria-label="Search" />
           {query && (
             <button onClick={() => setQuery('')} className="text-text-3 hover:text-text-1 transition-colors">
@@ -192,7 +192,7 @@ export default function Explore() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
             Filter
             {activeSheetCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold font-mono rounded-full flex items-center justify-center">{activeSheetCount}</span>
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold rounded-full flex items-center justify-center">{activeSheetCount}</span>
             )}
           </button>
         </div>
@@ -225,7 +225,7 @@ export default function Explore() {
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${color}`}>
                 <Icon className="w-6 h-6" strokeWidth={1.75} />
               </div>
-              <div className={`font-heading font-bold text-[14px] md:text-[15px] ${activeCat === value ? 'text-primary' : 'text-text-1'} transition-colors`}>{name}</div>
+              <div className={`font-sans font-bold text-[14px] md:text-[15px] ${activeCat === value ? 'text-primary' : 'text-text-1'} transition-colors`}>{name}</div>
               <div className="text-[12px] text-text-3">
                 {loading ? '…' : `${count} event${count !== 1 ? 's' : ''}`}
               </div>
@@ -239,7 +239,7 @@ export default function Explore() {
         <div className="flex items-center gap-2">
           <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">{title}</h2>
           {!loading && (
-            <span className="text-[10px] font-bold font-mono bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{filtered.length}</span>
+            <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{filtered.length}</span>
           )}
         </div>
         <div className="flex items-center gap-3">

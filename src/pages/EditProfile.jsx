@@ -332,7 +332,7 @@ export default function EditProfile() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[11px] font-bold uppercase tracking-wider text-text-3">Account type</p>
-            <p className="font-heading font-bold text-[14px] text-text-1">
+            <p className="font-sans font-bold text-[14px] text-text-1">
               {role === 'organizer' ? 'Event Organizer' : 'Student'}
             </p>
           </div>
@@ -492,7 +492,7 @@ export default function EditProfile() {
             className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-border px-4 py-3
                        shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
             <button onClick={save} disabled={saving}
-              className="w-full bg-primary text-white font-bold text-[15px] py-3 rounded-lg
+              className="w-full bg-primary text-white font-sans font-bold text-[15px] py-3 rounded-lg
                          hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-70">
               {saving
                 ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> Saving…</>

@@ -402,7 +402,7 @@ function StatsRow({ loading, stats }) {
               <div className="flex justify-center mb-2">
                 <Icon className="w-8 h-8 text-text-2" />
               </div>
-              <div className="font-mono font-bold text-[40px] text-text-1 leading-none tracking-tight">
+              <div className="font-heading font-bold text-[40px] text-text-1 leading-none tracking-tight">
                 {value}
               </div>
               <div className="text-[14px] text-text-3 font-medium mt-2">{label}</div>

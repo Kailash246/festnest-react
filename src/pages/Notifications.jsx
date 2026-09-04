@@ -228,7 +228,7 @@ export default function Notifications() {
                 Activity
               </h1>
               {unreadNotifCount > 0 && (
-                <span className="bg-primary text-white text-[11px] font-bold font-mono px-2 py-0.5 rounded-md leading-none">
+                <span className="bg-primary text-white text-[11px] font-bold px-2 py-0.5 rounded-md leading-none">
                   {unreadNotifCount}
                 </span>
               )}

@@ -332,6 +332,7 @@ export default function EventCard({ event, onDelete, featured }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
+            fontFamily: "var(--f-sans)",
             fontSize: 15, fontWeight: 700,
             color: isFeaturedCard ? '#78350f' : '#111110',
             letterSpacing: '-0.02em', lineHeight: 1.25,
@@ -379,12 +380,14 @@ export default function EventCard({ event, onDelete, featured }) {
               <CalIcon />
             </span>
             <span style={{ color: isFeaturedCard ? '#b45309' : '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
+            <span style={{ color: isFeaturedCard ? '#b45309' : '#4B4B47', fontWeight: 500, fontFamily: 'var(--f-mono)' }}>{event.startDate}</span>
             {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
               <>
                 <span style={{ color: isFeaturedCard ? 'rgba(180,83,9,0.40)' : '#CBCBC6' }}>·</span>
                 <span style={{
                   color: event.deadlineDays <= 2 ? '#DC2626' : '#B45309',
                   fontWeight: 700,
+                  fontFamily: 'var(--f-mono)',
                 }}>
                   {event.deadlineDays === 1 ? 'Last day!' : `${event.deadlineDays}d left`}
                 </span>
@@ -473,6 +476,7 @@ export default function EventCard({ event, onDelete, featured }) {
                 </div>
                 <h3 style={{
                   fontFamily: "'Syne', sans-serif",
+                  fontFamily: "var(--f-heading)",
                   fontSize: 18, fontWeight: 700, color: '#111110',
                   textAlign: 'center', marginBottom: 10,
                 }}>

@@ -297,7 +297,8 @@ export default function Home() {
           <span className="w-1.5 h-1.5 bg-[#16A34A] rounded-full animate-pulse-dot" aria-hidden />
           Good afternoon, Explorer
         </div>
-        <h1 className="font-heading font-bold text-[32px] md:text-[40px] text-text-1 leading-tight tracking-tight mb-0 md:mb-4">
+        <h1 className="font-display font-bold text-[32px] md:text-[40px] text-text-1 leading-tight tracking-tight mb-0 md:mb-4">
+        <h1 className="font-sans font-bold text-[32px] md:text-[40px] text-text-1 leading-tight tracking-tight mb-0 md:mb-4">
           Find your next<br /><em className="text-primary not-italic">big moment</em>
         </h1>
 
@@ -316,7 +317,8 @@ export default function Home() {
             <input ref={searchRef} value={searchVal} onChange={e => setSearchVal(e.target.value)}
               onFocus={() => setShowSuggestions(true)} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
               onKeyDown={e => { if (e.key === 'Escape') { setSearchVal(''); searchRef.current?.blur(); } }}
-              className="flex-1 text-[14px] text-[#111110] bg-transparent outline-none placeholder:text-[#8A8A85] min-w-0"
+              className="flex-1 font-body text-[14px] text-[#111110] bg-transparent outline-none placeholder:text-[#8A8A85] min-w-0"
+              className="flex-1 font-sans text-[14px] text-[#111110] bg-transparent outline-none placeholder:text-[#8A8A85] min-w-0"
               placeholder="Events, colleges, cities…" aria-label="Search events" autoComplete="off" />
             <AnimatePresence>
               {searchVal && (
@@ -333,7 +335,8 @@ export default function Home() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
               Filter
               {activeSheetCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold font-mono rounded-full flex items-center justify-center">{activeSheetCount}</span>
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold rounded-full flex items-center justify-center">{activeSheetCount}</span>
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-mono font-bold rounded-full flex items-center justify-center">{activeSheetCount}</span>
               )}
             </button>
           </div>
@@ -376,6 +379,7 @@ export default function Home() {
       {/* ── Trending Now ── */}
       <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
         <div className="flex items-center gap-2">
+          <h2 className="font-display font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Flame size={16} strokeWidth={1.8} className="text-red" /> Trending Now</h2>
           <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Flame size={16} strokeWidth={1.8} className="text-red" /> Trending Now</h2>
           <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">Live</span>
         </div>
@@ -398,14 +402,17 @@ export default function Home() {
                 {ev.imageUrl
                   ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" />
                   : <span aria-hidden>{ev.emoji}</span>}
-                <span className="absolute top-2 left-2 text-[10px] font-bold font-mono bg-black/55 text-white px-[7px] py-[2px] rounded-md tracking-wide z-[1]">#{ev.trendRank}</span>
+                <span className="absolute top-2 left-2 text-[10px] font-bold bg-black/55 text-white px-[7px] py-[2px] rounded-md tracking-wide z-[1]">#{ev.trendRank}</span>
+                <span className="absolute top-2 left-2 text-[10px] font-mono font-bold bg-black/55 text-white px-[7px] py-[2px] rounded-md tracking-wide z-[1]">#{ev.trendRank}</span>
               </div>
               <div className="p-3">
                 <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-[3px]">{ev.category}</div>
-                <div className="font-heading font-bold text-[13px] md:text-[14px] text-text-1 leading-snug tracking-snug mb-[5px]">{ev.name}</div>
+                <div className="font-display font-bold text-[13px] md:text-[14px] text-text-1 leading-snug tracking-snug mb-[5px]">{ev.name}</div>
+                <div className="font-sans font-bold text-[13px] md:text-[14px] text-text-1 leading-snug tracking-snug mb-[5px]">{ev.name}</div>
                 <div className="flex items-center gap-1 text-[11px] text-text-3 mb-2"><PinIcon /> {ev.college}</div>
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                   <div className="flex items-center gap-[3px] text-[11px] text-text-3"><FireIcon /> {ev.trendViews}</div>
+                  <div className="flex items-center gap-[3px] text-[11px] font-mono text-text-3"><FireIcon /> {ev.trendViews}</div>
                   <span className="text-[10px] font-bold text-primary">{ev.trendExtra}</span>
                 </div>
               </div>
@@ -416,6 +423,7 @@ export default function Home() {
 
       {/* ── Ending Soon ── */}
       <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
+        <h2 className="font-display font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Timer size={16} strokeWidth={1.8} className="text-amber" /> Ending Soon</h2>
         <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Timer size={16} strokeWidth={1.8} className="text-amber" /> Ending Soon</h2>
         <button onClick={() => navigate('/explore')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">See all</button>
       </div>
@@ -437,10 +445,12 @@ export default function Home() {
               </div>
               <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
                 <div className="flex items-center gap-[5px] text-[10px] font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-md w-fit mb-[5px] tracking-normal">
+                <div className="flex items-center gap-[5px] text-[10px] font-mono font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-md w-fit mb-[5px] tracking-normal">
                   <span className="w-[5px] h-[5px] bg-red rounded-full animate-pulse-fast flex-shrink-0" />
                   {ev.endingSoonDays === 0 ? 'Ends today' : `${ev.endingSoonDays} ${ev.endingSoonDays === 1 ? 'day' : 'days'} left`}
                 </div>
-                <div className="font-heading font-bold text-[12px] text-text-1 leading-snug mb-[3px] truncate">{ev.name}</div>
+                <div className="font-display font-bold text-[12px] text-text-1 leading-snug mb-[3px] truncate">{ev.name}</div>
+                <div className="font-sans font-bold text-[12px] text-text-1 leading-snug mb-[3px] truncate">{ev.name}</div>
                 <div className="text-[11px] text-text-3">{ev.college} · {ev.city}</div>
               </div>
             </motion.div>
@@ -461,16 +471,20 @@ export default function Home() {
       {/* ── For You feed ── */}
       <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
         <div className="flex items-center gap-2">
+          <h2 className="font-display font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">For You</h2>
+          {!feedLoading && <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{displayedEvents.length}</span>}
           <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">For You</h2>
-          {!feedLoading && <span className="text-[10px] font-bold font-mono bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{displayedEvents.length}</span>}
+          {!feedLoading && <span className="text-[10px] font-mono font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{displayedEvents.length}</span>}
           {totalActiveFilters > 0 && <span className="text-[11px] text-[#8A8A85]">· filtered</span>}
         </div>
         <SortDropdown value={sheetFilters.sort} onChange={v => setSheetFilters(f => ({ ...f, sort: v }))} />
       </div>
 
+      {/* Error state */}
       {error && !feedLoading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center px-4 py-16 text-center">
           <AlertTriangle size={56} strokeWidth={1.5} className="text-amber mb-4" />
+          <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="font-heading font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">{error}</div>
           <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark transition-all">Retry</button>
@@ -488,8 +502,10 @@ export default function Home() {
       {!feedLoading && !error && displayedEvents.length === 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center px-4 py-20 text-center">
           <Search size={56} strokeWidth={1.5} className="text-text-3 mb-4" />
-          <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No events found</div>
+          <div className="font-display font-bold text-[18px] text-text-1 mb-2">No events found</div>
           <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">Try adjusting your search or removing some filters.</div>
+          <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No events found</div>
+          <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">{error || 'Try adjusting your search or removing some filters.'}</div>
           <button onClick={clearAll} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-indigo transition-all">Clear All Filters</button>
         </motion.div>
       )}

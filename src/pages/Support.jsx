@@ -448,18 +448,22 @@ export default function Support() {
                   {[
                     { day: 'Mon – Fri', hours: '9:00 AM – 9:00 PM', active: true },
                     { day: 'Saturday',  hours: '10:00 AM – 6:00 PM', active: true },
-                    { day: 'Sunday',    hours: '12:00 PM – 5:00 PM', active: false },
-                    { day: 'Emergency', hours: '24/7 on WhatsApp',   active: true },
+                    { day: 'Sunday',    hours: 'Limited support', active: false },
+                    { day: 'Holidays',  hours: 'Emergency only', active: false },
                   ].map(({ day, hours, active }) => (
-                    <div key={day} className="flex items-start justify-between gap-2">
+                    <div key={day} className="flex items-start gap-2.5">
+                      <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0
+                                        ${active ? 'bg-[#16A34A]' : 'bg-border-strong'}`} />
                       <div>
                         <div className="text-[13px] font-semibold text-text-1">{day}</div>
-                        <div className="text-[12px] text-text-3 font-mono">{hours}</div>
+                        <div className={`text-[12px] ${active ? 'text-text-3' : 'text-text-4'}`}>{hours}</div>
                       </div>
-                      <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0
-                                        ${active ? 'bg-[#16A34A]' : 'bg-text-4'}`} />
                     </div>
                   ))}
+                </div>
+                <div className="mt-4 pt-4 border-t border-border text-[12px] text-text-4 leading-relaxed">
+                  All times are Indian Standard Time (IST, UTC +5:30).
+                  For urgent issues during off-hours, email support@festnest.in — we monitor critical alerts 24/7.
                 </div>
               </div>
 
@@ -509,7 +513,7 @@ export default function Support() {
                   value={faqQuery}
                   onChange={e => setFaqQuery(e.target.value)}
                   placeholder="Search questions…"
-                  className="flex-1 text-[14px] text-text-1 bg-transparent outline-none
+                  className="flex-1 font-sans text-[14px] text-text-1 bg-transparent outline-none
                              placeholder:text-text-3"
                 />
                 {faqQuery && (
@@ -688,7 +692,7 @@ export default function Support() {
                           placeholder="Arjun Kumar"
                           autoComplete="name"
                           className="w-full px-4 py-[11px] border-[1.5px] border-border-strong rounded-xl
-                                     text-[14px] text-text-1 bg-surface outline-none
+                                     font-sans text-[14px] text-text-1 bg-surface outline-none
                                      placeholder:text-text-4
                                      focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)]
                                      transition-all"
@@ -705,7 +709,7 @@ export default function Support() {
                           placeholder="you@college.edu"
                           autoComplete="email"
                           className="w-full px-4 py-[11px] border-[1.5px] border-border-strong rounded-xl
-                                     text-[14px] text-text-1 bg-surface outline-none
+                                     font-sans text-[14px] text-text-1 bg-surface outline-none
                                      placeholder:text-text-4
                                      focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)]
                                      transition-all"
@@ -752,7 +756,7 @@ export default function Support() {
                         placeholder="Describe your issue, question, or feedback in detail…"
                         rows={5}
                         className="w-full px-4 py-3.5 border-[1.5px] border-border-strong rounded-xl
-                                   text-[14px] text-text-1 bg-surface outline-none resize-y
+                                   font-sans text-[14px] text-text-1 bg-surface outline-none resize-y
                                    placeholder:text-text-4
                                    focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)]
                                    transition-all min-h-[120px]"
@@ -764,7 +768,7 @@ export default function Support() {
                       whileHover={{ scale: 1.005 }} whileTap={{ scale: 0.98 }}
                       onClick={handleSubmit}
                       disabled={submitting}
-                      className="w-full py-4 bg-primary text-white rounded-xl text-[15px]
+                      className="w-full py-4 bg-primary text-white rounded-xl font-sans text-[15px]
                                  font-bold flex items-center justify-center gap-2.5
                                  hover:bg-primary-dark hover:shadow-indigo
                                  transition-all disabled:opacity-60"
@@ -855,7 +859,7 @@ export default function Support() {
                                         ? 'bg-primary text-white border-primary'
                                         : 'bg-white text-text-2 border-border hover:border-primary/40 hover:text-primary'}`}>
                           {f.label}
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold
                                             ${ticketFilter === f.id ? 'bg-white/20 text-white' : 'bg-surface-3 text-text-3'}`}>
                             {counts[f.id]}
                           </span>
