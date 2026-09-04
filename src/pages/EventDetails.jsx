@@ -1863,14 +1863,12 @@ export default function EventDetails() {
                   </span>
                 </div>
 
-                <h4 className="font-heading font-bold text-[15px] text-white line-clamp-1 group-hover:text-primary-mid transition-colors">
                 <h4 className="font-sans font-bold text-[15px] text-white line-clamp-1 group-hover:text-primary-mid transition-colors">
                   {sidebarFeaturedEvent.name}
                 </h4>
                 <div className="text-[12px] text-white/60 mt-0.5 truncate">
                   {sidebarFeaturedEvent.college || sidebarFeaturedEvent.city}
                 </div>
-                <div className="text-[11px] text-white/40 mt-1">
                 <div className="text-[11px] font-mono text-white/40 mt-1">
                   {sidebarFeaturedEvent.startDate || 'Upcoming'}
                 </div>
@@ -1906,14 +1904,12 @@ export default function EventDetails() {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-heading font-bold text-[13px] text-text-1 truncate group-hover:text-primary transition-colors">
                       <div className="font-sans font-bold text-[13px] text-text-1 truncate group-hover:text-primary transition-colors">
                         {sEv.name}
                       </div>
                       <div className="text-[11px] text-text-3 truncate mt-0.5">
                         {sEv.college || sEv.city}
                       </div>
-                      <div className="text-[10px] text-text-4 mt-0.5">
                       <div className="text-[10px] font-mono text-text-4 mt-0.5">
                         {sEv.startDate || 'Upcoming'}
                       </div>

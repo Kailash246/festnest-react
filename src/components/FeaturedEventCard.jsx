@@ -47,7 +47,6 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
           {ev.category}
         </div>
         <div
-          className="font-display font-bold text-[15px] text-text-1 leading-snug tracking-tight"
           className="font-sans font-bold text-[15px] text-text-1 leading-snug tracking-tight"
           style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
         >
@@ -71,7 +70,6 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
                 <line x1="8" y1="2" x2="8" y2="6"/>
                 <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
-              <span>{ev.startDate}</span>
               <span className="font-mono">{ev.startDate}</span>
             </div>
           )}

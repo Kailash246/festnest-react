@@ -41,10 +41,8 @@ export function FilterSheet({ open, onClose, filters, setFilters, onApply, activ
               <div className="w-10 h-1 bg-[#E4E4E0] rounded-full" />
             </div>
             <div className="flex items-center justify-between px-5 py-3 border-b border-[#E4E4E0] flex-shrink-0">
-              <h3 className="font-display font-bold text-[18px] text-[#111110]">
               <h3 className="font-heading font-bold text-[18px] text-[#111110]">
                 Filters
-                {activeCount > 0 && <span className="ml-2 text-[12px] font-bold bg-primary text-white px-2 py-0.5 rounded-md">{activeCount}</span>}
                 {activeCount > 0 && <span className="ml-2 text-[12px] font-mono font-bold bg-primary text-white px-2 py-0.5 rounded-md">{activeCount}</span>}
               </h3>
               <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F1F0ED] text-[#8A8A85] hover:bg-[#E4E4E0] transition-colors">

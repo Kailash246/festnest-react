@@ -331,7 +331,6 @@ export default function EventCard({ event, onDelete, featured }) {
         {/* 1. Event name + prize badge on same row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
           <h3 style={{
-            fontFamily: "'Syne', sans-serif",
             fontFamily: "var(--f-sans)",
             fontSize: 15, fontWeight: 700,
             color: isFeaturedCard ? '#78350f' : '#111110',
@@ -379,7 +378,6 @@ export default function EventCard({ event, onDelete, featured }) {
             <span style={{ color: isFeaturedCard ? '#f59e0b' : 'inherit', display: 'flex', flexShrink: 0 }}>
               <CalIcon />
             </span>
-            <span style={{ color: isFeaturedCard ? '#b45309' : '#4B4B47', fontWeight: 500 }}>{event.startDate}</span>
             <span style={{ color: isFeaturedCard ? '#b45309' : '#4B4B47', fontWeight: 500, fontFamily: 'var(--f-mono)' }}>{event.startDate}</span>
             {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
               <>
@@ -475,7 +473,6 @@ export default function EventCard({ event, onDelete, featured }) {
                   <Trash2 size={42} strokeWidth={1.5} style={{ color: '#DC2626' }} />
                 </div>
                 <h3 style={{
-                  fontFamily: "'Syne', sans-serif",
                   fontFamily: "var(--f-heading)",
                   fontSize: 18, fontWeight: 700, color: '#111110',
                   textAlign: 'center', marginBottom: 10,

@@ -76,7 +76,6 @@ export default function Leaderboard() {
           <div key={rank} className="flex flex-col items-center gap-2">
             {crown && <div className="-mb-1"><Crown size={20} strokeWidth={1.8} className="text-[#D97706]" /></div>}
             <div className="rounded-full border-[3px] flex items-center justify-center
-                            font-display font-bold text-white"
                             font-sans font-bold text-white"
               style={{ width: av, height: av, background: color, fontSize: av > 50 ? 18 : 13,
                        borderColor: color }}>
@@ -84,8 +83,6 @@ export default function Leaderboard() {
             </div>
             <div className="text-[12px] font-semibold text-text-1 text-center max-w-[70px] truncate">{name}</div>
             <div className="text-[10px] text-text-3 text-center max-w-[70px] truncate">{college}</div>
-            <div className="font-display font-bold text-[13px] text-primary">{pts} pts</div>
-            <div className="rounded-t-md flex items-center justify-center font-display font-bold text-[18px] text-white"
             <div className="font-mono font-bold text-[13px] text-primary">{pts} pts</div>
             <div className="rounded-t-md flex items-center justify-center font-mono font-bold text-[18px] text-white"
               style={{ width: blockW, height: blockH, background: color }}>
@@ -97,7 +94,6 @@ export default function Leaderboard() {
 
       {/* Full list */}
       <div className="px-4 md:px-12 pt-5 pb-8 md:max-w-[1000px] md:mx-auto">
-        <div className="font-display font-bold text-[14px] text-text-1 mb-3">Full Rankings</div>
         <div className="font-heading font-bold text-[14px] text-text-1 mb-3">Full Rankings</div>
         <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-1">
           {ROWS.map(({ rank, initials, color, name, college, pts, badges, isMe }) => (
@@ -120,7 +116,6 @@ export default function Leaderboard() {
                 <div className="text-[12px] text-text-3">{college}</div>
               </div>
               <div className="text-right">
-                <div className="font-display font-bold text-[15px] md:text-[16px] text-primary">{pts}</div>
                 <div className="font-mono font-bold text-[15px] md:text-[16px] text-primary">{pts}</div>
                 <div className="flex justify-end gap-[3px] mt-1">
                   {badges.map((BadgeIcon, i) => <BadgeIcon key={i} size={13} strokeWidth={1.8} className="text-text-3" />)}
@@ -140,13 +135,11 @@ export default function Leaderboard() {
 
         {/* How points work */}
         <div className="mt-5 bg-surface-2 rounded-xl p-5">
-          <div className="font-display font-bold text-[14px] text-text-1 mb-3">How points are earned</div>
           <div className="font-heading font-bold text-[14px] text-text-1 mb-3">How points are earned</div>
           <div className="flex flex-col gap-2">
             {PTS_RULES.map(([RuleIcon, label, pts]) => (
               <div key={label} className="flex items-center justify-between text-[13px]">
                 <span className="text-text-2 flex items-center gap-2"><RuleIcon size={13} strokeWidth={1.8} className="text-text-3 flex-shrink-0" />{label}</span>
-                <span className="font-semibold text-primary">{pts}</span>
                 <span className="font-mono font-semibold text-primary">{pts}</span>
               </div>
             ))}
