@@ -43,7 +43,7 @@ function CollegeCard({ name, events, prize, when, highlight, color = 'indigo' })
   };
   return (
     <div className={`rounded-xl border p-5 ${colors[color] || colors.indigo}`}>
-      <p className="font-bold text-gray-900 text-base font-syne mb-1">{name}</p>
+      <p className="font-bold text-gray-900 text-base font-display mb-1">{name}</p>
       {highlight && (
         <p className="text-xs font-semibold text-indigo-600 mb-3">{highlight}</p>
       )}

@@ -24,7 +24,7 @@ export default function BlogHub() {
             <span className="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-md mb-4 uppercase tracking-widest">
               FestNest Blog
             </span>
-            <h1 className="font-syne text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">
               Your Playbook for College<br className="hidden sm:block" /> Competition Success
             </h1>
             <p className="text-indigo-200 text-base sm:text-lg max-w-2xl mx-auto">
@@ -49,7 +49,7 @@ export default function BlogHub() {
                   </span>
                   <span className="text-xs text-gray-400">Featured</span>
                 </div>
-                <h2 className="font-syne text-xl sm:text-2xl font-bold text-gray-900 mb-3 group-hover:text-indigo-700 transition-colors leading-tight">
+                <h2 className="font-display text-xl sm:text-2xl font-bold text-gray-900 mb-3 group-hover:text-indigo-700 transition-colors leading-tight">
                   {BLOG_POSTS[0].title}
                 </h2>
                 <p className="text-gray-500 text-sm leading-relaxed mb-5 max-w-2xl">
@@ -68,7 +68,7 @@ export default function BlogHub() {
           )}
 
           {/* ── All posts grid ──────────────────────────────────────── */}
-          <h2 className="font-syne text-lg font-bold text-gray-800 mb-6">All Articles</h2>
+          <h2 className="font-display text-lg font-bold text-gray-800 mb-6">All Articles</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {BLOG_POSTS.slice(1).map((post) => (
               <Link
@@ -79,7 +79,7 @@ export default function BlogHub() {
                 <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md self-start mb-4">
                   {post.category}
                 </span>
-                <h3 className="font-syne font-bold text-gray-900 text-base mb-2 leading-snug group-hover:text-indigo-700 transition-colors flex-1">
+                <h3 className="font-display font-bold text-gray-900 text-base mb-2 leading-snug group-hover:text-indigo-700 transition-colors flex-1">
                   {post.title}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-3">
@@ -98,7 +98,7 @@ export default function BlogHub() {
           {/* ── Bottom CTA ─────────────────────────────────────────── */}
           <div className="mt-16 rounded-xl bg-gradient-to-r from-[#4F46E5] to-indigo-500 p-8 text-center text-white">
             <Zap size={28} className="text-yellow-300 mx-auto mb-3" />
-            <h2 className="font-syne text-xl font-bold mb-2">
+            <h2 className="font-display text-xl font-bold mb-2">
               Ready to compete? Find events on FestNest.
             </h2>
             <p className="text-indigo-200 text-sm mb-5">

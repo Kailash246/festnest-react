@@ -83,7 +83,7 @@ In your global CSS (index.css or App.css), add:
 }
 
 .prose-custom h2 {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
   color: #111827;

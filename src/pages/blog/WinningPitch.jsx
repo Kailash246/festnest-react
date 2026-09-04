@@ -141,7 +141,7 @@ export default function WinningPitch() {
             ].map((item) => (
               <div key={item.num} className="bg-gray-50 rounded-lg p-5 border border-gray-100">
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl font-bold text-gray-200 font-syne leading-none shrink-0">{item.num}</span>
+                  <span className="text-3xl font-bold text-gray-200 font-display leading-none shrink-0">{item.num}</span>
                   <div className="flex-1">
                     <p className="font-bold text-gray-900 text-sm mb-2">{item.title}</p>
                     <p className="text-xs text-green-700 mb-1"><strong>Must have:</strong> {item.must}</p>

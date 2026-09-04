@@ -64,7 +64,7 @@ export function FindEventsCTA({ category, label }) {
           Find Events on FestNest
         </span>
       </div>
-      <p className="text-lg font-bold font-syne mb-1">
+      <p className="text-lg font-bold font-display mb-1">
         {label || `Browse ${category || 'College'} Events Near You`}
       </p>
       <p className="text-sm text-indigo-200 mb-4">
@@ -85,8 +85,8 @@ export function PostSection({ id, title, level = 2, children }) {
   const Tag = `h${level}`;
   const sizeClass =
     level === 2
-      ? 'text-xl font-bold text-gray-900 mt-10 mb-4 font-syne'
-      : 'text-lg font-semibold text-gray-800 mt-6 mb-3 font-syne';
+      ? 'text-xl font-bold text-gray-900 mt-10 mb-4 font-display'
+      : 'text-lg font-semibold text-gray-800 mt-6 mb-3 font-display';
   return (
     <section id={id}>
       <Tag className={sizeClass}>{title}</Tag>
@@ -149,7 +149,7 @@ export default function BlogLayout({ meta, sections = [], children, relatedSlugs
           </span>
 
           {/* Title */}
-          <h1 className="font-syne text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">
             {meta.title}
           </h1>
 
@@ -289,7 +289,7 @@ export default function BlogLayout({ meta, sections = [], children, relatedSlugs
         {/* ── Related posts ─────────────────────────────────────────── */}
         {relatedPosts.length > 0 && (
           <div className="mt-16 pt-10 border-t border-gray-200">
-            <h2 className="font-syne text-xl font-bold text-gray-900 mb-6">Related Articles</h2>
+            <h2 className="font-display text-xl font-bold text-gray-900 mb-6">Related Articles</h2>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
               {relatedPosts.map((post) => (
                 <Link
@@ -300,7 +300,7 @@ export default function BlogLayout({ meta, sections = [], children, relatedSlugs
                   <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
                     {post.category}
                   </span>
-                  <h3 className="font-syne font-bold text-gray-900 text-sm mt-3 mb-2 leading-snug group-hover:text-indigo-700 transition-colors">
+                  <h3 className="font-display font-bold text-gray-900 text-sm mt-3 mb-2 leading-snug group-hover:text-indigo-700 transition-colors">
                     {post.title}
                   </h3>
                   <p className="text-xs text-gray-400 flex items-center gap-1">

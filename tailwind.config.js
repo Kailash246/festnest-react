@@ -17,9 +17,12 @@ export default {
 
       /* ── Typography ── */
       fontFamily: {
-        sans:    ['Geist', 'sans-serif'],
+        sans:    ['Satoshi', 'sans-serif'],
+        body:    ['Satoshi', 'sans-serif'],
+        display: ['Clash Display', 'sans-serif'],
+        heading: ['Clash Display', 'sans-serif'],
+        syne:    ['Clash Display', 'sans-serif'],
         mono:    ['Geist Mono', 'monospace'],
-        heading: ['Space Grotesk', 'sans-serif'],
       },
       fontSize: {
         'xxs':  ['11px',  { lineHeight: '1.5' }],

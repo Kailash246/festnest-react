@@ -201,7 +201,7 @@ export default function HowToWinHackathon() {
               { num: '06', title: 'What\'s Next (15 sec)', desc: 'One next step if you had more time or won the prize money. Shows judges you\'ve thought beyond the hackathon.' },
             ].map((item) => (
               <div key={item.num} className="flex gap-4">
-                <span className="text-2xl font-bold text-gray-200 font-syne shrink-0 w-8">{item.num}</span>
+                <span className="text-2xl font-bold text-gray-200 font-display shrink-0 w-8">{item.num}</span>
                 <div>
                   <p className="font-semibold text-gray-800 text-sm mb-1">{item.title}</p>
                   <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>

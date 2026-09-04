@@ -48,7 +48,7 @@ function EventCard({ name, college, category, when, why, categoryColor = 'indigo
     <div className="bg-white rounded-xl border border-gray-100 p-5 hover:border-indigo-200 transition-colors">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="font-bold text-gray-900 text-sm font-syne">{name}</p>
+          <p className="font-bold text-gray-900 text-sm font-display">{name}</p>
           <p className="text-xs text-gray-400 mt-0.5">{college}</p>
         </div>
         <span className={`text-xs font-semibold px-2 py-0.5 rounded-md shrink-0 ml-2 ${colors[categoryColor] || colors.indigo}`}>
@@ -90,7 +90,7 @@ export default function BestCollegeEvents() {
               { stat: '4.3 Cr', label: 'College students in India who could be your future co-founders, clients, or collaborators' },
             ].map((item) => (
               <div key={item.stat} className="bg-indigo-50 rounded-xl p-4 text-center border border-indigo-100">
-                <p className="text-2xl font-bold text-indigo-700 font-syne mb-1">{item.stat}</p>
+                <p className="text-2xl font-bold text-indigo-700 font-display mb-1">{item.stat}</p>
                 <p className="text-xs text-indigo-600 leading-relaxed">{item.label}</p>
               </div>
             ))}
@@ -343,7 +343,7 @@ export default function BestCollegeEvents() {
               },
             ].map((item) => (
               <div key={item.name} className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-100">
-                <p className="font-bold text-gray-900 text-sm font-syne mb-1">{item.name}</p>
+                <p className="font-bold text-gray-900 text-sm font-display mb-1">{item.name}</p>
                 <p className="text-xs font-semibold text-amber-700 mb-2">{item.highlight}</p>
                 <p className="text-sm text-gray-600">{item.desc}</p>
               </div>
