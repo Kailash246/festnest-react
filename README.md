@@ -293,8 +293,6 @@ shadow-1  shadow-2  shadow-3  shadow-indigo
 ```
 font-display = Syne      (headings, titles, logo)
 font-body    = DM Sans   (body text, buttons, inputs)
-font-display = Clash Display (headings, titles, logo)
-font-body    = Satoshi       (body text, buttons, inputs)
 ```
 
 ---
