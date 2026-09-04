@@ -30,7 +30,7 @@ export default function HubPage() {
 
       {/* ── Header ── */}
       <div className="px-4 pt-5 pb-2 md:px-12 md:pt-10">
-        <h1 className="font-display font-bold text-[26px] md:text-[36px] text-text-1 leading-tight tracking-tight mb-3">
+        <h1 className="font-heading font-bold text-[26px] md:text-[36px] text-text-1 leading-tight tracking-tight mb-3">
           Discover College Events Across India
         </h1>
         <p className="text-[14px] md:text-[15px] text-text-2 leading-relaxed max-w-[720px]">
@@ -42,7 +42,7 @@ export default function HubPage() {
 
       {/* ── Browse by City ── */}
       <section className="px-4 pt-7 md:px-12">
-        <h2 className="font-display font-bold text-[18px] md:text-[20px] text-text-1 tracking-snug mb-4">
+        <h2 className="font-heading font-bold text-[18px] md:text-[20px] text-text-1 tracking-snug mb-4">
           Browse by City
         </h2>
         <div className="flex flex-wrap gap-2.5">
@@ -58,7 +58,7 @@ export default function HubPage() {
 
       {/* ── Browse by Category ── */}
       <section className="px-4 pt-9 pb-8 md:px-12">
-        <h2 className="font-display font-bold text-[18px] md:text-[20px] text-text-1 tracking-snug mb-4">
+        <h2 className="font-heading font-bold text-[18px] md:text-[20px] text-text-1 tracking-snug mb-4">
           Browse by Category
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-[1140px]">
@@ -69,7 +69,7 @@ export default function HubPage() {
                 <Icon size={21} strokeWidth={1.9} className="text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1 font-display font-bold text-[15px] text-text-1 group-hover:text-primary transition-colors">
+                <div className="flex items-center gap-1 font-heading font-bold text-[15px] text-text-1 group-hover:text-primary transition-colors">
                   {label}
                   <ChevronRight size={15} strokeWidth={2.5} className="text-text-3 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 </div>

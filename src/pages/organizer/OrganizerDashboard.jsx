@@ -46,7 +46,7 @@ const Empty = ({ Icon: EIcon, title, sub, action, onAction }) => (
                     shadow-[0_0_0_6px_rgba(79,70,229,0.08)]">
       <EIcon size={32} strokeWidth={1.8} className="text-primary" />
     </div>
-    <div className="font-display font-bold text-[16px] text-text-1 mb-1.5">{title}</div>
+    <div className="font-heading font-bold text-[16px] text-text-1 mb-1.5">{title}</div>
     {sub && <div className="text-[13px] text-text-3 mb-6 max-w-[260px] leading-relaxed">{sub}</div>}
     {action && (
       <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} onClick={onAction}
@@ -89,7 +89,7 @@ const StatCard = ({ Icon: CardIcon, label, value, color = 'indigo', sub }) => {
           <CardIcon size={17} strokeWidth={1.8} />
         </div>
       </div>
-      <div className="text-[28px] font-display font-bold text-text-1 leading-none mb-1">
+      <div className="text-[28px] font-mono font-bold text-text-1 leading-none mb-1">
         {value ?? '—'}
       </div>
       <div className="text-[12px] text-text-3 font-medium">{label}</div>
@@ -139,7 +139,7 @@ function EventCard({ ev, onView, expanded, onToggle, navigate, showToast }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1.5">
             <div className="flex-1 min-w-0">
-              <div className="font-display font-bold text-[14px] text-text-1 leading-snug line-clamp-1">
+              <div className="font-heading font-bold text-[14px] text-text-1 leading-snug line-clamp-1">
                 {ev.eventName}
               </div>
               <div className="text-[11px] text-text-3 mt-0.5 truncate">{ev.college}</div>
@@ -413,7 +413,7 @@ export function CompetitionManager({ eventKey, eventName, showToast, onCompetiti
           <motion.div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/45 p-0 md:items-center md:p-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditorOpen(false)}>
             <motion.form onSubmit={save} onClick={event => event.stopPropagation()} initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} className="flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white md:max-w-[620px] md:rounded-xl" role="dialog" aria-modal="true" aria-labelledby="competition-form-title">
               <div className="flex items-center gap-3 border-b border-border px-5 py-4">
-                <div className="min-w-0 flex-1"><h3 id="competition-form-title" className="font-display text-[18px] font-bold text-text-1">{editingId ? 'Edit Competition' : 'Add Competition'}</h3><p className="text-[12px] text-text-3">For {eventName}</p></div>
+                <div className="min-w-0 flex-1"><h3 id="competition-form-title" className="font-heading text-[18px] font-bold text-text-1">{editingId ? 'Edit Competition' : 'Add Competition'}</h3><p className="text-[12px] text-text-3">For {eventName}</p></div>
                 <button type="button" onClick={() => setEditorOpen(false)} aria-label="Close competition form" className="flex h-8 w-8 items-center justify-center rounded-md bg-surface-2 text-text-2"><X size={17} /></button>
               </div>
               <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-5">
@@ -476,7 +476,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
               <span className="text-white text-[10px] font-bold tracking-widest uppercase">Organizer</span>
             </div>
           </div>
-          <div className="font-display font-bold text-[22px] md:text-[24px] text-white leading-tight mb-1 tracking-tight">
+          <div className="font-heading font-bold text-[22px] md:text-[24px] text-white leading-tight mb-1 tracking-tight">
             Welcome back, {user?.name?.split(' ')[0] || 'Organizer'}
           </div>
           <div className="text-white/70 text-[13px] mb-4">
@@ -491,7 +491,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
               { v: pending,  l: 'In Review' },
             ].map(({ v, l }) => (
               <div key={l} className="text-center">
-                <div className="font-display font-bold text-[18px] text-white leading-none">{v}</div>
+                <div className="font-mono font-bold text-[18px] text-white leading-none">{v}</div>
                 <div className="text-[10px] text-white/60 mt-0.5">{l}</div>
               </div>
             ))}
@@ -560,7 +560,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
             <Star size={22} strokeWidth={1.8} className="text-amber-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-display font-bold text-[20px] text-primary leading-none">
+            <div className="font-mono font-bold text-[20px] text-primary leading-none">
               {user.points.toLocaleString('en-IN')} pts
             </div>
             <div className="text-[12px] text-primary/70 mt-0.5">FestNest points earned</div>
@@ -787,7 +787,7 @@ function TipsTab({ navigate }) {
           <div className="w-12 h-12 rounded-lg bg-white/15 flex items-center justify-center mb-3">
             <Lightbulb size={24} strokeWidth={1.8} className="text-white" />
           </div>
-          <div className="font-display font-bold text-[18px] text-white mb-1">
+          <div className="font-heading font-bold text-[18px] text-white mb-1">
             Make your event successful
           </div>
           <div className="text-white/70 text-[13px] leading-relaxed">
@@ -820,7 +820,7 @@ function TipsTab({ navigate }) {
                     <tip.Icon size={18} strokeWidth={1.8} className="text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-display font-bold text-[14px] text-text-1 mb-1">{tip.title}</div>
+                    <div className="font-heading font-bold text-[14px] text-text-1 mb-1">{tip.title}</div>
                     <div className="text-[13px] text-text-2 leading-relaxed">{tip.body}</div>
                   </div>
                 </div>
@@ -991,7 +991,7 @@ export default function OrganizerDashboard() {
 
           {/* Title */}
           <div className="flex-1 min-w-0">
-            <div className="font-display font-bold text-[15px] text-text-1 leading-none truncate">
+            <div className="font-heading font-bold text-[15px] text-text-1 leading-none truncate">
               Organizer Hub
             </div>
             <div className="text-[11px] text-text-3 truncate mt-0.5">

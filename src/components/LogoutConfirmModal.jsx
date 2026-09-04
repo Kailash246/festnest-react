@@ -33,7 +33,7 @@ export default function LogoutConfirmModal({ open, onConfirm, onCancel }) {
               <AlertTriangle size={22} strokeWidth={1.8} className="text-[#DC2626]" />
             </div>
 
-            <h2 className="font-display font-bold text-[17px] text-text-1 mb-1">Sign Out?</h2>
+            <h2 className="font-heading font-bold text-[17px] text-text-1 mb-1">Sign Out?</h2>
             <p className="text-[13px] text-text-3 leading-relaxed mb-6">
               You'll be signed out of FestNest on this device.
             </p>

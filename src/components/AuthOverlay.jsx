@@ -25,7 +25,7 @@ const ProgressDots = ({ total, current }) => (
   </div>
 );
 const StepLabel = ({ children }) => <div className="text-[11px] font-bold tracking-wider uppercase text-primary mb-2">{children}</div>;
-const AuthTitle = ({ children }) => <h2 className="font-display font-bold text-[24px] md:text-[28px] text-[#111110] tracking-tight leading-tight mb-2">{children}</h2>;
+const AuthTitle = ({ children }) => <h2 className="font-heading font-bold text-[24px] md:text-[28px] text-[#111110] tracking-tight leading-tight mb-2">{children}</h2>;
 const AuthSub   = ({ children }) => <p className="text-[14px] text-[#8A8A85] leading-relaxed mb-6">{children}</p>;
 const BackBtn   = ({ onClick })  => (
   <button onClick={onClick} className="flex items-center gap-1.5 text-[13px] font-medium text-[#8A8A85] mb-6 hover:text-[#111110] transition-colors">
@@ -36,7 +36,7 @@ const BackBtn   = ({ onClick })  => (
 const AuthCta = ({ onClick, children, loading, green, disabled }) => (
   <motion.button type="button" whileHover={{ scale: 1.005 }} whileTap={{ scale: 0.98 }}
     onClick={onClick} disabled={loading || disabled}
-    className={`w-full py-3.5 px-6 rounded-md flex items-center justify-center gap-2 font-body text-[15px] font-bold text-white mb-4 transition-all duration-150 disabled:opacity-55 ${green ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-primary hover:bg-primary-dark hover:shadow-indigo'}`}>
+    className={`w-full py-3.5 px-6 rounded-md flex items-center justify-center gap-2 text-[15px] font-bold text-white mb-4 transition-all duration-150 disabled:opacity-55 ${green ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-primary hover:bg-primary-dark hover:shadow-indigo'}`}>
     {loading
       ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
       : children}
@@ -49,8 +49,7 @@ const Divider = ({ text }) => (
     <div className="flex-1 h-px bg-[#E4E4E0]"/>
   </div>
 );
-
-const inputCls = `w-full px-4 py-3 border-[1.5px] border-[#CBCBC6] rounded-md font-body text-[15px] text-[#111110] bg-white placeholder:text-[#AEAEAD] focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all duration-150 outline-none`;
+const inputCls = `w-full px-4 py-3 border-[1.5px] border-[#CBCBC6] rounded-md text-[15px] text-[#111110] bg-white placeholder:text-[#AEAEAD] focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all duration-150 outline-none`;
 // Applied on top of inputCls when a field has a validation error.
 const inputErrCls = `border-red-500 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.10)]`;
 
@@ -103,19 +102,19 @@ const LeftPanel = () => (
   <div className="hidden md:flex flex-col justify-between w-[400px] flex-shrink-0 bg-primary px-10 py-10 relative overflow-hidden">
     <div className="absolute w-[400px] h-[400px] rounded-full bg-white/[0.06] -top-20 -right-20 pointer-events-none"/>
     <div className="absolute w-[300px] h-[300px] rounded-full bg-white/[0.06] -bottom-16 -left-16 pointer-events-none"/>
-    <div className="flex items-center gap-2.5 relative z-10 font-display font-bold text-[22px] text-white tracking-[-0.4px]">
+    <div className="flex items-center gap-2.5 relative z-10 font-heading font-bold text-[22px] text-white tracking-[-0.4px]">
       <BrandMark className="w-9 h-9" />
       FestNest
     </div>
     <div className="relative z-10">
-      <h2 className="font-display font-bold text-[30px] text-white leading-[1.18] tracking-[-0.035em] mb-4">
+      <h2 className="font-heading font-bold text-[30px] text-white leading-[1.18] tracking-[-0.035em] mb-4">
         Every college event,<br/><em className="text-white/65 not-italic">in one place.</em>
       </h2>
       <p className="text-[15px] text-white/70 leading-relaxed mb-8">Stop missing hackathons, fests, and workshops. FestNest brings it all together.</p>
       <div className="flex gap-6">
         {[['230+','Events'],['48k+','Students'],['180+','Colleges']].map(([n,l]) => (
           <div key={l} className="text-center">
-            <div className="font-display font-bold text-[22px] text-white mb-0.5">{n}</div>
+            <div className="font-mono font-bold text-[22px] text-white mb-0.5">{n}</div>
             <div className="text-[12px] text-white/60">{l}</div>
           </div>
         ))}
@@ -620,7 +619,7 @@ export default function AuthOverlay() {
           <div className="w-full max-w-[400px]">
 
             {/* Mobile logo */}
-            <div className="md:hidden flex items-center gap-2 font-display font-bold text-[18px] text-primary tracking-[-0.025em] mb-8">
+            <div className="md:hidden flex items-center gap-2 font-heading font-bold text-[18px] text-primary tracking-[-0.025em] mb-8">
               <BrandMark className="w-7 h-7" />
               FestNest
             </div>
@@ -717,7 +716,7 @@ export default function AuthOverlay() {
                         <div className={`w-14 h-14 rounded-lg flex items-center justify-center mb-3 mx-auto transition-colors duration-150 ${role===r ? 'bg-primary text-white' : 'bg-primary-light text-primary'}`}>
                           <Icon className="w-7 h-7" strokeWidth={1.5} />
                         </div>
-                        <div className={`font-display font-bold text-[14px] mb-1 ${role===r?'text-primary':'text-[#111110]'}`}>{title}</div>
+                        <div className={`font-heading font-bold text-[14px] mb-1 ${role===r?'text-primary':'text-[#111110]'}`}>{title}</div>
                         <div className="text-[11px] text-[#8A8A85] leading-relaxed">{sub}</div>
                       </motion.button>
                     ))}
@@ -982,7 +981,7 @@ export default function AuthOverlay() {
                     <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9"><polyline points="20 6 9 17 4 12"/></svg>
                   </motion.div>
                   <StepLabel>You're in!</StepLabel>
-                  <h2 className="font-display font-bold text-[24px] text-[#111110] tracking-tight mb-2">
+                  <h2 className="font-heading font-bold text-[24px] text-[#111110] tracking-tight mb-2">
                     Welcome, {name.split(' ')[0] || 'there'}! 🎉
                   </h2>
                   <p className="text-[14px] text-[#8A8A85] leading-relaxed mb-7 max-w-[300px] mx-auto">
@@ -1127,7 +1126,7 @@ export default function AuthOverlay() {
                     <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9"><polyline points="20 6 9 17 4 12"/></svg>
                   </motion.div>
                   <StepLabel>All done!</StepLabel>
-                  <h2 className="font-display font-bold text-[24px] text-[#111110] tracking-tight mb-2">
+                  <h2 className="font-heading font-bold text-[24px] text-[#111110] tracking-tight mb-2">
                     Password reset successfully!
                   </h2>
                   <p className="text-[14px] text-[#8A8A85] leading-relaxed mb-7 max-w-[300px] mx-auto">

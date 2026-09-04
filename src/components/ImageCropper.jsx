@@ -356,7 +356,7 @@ export default function ImageCropper({ file, onApply, onCancel }) {
         <div className="flex items-center justify-between px-5 py-3.5 flex-shrink-0"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div>
-            <h2 className="font-display font-bold text-[16px] text-white" style={{ letterSpacing: '-0.01em' }}>
+            <h2 className="font-heading font-bold text-[16px] text-white" style={{ letterSpacing: '-0.01em' }}>
               Crop Event Poster
             </h2>
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', marginTop: 2 }}>

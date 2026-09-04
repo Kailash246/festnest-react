@@ -54,12 +54,12 @@ export default function Saved() {
       className="bg-white min-h-screen w-full overflow-x-hidden">
 
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
-        <h1 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">
+        <h1 className="font-heading font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">
           Saved Events
         </h1>
         <p className="text-[14px] text-text-3">
           {loading ? 'Loading…' : savedList.length > 0
-            ? `${savedList.length} event${savedList.length > 1 ? 's' : ''} saved`
+            ? <><span className="font-mono">{savedList.length}</span> event{savedList.length > 1 ? 's' : ''} saved</>
             : '0 events saved'}
         </p>
       </div>
@@ -68,7 +68,7 @@ export default function Saved() {
       {error && (
         <div className="flex flex-col items-center py-16 text-center px-4">
           <div className="text-[48px] mb-3">⚠️</div>
-          <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load saved events</div>
+          <div className="font-heading font-bold text-[18px] text-text-1 mb-2">Could not load saved events</div>
           <div className="text-[13px] text-text-3 mb-4">{error}</div>
           <button onClick={() => window.location.reload()}
             className="px-5 py-2.5 bg-primary text-white rounded text-[14px] font-semibold hover:bg-primary-dark transition-colors">
@@ -91,7 +91,7 @@ export default function Saved() {
             <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="flex flex-col items-center py-20 text-center px-4">
               <div className="text-[64px] mb-4">🔖</div>
-              <div className="font-display font-bold text-[18px] text-text-1 mb-2">No saved events yet</div>
+              <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No saved events yet</div>
               <div className="text-[14px] text-text-3 mb-6">Bookmark events using the 🔖 icon on any card.</div>
               <button onClick={() => navigate('/explore')}
                 className="px-6 py-3 bg-primary text-white rounded text-[14px] font-semibold
@@ -116,7 +116,7 @@ export default function Saved() {
                   </div>
                   <div className="p-4 flex-1 min-w-0">
                     <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-1">{ev.category}</div>
-                    <div className="font-display font-bold text-[15px] text-text-1 tracking-snug mb-1 leading-snug">{ev.name}</div>
+                    <div className="font-heading font-bold text-[15px] text-text-1 tracking-snug mb-1 leading-snug">{ev.name}</div>
                     <div className="text-[12px] text-text-3 mb-3">{ev.college} · {ev.startDate}</div>
                     <div className="flex gap-2">
                       <button onClick={e => { e.stopPropagation(); navigate(`/event/${ev.id}`); }}

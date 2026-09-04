@@ -1,10 +1,23 @@
+/* ── Self-hosted Fonts ── */
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/Geist-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/GeistMono-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* ── Import fonts ── */
-@import 'geist';
-@import '@fontsource/space-grotesk';
 
 /* ══════════════════════════════════════════════════════
    FESTNEST — Global CSS
@@ -396,7 +409,7 @@ input:focus:required {
   margin-bottom: 1rem;
 }
 .prose-custom h2 {
-  font-family: 'Syne', sans-serif;
+  font-family: var(--f-heading);
   font-size: 1.25rem;
   font-weight: 700;
   color: #111827;

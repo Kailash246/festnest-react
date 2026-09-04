@@ -202,7 +202,7 @@ export default function Notifications() {
       <div className="w-16 h-16 rounded-lg bg-primary-light flex items-center justify-center mb-5">
         <Bell size={30} strokeWidth={1.5} className="text-primary" />
       </div>
-      <h2 className="font-display font-bold text-[20px] text-text-1 mb-2">Activity Center</h2>
+      <h2 className="font-heading font-bold text-[20px] text-text-1 mb-2">Activity Center</h2>
       <p className="text-[14px] text-text-3 mb-6 max-w-[260px]">
         Sign in to receive deadline reminders, event updates, and announcements.
       </p>
@@ -224,11 +224,11 @@ export default function Notifications() {
         <div className="flex items-start justify-between gap-3 mb-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="font-display font-bold text-[22px] md:text-[28px] text-text-1 tracking-tight leading-none">
+              <h1 className="font-heading font-bold text-[22px] md:text-[28px] text-text-1 tracking-tight leading-none">
                 Activity
               </h1>
               {unreadNotifCount > 0 && (
-                <span className="bg-primary text-white text-[11px] font-bold px-2 py-0.5 rounded-md leading-none">
+                <span className="bg-primary text-white text-[11px] font-bold font-mono px-2 py-0.5 rounded-md leading-none">
                   {unreadNotifCount}
                 </span>
               )}
@@ -293,7 +293,7 @@ export default function Notifications() {
             <div className="w-16 h-16 rounded-lg bg-surface-3 flex items-center justify-center mb-4">
               <BellOff size={28} strokeWidth={1.3} className="text-text-3" />
             </div>
-            <div className="font-display font-bold text-[18px] text-text-1 mb-2">
+            <div className="font-heading font-bold text-[18px] text-text-1 mb-2">
               {activeTab === 'all' ? 'All caught up!' : `No ${activeTab} notifications`}
             </div>
             <p className="text-[14px] text-text-3 max-w-[240px]">

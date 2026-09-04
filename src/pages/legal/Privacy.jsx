@@ -34,7 +34,7 @@ const DATA_USE = [
 const Right = ({ section, title, children }) => (
   <div className="bg-white border border-border rounded-lg p-4">
     <div className="inline-block text-[11px] font-bold text-primary bg-primary-light px-2 py-0.5 rounded mb-2">{section}</div>
-    <div className="font-display font-bold text-[14px] text-text-1 mb-1">{title}</div>
+    <div className="font-heading font-bold text-[14px] text-text-1 mb-1">{title}</div>
     <div className="text-[13px] text-text-2 leading-relaxed">{children}</div>
   </div>
 );
@@ -92,7 +92,7 @@ export default function Privacy() {
           {DATA_USE.map(([DataIcon, t, d]) => (
             <div key={t} className="bg-surface-2 rounded-lg p-4">
               <div className="mb-1.5 text-primary"><DataIcon className="w-5 h-5" /></div>
-              <div className="font-display font-bold text-[13px] text-text-1 mb-1">{t}</div>
+              <div className="font-heading font-bold text-[13px] text-text-1 mb-1">{t}</div>
               <div className="text-[12px] text-text-3 leading-relaxed">{d}</div>
             </div>
           ))}

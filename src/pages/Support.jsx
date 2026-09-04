@@ -378,7 +378,7 @@ export default function Support() {
             Support team online · avg. response in 3h
           </div>
 
-          <h1 className="font-display font-bold text-[28px] md:text-[38px] text-white
+          <h1 className="font-heading font-bold text-[28px] md:text-[38px] text-white
                          leading-tight tracking-tight mb-3">
             How can we<br className="md:hidden" /> help you?
           </h1>
@@ -422,7 +422,7 @@ export default function Support() {
               initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }}>
 
-              <h2 className="font-display font-bold text-[20px] md:text-[24px] text-text-1
+              <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-text-1
                              tracking-tight mb-1">Contact channels</h2>
               <p className="text-[14px] text-text-3 mb-6">
                 Reach the right team directly — or use the message form for a guided experience.
@@ -441,29 +441,25 @@ export default function Support() {
 
               {/* Office hours */}
               <div className="bg-surface border border-border rounded-xl p-5 mb-6">
-                <div className="font-display font-bold text-[16px] text-text-1 mb-4 flex items-center gap-2">
+                <div className="font-heading font-bold text-[16px] text-text-1 mb-4 flex items-center gap-2">
                   <Clock size={16} strokeWidth={1.8} className="text-text-2" /> Support hours
                 </div>
                 <div className="grid grid-cols-2 gap-y-3 gap-x-6">
                   {[
                     { day: 'Mon – Fri', hours: '9:00 AM – 9:00 PM', active: true },
                     { day: 'Saturday',  hours: '10:00 AM – 6:00 PM', active: true },
-                    { day: 'Sunday',    hours: 'Limited support', active: false },
-                    { day: 'Holidays',  hours: 'Emergency only', active: false },
+                    { day: 'Sunday',    hours: '12:00 PM – 5:00 PM', active: false },
+                    { day: 'Emergency', hours: '24/7 on WhatsApp',   active: true },
                   ].map(({ day, hours, active }) => (
-                    <div key={day} className="flex items-start gap-2.5">
-                      <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0
-                                        ${active ? 'bg-[#16A34A]' : 'bg-border-strong'}`} />
+                    <div key={day} className="flex items-start justify-between gap-2">
                       <div>
                         <div className="text-[13px] font-semibold text-text-1">{day}</div>
-                        <div className={`text-[12px] ${active ? 'text-text-3' : 'text-text-4'}`}>{hours}</div>
+                        <div className="text-[12px] text-text-3 font-mono">{hours}</div>
                       </div>
+                      <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0
+                                        ${active ? 'bg-[#16A34A]' : 'bg-text-4'}`} />
                     </div>
                   ))}
-                </div>
-                <div className="mt-4 pt-4 border-t border-border text-[12px] text-text-4 leading-relaxed">
-                  All times are Indian Standard Time (IST, UTC +5:30).
-                  For urgent issues during off-hours, email support@festnest.in — we monitor critical alerts 24/7.
                 </div>
               </div>
 
@@ -471,7 +467,7 @@ export default function Support() {
               <div className="bg-primary-light border border-[#C7D2FE] rounded-xl p-5 flex items-start gap-4">
                 <Lightbulb size={32} strokeWidth={1.5} className="text-amber-400 flex-shrink-0" />
                 <div className="flex-1">
-                  <div className="font-display font-bold text-[15px] text-primary mb-1">
+                  <div className="font-heading font-bold text-[15px] text-primary mb-1">
                     Not sure where to start?
                   </div>
                   <p className="text-[13px] text-text-2 leading-relaxed mb-3">
@@ -495,7 +491,7 @@ export default function Support() {
               initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }}>
 
-              <h2 className="font-display font-bold text-[20px] md:text-[24px] text-text-1
+              <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-text-1
                              tracking-tight mb-1">Frequently asked questions</h2>
               <p className="text-[14px] text-text-3 mb-5">
                 {FAQS.length} questions covering the most common issues.
@@ -513,7 +509,7 @@ export default function Support() {
                   value={faqQuery}
                   onChange={e => setFaqQuery(e.target.value)}
                   placeholder="Search questions…"
-                  className="flex-1 font-body text-[14px] text-text-1 bg-transparent outline-none
+                  className="flex-1 text-[14px] text-text-1 bg-transparent outline-none
                              placeholder:text-text-3"
                 />
                 {faqQuery && (
@@ -529,7 +525,7 @@ export default function Support() {
               {filteredFaqs.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="flex justify-center mb-3"><HelpCircle size={48} strokeWidth={1.3} className="text-text-3" /></div>
-                  <div className="font-display font-bold text-[17px] text-text-1 mb-2">No results found</div>
+                  <div className="font-heading font-bold text-[17px] text-text-1 mb-2">No results found</div>
                   <p className="text-[14px] text-text-3 mb-5">
                     Couldn't find an answer for "{faqQuery}"
                   </p>
@@ -551,7 +547,7 @@ export default function Support() {
               {filteredFaqs.length > 0 && (
                 <div className="mt-8 flex flex-col items-center text-center">
                   <div className="flex justify-center mb-2"><User size={28} strokeWidth={1.5} className="text-text-3" /></div>
-                  <div className="font-display font-bold text-[15px] text-text-1 mb-1">Still stuck?</div>
+                  <div className="font-heading font-bold text-[15px] text-text-1 mb-1">Still stuck?</div>
                   <p className="text-[13px] text-text-3 mb-4">Our team usually replies within a few hours.</p>
                   <button onClick={() => setActiveSection('form')}
                     className="px-6 py-3 bg-primary text-white rounded-xl text-[14px] font-bold
@@ -598,7 +594,7 @@ export default function Support() {
                         <div className="text-[11px] font-bold tracking-wider uppercase text-[#16A34A] mb-2">
                           ✅ Support Ticket Created
                         </div>
-                        <h2 className="font-display font-bold text-[24px] text-text-1 tracking-tight mb-2">
+                        <h2 className="font-heading font-bold text-[24px] text-text-1 tracking-tight mb-2">
                           Thank you, {formData.name.split(' ')[0]}
                         </h2>
                         <p className="text-[14px] text-text-3 leading-relaxed">
@@ -674,7 +670,7 @@ export default function Support() {
                   <motion.div key="form-fields"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
 
-                    <h2 className="font-display font-bold text-[20px] md:text-[24px] text-text-1
+                    <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-text-1
                                    tracking-tight mb-1">Send us a message</h2>
                     <p className="text-[14px] text-text-3 mb-7">
                       Fill in the form and we'll get back to you at support@festnest.in
@@ -692,7 +688,7 @@ export default function Support() {
                           placeholder="Arjun Kumar"
                           autoComplete="name"
                           className="w-full px-4 py-[11px] border-[1.5px] border-border-strong rounded-xl
-                                     font-body text-[14px] text-text-1 bg-surface outline-none
+                                     text-[14px] text-text-1 bg-surface outline-none
                                      placeholder:text-text-4
                                      focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)]
                                      transition-all"
@@ -709,7 +705,7 @@ export default function Support() {
                           placeholder="you@college.edu"
                           autoComplete="email"
                           className="w-full px-4 py-[11px] border-[1.5px] border-border-strong rounded-xl
-                                     font-body text-[14px] text-text-1 bg-surface outline-none
+                                     text-[14px] text-text-1 bg-surface outline-none
                                      placeholder:text-text-4
                                      focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)]
                                      transition-all"
@@ -756,7 +752,7 @@ export default function Support() {
                         placeholder="Describe your issue, question, or feedback in detail…"
                         rows={5}
                         className="w-full px-4 py-3.5 border-[1.5px] border-border-strong rounded-xl
-                                   font-body text-[14px] text-text-1 bg-surface outline-none resize-y
+                                   text-[14px] text-text-1 bg-surface outline-none resize-y
                                    placeholder:text-text-4
                                    focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.10)]
                                    transition-all min-h-[120px]"
@@ -768,7 +764,7 @@ export default function Support() {
                       whileHover={{ scale: 1.005 }} whileTap={{ scale: 0.98 }}
                       onClick={handleSubmit}
                       disabled={submitting}
-                      className="w-full py-4 bg-primary text-white rounded-xl font-body text-[15px]
+                      className="w-full py-4 bg-primary text-white rounded-xl text-[15px]
                                  font-bold flex items-center justify-center gap-2.5
                                  hover:bg-primary-dark hover:shadow-indigo
                                  transition-all disabled:opacity-60"
@@ -812,7 +808,7 @@ export default function Support() {
 
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h2 className="font-display font-bold text-[20px] md:text-[24px] text-text-1 tracking-tight">My Tickets</h2>
+                  <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-text-1 tracking-tight">My Tickets</h2>
                   <p className="text-[14px] text-text-3 mt-0.5">Track all your support requests</p>
                 </div>
                 <motion.button whileTap={{ scale: 0.95 }} onClick={loadMyTickets}
@@ -859,7 +855,7 @@ export default function Support() {
                                         ? 'bg-primary text-white border-primary'
                                         : 'bg-white text-text-2 border-border hover:border-primary/40 hover:text-primary'}`}>
                           {f.label}
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold
                                             ${ticketFilter === f.id ? 'bg-white/20 text-white' : 'bg-surface-3 text-text-3'}`}>
                             {counts[f.id]}
                           </span>

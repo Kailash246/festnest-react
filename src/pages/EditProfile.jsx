@@ -90,7 +90,7 @@ const SectionCard = ({ icon: Icon, title, subtitle, children }) => (
         <Icon className="w-4 h-4 text-primary" strokeWidth={2} />
       </div>
       <div className="flex-1 min-w-0">
-        <h2 className="font-display font-bold text-[16px] text-text-1 leading-tight">{title}</h2>
+        <h2 className="font-heading font-bold text-[16px] text-text-1 leading-tight">{title}</h2>
         {subtitle && <p className="text-[12.5px] text-text-3 mt-0.5">{subtitle}</p>}
       </div>
     </div>
@@ -143,7 +143,7 @@ function AvatarUpload({ value, name, onPick, onClear, uploading }) {
     <div className="flex items-center gap-4 md:gap-5">
       <div className="relative">
         <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-gradient-to-br from-primary to-[#7C3AED]
-                        flex items-center justify-center text-white font-display font-bold text-[30px] md:text-[36px]
+                        flex items-center justify-center text-white font-sans font-bold text-[30px] md:text-[36px]
                         ring-4 ring-white shadow-[0_4px_16px_rgba(79,70,229,0.18)]">
           {value
             ? <img src={value} alt="" className="w-full h-full object-cover" />
@@ -305,7 +305,7 @@ export default function EditProfile() {
             <ArrowLeft className="w-4 h-4" strokeWidth={2.25}/>
             <span className="hidden sm:inline">Back</span>
           </button>
-          <h1 className="font-display font-bold text-[15px] md:text-[17px] text-text-1 flex-1 text-center truncate">
+          <h1 className="font-heading font-bold text-[15px] md:text-[17px] text-text-1 flex-1 text-center truncate">
             Edit Profile
           </h1>
           <button onClick={save} disabled={!dirty || saving}
@@ -332,7 +332,7 @@ export default function EditProfile() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[11px] font-bold uppercase tracking-wider text-text-3">Account type</p>
-            <p className="font-display font-bold text-[14px] text-text-1">
+            <p className="font-heading font-bold text-[14px] text-text-1">
               {role === 'organizer' ? 'Event Organizer' : 'Student'}
             </p>
           </div>
@@ -492,7 +492,7 @@ export default function EditProfile() {
             className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-border px-4 py-3
                        shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
             <button onClick={save} disabled={saving}
-              className="w-full bg-primary text-white font-display font-bold text-[15px] py-3 rounded-lg
+              className="w-full bg-primary text-white font-bold text-[15px] py-3 rounded-lg
                          hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-70">
               {saving
                 ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> Saving…</>

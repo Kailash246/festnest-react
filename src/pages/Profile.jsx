@@ -138,7 +138,7 @@ function HeroSection({ user, role, loading, onEdit }) {
                 className="w-[88px] h-[88px] rounded-full object-cover border-4 border-white shadow-lg" />
             ) : (
               <div className="w-[88px] h-[88px] rounded-md border-4 border-white shadow-lg
-                              flex items-center justify-center font-display font-bold text-[26px]
+                              flex items-center justify-center font-sans font-bold text-[26px]
                               text-primary bg-primary-light">
                 {loading ? '' : initials}
               </div>
@@ -166,7 +166,7 @@ function HeroSection({ user, role, loading, onEdit }) {
         ) : (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}>
-            <h1 className="font-display font-bold text-[26px] md:text-[30px] text-text-1
+            <h1 className="font-heading font-bold text-[26px] md:text-[30px] text-text-1
                            tracking-tight leading-none mb-2">
               {user?.name || 'User'}
             </h1>
@@ -246,7 +246,7 @@ function StudentStats({ stats, completedCount, unlockedCount, loading }) {
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 ${ic}`}>
                 <Icon size={16} strokeWidth={1.8} />
               </div>
-              <div className="font-display font-bold text-[22px] text-text-1 leading-none mb-0.5">
+              <div className="font-mono font-bold text-[22px] text-text-1 leading-none mb-0.5">
                 {values[key]}
               </div>
               <div className="text-[10px] text-text-3 font-semibold uppercase tracking-wide leading-tight">
@@ -314,7 +314,7 @@ function AchievementsSection({ stats, completedCount, loading }) {
     <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <div>
-          <div className="font-display font-bold text-[15px] text-text-1">Achievements</div>
+          <div className="font-heading font-bold text-[15px] text-text-1">Achievements</div>
           <div className="text-[11px] text-text-3 mt-0.5">
             {unlockedCount}/{achievements.length} unlocked
           </div>
@@ -369,7 +369,7 @@ function CertificatesSection() {
   return (
     <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
-        <div className="font-display font-bold text-[15px] text-text-1">Certificates</div>
+        <div className="font-heading font-bold text-[15px] text-text-1">Certificates</div>
         <div className="text-[11px] text-text-3 mt-0.5">Earned from events you've attended</div>
       </div>
       <div className="p-5">
@@ -494,7 +494,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
   return (
     <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 pt-4 pb-0">
-        <div className="font-display font-bold text-[15px] text-text-1 mb-3">My Events</div>
+        <div className="font-heading font-bold text-[15px] text-text-1 mb-3">My Events</div>
         <div className="flex gap-0 border-b border-border -mx-5 px-5">
           {EVENT_TABS.map(t => (
             <button key={t.id} onClick={() => handleTab(t.id)}
@@ -505,7 +505,7 @@ function MyEventsSection({ registrations, savedEvList, savedLoading, savedCount,
                             : 'border-transparent text-text-3 hover:text-text-1'}`}>
               {t.label}
               {counts[t.id] > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold min-w-[18px] text-center
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold min-w-[18px] text-center
                                   ${tab === t.id ? 'bg-primary-light text-primary' : 'bg-surface-3 text-text-3'}`}>
                   {counts[t.id]}
                 </span>
@@ -609,7 +609,7 @@ function OrganizerCTA({ navigate }) {
               Organizer Hub
             </span>
           </div>
-          <div className="font-display font-bold text-[20px] text-white mb-1">
+          <div className="font-heading font-bold text-[20px] text-white mb-1">
             Organizer Dashboard
           </div>
           <div className="text-white/70 text-[13px]">
@@ -667,7 +667,7 @@ function AboutOrgSection({ user, events = [] }) {
   return (
     <div className="bg-white border border-border rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
-        <div className="font-display font-bold text-[15px] text-text-1">About Organization</div>
+        <div className="font-heading font-bold text-[15px] text-text-1">About Organization</div>
       </div>
       <div className="p-5">
         {/* Identity */}
@@ -677,7 +677,7 @@ function AboutOrgSection({ user, events = [] }) {
             <Building2 size={22} strokeWidth={1.8} className="text-[#7C3AED]" />
           </div>
           <div className="min-w-0">
-            <div className="font-display font-bold text-[16px] text-text-1 truncate">
+            <div className="font-heading font-bold text-[16px] text-text-1 truncate">
               {orgName || <NotProvided />}
             </div>
             <div className="flex items-center gap-2 text-[12px] text-text-3 mt-0.5 flex-wrap">
@@ -699,7 +699,7 @@ function AboutOrgSection({ user, events = [] }) {
           {STATS.map(s => (
             <div key={s.label}
               className="bg-surface-2 border border-border rounded-lg p-3 text-center">
-              <div className="font-display font-bold text-[20px] text-text-1 leading-none mb-1">
+              <div className="font-mono font-bold text-[20px] text-text-1 leading-none mb-1">
                 {s.value}
               </div>
               <div className="text-[10px] text-text-3 font-semibold uppercase tracking-wide leading-tight">
@@ -778,7 +778,7 @@ function HostedEventsSection({ events, loading, navigate }) {
     <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <div>
-          <div className="font-display font-bold text-[15px] text-text-1">Hosted Events</div>
+          <div className="font-heading font-bold text-[15px] text-text-1">Hosted Events</div>
           <div className="text-[11px] text-text-3 mt-0.5">Events you've submitted to FestNest</div>
         </div>
         <motion.button whileHover={{ x: 2 }} onClick={() => navigate('/organizer')}
@@ -880,7 +880,7 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
   return (
     <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
       <div className="px-5 py-4 border-b border-border">
-        <div className="font-display font-bold text-[15px] text-text-1">Activity Center</div>
+        <div className="font-heading font-bold text-[15px] text-text-1">Activity Center</div>
         <div className="text-[11px] text-text-3 mt-0.5">Manage your account and preferences</div>
       </div>
       <div className="p-4">

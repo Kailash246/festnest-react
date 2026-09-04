@@ -47,7 +47,7 @@ export default function About() {
             className="w-[72px] h-[72px] flex items-center justify-center mx-auto mb-4">
             <BrandMark className="w-[72px] h-[72px]" />
           </motion.div>
-          <h1 className="font-display font-bold text-[28px] md:text-[40px] text-primary tracking-tight mb-2">FestNest</h1>
+          <h1 className="font-heading font-bold text-[28px] md:text-[40px] text-primary tracking-tight mb-2">FestNest</h1>
           <p className="text-[15px] text-text-3 leading-relaxed">Discover every college event across India — in one place.</p>
           <div className="inline-block mt-3 bg-green-bg text-[#16A34A] border border-green-border
                           rounded-full text-[12px] font-bold px-3.5 py-1 tracking-wide">v1.0 · Beta</div>
@@ -55,7 +55,7 @@ export default function About() {
 
         {/* Mission */}
         <div className="bg-primary-light border border-[#C7D2FE] rounded-xl p-5 mb-4">
-          <div className="font-display font-bold text-[16px] text-primary mb-3 flex items-center gap-2"><Target size={16} strokeWidth={1.8} /> Our Mission</div>
+          <div className="font-heading font-bold text-[16px] text-primary mb-3 flex items-center gap-2"><Target size={16} strokeWidth={1.8} /> Our Mission</div>
           <p className="text-[14px] text-text-2 leading-relaxed">
             Students across India miss incredible events — hackathons, cultural fests, workshops, and competitions —
             because information is scattered across WhatsApp forwards, Instagram stories, and random posters.
@@ -65,7 +65,7 @@ export default function About() {
 
         {/* Why FestNest */}
         <div className="mb-5">
-          <div className="font-display font-bold text-[16px] md:text-[18px] text-text-1 mb-4">Why FestNest?</div>
+          <div className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 mb-4">Why FestNest?</div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {WHY.map(({ emoji, title, desc }) => (
               <div key={title} className="bg-surface border border-border rounded-lg p-4
@@ -80,7 +80,7 @@ export default function About() {
 
         {/* How it works */}
         <div className="mb-5">
-          <div className="font-display font-bold text-[16px] md:text-[18px] text-text-1 mb-4">How FestNest Works</div>
+          <div className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 mb-4">How FestNest Works</div>
           <div className="grid md:grid-cols-2 gap-3 about-steps-grid">
             {HOW.map(({ Icon: HowIcon, title, desc }) => (
               <div key={title} className="flex items-start gap-3 p-4 bg-surface border border-border rounded-lg
@@ -99,13 +99,13 @@ export default function About() {
 
         {/* Team */}
         <div className="mb-5">
-          <div className="font-display font-bold text-[16px] md:text-[18px] text-text-1 mb-4">The Team</div>
+          <div className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 mb-4">The Team</div>
           <div className="grid grid-cols-2 gap-3 about-team-grid" style={{ maxWidth: 420 }}>
             {TEAM.map(({ av, color, name, role, college }) => (
               <div key={name} className="bg-surface border border-border rounded-lg p-4 text-center
                                          hover:border-primary-mid hover:-translate-y-[1px] transition-all">
                 <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3
-                                font-display font-bold text-[16px] text-white"
+                                font-sans font-bold text-[16px] text-white"
                   style={{ background: color }}>{av}</div>
                 <div className="text-[14px] font-semibold text-text-1 mb-0.5">{name}</div>
                 <div className="text-[12px] text-text-3 mb-0.5">{role}</div>

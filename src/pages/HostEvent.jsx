@@ -36,7 +36,7 @@ const STEPS = [
 ];
 
 /* ─── Reusable field components ─────────────────────── */
-const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-md font-body text-[14px] text-text-1 bg-white placeholder:text-text-4
+const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-md text-[14px] text-text-1 bg-white placeholder:text-text-4
   focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all duration-150 outline-none`;
 
 function Field({ label, required, hint, error, prefix, children }) {
@@ -103,7 +103,7 @@ function SectionCard({ icon, title, sub, children }) {
           {icon}
         </div>
         <div>
-          <div className="font-display font-bold text-[14px] text-text-1 tracking-snug">{title}</div>
+          <div className="font-heading font-bold text-[14px] text-text-1 tracking-snug">{title}</div>
           {sub && <div className="text-[12px] text-text-3 mt-0.5">{sub}</div>}
         </div>
       </div>
@@ -589,7 +589,7 @@ export default function HostEvent() {
         <div className="inline-flex items-center gap-1.5 bg-green-bg border border-green-border text-[#16A34A] text-[12px] font-bold px-3 py-1 rounded-md mb-4">
           <CheckCircle2 size={12} strokeWidth={2} /> Submitted successfully
         </div>
-        <h2 className="font-display font-bold text-[26px] md:text-[30px] text-text-1 tracking-tight mb-3">
+        <h2 className="font-heading font-bold text-[26px] md:text-[30px] text-text-1 tracking-tight mb-3">
           Your event is under review!
         </h2>
         <p className="text-[15px] text-text-2 leading-relaxed mb-2 max-w-[400px] mx-auto">
@@ -630,7 +630,7 @@ export default function HostEvent() {
         <div className="flex items-center gap-2 mb-2">
           <span className="text-white/80 text-[13px] font-semibold tracking-wide uppercase">FestNest</span>
         </div>
-        <h1 className="font-display font-bold text-[22px] md:text-[26px] text-white tracking-tight leading-tight mb-1">
+        <h1 className="font-heading font-bold text-[22px] md:text-[26px] text-white tracking-tight leading-tight mb-1">
           {isEditMode ? 'Edit Event' : 'Post Your Event'}
         </h1>
         <p className="text-white/75 text-[14px]">
@@ -1085,7 +1085,7 @@ export default function HostEvent() {
                     <EIcon size={24} strokeWidth={1.8} />
                   </div>); })()}
                   <div className="flex-1 min-w-0">
-                    <div className="font-display font-bold text-[15px] text-text-1 truncate">{f.title || 'Your Event'}</div>
+                    <div className="font-heading font-bold text-[15px] text-text-1 truncate">{f.title || 'Your Event'}</div>
                     <div className="text-[12px] text-text-3">{f.college || 'Your College'} · {f.cityState || 'Location TBD'}</div>
                     {f.startDate && <div className="text-[12px] text-primary font-medium mt-0.5 flex items-center gap-1"><CalendarDays size={12} strokeWidth={1.8} /> {f.startDate}{f.endDate && ` → ${f.endDate}`}</div>}
                   </div>

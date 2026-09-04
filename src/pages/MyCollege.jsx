@@ -33,7 +33,7 @@ export default function MyCollege() {
       className="bg-white min-h-screen w-full overflow-x-hidden">
       {/* Page title */}
       <div className="px-4 pt-5 pb-0 md:px-12 md:pt-10">
-        <h1 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">My College</h1>
+        <h1 className="font-heading font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">My College</h1>
         <p className="text-[14px] text-text-3 mb-4">NSIT Delhi — your campus hub</p>
       </div>
 
@@ -43,7 +43,7 @@ export default function MyCollege() {
           <div className="absolute inset-0 flex items-center justify-center text-[60px]">🏛️</div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/55" />
           <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-            <div className="font-display font-bold text-[18px] text-white tracking-tight mb-1">
+            <div className="font-heading font-bold text-[18px] text-white tracking-tight mb-1">
               Netaji Subhas Institute of Technology
             </div>
             <div className="flex items-center gap-1 text-[13px] text-white/75">
@@ -63,7 +63,7 @@ export default function MyCollege() {
         {[['24','Events this year'],['840','Students on FestNest'],['#12','Delhi ranking']].map(([n,l])=>(
           <div key={l} className="bg-surface border border-border rounded-lg p-3.5 text-center
                                   hover:border-primary hover:-translate-y-[1px] transition-all">
-            <div className="font-display font-bold text-[20px] md:text-[24px] text-primary mb-0.5">{n}</div>
+            <div className="font-mono font-bold text-[20px] md:text-[24px] text-primary mb-0.5">{n}</div>
             <div className="text-[11px] text-text-3 font-medium">{l}</div>
           </div>
         ))}
@@ -71,7 +71,7 @@ export default function MyCollege() {
 
       {/* Upcoming events */}
       <div className="px-4 md:px-12 mb-5 md:max-w-[1140px] md:mx-auto">
-        <div className="font-display font-bold text-[15px] md:text-[17px] text-text-1 mb-3">Upcoming from NSIT</div>
+        <div className="font-heading font-bold text-[15px] md:text-[17px] text-text-1 mb-3">Upcoming from NSIT</div>
         <div className="bg-surface border border-border rounded-xl overflow-hidden">
           {upcoming.map(({ em, bg, name, sub }) => (
             <div key={name} onClick={() => showToast(`Opening ${name}…`, 'info')}
@@ -91,7 +91,7 @@ export default function MyCollege() {
 
       {/* Clubs */}
       <div className="px-4 md:px-12 mb-5 md:max-w-[1140px] md:mx-auto">
-        <div className="font-display font-bold text-[15px] md:text-[17px] text-text-1 mb-3">Active Clubs & Societies</div>
+        <div className="font-heading font-bold text-[15px] md:text-[17px] text-text-1 mb-3">Active Clubs & Societies</div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {clubs.map(({ em, name, members }) => (
             <div key={name} onClick={() => showToast(`Viewing ${name} profile…`, 'info')}
@@ -109,15 +109,15 @@ export default function MyCollege() {
 
       {/* Top students */}
       <div className="px-4 md:px-12 pb-8 md:max-w-[1140px] md:mx-auto">
-        <div className="font-display font-bold text-[15px] md:text-[17px] text-text-1 mb-3">Top Students This Month</div>
+        <div className="font-heading font-bold text-[15px] md:text-[17px] text-text-1 mb-3">Top Students This Month</div>
         <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-1">
           {toppers.map(({ rank, av, color, name, sub, pts, rankClass, isMe }) => (
             <div key={name}
               className={`flex items-center gap-3 px-4 py-4 border-b border-border last:border-b-0
                           hover:bg-primary-xlight transition-colors cursor-pointer
                           ${isMe ? 'bg-primary-xlight' : ''}`}>
-              <div className={`font-display font-bold text-[14px] w-6 text-center flex-shrink-0 ${rankClass}`}>{rank}</div>
-              <div className="w-9 h-9 rounded-full flex items-center justify-center font-display font-bold text-[13px] text-white flex-shrink-0"
+              <div className={`font-mono font-bold text-[14px] w-6 text-center flex-shrink-0 ${rankClass}`}>{rank}</div>
+              <div className="w-9 h-9 rounded-full flex items-center justify-center font-sans font-bold text-[13px] text-white flex-shrink-0"
                 style={{ background: color }}>{av}</div>
               <div className="flex-1">
                 <div className="text-[14px] font-semibold text-text-1 mb-0.5 flex items-center gap-1">
@@ -126,7 +126,7 @@ export default function MyCollege() {
                 </div>
                 <div className="text-[12px] text-text-3">{sub}</div>
               </div>
-              <div className="font-display font-bold text-[15px] text-primary">{pts}</div>
+              <div className="font-mono font-bold text-[15px] text-primary">{pts}</div>
             </div>
           ))}
         </div>

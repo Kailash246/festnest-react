@@ -97,7 +97,7 @@ export default function MobileDrawer() {
               {/* Logo row */}
               <div className="flex items-center gap-2.5 px-4 pt-5 pb-3">
                 <BrandMark className="w-8 h-8" />
-                <span className="font-display font-bold text-[20px] text-primary tracking-[-0.4px]">FestNest</span>
+                <span className="font-heading font-bold text-[20px] text-primary tracking-[-0.4px]">FestNest</span>
                 <button
                   onClick={() => setDrawerOpen(false)}
                   aria-label="Close menu"
@@ -116,7 +116,7 @@ export default function MobileDrawer() {
               {isLoggedIn ? (
                 <div className="flex items-center gap-3 px-4 py-3 pb-4 bg-primary-xlight border-t border-[#E4E4E0]">
                   <div className="w-10 h-10 rounded-full bg-primary-light border-2 border-primary
-                                  flex items-center justify-center overflow-hidden font-display font-bold
+                                  flex items-center justify-center overflow-hidden font-sans font-bold
                                   text-[13px] text-primary flex-shrink-0">
                     {avatarUrl
                       ? <img src={avatarUrl} alt={initials}

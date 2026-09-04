@@ -47,7 +47,7 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
           {ev.category}
         </div>
         <div
-          className="font-display font-bold text-[15px] text-text-1 leading-snug tracking-tight"
+          className="font-heading font-bold text-[15px] text-text-1 leading-snug tracking-tight"
           style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
         >
           {ev.name}

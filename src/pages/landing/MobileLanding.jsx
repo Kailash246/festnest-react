@@ -49,7 +49,7 @@ export default function MobileLanding() {
       <header className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
         <div className="flex items-center gap-2">
           <BrandMark className="w-8 h-8" />
-          <span className="font-display font-bold text-[20px] text-primary tracking-[-0.4px]">FestNest</span>
+          <span className="font-heading font-bold text-[20px] text-primary tracking-[-0.4px]">FestNest</span>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => navigate('/blog')}
@@ -78,7 +78,7 @@ export default function MobileLanding() {
         </div>
 
         {/* Headline */}
-        <h1 className="font-display font-bold text-[32px] leading-[1.1] tracking-tight text-text-1 mb-4">
+        <h1 className="font-heading font-bold text-[32px] leading-[1.1] tracking-tight text-text-1 mb-4">
           Discover every college event in India.{' '}
           <span className="lp-gradient-text">In one place.</span>
         </h1>
@@ -120,7 +120,7 @@ export default function MobileLanding() {
               { value: String(apiStats.totalCategories), label: 'Categories' },
             ].map(({ value, label }) => (
               <div key={label} className="bg-surface-2 rounded-lg py-4 text-center">
-                <div className="font-display font-bold text-[22px] text-text-1 leading-none">{value}</div>
+                <div className="font-mono font-bold text-[22px] text-text-1 leading-none">{value}</div>
                 <div className="text-[11px] text-text-3 font-semibold mt-1">{label}</div>
               </div>
             ))}
@@ -136,7 +136,7 @@ export default function MobileLanding() {
                 className={`${bg} rounded-lg p-4 flex items-center gap-3 text-left
                              hover:opacity-80 active:scale-[0.97] transition-all`}>
                 <Icon className="w-7 h-7 text-white/80 flex-shrink-0" />
-                <span className="font-display font-bold text-[14px] text-text-1 leading-tight">{label}</span>
+                <span className="font-heading font-bold text-[14px] text-text-1 leading-tight">{label}</span>
               </button>
             ))}
           </div>

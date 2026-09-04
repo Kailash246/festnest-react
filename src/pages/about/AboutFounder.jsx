@@ -78,7 +78,7 @@ export default function AboutFounder() {
           <span className="inline-block bg-white/20 text-white text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full mb-6">
             v1.0 Beta
           </span>
-          <h1 className="font-display font-bold text-[26px] sm:text-[34px] md:text-[44px] text-white leading-tight tracking-tight mb-4 max-w-3xl mx-auto">
+          <h1 className="font-heading font-bold text-[26px] sm:text-[34px] md:text-[44px] text-white leading-tight tracking-tight mb-4 max-w-3xl mx-auto">
             Discover Every College Event<br className="hidden sm:block" /> Across India
           </h1>
           <p className="text-indigo-200 text-[15px] md:text-[17px] max-w-xl mx-auto leading-relaxed">
@@ -104,7 +104,7 @@ export default function AboutFounder() {
         {/* ── 4. WHY FESTNEST ─────────────────────────────────────── */}
         <section className="bg-gray-50 py-14 px-6">
           <div className="max-w-4xl mx-auto">
-            <h2 className="font-display font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
+            <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
               Why FestNest?
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -126,7 +126,7 @@ export default function AboutFounder() {
         {/* ── 5. HOW FESTNEST WORKS ───────────────────────────────── */}
         <section className="bg-white py-14 px-6">
           <div className="max-w-4xl mx-auto">
-            <h2 className="font-display font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
+            <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
               How FestNest Works
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
@@ -135,7 +135,7 @@ export default function AboutFounder() {
                   className="flex gap-4 p-5 rounded-xl border border-gray-100
                              hover:border-indigo-200 hover:shadow-sm transition-all duration-150">
                   <div className="w-10 h-10 rounded-full bg-[#4F46E5] flex items-center justify-center flex-shrink-0">
-                    <span className="text-[12px] font-bold text-white font-display">{num}</span>
+                    <span className="text-[12px] font-bold text-white font-mono">{num}</span>
                   </div>
                   <div>
                     <div className="text-[14px] font-semibold text-gray-900 mb-1">{title}</div>
@@ -150,7 +150,7 @@ export default function AboutFounder() {
         {/* ── 6. TEAM / FOUNDER ───────────────────────────────────── */}
         <section className="bg-gray-50 py-14 px-6">
           <div className="max-w-4xl mx-auto">
-            <h2 className="font-display font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
+            <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
               The People Building FestNest
             </h2>
             <div className="grid md:grid-cols-4 gap-4">
@@ -161,7 +161,7 @@ export default function AboutFounder() {
                 <div className="p-6 flex-1">
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-[72px] h-[72px] rounded-full bg-indigo-600 flex items-center justify-center
-                                    font-display font-bold text-[22px] text-white flex-shrink-0">
+                                    font-sans font-bold text-[22px] text-white flex-shrink-0">
                       <img
                         src="/festnest-logo-kit/picofme (7).png"
                         alt="Kailash Kumar B"
@@ -169,7 +169,7 @@ export default function AboutFounder() {
                       />
                     </div>
                     <div className="min-w-0">
-                      <div className="font-display font-bold text-[18px] text-gray-900 mb-0.5">
+                      <div className="font-heading font-bold text-[18px] text-gray-900 mb-0.5">
                         Kailash Kumar B
                       </div>
                       <div className="text-[13px] font-semibold text-indigo-600 mb-2">Founder &amp; CEO</div>
@@ -204,7 +204,7 @@ export default function AboutFounder() {
                 <div className="p-6 flex-1">
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-[72px] h-[72px] rounded-full bg-indigo-600 flex items-center justify-center
-                                    font-display font-bold text-[22px] text-white flex-shrink-0">
+                                    font-sans font-bold text-[22px] text-white flex-shrink-0">
                       <img
                         src="/adrash pro.png"
                         alt="Adarsh Kumar"
@@ -212,7 +212,7 @@ export default function AboutFounder() {
                       />
                     </div>
                     <div className="min-w-0">
-                      <div className="font-display font-bold text-[18px] text-gray-900 mb-0.5">
+                      <div className="font-heading font-bold text-[18px] text-gray-900 mb-0.5">
                         Adarsh Kumar
                       </div>
                       <div className="text-[13px] font-semibold text-indigo-600 mb-2">Co-Founder</div>
@@ -245,7 +245,7 @@ export default function AboutFounder() {
         {/* ── 7. CONNECT / SOCIAL ─────────────────────────────────── */}
         <section className="bg-white py-14 px-6">
           <div className="max-w-3xl mx-auto">
-            <h2 className="font-display font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
+            <h2 className="font-heading font-bold text-[20px] md:text-[24px] text-gray-900 mb-8 text-center">
               Connect With FestNest
             </h2>
             <div className="grid sm:grid-cols-3 gap-4">

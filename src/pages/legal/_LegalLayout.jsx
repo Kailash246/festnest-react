@@ -29,7 +29,7 @@ export function Callout({ type = 'info', icon, title, children }) {
       <div className="flex items-start gap-2.5">
         {Icon && <Icon className={`w-4 h-4 flex-shrink-0 mt-0.5 ${iconColor[type]}`} />}
         <div className="flex-1 min-w-0">
-          {title && <div className={`font-display font-bold text-[13px] mb-1 ${titleColor[type]}`}>{title}</div>}
+          {title && <div className={`font-heading font-bold text-[13px] mb-1 ${titleColor[type]}`}>{title}</div>}
           <div className="text-[13px] leading-relaxed text-text-2">{children}</div>
         </div>
       </div>
@@ -41,10 +41,10 @@ export function Section({ num, title, id, children }) {
   return (
     <section id={id} className="scroll-mt-20 mb-10">
       <div className="flex items-center gap-2.5 mb-3">
-        <span className="flex-shrink-0 w-8 h-8 rounded-md bg-primary text-white font-display font-bold text-[13px] flex items-center justify-center">
+        <span className="flex-shrink-0 w-8 h-8 rounded-md bg-primary text-white font-mono font-bold text-[13px] flex items-center justify-center">
           {num}
         </span>
-        <h2 className="font-display font-bold text-[18px] md:text-[20px] text-text-1 tracking-tight leading-tight">{title}</h2>
+        <h2 className="font-heading font-bold text-[18px] md:text-[20px] text-text-1 tracking-tight leading-tight">{title}</h2>
       </div>
       <div className="text-[14px] text-text-2 leading-relaxed space-y-3 md:pl-[42px]">
         {children}
@@ -70,7 +70,7 @@ export function DualList({ leftTitle, leftItems, rightTitle, rightItems }) {
   return (
     <div className="grid sm:grid-cols-2 gap-3 my-4">
       <div className="bg-green-bg border border-green-border rounded-lg p-4">
-        <div className="font-display font-bold text-[13px] text-[#16A34A] mb-3 flex items-center gap-1.5">
+        <div className="font-heading font-bold text-[13px] text-[#16A34A] mb-3 flex items-center gap-1.5">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg>
           {leftTitle}
         </div>
@@ -84,7 +84,7 @@ export function DualList({ leftTitle, leftItems, rightTitle, rightItems }) {
         </ul>
       </div>
       <div className="bg-red-bg border border-red-border rounded-lg p-4">
-        <div className="font-display font-bold text-[13px] text-red mb-3 flex items-center gap-1.5">
+        <div className="font-heading font-bold text-[13px] text-red mb-3 flex items-center gap-1.5">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path d="M18 6 6 18M6 6l12 12"/></svg>
           {rightTitle}
         </div>
@@ -109,7 +109,7 @@ export function RoleCard({ icon: Icon, title, badge, items }) {
           {Icon && <Icon className="w-5 h-5" />}
         </div>
         <div>
-          <div className="font-display font-bold text-[15px] text-text-1">{title}</div>
+          <div className="font-heading font-bold text-[15px] text-text-1">{title}</div>
           <div className="text-[11px] font-semibold text-primary uppercase tracking-wide">{badge}</div>
         </div>
       </div>
@@ -128,7 +128,7 @@ export function ContactCard({ icon: Icon, title, email, desc }) {
   return (
     <div className="bg-white border border-border rounded-lg p-5">
       <div className="mb-2 text-primary">{Icon && <Icon className="w-5 h-5" />}</div>
-      <div className="font-display font-bold text-[14px] text-text-1 mb-1">{title}</div>
+      <div className="font-heading font-bold text-[14px] text-text-1 mb-1">{title}</div>
       <a href={`mailto:${email}`} className="text-[13px] font-semibold text-primary hover:underline block mb-1.5 break-all">{email}</a>
       <div className="text-[12px] text-text-3 leading-relaxed">{desc}</div>
     </div>
@@ -191,7 +191,7 @@ export default function LegalLayout({ kind, title, subtitle, effectiveDate, last
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur rounded-full px-3 py-1 mb-3">
             <span className="text-white/90 text-[11px] font-bold uppercase tracking-wider">{kind}</span>
           </div>
-          <h1 className="font-display font-bold text-[28px] md:text-[40px] text-white tracking-tight leading-[1.1] mb-3">{title}</h1>
+          <h1 className="font-heading font-bold text-[28px] md:text-[40px] text-white tracking-tight leading-[1.1] mb-3">{title}</h1>
           <p className="text-[14px] md:text-[16px] text-white/75 leading-relaxed max-w-[560px]">{subtitle}</p>
           <div className="flex flex-wrap items-center gap-2 mt-5">
             {effectiveDate && (

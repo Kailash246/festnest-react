@@ -90,7 +90,7 @@ export default function CityPage() {
         <div className="flex items-center gap-2 text-[13px] text-text-3 mb-1">
           <MapPin size={15} strokeWidth={2} className="text-primary" /> {city}, India
         </div>
-        <h1 className="font-display font-bold text-[26px] md:text-[34px] text-text-1 leading-tight tracking-tight mb-3">
+        <h1 className="font-heading font-bold text-[26px] md:text-[34px] text-text-1 leading-tight tracking-tight mb-3">
           College Events in {city}
         </h1>
         <p className="text-[14px] md:text-[15px] text-text-2 leading-relaxed max-w-[680px]">
@@ -103,11 +103,11 @@ export default function CityPage() {
       {/* ── Feed header ── */}
       <div className="flex items-center justify-between px-4 md:section-hd-desktop mb-3">
         <div className="flex items-center gap-2">
-          <h2 className="font-display font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">
+          <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">
             Events in {city}
           </h2>
           {!loading && !error && (
-            <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{events.length}</span>
+            <span className="text-[10px] font-mono font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{events.length}</span>
           )}
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function CityPage() {
       {error && (
         <div className="flex flex-col items-center py-16 text-center px-4">
           <div className="text-[48px] mb-4">⚠️</div>
-          <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
+          <div className="font-heading font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-text-3 mb-4">{error}</div>
           <button onClick={fetchEvents} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>
         </div>
@@ -133,7 +133,7 @@ export default function CityPage() {
       {!loading && !error && events.length === 0 && (
         <div className="flex flex-col items-center py-16 text-center px-4">
           <div className="text-[48px] mb-4">📍</div>
-          <div className="font-display font-bold text-[18px] text-text-1 mb-2">No events yet in {city} — check back soon</div>
+          <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No events yet in {city} — check back soon</div>
           <div className="text-[14px] text-text-3 mb-4">We add new college events every week. Explore events across India in the meantime.</div>
           <button onClick={() => navigate('/discover')} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Discover all events</button>
         </div>

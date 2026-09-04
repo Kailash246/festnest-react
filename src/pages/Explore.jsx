@@ -172,14 +172,14 @@ export default function Explore() {
 
       {/* Header */}
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
-        <h1 className="font-display font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Explore</h1>
+        <h1 className="font-heading font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Explore</h1>
         <p className="text-[14px] text-text-3 mb-4">Discover events across India</p>
         <div className="flex items-center gap-3 bg-surface border-[1.5px] border-border-strong rounded-md px-4 py-[11px] focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all max-w-[600px]">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-text-3 flex-shrink-0">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input value={query} onChange={e => setQuery(e.target.value)}
-            className="flex-1 font-body text-[14px] text-text-1 bg-transparent outline-none placeholder:text-text-3"
+            className="flex-1 text-[14px] text-text-1 bg-transparent outline-none placeholder:text-text-3"
             placeholder="Search events, colleges, cities…" aria-label="Search" />
           {query && (
             <button onClick={() => setQuery('')} className="text-text-3 hover:text-text-1 transition-colors">
@@ -192,7 +192,7 @@ export default function Explore() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
             Filter
             {activeSheetCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold rounded-full flex items-center justify-center">{activeSheetCount}</span>
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold font-mono rounded-full flex items-center justify-center">{activeSheetCount}</span>
             )}
           </button>
         </div>
@@ -213,7 +213,7 @@ export default function Explore() {
 
       {/* Category grid */}
       <div className="section-hd-desktop">
-        <h2 className="font-display font-bold text-[15px] md:text-[17px] text-text-1 px-4 md:px-0 mb-3">Categories</h2>
+        <h2 className="font-heading font-bold text-[15px] md:text-[17px] text-text-1 px-4 md:px-0 mb-3">Categories</h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 px-4 md:px-12 mb-5 md:max-w-[1140px] md:mx-auto">
         {EXPLORE_CATEGORIES.map(({ icon: Icon, name, value, color }) => {
@@ -225,7 +225,7 @@ export default function Explore() {
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${color}`}>
                 <Icon className="w-6 h-6" strokeWidth={1.75} />
               </div>
-              <div className={`font-display font-bold text-[14px] md:text-[15px] ${activeCat === value ? 'text-primary' : 'text-text-1'} transition-colors`}>{name}</div>
+              <div className={`font-heading font-bold text-[14px] md:text-[15px] ${activeCat === value ? 'text-primary' : 'text-text-1'} transition-colors`}>{name}</div>
               <div className="text-[12px] text-text-3">
                 {loading ? '…' : `${count} event${count !== 1 ? 's' : ''}`}
               </div>
@@ -237,9 +237,9 @@ export default function Explore() {
       {/* Feed header */}
       <div className="flex items-center justify-between px-4 md:section-hd-desktop mb-3">
         <div className="flex items-center gap-2">
-          <h2 className="font-display font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">{title}</h2>
+          <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">{title}</h2>
           {!loading && (
-            <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{filtered.length}</span>
+            <span className="text-[10px] font-bold font-mono bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{filtered.length}</span>
           )}
         </div>
         <div className="flex items-center gap-3">
@@ -254,7 +254,7 @@ export default function Explore() {
       {error && (
         <div className="flex flex-col items-center py-16 text-center px-4">
           <div className="text-[48px] mb-4">⚠️</div>
-          <div className="font-display font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
+          <div className="font-heading font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-text-3 mb-4">{error}</div>
           <button onClick={fetchEvents} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>
         </div>
@@ -271,7 +271,7 @@ export default function Explore() {
       {!loading && !error && filtered.length === 0 && (
         <div className="flex flex-col items-center py-16 text-center px-4">
           <div className="text-[48px] mb-4">🔍</div>
-          <div className="font-display font-bold text-[18px] text-text-1 mb-2">No events found</div>
+          <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No events found</div>
           <div className="text-[14px] text-text-3 mb-4">Try a different search or category.</div>
           <button onClick={() => { setActiveCat('all'); setQuery(''); }} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Clear Filters</button>
         </div>

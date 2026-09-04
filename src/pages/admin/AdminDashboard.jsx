@@ -43,7 +43,7 @@ const StatCard = ({ icon, label, value, sub, color = 'indigo' }) => {
     <div className="bg-white border border-border rounded-lg p-4 shadow-1 flex items-start gap-3">
       <div className={`w-10 h-10 rounded-md flex items-center justify-center text-xl flex-shrink-0 ${bg[color]}`}>{icon}</div>
       <div>
-        <div className="text-[22px] font-display font-bold text-text-1 leading-none">{value ?? '—'}</div>
+        <div className="text-[22px] font-mono font-bold text-text-1 leading-none">{value ?? '—'}</div>
         <div className="text-[12px] text-text-2 font-medium mt-0.5">{label}</div>
         {sub && <div className="text-[11px] text-text-3 mt-0.5">{sub}</div>}
       </div>
@@ -53,7 +53,7 @@ const StatCard = ({ icon, label, value, sub, color = 'indigo' }) => {
 
 const SectionHeader = ({ title, sub }) => (
   <div className="mb-4">
-    <h3 className="font-display font-bold text-[16px] text-text-1 tracking-tight">{title}</h3>
+    <h3 className="font-heading font-bold text-[16px] text-text-1 tracking-tight">{title}</h3>
     {sub && <p className="text-[13px] text-text-3 mt-0.5">{sub}</p>}
   </div>
 );
@@ -278,7 +278,7 @@ function SubmissionPreviewModal({ sub, onClose }) {
                 </div>
 
                 {/* Event name */}
-                <h2 className="font-display font-bold text-[22px] text-text-1 leading-tight tracking-tight">
+                <h2 className="font-heading font-bold text-[22px] text-text-1 leading-tight tracking-tight">
                   {sub.eventName}
                 </h2>
 
@@ -614,7 +614,7 @@ function EventsTab({ showToast }) {
               className="fixed inset-0 z-[301] flex items-center justify-center p-4">
               <div className="bg-white rounded-lg shadow-[0_20px_60px_rgba(0,0,0,0.20)] max-w-sm w-full p-6">
                 <div className="mb-3 text-red"><Trash2 size={28} strokeWidth={1.75} /></div>
-                <div className="font-display font-bold text-[16px] text-text-1 mb-2">Permanently delete event?</div>
+                <div className="font-heading font-bold text-[16px] text-text-1 mb-2">Permanently delete event?</div>
                 <div className="text-[13px] text-text-3 mb-1">
                   <span className="font-semibold text-text-1">"{confirmDelete.name}"</span> will be removed forever along with all saves and registrations.
                 </div>
@@ -1215,7 +1215,7 @@ export default function AdminDashboard() {
             </svg>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-display font-bold text-[15px] text-text-1 leading-none">Admin Dashboard</div>
+            <div className="font-heading font-bold text-[15px] text-text-1 leading-none">Admin Dashboard</div>
             <div className="text-[11px] text-text-3">{currentUser?.name} · {currentUser?.role}</div>
           </div>
           <button onClick={() => navigate('/')}
