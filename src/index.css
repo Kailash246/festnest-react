@@ -52,9 +52,11 @@
   --c-red-border:     #FECACA;
   --c-blue:           #2563EB;
   --c-blue-bg:        #EFF6FF;
-  --f-sans:           'Geist', sans-serif;
+  --f-sans:           'Satoshi', sans-serif;
+  --f-body:           'Satoshi', sans-serif;
+  --f-display:        'Clash Display', sans-serif;
+  --f-heading:        'Clash Display', sans-serif;
   --f-mono:           'Geist Mono', monospace;
-  --f-heading:        'Space Grotesk', sans-serif;
   --shadow-1:         0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-2:         0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
   --shadow-3:         0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
