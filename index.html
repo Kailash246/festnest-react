@@ -51,10 +51,9 @@
       content="Discover and register for hackathons, cultural fests, workshops, and competitions at colleges across India — all in one place."
     />
     <meta name="twitter:image" content="https://festnest.in/og-image.png" />
-
-    <link rel="preconnect" href="https://api.fontshare.com" />
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap" rel="stylesheet" />
-    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+    <!-- Preload key self-hosted fonts for instant render -->
+    <link rel="preload" href="/fonts/ClashDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Satoshi-Regular.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <div id="root"></div>

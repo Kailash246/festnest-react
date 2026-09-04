@@ -297,12 +297,13 @@ export default function Home() {
           <span className="w-1.5 h-1.5 bg-[#16A34A] rounded-full animate-pulse-dot" aria-hidden />
           Good afternoon, Explorer
         </div>
-        <h1 className="font-heading font-bold text-[32px] md:text-[40px] text-text-1 leading-tight tracking-tight mb-1">
-          EVERY FEST.<br /><span className="text-primary">ONE NEST.</span>
+        <h1 className="font-heading font-bold text-[28px] sm:text-[34px] md:text-[38px] lg:text-[40px] text-text-1 leading-tight tracking-normal mb-3 md:mb-4">
+          <span>EVERY FEST.</span>{' '}
+          <span className="text-primary">ONE NEST.</span>{' '}
+          <span className="font-sans font-medium text-[14px] sm:text-[16px] md:text-[18px] text-text-3 tracking-wider uppercase align-baseline inline-block whitespace-nowrap">
+            — FESTNEST
+          </span>
         </h1>
-        <div className="font-sans font-medium text-[13px] md:text-[15px] text-text-3 tracking-wider uppercase mb-3 md:mb-4">
-          FESTNEST
-        </div>
 
         {/* Discover hub — internal SEO entry point */}
         <button onClick={() => navigate('/discover')}
