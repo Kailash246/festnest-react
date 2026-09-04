@@ -174,7 +174,7 @@ export default function Explore() {
       <div className="px-4 pt-5 pb-4 md:px-12 md:pt-10">
         <h1 className="font-heading font-bold text-[20px] md:text-[26px] text-text-1 tracking-tight mb-1">Explore</h1>
         <p className="text-[14px] text-text-3 mb-4">Discover events across India</p>
-        <div className="flex items-center gap-3 bg-surface border-[1.5px] border-border-strong rounded-md px-4 py-[11px] focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all max-w-[600px]">
+        <div className="flex items-center gap-3 bg-surface border-[1.5px] border-border-strong rounded-md px-4 py-[11px] focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.10)] transition-all w-full">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-text-3 flex-shrink-0">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
