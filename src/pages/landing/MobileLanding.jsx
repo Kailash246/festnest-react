@@ -120,7 +120,7 @@ export default function MobileLanding() {
               { value: String(apiStats.totalCategories), label: 'Categories' },
             ].map(({ value, label }) => (
               <div key={label} className="bg-surface-2 rounded-lg py-4 text-center">
-                <div className="font-mono font-bold text-[22px] text-text-1 leading-none">{value}</div>
+                <div className="font-bold text-[22px] text-text-1 leading-none tabular-nums">{value}</div>
                 <div className="text-[11px] text-text-3 font-semibold mt-1">{label}</div>
               </div>
             ))}

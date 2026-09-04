@@ -63,7 +63,7 @@ export default function MyCollege() {
         {[['24','Events this year'],['840','Students on FestNest'],['#12','Delhi ranking']].map(([n,l])=>(
           <div key={l} className="bg-surface border border-border rounded-lg p-3.5 text-center
                                   hover:border-primary hover:-translate-y-[1px] transition-all">
-            <div className="font-mono font-bold text-[20px] md:text-[24px] text-primary mb-0.5">{n}</div>
+            <div className="font-bold text-[20px] md:text-[24px] text-primary mb-0.5 tabular-nums">{n}</div>
             <div className="text-[11px] text-text-3 font-medium">{l}</div>
           </div>
         ))}
@@ -116,7 +116,7 @@ export default function MyCollege() {
               className={`flex items-center gap-3 px-4 py-4 border-b border-border last:border-b-0
                           hover:bg-primary-xlight transition-colors cursor-pointer
                           ${isMe ? 'bg-primary-xlight' : ''}`}>
-              <div className={`font-mono font-bold text-[14px] w-6 text-center flex-shrink-0 ${rankClass}`}>{rank}</div>
+              <div className={`font-bold text-[14px] w-6 text-center flex-shrink-0 tabular-nums ${rankClass}`}>{rank}</div>
               <div className="w-9 h-9 rounded-full flex items-center justify-center font-sans font-bold text-[13px] text-white flex-shrink-0"
                 style={{ background: color }}>{av}</div>
               <div className="flex-1">
@@ -126,7 +126,7 @@ export default function MyCollege() {
                 </div>
                 <div className="text-[12px] text-text-3">{sub}</div>
               </div>
-              <div className="font-mono font-bold text-[15px] text-primary">{pts}</div>
+              <div className="font-bold text-[15px] text-primary tabular-nums">{pts}</div>
             </div>
           ))}
         </div>

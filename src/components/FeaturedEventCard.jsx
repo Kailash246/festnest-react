@@ -70,7 +70,7 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
                 <line x1="8" y1="2" x2="8" y2="6"/>
                 <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
-              <span className="font-mono">{ev.startDate}</span>
+              <span className="tabular-nums">{ev.startDate}</span>
             </div>
           )}
         </div>

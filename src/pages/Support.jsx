@@ -636,7 +636,7 @@ export default function Support() {
                       {/* Tracking info */}
                       <div className="bg-primary-light border border-[#C7D2FE] rounded-xl p-4 space-y-1">
                         <div className="text-[12px] font-bold text-primary">📍 Track your ticket inside FestNest</div>
-                        <div className="text-[13px] text-primary/80 font-mono font-medium">
+                        <div className="text-[13px] text-primary/80 font-medium">
                           Profile → Help & Support → My Tickets
                         </div>
                         <div className="text-[12px] text-primary/60 pt-1">

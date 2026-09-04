@@ -89,7 +89,7 @@ const StatCard = ({ Icon: CardIcon, label, value, color = 'indigo', sub }) => {
           <CardIcon size={17} strokeWidth={1.8} />
         </div>
       </div>
-      <div className="text-[28px] font-mono font-bold text-text-1 leading-none mb-1">
+      <div className="text-[28px] font-bold text-text-1 leading-none mb-1 tabular-nums">
         {value ?? '—'}
       </div>
       <div className="text-[12px] text-text-3 font-medium">{label}</div>
@@ -491,7 +491,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
               { v: pending,  l: 'In Review' },
             ].map(({ v, l }) => (
               <div key={l} className="text-center">
-                <div className="font-mono font-bold text-[18px] text-white leading-none">{v}</div>
+                <div className="font-bold text-[18px] text-white leading-none tabular-nums">{v}</div>
                 <div className="text-[10px] text-white/60 mt-0.5">{l}</div>
               </div>
             ))}
@@ -560,7 +560,7 @@ function OverviewTab({ events, user, navigate, onViewAll }) {
             <Star size={22} strokeWidth={1.8} className="text-amber-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-mono font-bold text-[20px] text-primary leading-none">
+            <div className="font-bold text-[20px] text-primary leading-none tabular-nums">
               {user.points.toLocaleString('en-IN')} pts
             </div>
             <div className="text-[12px] text-primary/70 mt-0.5">FestNest points earned</div>

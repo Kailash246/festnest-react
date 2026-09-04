@@ -389,7 +389,7 @@ const PrizePodium = ({ prizes }) => {
         {podium.map(({ rankLabel, label, value, bg, text }) => (
           <div key={label} className={`border rounded-lg p-3 sm:p-4 text-center ${bg}`}>
             <div className={`text-[13px] sm:text-[14px] font-bold mb-0.5 ${text}`}>{rankLabel}</div>
-            <div className={`font-mono font-bold text-[16px] sm:text-[18px] ${text}`}>₹{Number(String(value).replace(/,/g,'')).toLocaleString('en-IN')}</div>
+            <div className={`font-bold text-[16px] sm:text-[18px] tabular-nums ${text}`}>₹{Number(String(value).replace(/,/g,'')).toLocaleString('en-IN')}</div>
             <div className="text-[11px] text-text-3 mt-0.5">{label}</div>
           </div>
         ))}
@@ -635,10 +635,10 @@ function TicketCountdownCard({
             { v: countdown?.s ?? 0,  l: 'SECS' },
           ].map(({ v, l }) => (
             <div key={l} className="bg-white/10 rounded-lg py-2.5 text-center border border-white/10">
-              <div className="font-mono font-black text-[22px] leading-none text-white tabular-nums">
+              <div className="font-black text-[22px] leading-none text-white tabular-nums">
                 {String(v).padStart(2, '0')}
               </div>
-              <div className="text-[8px] font-mono tracking-wider text-white/50 mt-1">{l}</div>
+              <div className="text-[8px] tracking-wider text-white/50 mt-1 uppercase">{l}</div>
             </div>
           ))}
         </div>
@@ -663,7 +663,7 @@ function TicketCountdownCard({
         <div>
           <div className="text-[11px] font-bold uppercase tracking-wider text-text-4">Entry Fee</div>
           <div className="flex items-baseline gap-2 mt-0.5">
-            <span className="font-mono font-bold text-[28px] text-text-1">{ev.price || 'Free'}</span>
+            <span className="font-bold text-[28px] text-text-1 tabular-nums">{ev.price || 'Free'}</span>
             <span className="text-[13px] text-text-3">/ team</span>
           </div>
         </div>
@@ -1193,7 +1193,7 @@ export default function EventDetails() {
                     <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-white/60 mb-0.5">
                       Total Prize Pool
                     </div>
-                    <div className="font-mono font-bold text-white text-[18px] sm:text-[22px] leading-tight">
+                    <div className="font-bold text-white text-[18px] sm:text-[22px] leading-tight tabular-nums">
                       ₹{displayTotalPrize}
                     </div>
                     <div className="text-[11px] text-white/60 mt-0.5">
@@ -1540,11 +1540,11 @@ export default function EventDetails() {
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] sm:text-[11px] font-bold font-mono tracking-[0.14em] uppercase text-primary">
+                          <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.14em] uppercase text-primary">
                             TOTAL PRIZE POOL
                           </span>
                         </div>
-                        <div className="font-mono font-black text-[28px] sm:text-[36px] leading-tight tracking-tight text-text-1 mt-0.5">
+                        <div className="font-black text-[28px] sm:text-[36px] leading-tight tracking-tight text-text-1 mt-0.5 tabular-nums">
                           ₹{displayTotalPrize}
                         </div>
                         <p className="text-[12px] text-text-3 font-medium mt-0.5">
@@ -1869,7 +1869,7 @@ export default function EventDetails() {
                 <div className="text-[12px] text-white/60 mt-0.5 truncate">
                   {sidebarFeaturedEvent.college || sidebarFeaturedEvent.city}
                 </div>
-                <div className="text-[11px] font-mono text-white/40 mt-1">
+                <div className="text-[11px] text-white/40 mt-1 tabular-nums">
                   {sidebarFeaturedEvent.startDate || 'Upcoming'}
                 </div>
 
@@ -1910,7 +1910,7 @@ export default function EventDetails() {
                       <div className="text-[11px] text-text-3 truncate mt-0.5">
                         {sEv.college || sEv.city}
                       </div>
-                      <div className="text-[10px] font-mono text-text-4 mt-0.5">
+                      <div className="text-[10px] text-text-4 mt-0.5 tabular-nums">
                         {sEv.startDate || 'Upcoming'}
                       </div>
                     </div>
@@ -1938,7 +1938,7 @@ export default function EventDetails() {
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[50] bg-white/95 backdrop-blur-[20px] border-t border-border px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
         <div className="flex items-center gap-3 max-w-[500px] mx-auto">
           <div className="flex-shrink-0">
-            <div className="font-mono font-bold text-[20px] leading-none text-text-1">
+            <div className="font-bold text-[20px] leading-none text-text-1 tabular-nums">
               {ev.price || 'Free'}
             </div>
             <div className="text-[11px] text-text-3 mt-0.5">{ev.priceNote || 'per team'}</div>

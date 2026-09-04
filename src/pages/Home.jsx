@@ -2,14 +2,14 @@ import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react
 import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Timer, Star, CalendarDays, Code2, Music4, Wrench, Ticket, Trophy, AlertTriangle, Search, MapPin, PartyPopper, Compass } from 'lucide-react';
+import { Flame, Timer, Star, CalendarDays, Code2, Music4, Ticket, Trophy, AlertTriangle, Search, MapPin, Compass } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EventCard, { isEventExpired, sortEventsByStatus } from '../components/EventCard';
 import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { PRIORITY_CATEGORIES } from '../data/categories';
-import { FilterSheet, SortDropdown, ActivePill, CITIES, ENTRY, SORT_OPT } from '../components/EventFilters';
+import { FilterSheet, SortDropdown, ActivePill } from '../components/EventFilters';
 
 /* Organization + WebSite structured data for the homepage. */
 const HOME_JSON_LD = [
@@ -47,7 +47,7 @@ const CHIP_FILTERS = [
 ];
 
 /* ─────────────────────────────────────────
-   ICONS  (unchanged)
+   ICONS
 ───────────────────────────────────────── */
 const FireIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-[11px] h-[11px] text-red">
@@ -120,12 +120,31 @@ function applyFilters(events, chipCategory, sheetFilters, searchVal) {
   }
   if (sheetFilters.city) result = result.filter(ev => ev.city === sheetFilters.city);
 
-  let sortFn = (a, b) => a.deadlineDays - b.deadlineDays;
+  let sortFn = (a, b) => (a.deadlineDays ?? 999) - (b.deadlineDays ?? 999);
   switch (sheetFilters.sort) {
-    case 'Oldest':          sortFn = (a, b) => b.deadlineDays - a.deadlineDays; break;
-    case 'Most Registered': sortFn = (a, b) => b.registrationCount - a.registrationCount; break;
-    case 'Deadline Soon':   sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
-    default:                sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
+    case 'Latest':
+      sortFn = (a, b) => {
+        const tA = new Date(a.startDate || a.date?.start || a.date || a.createdAt || 0).getTime() || 0;
+        const tB = new Date(b.startDate || b.date?.start || b.date || b.createdAt || 0).getTime() || 0;
+        return tB - tA;
+      };
+      break;
+    case 'Oldest':
+      sortFn = (a, b) => {
+        const tA = new Date(a.startDate || a.date?.start || a.date || a.createdAt || 0).getTime() || 0;
+        const tB = new Date(b.startDate || b.date?.start || b.date || b.createdAt || 0).getTime() || 0;
+        return tA - tB;
+      };
+      break;
+    case 'Most Registered':
+      sortFn = (a, b) => (b.registrationCount || 0) - (a.registrationCount || 0);
+      break;
+    case 'Deadline Soon':
+      sortFn = (a, b) => (a.deadlineDays ?? 999) - (b.deadlineDays ?? 999);
+      break;
+    default:
+      sortFn = (a, b) => (a.deadlineDays ?? 999) - (b.deadlineDays ?? 999);
+      break;
   }
 
   result.sort(sortFn);
@@ -232,7 +251,11 @@ export default function Home() {
         ...expiredEvents,
       ];
 
-  const activeSheetCount = [sheetFilters.category, sheetFilters.entry, sheetFilters.city].filter(Boolean).length;
+  const activeSheetCount = [
+    sheetFilters.category,
+    sheetFilters.entry && sheetFilters.entry !== 'All' ? sheetFilters.entry : null,
+    sheetFilters.city,
+  ].filter(Boolean).length;
   const totalActiveFilters = activeSheetCount + (chipCategory !== 'all' ? 1 : 0);
 
   const clearAll = useCallback(() => {
@@ -314,12 +337,21 @@ export default function Home() {
         </button>
 
         {/* Search + Filter */}
-        <div className="relative block mt-4 md:mt-0">
+        <div className="relative block mt-4 md:mt-3 max-w-[640px]">
           <div className={`flex items-center gap-3 bg-white border-[1.5px] rounded-md px-4 py-[11px] transition-all duration-fast ${showSuggestions ? 'border-primary shadow-[0_0_0_3px_rgba(79,70,229,0.10)]' : 'border-[#CBCBC6]'}`} role="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-fast ${showSuggestions ? 'text-primary' : 'text-[#8A8A85]'}`}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input ref={searchRef} value={searchVal} onChange={e => setSearchVal(e.target.value)}
-              onFocus={() => setShowSuggestions(true)} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-              onKeyDown={e => { if (e.key === 'Escape') { setSearchVal(''); searchRef.current?.blur(); } }}
+              onFocus={() => setShowSuggestions(true)} onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              onKeyDown={e => {
+                if (e.key === 'Escape') {
+                  if (showSuggestions) {
+                    setShowSuggestions(false);
+                  } else {
+                    setSearchVal('');
+                    searchRef.current?.blur();
+                  }
+                }
+              }}
               className="flex-1 font-sans text-[14px] text-[#111110] bg-transparent outline-none placeholder:text-[#8A8A85] min-w-0"
               placeholder="Events, colleges, cities…" aria-label="Search events" autoComplete="off" />
             <AnimatePresence>
@@ -332,12 +364,16 @@ export default function Home() {
               )}
             </AnimatePresence>
             <div className="w-px h-5 bg-[#E4E4E0] flex-shrink-0" />
-            <button onClick={() => setFilterOpen(true)}
-              className={`flex items-center gap-[5px] rounded px-[11px] py-1.5 text-[12px] font-semibold flex-shrink-0 active:scale-95 transition-all duration-fast relative ${activeSheetCount > 0 ? 'bg-primary text-white' : 'bg-primary text-white hover:bg-primary-dark'}`}>
+            <button
+              type="button"
+              onClick={() => setFilterOpen(true)}
+              aria-label="Filter events"
+              aria-expanded={filterOpen}
+              className={`flex items-center gap-[5px] rounded px-[11px] py-1.5 text-[12px] font-semibold flex-shrink-0 active:scale-95 transition-all duration-fast relative ${activeSheetCount > 0 ? 'bg-primary text-white hover:bg-primary-dark shadow-sm' : 'bg-primary text-white hover:bg-primary-dark'}`}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
               Filter
               {activeSheetCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-mono font-bold rounded-full flex items-center justify-center">{activeSheetCount}</span>
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold rounded-full flex items-center justify-center tabular-nums">{activeSheetCount}</span>
               )}
             </button>
           </div>
@@ -348,7 +384,11 @@ export default function Home() {
                 <div className="px-4 pt-2.5 pb-1.5 text-[10px] font-bold tracking-wider text-[#AEAEAD] uppercase">Recent Searches</div>
                 {suggestions.map(({ text, sub, bg, Icon: SugIcon }) => (
                   <button key={text} className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[#F5F3FF] transition-colors border-t border-[#E4E4E0] text-left"
-                    onMouseDown={() => { setSearchVal(text); setShowSuggestions(false); }} role="option">
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      setSearchVal(text);
+                      setShowSuggestions(false);
+                    }} role="option">
                     <div className={`w-[34px] h-[34px] rounded ${bg} flex items-center justify-center flex-shrink-0`}><SugIcon size={18} strokeWidth={1.8} /></div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[14px] font-medium text-[#111110]">{text}</div>
@@ -378,78 +418,98 @@ export default function Home() {
       </AnimatePresence>
 
       {/* ── Trending Now ── */}
-      <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
-        <div className="flex items-center gap-2">
-          <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Flame size={16} strokeWidth={1.8} className="text-red" /> Trending Now</h2>
-          <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">Live</span>
-        </div>
-        <button onClick={() => navigate('/explore')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">See all</button>
-      </div>
+      {(secLoading || trending.length > 0) && (
+        <>
+          <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
+            <div className="flex items-center gap-2">
+              <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Flame size={16} strokeWidth={1.8} className="text-red" /> Trending Now</h2>
+              <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">Live</span>
+            </div>
+            <button onClick={() => navigate('/explore')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">See all</button>
+          </div>
 
-      {secLoading ? <SkeletonHScroll count={5} /> : (
-        <div className="flex gap-3 md:gap-4 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
-          {trending.map((ev) => (
-            <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-              onClick={() => {
-                sessionStorage.setItem('feed_scroll_origin', pathname);
-                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
-                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
-                navigate(`/event/${ev.id}`);
-              }}
-              className="flex-shrink-0 w-[196px] md:w-[224px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start transition-all duration-base"
-              tabIndex={0} role="listitem" onKeyDown={e => { if (e.key === 'Enter') navigate(`/event/${ev.id}`); }}>
-              <div className={`relative w-full h-[116px] md:h-[136px] flex items-center justify-center text-[36px] ${ev.bg}`}>
-                {ev.imageUrl
-                  ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" />
-                  : <span aria-hidden>{ev.emoji}</span>}
-                <span className="absolute top-2 left-2 text-[10px] font-mono font-bold bg-black/55 text-white px-[7px] py-[2px] rounded-md tracking-wide z-[1]">#{ev.trendRank}</span>
-              </div>
-              <div className="p-3">
-                <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-[3px]">{ev.category}</div>
-                <div className="font-sans font-bold text-[13px] md:text-[14px] text-text-1 leading-snug tracking-snug mb-[5px]">{ev.name}</div>
-                <div className="flex items-center gap-1 text-[11px] text-text-3 mb-2"><PinIcon /> {ev.college}</div>
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                  <div className="flex items-center gap-[3px] text-[11px] font-mono text-text-3"><FireIcon /> {ev.trendViews}</div>
-                  <span className="text-[10px] font-bold text-primary">{ev.trendExtra}</span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+          {secLoading ? <SkeletonHScroll count={5} /> : (
+            <div className="flex gap-3 md:gap-4 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2" role="list" aria-label="Trending events">
+              {trending.map((ev) => (
+                <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                  onClick={() => {
+                    sessionStorage.setItem('feed_scroll_origin', pathname);
+                    sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                    sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+                    navigate(`/event/${ev.id}`);
+                  }}
+                  className="flex-shrink-0 w-[196px] md:w-[224px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start transition-all duration-base"
+                  tabIndex={0} role="listitem" aria-label={`${ev.name} at ${ev.college}`}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/event/${ev.id}`);
+                    }
+                  }}>
+                  <div className={`relative w-full h-[116px] md:h-[136px] flex items-center justify-center text-[36px] ${ev.bg}`}>
+                    {ev.imageUrl
+                      ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" />
+                      : <span aria-hidden>{ev.emoji}</span>}
+                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-black/55 text-white px-[7px] py-[2px] rounded-md tracking-wide z-[1] tabular-nums">#{ev.trendRank}</span>
+                  </div>
+                  <div className="p-3">
+                    <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-[3px] truncate">{ev.category}</div>
+                    <div className="font-sans font-bold text-[13px] md:text-[14px] text-text-1 leading-snug tracking-snug mb-[5px] line-clamp-2 min-h-[36px]">{ev.name}</div>
+                    <div className="flex items-center gap-1 text-[11px] text-text-3 mb-2 min-w-0"><PinIcon /> <span className="truncate">{ev.college}</span></div>
+                    <div className="flex items-center justify-between pt-2 border-t border-border">
+                      <div className="flex items-center gap-[3px] text-[11px] text-text-3 tabular-nums"><FireIcon /> {ev.trendViews}</div>
+                      <span className="text-[10px] font-bold text-primary truncate max-w-[80px] text-right">{ev.trendExtra}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* ── Ending Soon ── */}
-      <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
-        <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Timer size={16} strokeWidth={1.8} className="text-amber" /> Ending Soon</h2>
-        <button onClick={() => navigate('/explore')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">See all</button>
-      </div>
+      {(secLoading || urgent.length > 0) && (
+        <>
+          <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
+            <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug flex items-center gap-2"><Timer size={16} strokeWidth={1.8} className="text-amber" /> Ending Soon</h2>
+            <button onClick={() => navigate('/explore')} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">See all</button>
+          </div>
 
-      {secLoading ? <SkeletonHScroll count={4} wide /> : (
-        <div className="flex gap-3 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2">
-          {urgent.map((ev) => (
-            <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-              onClick={() => {
-                sessionStorage.setItem('feed_scroll_origin', pathname);
-                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
-                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
-                navigate(`/event/${ev.id}`);
-              }}
-              className="flex-shrink-0 w-[236px] md:w-[270px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start flex transition-all duration-base"
-              tabIndex={0} role="listitem" onKeyDown={e => { if (e.key === 'Enter') navigate(`/event/${ev.id}`); }}>
-              <div className={`w-[78px] min-h-[78px] flex items-center justify-center text-[28px] flex-shrink-0 ${ev.bg}`}>
-                {ev.imageUrl ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" /> : ev.emoji}
-              </div>
-              <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
-                <div className="flex items-center gap-[5px] text-[10px] font-mono font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-md w-fit mb-[5px] tracking-normal">
-                  <span className="w-[5px] h-[5px] bg-red rounded-full animate-pulse-fast flex-shrink-0" />
-                  {ev.endingSoonDays === 0 ? 'Ends today' : `${ev.endingSoonDays} ${ev.endingSoonDays === 1 ? 'day' : 'days'} left`}
-                </div>
-                <div className="font-sans font-bold text-[12px] text-text-1 leading-snug mb-[3px] truncate">{ev.name}</div>
-                <div className="text-[11px] text-text-3">{ev.college} · {ev.city}</div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+          {secLoading ? <SkeletonHScroll count={4} wide /> : (
+            <div className="flex gap-3 px-4 scroll-px-4 md:hscroll-desktop overflow-x-auto no-scrollbar scroll-snap-x pb-2" role="list" aria-label="Ending soon events">
+              {urgent.map((ev) => (
+                <motion.div key={ev.id} whileHover={{ y: -3, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                  onClick={() => {
+                    sessionStorage.setItem('feed_scroll_origin', pathname);
+                    sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                    sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+                    navigate(`/event/${ev.id}`);
+                  }}
+                  className="flex-shrink-0 w-[236px] md:w-[270px] bg-white border border-[#E4E4E0] rounded-md overflow-hidden cursor-pointer scroll-snap-start flex transition-all duration-base"
+                  tabIndex={0} role="listitem" aria-label={`${ev.name} at ${ev.college}`}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/event/${ev.id}`);
+                    }
+                  }}>
+                  <div className={`w-[78px] min-h-[78px] flex items-center justify-center text-[28px] flex-shrink-0 ${ev.bg}`}>
+                    {ev.imageUrl ? <img src={ev.imageUrl} alt={ev.name} className="w-full h-full object-cover" /> : ev.emoji}
+                  </div>
+                  <div className="p-3 flex-1 flex flex-col justify-center min-w-0">
+                    <div className="flex items-center gap-[5px] text-[10px] font-bold text-red bg-red-bg border border-red-border px-2 py-[2px] rounded-md w-fit mb-[5px] tracking-normal tabular-nums">
+                      <span className="w-[5px] h-[5px] bg-red rounded-full animate-pulse-fast flex-shrink-0" />
+                      {ev.endingSoonDays === 0 ? 'Ends today' : `${ev.endingSoonDays} ${ev.endingSoonDays === 1 ? 'day' : 'days'} left`}
+                    </div>
+                    <div className="font-sans font-bold text-[12px] text-text-1 leading-snug mb-[3px] truncate">{ev.name}</div>
+                    <div className="text-[11px] text-text-3 truncate">{ev.college} · {ev.city}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* ── Filter chips ── */}
@@ -466,10 +526,17 @@ export default function Home() {
       <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
         <div className="flex items-center gap-2">
           <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">For You</h2>
-          {!feedLoading && <span className="text-[10px] font-mono font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{displayedEvents.length}</span>}
+          {!feedLoading && <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md tabular-nums">{displayedEvents.length}</span>}
           {totalActiveFilters > 0 && <span className="text-[11px] text-[#8A8A85]">· filtered</span>}
         </div>
-        <SortDropdown value={sheetFilters.sort} onChange={v => setSheetFilters(f => ({ ...f, sort: v }))} />
+        <div className="flex items-center gap-3">
+          {totalActiveFilters > 0 && (
+            <button onClick={clearAll} className="text-[13px] font-medium text-primary hover:opacity-70 transition-opacity">
+              Clear filters
+            </button>
+          )}
+          <SortDropdown value={sheetFilters.sort} onChange={v => setSheetFilters(f => ({ ...f, sort: v }))} />
+        </div>
       </div>
 
       {/* Error state */}

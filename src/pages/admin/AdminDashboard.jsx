@@ -43,7 +43,7 @@ const StatCard = ({ icon, label, value, sub, color = 'indigo' }) => {
     <div className="bg-white border border-border rounded-lg p-4 shadow-1 flex items-start gap-3">
       <div className={`w-10 h-10 rounded-md flex items-center justify-center text-xl flex-shrink-0 ${bg[color]}`}>{icon}</div>
       <div>
-        <div className="text-[22px] font-mono font-bold text-text-1 leading-none">{value ?? '—'}</div>
+        <div className="text-[22px] font-bold text-text-1 leading-none tabular-nums">{value ?? '—'}</div>
         <div className="text-[12px] text-text-2 font-medium mt-0.5">{label}</div>
         {sub && <div className="text-[11px] text-text-3 mt-0.5">{sub}</div>}
       </div>

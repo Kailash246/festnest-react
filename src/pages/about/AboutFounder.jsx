@@ -135,7 +135,7 @@ export default function AboutFounder() {
                   className="flex gap-4 p-5 rounded-xl border border-gray-100
                              hover:border-indigo-200 hover:shadow-sm transition-all duration-150">
                   <div className="w-10 h-10 rounded-full bg-[#4F46E5] flex items-center justify-center flex-shrink-0">
-                    <span className="text-[12px] font-bold text-white font-mono">{num}</span>
+                    <span className="text-[12px] font-bold text-white tabular-nums">{num}</span>
                   </div>
                   <div>
                     <div className="text-[14px] font-semibold text-gray-900 mb-1">{title}</div>

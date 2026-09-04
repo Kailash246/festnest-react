@@ -115,7 +115,7 @@ const LeftPanel = () => (
       <div className="flex gap-6">
         {[['230+','Events'],['48k+','Students'],['180+','Colleges']].map(([n,l]) => (
           <div key={l} className="text-center">
-            <div className="font-mono font-bold text-[22px] text-white mb-0.5">{n}</div>
+            <div className="font-bold text-[22px] text-white mb-0.5 tabular-nums">{n}</div>
             <div className="text-[12px] text-white/60">{l}</div>
           </div>
         ))}

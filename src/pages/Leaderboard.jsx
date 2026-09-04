@@ -83,8 +83,8 @@ export default function Leaderboard() {
             </div>
             <div className="text-[12px] font-semibold text-text-1 text-center max-w-[70px] truncate">{name}</div>
             <div className="text-[10px] text-text-3 text-center max-w-[70px] truncate">{college}</div>
-            <div className="font-mono font-bold text-[13px] text-primary">{pts} pts</div>
-            <div className="rounded-t-md flex items-center justify-center font-mono font-bold text-[18px] text-white"
+            <div className="font-bold text-[13px] text-primary tabular-nums">{pts} pts</div>
+            <div className="rounded-t-md flex items-center justify-center font-bold text-[18px] text-white tabular-nums"
               style={{ width: blockW, height: blockH, background: color }}>
               {rank}
             </div>
@@ -101,7 +101,7 @@ export default function Leaderboard() {
               className={`flex items-center gap-3 px-4 md:px-5 py-3.5 border-b border-border last:border-b-0
                           transition-colors hover:bg-primary-xlight cursor-pointer
                           ${isMe ? 'bg-primary-xlight' : ''}`}>
-              <div className={`font-mono font-bold text-[14px] w-7 text-center flex-shrink-0
+              <div className={`font-bold text-[14px] w-7 text-center flex-shrink-0 tabular-nums
                               ${rank===1?'text-[#D97706]':rank===2?'text-[#9CA3AF]':rank===3?'text-[#B45309]':'text-text-3'}`}>
                 {rank}
               </div>
@@ -116,7 +116,7 @@ export default function Leaderboard() {
                 <div className="text-[12px] text-text-3">{college}</div>
               </div>
               <div className="text-right">
-                <div className="font-mono font-bold text-[15px] md:text-[16px] text-primary">{pts}</div>
+                <div className="font-bold text-[15px] md:text-[16px] text-primary tabular-nums">{pts}</div>
                 <div className="flex justify-end gap-[3px] mt-1">
                   {badges.map((BadgeIcon, i) => <BadgeIcon key={i} size={13} strokeWidth={1.8} className="text-text-3" />)}
                 </div>
@@ -140,7 +140,7 @@ export default function Leaderboard() {
             {PTS_RULES.map(([RuleIcon, label, pts]) => (
               <div key={label} className="flex items-center justify-between text-[13px]">
                 <span className="text-text-2 flex items-center gap-2"><RuleIcon size={13} strokeWidth={1.8} className="text-text-3 flex-shrink-0" />{label}</span>
-                <span className="font-mono font-semibold text-primary">{pts}</span>
+                <span className="font-semibold text-primary tabular-nums">{pts}</span>
               </div>
             ))}
           </div>

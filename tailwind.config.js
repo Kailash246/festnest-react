@@ -17,11 +17,11 @@ export default {
 
       /* ── Typography ── */
       fontFamily: {
-        sans:    ['Satoshi', 'sans-serif'],
-        body:    ['Satoshi', 'sans-serif'],
-        display: ['Clash Display', 'sans-serif'],
-        heading: ['Clash Display', 'sans-serif'],
-        syne:    ['Clash Display', 'sans-serif'],
+        sans:    ['Geist Sans', 'Geist', 'sans-serif'],
+        body:    ['Geist Sans', 'Geist', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
+        heading: ['Space Grotesk', 'sans-serif'],
+        syne:    ['Space Grotesk', 'sans-serif'],
         mono:    ['Geist Mono', 'monospace'],
       },
       fontSize: {

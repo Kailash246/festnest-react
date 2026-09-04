@@ -41,7 +41,7 @@ export function Section({ num, title, id, children }) {
   return (
     <section id={id} className="scroll-mt-20 mb-10">
       <div className="flex items-center gap-2.5 mb-3">
-        <span className="flex-shrink-0 w-8 h-8 rounded-md bg-primary text-white font-mono font-bold text-[13px] flex items-center justify-center">
+        <span className="flex-shrink-0 w-8 h-8 rounded-md bg-primary text-white font-bold text-[13px] flex items-center justify-center tabular-nums">
           {num}
         </span>
         <h2 className="font-heading font-bold text-[18px] md:text-[20px] text-text-1 tracking-tight leading-tight">{title}</h2>

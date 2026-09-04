@@ -246,7 +246,7 @@ function StudentStats({ stats, completedCount, unlockedCount, loading }) {
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 ${ic}`}>
                 <Icon size={16} strokeWidth={1.8} />
               </div>
-              <div className="font-mono font-bold text-[22px] text-text-1 leading-none mb-0.5">
+              <div className="font-bold text-[22px] text-text-1 leading-none mb-0.5 tabular-nums">
                 {values[key]}
               </div>
               <div className="text-[10px] text-text-3 font-semibold uppercase tracking-wide leading-tight">
@@ -699,7 +699,7 @@ function AboutOrgSection({ user, events = [] }) {
           {STATS.map(s => (
             <div key={s.label}
               className="bg-surface-2 border border-border rounded-lg p-3 text-center">
-              <div className="font-mono font-bold text-[20px] text-text-1 leading-none mb-1">
+              <div className="font-bold text-[20px] text-text-1 leading-none mb-1 tabular-nums">
                 {s.value}
               </div>
               <div className="text-[10px] text-text-3 font-semibold uppercase tracking-wide leading-tight">

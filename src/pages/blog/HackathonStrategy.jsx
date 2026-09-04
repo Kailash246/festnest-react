@@ -121,7 +121,7 @@ export default function HackathonStrategy() {
                 { time: '1:45–2:00', task: 'Divide tasks. Everyone must have a clear first task before leaving this meeting.' },
               ].map((item) => (
                 <div key={item.time} className="flex gap-3 text-sm">
-                  <span className="text-indigo-500 font-mono font-bold shrink-0">{item.time}</span>
+                  <span className="text-indigo-500 font-bold shrink-0 tabular-nums">{item.time}</span>
                   <span className="text-indigo-800">{item.task}</span>
                 </div>
               ))}
