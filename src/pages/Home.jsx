@@ -5,11 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Timer, Star, CalendarDays, Code2, Music4, Ticket, Trophy, AlertTriangle, Search, MapPin, Compass } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EventCard, { isEventExpired, sortEventsByStatus } from '../components/EventCard';
+import Pagination from '../components/Pagination';
 import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { PRIORITY_CATEGORIES } from '../data/categories';
 import { FilterSheet, SortDropdown, ActivePill } from '../components/EventFilters';
+
+const EVENTS_PER_PAGE = 16;
 
 /* Organization + WebSite structured data for the homepage. */
 const HOME_JSON_LD = [
@@ -157,13 +160,7 @@ function applyFilters(events, chipCategory, sheetFilters, searchVal) {
 export default function Home() {
   const navigate     = useNavigate();
   const { pathname } = useLocation();
-  const { notifBannerVisible, setNotifBannerVisible, showToast,
-          homeFeedCache, homeFeedCacheTime, setHomeFeedCache, setHomeFeedCacheTime } = useApp();
-
-  const CACHE_TTL  = 5 * 60 * 1000;
-  const cacheValid = homeFeedCache && (Date.now() - homeFeedCacheTime < CACHE_TTL);
-  const cacheRef   = useRef({ cache: homeFeedCache, cacheTime: homeFeedCacheTime });
-  cacheRef.current = { cache: homeFeedCache, cacheTime: homeFeedCacheTime };
+  const { notifBannerVisible, setNotifBannerVisible, showToast } = useApp();
 
   const [searchVal,       setSearchVal]       = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -171,35 +168,24 @@ export default function Home() {
   const [filterOpen,      setFilterOpen]      = useState(false);
   const [sheetFilters,    setSheetFilters]    = useState({ category: null, entry: null, city: null, sort: 'Latest' });
 
-  /* ── API state (lazy-initialised from cache when available) ── */
-  const [allEvents,   setAllEvents]   = useState(() => cacheValid ? homeFeedCache.allEvents : []);
-  const [trending,    setTrending]    = useState(() => cacheValid ? homeFeedCache.trending  : []);
-  const [urgent,      setUrgent]      = useState(() => cacheValid ? homeFeedCache.urgent    : []);
-  const [feedLoading, setFeedLoading] = useState(!cacheValid);
-  const [secLoading,  setSecLoading]  = useState(!cacheValid);
+  /* ── Pagination state ── */
+  const [page,        setPage]        = useState(1);
+  const [totalPages,  setTotalPages]  = useState(1);
+  const [totalEvents, setTotalEvents] = useState(0);
+
+  /* ── API state ── */
+  const [allEvents,   setAllEvents]   = useState([]);
+  const [trending,    setTrending]    = useState([]);
+  const [urgent,      setUrgent]      = useState([]);
+  const [feedLoading, setFeedLoading] = useState(true);
+  const [secLoading,  setSecLoading]  = useState(true);
   const [error,       setError]       = useState(null);
 
   const searchRef         = useRef();
   const scrollRestoredRef = useRef(false);
 
-  /* ── Fetch all data on mount (skip if cache is warm) ── */
+  /* ── Fetch trending and urgent carousels once on mount ── */
   useEffect(() => {
-    if (cacheRef.current.cache && (Date.now() - cacheRef.current.cacheTime < CACHE_TTL)) return;
-
-    let mainEvents = null;
-    let secEvents  = null;
-    const trySaveCache = () => {
-      if (mainEvents && secEvents) {
-        setHomeFeedCache({ allEvents: mainEvents, ...secEvents });
-        setHomeFeedCacheTime(Date.now());
-      }
-    };
-
-    eventsApi.list({ limit: 50 })
-      .then(r => { mainEvents = normaliseEvents(r.data.events); setAllEvents(mainEvents); trySaveCache(); })
-      .catch(e => setError(e.message))
-      .finally(() => setFeedLoading(false));
-
     Promise.all([eventsApi.trending(), eventsApi.urgent()])
       .then(([tr, ur]) => {
         const t = normaliseEvents(tr.data.events);
@@ -208,12 +194,72 @@ export default function Home() {
           .sort((a, b) => (a.deadlineDays ?? 0) - (b.deadlineDays ?? 0));
         setTrending(t);
         setUrgent(u);
-        secEvents = { trending: t, urgent: u };
-        trySaveCache();
       })
       .catch(err => { if (import.meta.env.DEV) console.error('[Home] rails fetch failed:', err); })
       .finally(() => setSecLoading(false));
   }, []);
+
+  /* ── Fetch paginated feed events ── */
+  const fetchFeed = useCallback((currentPage = page) => {
+    setFeedLoading(true);
+    setError(null);
+
+    const params = {
+      page: currentPage,
+      limit: EVENTS_PER_PAGE,
+    };
+
+    if (sheetFilters.category) {
+      params.category = sheetFilters.category;
+    } else if (chipCategory && chipCategory !== 'all') {
+      params.category = chipCategory;
+    }
+
+    if (sheetFilters.entry && sheetFilters.entry !== 'All') {
+      params.entryType = sheetFilters.entry;
+    }
+
+    if (sheetFilters.city) {
+      params.city = sheetFilters.city;
+    }
+
+    if (sheetFilters.sort) {
+      params.sort = sheetFilters.sort;
+    }
+
+    if (searchVal.trim()) {
+      params.search = searchVal.trim();
+    }
+
+    eventsApi.list(params)
+      .then(r => {
+        const events = normaliseEvents(r.data.events);
+        setAllEvents(events);
+        if (r.data.pagination) {
+          setTotalPages(r.data.pagination.pages || 1);
+          setTotalEvents(r.data.pagination.total || events.length);
+        } else {
+          setTotalPages(1);
+          setTotalEvents(events.length);
+        }
+      })
+      .catch(e => setError(e.message))
+      .finally(() => setFeedLoading(false));
+  }, [page, chipCategory, sheetFilters, searchVal]);
+
+  // Reset to page 1 whenever filters or search change
+  useEffect(() => {
+    setPage(1);
+  }, [chipCategory, sheetFilters, searchVal]);
+
+  // Trigger fetch whenever filter, search or page changes (debounced for search)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchFeed(page);
+    }, searchVal.trim() ? 250 : 0);
+
+    return () => clearTimeout(timer);
+  }, [fetchFeed, page, searchVal]);
 
   /* ── Restore scroll position when navigating back from an event page ── */
   useLayoutEffect(() => {
@@ -262,13 +308,24 @@ export default function Home() {
     setChipCategory('all');
     setSheetFilters({ category: null, entry: null, city: null, sort: 'Latest' });
     setSearchVal('');
+    setPage(1);
   }, []);
 
   const handleDeleteEvent = useCallback(async (eventId) => {
     await adminApi.hardDeleteEvent(eventId);
     setAllEvents(prev => prev.filter(ev => ev._id !== eventId));
+    setTotalEvents(prev => Math.max(0, prev - 1));
     showToast('Event permanently deleted', 'success');
   }, [showToast]);
+
+  const handlePageChange = useCallback((newPage) => {
+    setPage(newPage);
+    const el = document.getElementById('for-you-heading');
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, []);
 
   const suggestions = [
     { text: 'HackBits 2025',          sub: 'IIT Bombay · Hackathon',  bg: 'bg1', Icon: Code2 },
@@ -523,10 +580,10 @@ export default function Home() {
       </div>
 
       {/* ── For You feed ── */}
-      <div className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop">
+      <div id="for-you-heading" className="flex items-center justify-between px-4 pt-5 pb-3 md:section-hd-desktop scroll-mt-20">
         <div className="flex items-center gap-2">
           <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">For You</h2>
-          {!feedLoading && <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md tabular-nums">{displayedEvents.length}</span>}
+          {!feedLoading && <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md tabular-nums">{totalEvents}</span>}
           {totalActiveFilters > 0 && <span className="text-[11px] text-[#8A8A85]">· filtered</span>}
         </div>
         <div className="flex items-center gap-3">
@@ -545,19 +602,19 @@ export default function Home() {
           <AlertTriangle size={56} strokeWidth={1.5} className="text-amber mb-4" />
           <div className="font-heading font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-[#8A8A85] mb-6 max-w-[260px]">{error}</div>
-          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark transition-all">Retry</button>
+          <button onClick={() => fetchFeed(page)} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark transition-all">Retry</button>
         </motion.div>
       )}
 
       {/* Loading skeletons for feed */}
       {feedLoading && !error && (
         <div className="feed-grid">
-          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
       )}
 
       {/* Empty state */}
-      {!feedLoading && !error && displayedEvents.length === 0 && (
+      {!feedLoading && !error && allEvents.length === 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center px-4 py-20 text-center">
           <Search size={56} strokeWidth={1.5} className="text-text-3 mb-4" />
           <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No events found</div>
@@ -567,20 +624,31 @@ export default function Home() {
       )}
 
       {/* Feed */}
-      {!feedLoading && !error && displayedEvents.length > 0 && (
-        <div className="feed-grid" role="list" aria-label="Event feed">
-          {displayedEvents.map((ev, i) => (
-            <motion.div key={ev.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.16, delay: Math.min(i * 0.04, 0.24) }}
-              onClickCapture={() => {
-                sessionStorage.setItem('feed_scroll_origin', pathname);
-                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
-                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
-              }}>
-              <EventCard event={ev} onDelete={handleDeleteEvent} featured={ev.isFeatured || false} />
-            </motion.div>
-          ))}
-        </div>
+      {!feedLoading && !error && allEvents.length > 0 && (
+        <>
+          <div className="feed-grid" role="list" aria-label="Event feed">
+            {allEvents.map((ev, i) => (
+              <motion.div key={ev.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: Math.min(i * 0.04, 0.24) }}
+                onClickCapture={() => {
+                  sessionStorage.setItem('feed_scroll_origin', pathname);
+                  sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                  sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+                }}>
+                <EventCard event={ev} onDelete={handleDeleteEvent} featured={ev.isFeatured || false} />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* ── Pagination ── */}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            totalEvents={totalEvents}
+            limit={EVENTS_PER_PAGE}
+            onPageChange={handlePageChange}
+          />
+        </>
       )}
 
       <div className="h-4" />

@@ -3,12 +3,15 @@ import { createPortal } from 'react-dom';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import EventCard, { sortEventsByStatus } from '../components/EventCard';
+import Pagination from '../components/Pagination';
 import Seo from '../components/Seo';
 import { events as eventsApi, admin as adminApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES } from '../data/categories';
 import { FilterSheet, SortDropdown, ActivePill } from '../components/EventFilters';
+
+const EVENTS_PER_PAGE = 16;
 
 // Priority-first category tiles from the shared catalog.
 const EXPLORE_CATEGORIES = CATEGORIES.map(c => ({
@@ -43,10 +46,13 @@ export default function Explore() {
     const cat = searchParams.get('cat');
     return cat ? decodeURIComponent(cat) : 'all';
   });
-  const [allEvents, setAllEvents] = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState(null);
-  const scrollRestoredRef         = useRef(false);
+  const [allEvents,   setAllEvents]   = useState([]);
+  const [page,        setPage]        = useState(1);
+  const [totalPages,  setTotalPages]  = useState(1);
+  const [totalEvents, setTotalEvents] = useState(0);
+  const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState(null);
+  const scrollRestoredRef             = useRef(false);
 
   const [filterOpen,   setFilterOpen]   = useState(false);
   const [sheetFilters, setSheetFilters] = useState({ category: null, entry: null, city: null, sort: 'Latest' });
@@ -67,30 +73,64 @@ export default function Explore() {
     setActiveCat(f.category || 'all');
   }, []);
 
-  /* Fetch from API (skip if cache is warm and category matches) */
-  const fetchEvents = useCallback(() => {
-    const { cache, cacheTime } = cacheRef.current;
-    if (cache && (Date.now() - cacheTime < CACHE_TTL) && cache.activeCat === activeCat) {
-      setAllEvents(cache.allEvents);
-      setLoading(false);
-      return;
-    }
+  /* Fetch paginated events from backend */
+  const fetchEvents = useCallback((currentPage = page) => {
     setLoading(true);
     setError(null);
-    const params = { limit: 100 };
-    if (activeCat !== 'all') params.category = activeCat;
+
+    const params = {
+      page: currentPage,
+      limit: EVENTS_PER_PAGE,
+    };
+
+    const cat = activeCat !== 'all' ? activeCat : sheetFilters.category;
+    if (cat) params.category = cat;
+
+    if (sheetFilters.entry && sheetFilters.entry !== 'All') {
+      params.entryType = sheetFilters.entry;
+    }
+
+    if (sheetFilters.city) {
+      params.city = sheetFilters.city;
+    }
+
+    if (sheetFilters.sort) {
+      params.sort = sheetFilters.sort;
+    }
+
+    if (query.trim()) {
+      params.search = query.trim();
+    }
+
     eventsApi.list(params)
       .then(r => {
         const evts = normaliseEvents(r.data.events);
         setAllEvents(evts);
-        setExploreFeedCache({ allEvents: evts, activeCat });
-        setExploreFeedCacheTime(Date.now());
+        if (r.data.pagination) {
+          setTotalPages(r.data.pagination.pages || 1);
+          setTotalEvents(r.data.pagination.total || evts.length);
+        } else {
+          setTotalPages(1);
+          setTotalEvents(evts.length);
+        }
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
-  }, [activeCat]);
+  }, [page, activeCat, sheetFilters, query]);
 
-  useEffect(() => { fetchEvents(); }, [fetchEvents]);
+  // Reset page to 1 when filters or query change
+  useEffect(() => {
+    setPage(1);
+  }, [activeCat, sheetFilters, query]);
+
+  // Debounce query search and trigger fetch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchEvents(page);
+    }, query.trim() ? 250 : 0);
+
+    return () => clearTimeout(timer);
+  }, [fetchEvents, page, query]);
 
   /* Restore scroll position when navigating back from an event page */
   useLayoutEffect(() => {
@@ -110,35 +150,18 @@ export default function Explore() {
   const handleDeleteEvent = useCallback(async (eventId) => {
     await adminApi.hardDeleteEvent(eventId);
     setAllEvents(prev => prev.filter(ev => ev._id !== eventId));
+    setTotalEvents(prev => Math.max(0, prev - 1));
     showToast('Event permanently deleted', 'success');
   }, [showToast]);
 
-  /* Client-side text + entry/city filter on top of the already-category-filtered API results */
-  let filtered = allEvents.filter(ev => {
-    if (query) {
-      const q = query.toLowerCase();
-      const matchesQuery = ev.name.toLowerCase().includes(q) ||
-        ev.college.toLowerCase().includes(q) ||
-        ev.city.toLowerCase().includes(q);
-      if (!matchesQuery) return false;
+  const handlePageChange = useCallback((newPage) => {
+    setPage(newPage);
+    const el = document.getElementById('explore-feed-heading');
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
-    if (sheetFilters.entry && sheetFilters.entry !== 'All') {
-      const entryMap = { Free: 'free', Paid: 'paid', 'Prize Pool': 'prize' };
-      if (ev.entryType !== entryMap[sheetFilters.entry]) return false;
-    }
-    if (sheetFilters.city && ev.city !== sheetFilters.city) return false;
-    return true;
-  });
-
-  let sortFn = (a, b) => a.deadlineDays - b.deadlineDays;
-  switch (sheetFilters.sort) {
-    case 'Oldest':          sortFn = (a, b) => b.deadlineDays - a.deadlineDays; break;
-    case 'Most Registered': sortFn = (a, b) => b.registrationCount - a.registrationCount; break;
-    case 'Deadline Soon':   sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
-    default:                sortFn = (a, b) => a.deadlineDays - b.deadlineDays; break;
-  }
-  filtered.sort(sortFn);
-  filtered = sortEventsByStatus(filtered, sortFn);
+  }, []);
 
   /* Category counts from loaded data */
   const catCounts = allEvents.reduce((acc, ev) => {
@@ -192,7 +215,7 @@ export default function Explore() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
             Filter
             {activeSheetCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold rounded-full flex items-center justify-center">{activeSheetCount}</span>
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red text-white text-[9px] font-bold rounded-full flex items-center justify-center tabular-nums">{activeSheetCount}</span>
             )}
           </button>
         </div>
@@ -200,7 +223,7 @@ export default function Explore() {
 
       {/* Active filter pills */}
       <AnimatePresence>
-        {(sheetFilters.entry && sheetFilters.entry !== 'All' || sheetFilters.city) && (
+        {((sheetFilters.entry && sheetFilters.entry !== 'All') || sheetFilters.city) && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
             className="flex items-center gap-2 px-4 md:px-12 pt-3 overflow-x-auto no-scrollbar">
             <span className="text-[12px] text-[#8A8A85] flex-shrink-0">Filters:</span>
@@ -227,7 +250,7 @@ export default function Explore() {
               </div>
               <div className={`font-sans font-bold text-[14px] md:text-[15px] ${activeCat === value ? 'text-primary' : 'text-text-1'} transition-colors`}>{name}</div>
               <div className="text-[12px] text-text-3">
-                {loading ? '…' : `${count} event${count !== 1 ? 's' : ''}`}
+                Browse {name}
               </div>
             </motion.button>
           );
@@ -235,11 +258,11 @@ export default function Explore() {
       </div>
 
       {/* Feed header */}
-      <div className="flex items-center justify-between px-4 md:section-hd-desktop mb-3">
+      <div id="explore-feed-heading" className="flex items-center justify-between px-4 md:section-hd-desktop mb-3 scroll-mt-20">
         <div className="flex items-center gap-2">
           <h2 className="font-heading font-bold text-[16px] md:text-[18px] text-text-1 tracking-snug">{title}</h2>
           {!loading && (
-            <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md">{filtered.length}</span>
+            <span className="text-[10px] font-bold bg-primary-light text-primary px-[7px] py-[2px] rounded-md tabular-nums">{totalEvents}</span>
           )}
         </div>
         <div className="flex items-center gap-3">
@@ -251,24 +274,24 @@ export default function Explore() {
       </div>
 
       {/* Error */}
-      {error && (
+      {error && !loading && (
         <div className="flex flex-col items-center py-16 text-center px-4">
           <div className="text-[48px] mb-4">⚠️</div>
           <div className="font-heading font-bold text-[18px] text-text-1 mb-2">Could not load events</div>
           <div className="text-[14px] text-text-3 mb-4">{error}</div>
-          <button onClick={fetchEvents} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>
+          <button onClick={() => fetchEvents(page)} className="px-5 py-2.5 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>
         </div>
       )}
 
       {/* Skeleton loading */}
       {loading && !error && (
         <div className="feed-grid">
-          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
       )}
 
       {/* Empty */}
-      {!loading && !error && filtered.length === 0 && (
+      {!loading && !error && allEvents.length === 0 && (
         <div className="flex flex-col items-center py-16 text-center px-4">
           <div className="text-[48px] mb-4">🔍</div>
           <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No events found</div>
@@ -278,21 +301,34 @@ export default function Explore() {
       )}
 
       {/* Feed */}
-      {!loading && !error && filtered.length > 0 && (
-        <div className="feed-grid" role="list">
-          {filtered.map((ev, i) => (
-            <motion.div key={ev.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.15, delay: Math.min(i * 0.03, 0.2) }}
-              onClickCapture={() => {
-                sessionStorage.setItem('feed_scroll_origin', pathname);
-                sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
-                sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
-              }}>
-              <EventCard event={ev} onDelete={handleDeleteEvent} />
-            </motion.div>
-          ))}
-        </div>
+      {!loading && !error && allEvents.length > 0 && (
+        <>
+          <div className="feed-grid" role="list">
+            {allEvents.map((ev, i) => (
+              <motion.div key={ev.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15, delay: Math.min(i * 0.03, 0.2) }}
+                onClickCapture={() => {
+                  sessionStorage.setItem('feed_scroll_origin', pathname);
+                  sessionStorage.setItem('feed_scroll_window', String(window.scrollY));
+                  sessionStorage.setItem('feed_scroll_main', String(document.querySelector('main')?.scrollTop ?? 0));
+                }}>
+                <EventCard event={ev} onDelete={handleDeleteEvent} />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* ── Pagination ── */}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            totalEvents={totalEvents}
+            limit={EVENTS_PER_PAGE}
+            onPageChange={handlePageChange}
+          />
+        </>
       )}
+
+      <div className="h-6" />
     </motion.div>
   );
 }
