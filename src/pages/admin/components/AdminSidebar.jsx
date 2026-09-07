@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Activity,
   X,
+  Award,
 } from 'lucide-react';
 
 export const ADMIN_NAV_SECTIONS = [
@@ -32,6 +33,7 @@ export const ADMIN_NAV_SECTIONS = [
       { id: 'events',      label: 'Events',      icon: CalendarDays },
       { id: 'users',       label: 'Users',       icon: Users },
       { id: 'tickets',     label: 'Tickets',     icon: Ticket, badgeKey: 'openTickets', badgeColor: 'red' },
+      { id: 'ambassadors', label: 'Ambassadors', icon: Award,  badgeKey: 'pendingAmbassadors', badgeColor: 'purple' },
     ],
   },
   {
@@ -164,6 +166,8 @@ export default function AdminSidebar({
                               ? 'bg-white/20 text-white border-white/30'
                               : item.badgeColor === 'red'
                               ? 'bg-rose-50 text-rose-600 border-rose-200'
+                              : item.badgeColor === 'purple'
+                              ? 'bg-purple-50 text-purple-700 border-purple-200'
                               : 'bg-amber-50 text-amber-700 border-amber-200'
                           } ${isCollapsed ? 'absolute -top-1 -right-1 px-1 text-[9px]' : ''}`}
                         >

@@ -218,6 +218,13 @@ export const support = {
   replyToTicket: (id, msg) => post(`/support/tickets/${id}/reply`,   { message: msg }),
 };
 
+/* ─── Campus Ambassador ──────────────────────────────────── */
+export const ca = {
+  apply: (body) => post('/ca/apply', body),
+  me:    ()     => get('/ca/me'),
+  card:  (caId) => get(`/ca/card/${caId}`),
+};
+
 /* ─── Query-string builder — strips undefined/null/empty values ── */
 const buildQs = (params) => {
   const clean = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== ''));
@@ -257,6 +264,13 @@ export const admin = {
   deleteCollege:       (id)       => del(`/admin/colleges/${id}`),
   // Broadcast
   notify:              (body)     => post('/admin/notify', body),
+  // Campus Ambassadors
+  ambassadors:           (params={}) => get('/admin/ca' + buildQs(params)),
+  getAmbassador:         (id)        => get(`/admin/ca/${id}`),
+  approveAmbassador:     (id, body)  => patch(`/admin/ca/${id}/approve`, body || {}),
+  rejectAmbassador:      (id, body)  => patch(`/admin/ca/${id}/reject`, body || {}),
+  updateAmbassadorStatus:(id, body)  => patch(`/admin/ca/${id}/status`, body || {}),
+  adjustAmbassadorStats: (id, body)  => patch(`/admin/ca/${id}/adjust`, body),
 };
 
-export default { auth, events, users, notifications, leaderboard, college, support, admin, tokens };
+export default { auth, events, users, notifications, leaderboard, college, support, admin, ca, tokens };

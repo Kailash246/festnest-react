@@ -12,7 +12,7 @@ const ROLE_LABEL = { user: 'Student', organizer: 'Organizer', admin: 'Admin', su
 import {
   House, Compass, Bell, Bookmark, User, PlusCircle,
   Code2, Music4, Wrench, Trophy, LogOut,
-  Info, HelpCircle, ClipboardList, ShieldCheck, MessageCircle,
+  Info, HelpCircle, ClipboardList, ShieldCheck, MessageCircle, Award,
 } from 'lucide-react';
 import { PRIORITY_CATEGORIES } from '../data/categories';
 
@@ -179,6 +179,7 @@ export default function MobileDrawer() {
 
               <Div />
               <Lbl c="FestNest" />
+              <Btn onClick={() => go('/campus-ambassador')} Icon={Award} label="Campus Ambassador" />
               <Btn onClick={() => go('/about')}   Icon={Info}          label="About FestNest" />
               <Btn onClick={() => go('/support')} Icon={HelpCircle}    label="Help & Support" />
               {isAdmin && (

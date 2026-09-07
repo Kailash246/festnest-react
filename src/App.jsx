@@ -37,6 +37,8 @@ import HackathonStrategy  from './pages/blog/HackathonStrategy';
 import WinningPitch       from './pages/blog/WinningPitch';
 import TopColleges        from './pages/blog/TopColleges';
 import BestCollegeEvents  from './pages/blog/BestCollegeEvents';
+import CampusAmbassadorPage      from './pages/festnest_ca_page';
+import CampusAmbassadorDashboard from './pages/ca/CampusAmbassadorDashboard';
 
 const isMobile = () => window.innerWidth < 768;
 
@@ -82,6 +84,29 @@ export default function App() {
           <Route path="/terms"   element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
         </Routes>
+      </>
+    );
+  }
+
+  // Campus Ambassador routes render full-bleed with custom navigation and live dashboard
+  const isCARoute =
+    location.pathname === '/campus-ambassador' ||
+    location.pathname === '/ca' ||
+    location.pathname === '/campus-ambassador/dashboard' ||
+    location.pathname === '/ca/dashboard';
+
+  if (isCARoute) {
+    return (
+      <>
+        <ScrollToTop />
+        <AuthOverlay />
+        <Routes>
+          <Route path="/campus-ambassador"           element={<CampusAmbassadorPage />} />
+          <Route path="/ca"                          element={<CampusAmbassadorPage />} />
+          <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
+          <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
+        </Routes>
+        <ToastContainer />
       </>
     );
   }
@@ -141,6 +166,10 @@ export default function App() {
               <Route path="/event/:id"      element={<EventDetails />} />
               <Route path="/admin"         element={<AdminDashboard />} />
               <Route path="/organizer"    element={<OrganizerDashboard />} />
+              <Route path="/campus-ambassador"           element={<CampusAmbassadorPage />} />
+              <Route path="/ca"                          element={<CampusAmbassadorPage />} />
+              <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
+              <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
               <Route path="*"             element={<Navigate to="/home" replace />} />
             </Routes>
           </AnimatePresence>
