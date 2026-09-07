@@ -880,7 +880,7 @@ export default function EventDetails() {
   const isExpired = countdown?.isExpired || !isLiveEvent;
 
   const handleRegister = async () => {
-    if (registered || isExpired) return;
+    if (registered || isExpired || !ev) return;
     if (!requireAuth()) return;
     const registrationLink = ev?.registrationUrl || ev?.website || '';
     if (openExternalRegistrationLink(registrationLink)) return;
@@ -892,7 +892,7 @@ export default function EventDetails() {
     } catch (e) {
       if (e.message?.toLowerCase().includes('already')) {
         setRegistered(true);
-        showToast(`Already registered for ${ev.name} ✓`, 'success');
+        showToast(`Already registered for ${ev?.name || 'event'} ✓`, 'success');
       } else {
         showToast(e.message || 'Registration failed', 'error');
       }
@@ -910,7 +910,7 @@ export default function EventDetails() {
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href     = blobUrl;
-      a.download = `${(ev.name || 'event').replace(/[^a-z0-9]/gi, '-')}-brochure.pdf`;
+      a.download = `${(ev?.name || 'event').replace(/[^a-z0-9]/gi, '-')}-brochure.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -927,32 +927,15 @@ export default function EventDetails() {
     }
   };
 
-  if (loading) return <DetailSkeleton />;
-
-  if (error || !ev) return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
-      <Seo title={error ? 'Could not load event' : 'Event not found'} noindex />
-      {error ? <AlertTriangle size={72} strokeWidth={1.3} className="text-amber mb-4" /> : <HelpCircle size={72} strokeWidth={1.3} className="text-text-3 mb-4" />}
-      <h2 className="font-heading font-bold text-[22px] text-text-1 tracking-tight mb-2">
-        {error ? 'Could not load event' : 'Event not found'}
-      </h2>
-      <p className="text-[14px] text-text-3 mb-6">{error || 'This event may have ended or been removed.'}</p>
-      <div className="flex gap-3">
-        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
-        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-md text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
-      </div>
-    </div>
-  );
-
   // --- Derived values ---
-  const safeAbout  = sanitizeText(ev.about || '');
+  const safeAbout  = sanitizeText(ev?.about || '');
   const aboutShort = safeAbout.slice(0, 300);
   const prizes = {
-    first:  ev.prize1  || ev.prizeFirst  || '',
-    second: ev.prize2  || ev.prizeSecond || '',
-    third:  ev.prize3  || ev.prizeThird  || '',
-    total:  ev.totalPrize || '',
-    pool:   ev.prizeDetails || '',
+    first:  ev?.prize1  || ev?.prizeFirst  || '',
+    second: ev?.prize2  || ev?.prizeSecond || '',
+    third:  ev?.prize3  || ev?.prizeThird  || '',
+    total:  ev?.totalPrize || '',
+    pool:   ev?.prizeDetails || '',
   };
   const computedSum = [prizes.first, prizes.second, prizes.third]
     .map(p => Number(String(p).replace(/[^0-9.]/g, '')))
@@ -967,9 +950,9 @@ export default function EventDetails() {
     ? computedSum.toLocaleString('en-IN')
     : '';
 
-  const hasPrizes = Boolean(displayTotalPrize || prizes.first || prizes.second || prizes.third) || ev.badgeClass === 'badge-prize';
-  const eligibility   = sanitizeText(ev.eligibility || '');
-  const rules         = sanitizeText(ev.rules || '');
+  const hasPrizes = Boolean(displayTotalPrize || prizes.first || prizes.second || prizes.third) || ev?.badgeClass === 'badge-prize';
+  const eligibility   = sanitizeText(ev?.eligibility || '');
+  const rules         = sanitizeText(ev?.rules || '');
   const eligibilityList = eligibility ? eligibility.split('\n').map(s => s.trim()).filter(Boolean) : [];
   const rulesList = rules ? rules.split('\n').map(s => s.trim()).filter(Boolean) : [];
   const totalRulesCount = eligibilityList.length + rulesList.length;
@@ -984,14 +967,14 @@ export default function EventDetails() {
   const visibleRules = showFullRules
     ? rulesList
     : rulesList.slice(0, remainingRulesBudget);
-  const perks         = ev.perks       || '';
-  const pocName       = ev.pocName     || '';
-  const pocPhone      = ev.pocPhone    || ev.phone   || '';
-  const pocEmail      = ev.pocEmail    || ev.email   || '';
-  const website       = ev.website     || ev.registrationUrl || '';
-  const mode          = ev.mode        || 'In-Person';
-  const brochureUrl   = ev.brochureUrl || '';
-  const individualCompetitions = Array.isArray(ev.competitions)
+  const perks         = ev?.perks       || '';
+  const pocName       = ev?.pocName     || '';
+  const pocPhone      = ev?.pocPhone    || ev?.phone   || '';
+  const pocEmail      = ev?.pocEmail    || ev?.email   || '';
+  const website       = ev?.website     || ev?.registrationUrl || '';
+  const mode          = ev?.mode        || 'In-Person';
+  const brochureUrl   = ev?.brochureUrl || '';
+  const individualCompetitions = Array.isArray(ev?.competitions)
     ? ev.competitions.filter(item => item && competitionValue(item.name))
     : [];
 
@@ -1001,34 +984,36 @@ export default function EventDetails() {
 
   const registrationStatus = isExpired
     ? 'Event ended'
-    : (countdown && !countdown.isExpired && countdown.d <= 3) || (ev.deadlineDays > 0 && ev.deadlineDays <= 3)
+    : (countdown && !countdown.isExpired && countdown.d <= 3) || (ev?.deadlineDays > 0 && ev?.deadlineDays <= 3)
     ? 'Closing soon'
     : 'Registration open';
 
-  const canonicalUrl = `${SITE_URL}/event/${ev.slug || ev.id}`;
+  const canonicalUrl = `${SITE_URL}/event/${ev?.slug || ev?.id || id}`;
   const seoDescription = (
     safeAbout
       ? safeAbout.replace(/\s+/g, ' ').trim().slice(0, 155)
-      : `${ev.name} at ${ev.college}, ${ev.city}. ${ev.category} on FestNest — discover details and register.`
+      : ev?.name
+      ? `${ev.name} at ${ev.college || ''}, ${ev.city || ''}. ${ev.category || ''} on FestNest — discover details and register.`
+      : 'FestNest event details and registration.'
   );
-  const eventJsonLd = buildEventJsonLd(ev, canonicalUrl, seoDescription);
+  const eventJsonLd = ev ? buildEventJsonLd(ev, canonicalUrl, seoDescription) : null;
 
   // Title two-tone word split
-  const titleWords = (ev.name || '').trim().split(' ');
+  const titleWords = (ev?.name || '').trim().split(' ');
   const titleSplitIndex = Math.max(1, Math.ceil(titleWords.length / 2));
   const titlePart1 = titleWords.slice(0, titleSplitIndex).join(' ');
   const titlePart2 = titleWords.slice(titleSplitIndex).join(' ');
 
   // Dynamic nav items
-  const navItems = [
+  const navItems = ev ? [
     'Overview',
     safeAbout && 'About',
     individualCompetitions.length && 'Competitions',
-    (hasPrizes || perks || ev.highlights?.length) && 'Prizes',
+    (hasPrizes || perks || ev?.highlights?.length) && 'Prizes',
     (eligibility || rules) && 'Rules',
-    (ev.orgName || ev.college) && 'Organizer',
+    (ev?.orgName || ev?.college) && 'Organizer',
     (pocPhone || pocEmail || website || pocName) && 'Contact',
-  ].filter(Boolean);
+  ].filter(Boolean) : ['Overview'];
 
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
@@ -1060,6 +1045,7 @@ export default function EventDetails() {
   }, [getHeaderOffset]);
 
   useEffect(() => {
+    if (!ev) return;
     let ticking = false;
     const handleScroll = () => {
       if (isScrollingRef.current) return;
@@ -1105,7 +1091,24 @@ export default function EventDetails() {
       window.removeEventListener('scroll', handleScroll);
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
-  }, [navItems, getHeaderOffset]);
+  }, [navItems, getHeaderOffset, ev]);
+
+  if (loading) return <DetailSkeleton />;
+
+  if (error || !ev) return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
+      <Seo title={error ? 'Could not load event' : 'Event not found'} noindex />
+      {error ? <AlertTriangle size={72} strokeWidth={1.3} className="text-amber mb-4" /> : <HelpCircle size={72} strokeWidth={1.3} className="text-text-3 mb-4" />}
+      <h2 className="font-heading font-bold text-[22px] text-text-1 tracking-tight mb-2">
+        {error ? 'Could not load event' : 'Event not found'}
+      </h2>
+      <p className="text-[14px] text-text-3 mb-6">{error || 'This event may have ended or been removed.'}</p>
+      <div className="flex gap-3">
+        {error && <button onClick={() => window.location.reload()} className="px-6 py-3 bg-primary text-white rounded-md text-[14px] font-semibold hover:bg-primary-dark transition-colors">Retry</button>}
+        <button onClick={() => navigate('/')} className="px-6 py-3 border border-border text-text-2 rounded-md text-[14px] font-semibold hover:border-primary hover:text-primary transition-colors">← Back to Home</button>
+      </div>
+    </div>
+  );
 
   // Compact events for sidebar
   const sidebarEvents = (related.length > 0 ? related : featuredEvs).slice(0, 3);
