@@ -1158,7 +1158,7 @@ export default function EventDetails() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.22 }}
-      className="min-h-screen bg-white w-full overflow-x-clip pb-16">
+      className="min-h-screen bg-white w-full overflow-x-visible md:overflow-x-clip pb-16">
 
       <Seo
         rawTitle={`${ev.name} — ${ev.college} | FestNest`}

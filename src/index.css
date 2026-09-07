@@ -89,7 +89,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-  overflow-x: hidden;
+  overflow-x: clip;
   min-width: 320px;
 }
 
@@ -101,7 +101,7 @@ body {
 /* html full height */
 html {
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 img, svg { display: block; max-width: 100%; }
 button { font: inherit; outline: none; cursor: pointer; }

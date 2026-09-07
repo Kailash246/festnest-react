@@ -137,7 +137,7 @@ export default function App() {
           md:col-start-2 md:row-start-2
           md:border-l md:border-[#E4E4E0]
           min-h-[calc(100dvh-56px)] md:min-h-0
-          bg-white overflow-x-clip md:overflow-x-hidden md:overflow-y-auto
+          bg-white overflow-visible md:overflow-x-hidden md:overflow-y-auto
         ">
           <AnimatePresence mode="wait">
             <Routes>
