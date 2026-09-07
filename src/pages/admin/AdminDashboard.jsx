@@ -1,7 +1,8 @@
 // src/pages/admin/AdminDashboard.jsx
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Component } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { admin } from '../../services/api';
 
@@ -22,7 +23,66 @@ import FeaturedTab from './tabs/FeaturedTab';
 import BroadcastTab from './tabs/BroadcastTab';
 import CollegesTab from './tabs/CollegesTab';
 
-export default function AdminDashboard() {
+class AdminErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Admin Dashboard Caught Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+          <div className="bg-white p-8 rounded-2xl border border-rose-200 shadow-xl max-w-lg w-full space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-neutral-900">Admin Console Notice</h2>
+              <p className="text-xs text-neutral-500 mt-1">
+                A component encountered an issue while rendering. Diagnostic details:
+              </p>
+            </div>
+            <pre className="p-3 bg-neutral-900 text-rose-300 rounded-xl text-xs font-mono overflow-x-auto whitespace-pre-wrap max-h-48">
+              {this.state.error?.message || 'Unknown render error'}
+            </pre>
+            <div className="flex gap-2.5 pt-2">
+              <button
+                onClick={() => {
+                  this.setState({ hasError: false, error: null });
+                  window.location.reload();
+                }}
+                className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Reload Dashboard
+              </button>
+              <button
+                onClick={() => {
+                  window.location.href = '/home';
+                }}
+                className="px-4 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-xl text-xs font-semibold transition"
+              >
+                Go to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function AdminDashboardContent() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAdmin, isLoggedIn, currentUser, showToast, refreshUser } = useApp();
@@ -50,18 +110,6 @@ export default function AdminDashboard() {
   // Dashboard stats & live badges
   const [stats, setStats] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-
-  // Guard access
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/');
-      return;
-    }
-    if (!isAdmin) {
-      navigate('/');
-      showToast?.('Admin access required', 'error');
-    }
-  }, [isLoggedIn, isAdmin, navigate, showToast]);
 
   // Refresh user role on mount to prevent stale localStorage roles
   useEffect(() => {
@@ -145,13 +193,49 @@ export default function AdminDashboard() {
     }
   };
 
-  if (!isLoggedIn || !isAdmin) return null;
+  // Graceful Access Denied Screen if user is not authenticated or not admin
+  if (!isLoggedIn || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl border border-neutral-200 shadow-xl max-w-md w-full text-center space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+            <Lock className="w-7 h-7" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-neutral-900">Admin Privileges Required</h2>
+            <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+              {!isLoggedIn
+                ? 'Please sign in with your administrator account to access this area.'
+                : `Account "${currentUser?.name || currentUser?.email}" (${currentUser?.role || 'user'}) does not have administrator privileges.`}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+            <button
+              onClick={() => navigate('/home')}
+              className="flex-1 px-4 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to FestNest
+            </button>
+            <button
+              onClick={() => {
+                navigate('/home');
+              }}
+              className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const isSuperAdmin = currentUser?.role === 'superadmin';
 
   return (
-    <div className="min-h-screen bg-slate-50 text-neutral-900 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
-      {/* Collapsible Sidebar & Mobile Drawer */}
+    <div className="relative min-h-screen bg-slate-50 text-neutral-900 antialiased selection:bg-indigo-500 selection:text-white">
+      {/* Collapsible Sidebar & Mobile Drawer (Fixed on desktop) */}
       <AdminSidebar
         activeTab={activeTab}
         onSelectTab={handleSelectTab}
@@ -164,13 +248,13 @@ export default function AdminDashboard() {
         currentUser={currentUser}
       />
 
-      {/* Main Content Area */}
+      {/* Main Content Area: padded left for fixed sidebar on md+ screens */}
       <div
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${
-          sidebarCollapsed ? 'lg:pl-[70px]' : 'lg:pl-[240px]'
+        className={`flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-200 ${
+          sidebarCollapsed ? 'md:pl-[70px]' : 'md:pl-[240px]'
         }`}
       >
-        {/* Topbar */}
+        {/* Topbar: sticky at top 0 */}
         <AdminTopbar
           activeTab={activeTab}
           onOpenMobileNav={() => setMobileNavOpen(true)}
@@ -269,12 +353,19 @@ export default function AdminDashboard() {
         onSuccess={() => {
           fetchDashboardStats();
           if (activeTab === 'events') {
-            // Trigger refresh
             handleSelectTab('events');
           }
         }}
         showToast={showToast}
       />
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <AdminErrorBoundary>
+      <AdminDashboardContent />
+    </AdminErrorBoundary>
   );
 }

@@ -213,7 +213,7 @@ export default function AdminSidebar({
     <>
       {/* Desktop Persistent Sidebar */}
       <aside
-        className={`hidden md:flex flex-col flex-shrink-0 border-r border-border bg-white transition-[width] duration-200 ease-in-out z-20 ${
+        className={`hidden md:flex flex-col fixed top-0 bottom-0 left-0 h-screen flex-shrink-0 border-r border-border bg-white transition-[width] duration-200 ease-in-out z-30 ${
           collapsed ? 'w-[70px]' : 'w-[240px]'
         }`}
       >

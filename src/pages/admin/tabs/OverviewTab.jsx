@@ -204,9 +204,9 @@ export default function OverviewTab({
             </button>
           </div>
 
-          <div className="w-full h-64 mt-2">
+          <div className="w-full h-64 mt-2 min-w-0">
             {trendChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={240}>
                 <AreaChart data={trendChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="regGradient" x1="0" y1="0" x2="0" y2="1">
