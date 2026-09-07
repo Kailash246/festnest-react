@@ -96,6 +96,41 @@ const normaliseMultilineText = (text) =>
     .replace(/\r\n/g, '\n')
     .trim();
 
+const renderTextWithLinks = (text) => {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = String(text).split(urlRegex);
+  if (parts.length === 1) return text;
+
+  return parts.map((part, i) => {
+    if (part.match(/^https?:\/\//i)) {
+      const trailingMatch = part.match(/([.,;!?)\]}]+)$/);
+      let cleanUrl = part;
+      let trailing = '';
+      if (trailingMatch) {
+        trailing = trailingMatch[1];
+        cleanUrl = part.slice(0, -trailing.length);
+      }
+      return (
+        <span key={i}>
+          <a
+            href={cleanUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary font-medium underline underline-offset-2 hover:text-primary-dark break-all inline-flex items-center gap-1"
+            onClick={e => e.stopPropagation()}
+          >
+            {cleanUrl}
+            <ExternalLink size={12} className="inline flex-shrink-0" />
+          </a>
+          {trailing}
+        </span>
+      );
+    }
+    return part;
+  });
+};
+
 function MultilineText({ text, className = '' }) {
   const content = normaliseMultilineText(text);
   if (!content) return null;
@@ -106,8 +141,8 @@ function MultilineText({ text, className = '' }) {
   return (
     <div className={`space-y-3 ${className}`.trim()}>
       {blocks.map((block, index) => (
-        <p key={index} className="m-0 whitespace-pre-wrap break-words leading-relaxed">
-          {block}
+        <p key={index} className="m-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">
+          {renderTextWithLinks(block)}
         </p>
       ))}
     </div>
@@ -1598,25 +1633,41 @@ export default function EventDetails() {
           {(eligibility || rules) && (
             <section id="rules" ref={setSectionRef('rules')} className="scroll-mt-28">
               <SectionHeading>Eligibility & Rules</SectionHeading>
-              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] space-y-5">
+              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] space-y-5 overflow-hidden">
                 {visibleEligibility.length > 0 && (
                   <div>
-                    <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2">Who can participate</h3>
-                    <ul className="space-y-1.5 text-[14px] text-text-2 list-disc list-inside">
-                      {visibleEligibility.map((item, idx) => (
-                        <li key={idx} className="leading-relaxed">{item.replace(/^[-*•]\s*/, '')}</li>
-                      ))}
+                    <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2.5">Who can participate</h3>
+                    <ul className="space-y-2 text-[14px] text-text-2">
+                      {visibleEligibility.map((item, idx) => {
+                        const cleanText = item.replace(/^[-*•]\s*/, '').trim();
+                        return (
+                          <li key={idx} className="flex items-start gap-2.5 leading-relaxed min-w-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-text-3 mt-2 flex-shrink-0" aria-hidden="true" />
+                            <span className="flex-1 min-w-0 break-words [overflow-wrap:anywhere]">
+                              {renderTextWithLinks(cleanText)}
+                            </span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
 
                 {visibleRules.length > 0 && (
                   <div className={visibleEligibility.length > 0 ? "pt-4 border-t border-border" : ""}>
-                    <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2">General Rules</h3>
-                    <ul className="space-y-1.5 text-[14px] text-text-2 list-disc list-inside">
-                      {visibleRules.map((item, idx) => (
-                        <li key={idx} className="leading-relaxed">{item.replace(/^[-*•]\s*/, '')}</li>
-                      ))}
+                    <h3 className="text-[13px] font-bold text-text-1 uppercase tracking-wider mb-2.5">General Rules</h3>
+                    <ul className="space-y-2 text-[14px] text-text-2">
+                      {visibleRules.map((item, idx) => {
+                        const cleanText = item.replace(/^[-*•]\s*/, '').trim();
+                        return (
+                          <li key={idx} className="flex items-start gap-2.5 leading-relaxed min-w-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-text-3 mt-2 flex-shrink-0" aria-hidden="true" />
+                            <span className="flex-1 min-w-0 break-words [overflow-wrap:anywhere]">
+                              {renderTextWithLinks(cleanText)}
+                            </span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
