@@ -454,11 +454,11 @@ function SectionNav({ items, activeId, onSelectTab }) {
   return (
     <nav
       aria-label="Event sections"
-      className="sticky top-[56px] md:top-[64px] z-30 mb-7 border-b border-border bg-white/95 backdrop-blur-md w-full max-w-full overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
+      className="sticky top-0 z-30 mb-7 border-b border-border bg-white/95 backdrop-blur-md w-full max-w-full shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
     >
       <div
         ref={containerRef}
-        className="mx-auto flex max-w-[1280px] items-center gap-1.5 overflow-x-auto px-4 py-2.5 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8"
+        className="mx-auto flex max-w-[1280px] items-center gap-1.5 overflow-x-auto px-4 py-2.5 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8 touch-pan-x overscroll-x-contain"
       >
         {items.map(item => {
           const id = (typeof item === 'string' ? item : item.id).toLowerCase();
@@ -1018,31 +1018,44 @@ export default function EventDetails() {
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
 
-  const getHeaderOffset = useCallback(() => {
-    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
-    const topnavHeight = isDesktop ? 64 : 56;
-    const sectionNavHeight = 54;
-    return topnavHeight + sectionNavHeight + 14;
-  }, []);
-
   const handleSelectTab = useCallback((sectionId) => {
     setActiveSection(sectionId);
     isScrollingRef.current = true;
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
 
-    const el = document.getElementById(sectionId);
-    if (el) {
-      const offset = getHeaderOffset();
-      const y = el.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-    } else if (sectionId === 'overview') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    const main = document.querySelector('main');
+    const isDesktop = main && window.getComputedStyle(main).overflowY === 'auto';
+
+    if (sectionId === 'overview') {
+      if (isDesktop) {
+        main.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        const navEl = document.querySelector('nav[aria-label="Event sections"]');
+        const navHeight = navEl ? navEl.offsetHeight : 54;
+        const offset = navHeight + 14;
+
+        if (isDesktop) {
+          const elRect = el.getBoundingClientRect();
+          const mainRect = main.getBoundingClientRect();
+          const targetScroll = main.scrollTop + (elRect.top - mainRect.top) - offset;
+          main.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+        } else {
+          const elRect = el.getBoundingClientRect();
+          const targetScroll = window.scrollY + elRect.top - offset;
+          window.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+        }
+      }
     }
 
     scrollTimeoutRef.current = setTimeout(() => {
       isScrollingRef.current = false;
     }, 800);
-  }, [getHeaderOffset]);
+  }, []);
 
   useEffect(() => {
     if (!ev) return;
@@ -1057,22 +1070,39 @@ export default function EventDetails() {
             .filter(Boolean);
           if (!itemIds.length) return;
 
+          const main = document.querySelector('main');
+          const isDesktop = main && window.getComputedStyle(main).overflowY === 'auto';
+
           // If at the very bottom of the page, activate the last section
-          const scrollPosition = window.scrollY + window.innerHeight;
-          const documentHeight = document.documentElement.scrollHeight;
-          if (scrollPosition >= documentHeight - 60) {
-            setActiveSection(itemIds[itemIds.length - 1]);
-            return;
+          if (isDesktop) {
+            const scrollPosition = main.scrollTop + main.clientHeight;
+            const documentHeight = main.scrollHeight;
+            if (scrollPosition >= documentHeight - 60) {
+              setActiveSection(itemIds[itemIds.length - 1]);
+              return;
+            }
+          } else {
+            const scrollPosition = window.scrollY + window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            if (scrollPosition >= documentHeight - 60) {
+              setActiveSection(itemIds[itemIds.length - 1]);
+              return;
+            }
           }
 
-          const offset = getHeaderOffset();
+          const navEl = document.querySelector('nav[aria-label="Event sections"]');
+          const navBottom = navEl
+            ? navEl.getBoundingClientRect().bottom
+            : (isDesktop && main ? main.getBoundingClientRect().top + 54 : 54);
+          const threshold = navBottom + 20;
+
           let currentSection = itemIds[0];
 
           for (const id of itemIds) {
             const el = document.getElementById(id);
             if (el) {
               const rect = el.getBoundingClientRect();
-              if (rect.top <= offset + 40) {
+              if (rect.top <= threshold) {
                 currentSection = id;
               }
             }
@@ -1084,14 +1114,23 @@ export default function EventDetails() {
       }
     };
 
+    const main = document.querySelector('main');
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    if (main) {
+      main.addEventListener('scroll', handleScroll, { passive: true });
+    }
     handleScroll();
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      if (main) {
+        main.removeEventListener('scroll', handleScroll);
+      }
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
-  }, [navItems, getHeaderOffset, ev]);
+  }, [navItems, ev]);
 
   if (loading) return <DetailSkeleton />;
 
@@ -1119,7 +1158,7 @@ export default function EventDetails() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.22 }}
-      className="min-h-screen bg-white w-full overflow-x-hidden pb-16">
+      className="min-h-screen bg-white w-full overflow-x-clip pb-16">
 
       <Seo
         rawTitle={`${ev.name} — ${ev.college} | FestNest`}
@@ -1411,7 +1450,7 @@ export default function EventDetails() {
       <SectionNav items={navItems} activeId={activeSection} onSelectTab={handleSelectTab} />
 
       {/* ══ SECTION D: MAIN CONTENT + RIGHT SIDEBAR ══ */}
-      <div id="overview" className="scroll-mt-[125px] md:scroll-mt-[135px] mx-auto max-w-[1280px] w-full px-4 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1fr_360px] lg:gap-9 items-start">
+      <div id="overview" className="scroll-mt-[72px] mx-auto max-w-[1280px] w-full px-4 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1fr_360px] lg:gap-9 items-start">
 
         {/* ── LEFT COLUMN (≈2/3 width) ── */}
         <div className="flex flex-col gap-8 min-w-0 w-full">
@@ -1445,7 +1484,7 @@ export default function EventDetails() {
 
           {/* ── ABOUT THIS EVENT ── */}
           {safeAbout && (
-            <section id="about" className="scroll-mt-[125px] md:scroll-mt-[135px]">
+            <section id="about" className="scroll-mt-[72px]">
               <SectionHeading>About the Event</SectionHeading>
               <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
                 <MultilineText
@@ -1483,7 +1522,7 @@ export default function EventDetails() {
 
           {/* ── COMPETITIONS CAROUSEL ── */}
           {individualCompetitions.length > 0 && (
-            <section id="competitions" className="scroll-mt-[125px] md:scroll-mt-[135px]">
+            <section id="competitions" className="scroll-mt-[72px]">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="font-heading font-bold text-[20px] sm:text-[22px] text-text-1 tracking-tight">Competitions</h2>
@@ -1625,7 +1664,7 @@ export default function EventDetails() {
 
           {/* ── PRIZES & PERKS ── */}
           {(hasPrizes || perks || ev.highlights?.length > 0) && (
-            <section id="prizes" className="scroll-mt-[125px] md:scroll-mt-[135px]">
+            <section id="prizes" className="scroll-mt-[72px]">
               <SectionHeading>Prizes & Perks</SectionHeading>
 
               {/* Redesigned Dynamic Blue-Violet Prize Pool Banner Card */}
@@ -1705,7 +1744,7 @@ export default function EventDetails() {
 
           {/* ── ELIGIBILITY & RULES ── */}
           {(eligibility || rules) && (
-            <section id="rules" className="scroll-mt-[125px] md:scroll-mt-[135px]">
+            <section id="rules" className="scroll-mt-[72px]">
               <SectionHeading>Eligibility & Rules</SectionHeading>
               <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] space-y-5 overflow-hidden">
                 {visibleEligibility.length > 0 && (
@@ -1763,7 +1802,7 @@ export default function EventDetails() {
 
           {/* ── ORGANIZED BY ── */}
           {(ev.orgName || ev.college) && (
-            <section id="organizer" className="scroll-mt-[125px] md:scroll-mt-[135px]">
+            <section id="organizer" className="scroll-mt-[72px]">
               <SectionHeading>Organized By</SectionHeading>
               <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5 min-w-0">
@@ -1821,7 +1860,7 @@ export default function EventDetails() {
 
           {/* ── CONTACT & INQUIRIES (2×2 Grid) ── */}
           {(pocName || pocPhone || pocEmail || website) && (
-            <section id="contact" className="scroll-mt-[125px] md:scroll-mt-[135px]">
+            <section id="contact" className="scroll-mt-[72px]">
               <SectionHeading>Contact & Inquiries</SectionHeading>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {pocName && (
