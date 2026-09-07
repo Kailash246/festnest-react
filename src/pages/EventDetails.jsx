@@ -433,33 +433,53 @@ const PrizePodium = ({ prizes }) => {
   );
 };
 
-function SectionNav({ items, activeId }) {
+function SectionNav({ items, activeId, onSelectTab }) {
+  const containerRef = useRef(null);
+  const activeTabRef = useRef(null);
+
+  useEffect(() => {
+    if (activeTabRef.current && containerRef.current) {
+      const container = containerRef.current;
+      const tab = activeTabRef.current;
+      const containerRect = container.getBoundingClientRect();
+      const tabRect = tab.getBoundingClientRect();
+
+      if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
+        const scrollLeft = tab.offsetLeft - container.offsetWidth / 2 + tab.offsetWidth / 2;
+        container.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+      }
+    }
+  }, [activeId]);
+
   return (
-    <nav aria-label="Event sections" className="sticky top-0 z-30 mb-7 border-b border-border bg-white/95 backdrop-blur-md md:top-[64px] w-full max-w-full overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-      <div className="mx-auto flex max-w-[1280px] items-center gap-1.5 overflow-x-auto px-4 py-2.5 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8">
+    <nav
+      aria-label="Event sections"
+      className="sticky top-[56px] md:top-[64px] z-30 mb-7 border-b border-border bg-white/95 backdrop-blur-md w-full max-w-full overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
+    >
+      <div
+        ref={containerRef}
+        className="mx-auto flex max-w-[1280px] items-center gap-1.5 overflow-x-auto px-4 py-2.5 flex-nowrap no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8"
+      >
         {items.map(item => {
-          const id = item.toLowerCase();
+          const id = (typeof item === 'string' ? item : item.id).toLowerCase();
+          const label = typeof item === 'string' ? item : item.label;
           const isActive = activeId === id;
           return (
             <a
-              key={item}
+              key={id}
+              ref={isActive ? activeTabRef : null}
               href={`#${id}`}
               onClick={(e) => {
                 e.preventDefault();
-                const el = document.getElementById(id);
-                if (el) {
-                  const offset = window.innerWidth >= 768 ? 140 : 80;
-                  const y = el.getBoundingClientRect().top + window.scrollY - offset;
-                  window.scrollTo({ top: y, behavior: 'smooth' });
-                }
+                onSelectTab(id);
               }}
-              className={`flex-shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-[13px] font-semibold transition-all duration-fast flex items-center justify-center min-h-[36px] select-none ${
+              className={`flex-shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-[13px] font-semibold transition-all duration-150 flex items-center justify-center min-h-[36px] select-none cursor-pointer ${
                 isActive
                   ? 'bg-primary text-white shadow-sm'
                   : 'text-text-3 hover:bg-primary-light hover:text-primary active:bg-primary-light'
               }`}
             >
-              {item}
+              {label}
             </a>
           );
         })}
@@ -804,32 +824,6 @@ export default function EventDetails() {
   const competitionsScrollRef = useRef(null);
   const relatedScrollRef = useRef(null);
 
-  // --- Section refs for IntersectionObserver ---
-  const sectionRefs = useRef({});
-  const setSectionRef = useCallback((sId) => (el) => {
-    if (el) sectionRefs.current[sId] = el;
-  }, []);
-
-  useEffect(() => {
-    const refs = sectionRefs.current;
-    const entries = Object.entries(refs);
-    if (!entries.length) return;
-
-    const observer = new IntersectionObserver(
-      (observed) => {
-        for (const entry of observed) {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        }
-      },
-      { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
-    );
-
-    entries.forEach(([, el]) => observer.observe(el));
-    return () => observer.disconnect();
-  });
-
   /* Fetch featured events */
   useEffect(() => {
     setFeaturedEvs([]);
@@ -1035,6 +1029,83 @@ export default function EventDetails() {
     (ev.orgName || ev.college) && 'Organizer',
     (pocPhone || pocEmail || website || pocName) && 'Contact',
   ].filter(Boolean);
+
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
+
+  const getHeaderOffset = useCallback(() => {
+    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+    const topnavHeight = isDesktop ? 64 : 56;
+    const sectionNavHeight = 54;
+    return topnavHeight + sectionNavHeight + 14;
+  }, []);
+
+  const handleSelectTab = useCallback((sectionId) => {
+    setActiveSection(sectionId);
+    isScrollingRef.current = true;
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+
+    const el = document.getElementById(sectionId);
+    if (el) {
+      const offset = getHeaderOffset();
+      const y = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    } else if (sectionId === 'overview') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 800);
+  }, [getHeaderOffset]);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (isScrollingRef.current) return;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          ticking = false;
+          const itemIds = navItems
+            .map(item => (typeof item === 'string' ? item : item.id).toLowerCase())
+            .filter(Boolean);
+          if (!itemIds.length) return;
+
+          // If at the very bottom of the page, activate the last section
+          const scrollPosition = window.scrollY + window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          if (scrollPosition >= documentHeight - 60) {
+            setActiveSection(itemIds[itemIds.length - 1]);
+            return;
+          }
+
+          const offset = getHeaderOffset();
+          let currentSection = itemIds[0];
+
+          for (const id of itemIds) {
+            const el = document.getElementById(id);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              if (rect.top <= offset + 40) {
+                currentSection = id;
+              }
+            }
+          }
+
+          setActiveSection(currentSection);
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    };
+  }, [navItems, getHeaderOffset]);
 
   // Compact events for sidebar
   const sidebarEvents = (related.length > 0 ? related : featuredEvs).slice(0, 3);
@@ -1334,10 +1405,10 @@ export default function EventDetails() {
       </div>
 
       {/* ══ SECTION C: STICKY SECTION NAVIGATION ══ */}
-      <SectionNav items={navItems} activeId={activeSection} />
+      <SectionNav items={navItems} activeId={activeSection} onSelectTab={handleSelectTab} />
 
       {/* ══ SECTION D: MAIN CONTENT + RIGHT SIDEBAR ══ */}
-      <div id="overview" ref={setSectionRef('overview')} className="mx-auto max-w-[1280px] w-full px-4 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1fr_360px] lg:gap-9 items-start">
+      <div id="overview" className="scroll-mt-[125px] md:scroll-mt-[135px] mx-auto max-w-[1280px] w-full px-4 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1fr_360px] lg:gap-9 items-start">
 
         {/* ── LEFT COLUMN (≈2/3 width) ── */}
         <div className="flex flex-col gap-8 min-w-0 w-full">
@@ -1371,7 +1442,7 @@ export default function EventDetails() {
 
           {/* ── ABOUT THIS EVENT ── */}
           {safeAbout && (
-            <section id="about" ref={setSectionRef('about')} className="scroll-mt-28">
+            <section id="about" className="scroll-mt-[125px] md:scroll-mt-[135px]">
               <SectionHeading>About the Event</SectionHeading>
               <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
                 <MultilineText
@@ -1409,7 +1480,7 @@ export default function EventDetails() {
 
           {/* ── COMPETITIONS CAROUSEL ── */}
           {individualCompetitions.length > 0 && (
-            <section id="competitions" ref={setSectionRef('competitions')} className="scroll-mt-28">
+            <section id="competitions" className="scroll-mt-[125px] md:scroll-mt-[135px]">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="font-heading font-bold text-[20px] sm:text-[22px] text-text-1 tracking-tight">Competitions</h2>
@@ -1551,7 +1622,7 @@ export default function EventDetails() {
 
           {/* ── PRIZES & PERKS ── */}
           {(hasPrizes || perks || ev.highlights?.length > 0) && (
-            <section id="prizes" ref={setSectionRef('prizes')} className="scroll-mt-28">
+            <section id="prizes" className="scroll-mt-[125px] md:scroll-mt-[135px]">
               <SectionHeading>Prizes & Perks</SectionHeading>
 
               {/* Redesigned Dynamic Blue-Violet Prize Pool Banner Card */}
@@ -1631,7 +1702,7 @@ export default function EventDetails() {
 
           {/* ── ELIGIBILITY & RULES ── */}
           {(eligibility || rules) && (
-            <section id="rules" ref={setSectionRef('rules')} className="scroll-mt-28">
+            <section id="rules" className="scroll-mt-[125px] md:scroll-mt-[135px]">
               <SectionHeading>Eligibility & Rules</SectionHeading>
               <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] space-y-5 overflow-hidden">
                 {visibleEligibility.length > 0 && (
@@ -1689,7 +1760,7 @@ export default function EventDetails() {
 
           {/* ── ORGANIZED BY ── */}
           {(ev.orgName || ev.college) && (
-            <section id="organizer" ref={setSectionRef('organizer')} className="scroll-mt-28">
+            <section id="organizer" className="scroll-mt-[125px] md:scroll-mt-[135px]">
               <SectionHeading>Organized By</SectionHeading>
               <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5 min-w-0">
@@ -1747,7 +1818,7 @@ export default function EventDetails() {
 
           {/* ── CONTACT & INQUIRIES (2×2 Grid) ── */}
           {(pocName || pocPhone || pocEmail || website) && (
-            <section id="contact" ref={setSectionRef('contact')} className="scroll-mt-28">
+            <section id="contact" className="scroll-mt-[125px] md:scroll-mt-[135px]">
               <SectionHeading>Contact & Inquiries</SectionHeading>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {pocName && (
@@ -1878,7 +1949,7 @@ export default function EventDetails() {
         </div>
 
         {/* ── RIGHT COLUMN: STICKY SIDEBAR (≈1/3 width on desktop) ── */}
-        <div className="hidden lg:flex lg:flex-col lg:gap-6 sticky top-[84px]">
+        <div className="hidden lg:flex lg:flex-col lg:gap-6 sticky top-[135px]">
 
           {/* 1. TICKET CARD WITH LIVE COUNTDOWN */}
           <TicketCountdownCard
