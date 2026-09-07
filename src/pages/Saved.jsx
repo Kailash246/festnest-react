@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
 import { normaliseEvents } from '../services/normalise';
+import { sortEventsByStatus } from '../components/EventCard';
 
 const SkeletonRow = () => (
   <div className="bg-white border border-border rounded-lg overflow-hidden flex mb-3">
@@ -32,7 +33,10 @@ export default function Saved() {
     if (!isLoggedIn) { requireAuth(); setLoading(false); return; }
 
     eventsApi.saved()
-      .then(r => setSavedList(normaliseEvents(r.data.events)))
+      .then(r => {
+        const normalised = normaliseEvents(r.data.events);
+        setSavedList(sortEventsByStatus(normalised));
+      })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [isLoggedIn]);

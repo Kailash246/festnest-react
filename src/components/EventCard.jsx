@@ -82,50 +82,89 @@ function getPrizeAmount(event) {
   return main && main !== '—' ? main : null;
 }
 
-function parseEventDate(value) {
-  if (!value) return null;
+export function parseEventEndDate(endDate, startDate) {
+  const raw = String(endDate || startDate || '').trim();
+  if (!raw) return null;
 
-  const asDate = new Date(value);
-  if (!isNaN(asDate.getTime())) return asDate;
+  // 1. ISO format with date (YYYY-MM-DD)
+  const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    const [, y, m, d] = isoMatch;
+    if (raw.includes('T')) {
+      const dt = new Date(raw);
+      if (!isNaN(dt.getTime())) return dt;
+    }
+    const date = new Date(Number(y), Number(m) - 1, Number(d), 23, 59, 59, 999);
+    return isNaN(date.getTime()) ? null : date;
+  }
 
-  const match = String(value).trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
-  if (!match) return null;
+  // 2. Simple range with en-dash, em-dash, or hyphen (e.g. '18–19 May 2025' or '18 - 19 May 2025')
+  const simpleRange = raw.match(/^(\d{1,2})\s*[\u2013\u2014-]\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+  if (simpleRange) {
+    const [, , endDay, monthText, year] = simpleRange;
+    const monthIndex = new Date(monthText + ' 1, ' + year).getMonth();
+    if (!isNaN(monthIndex)) {
+      return new Date(Number(year), monthIndex, Number(endDay), 23, 59, 59, 999);
+    }
+  }
 
-  const [, day, monthText, year] = match;
-  const monthIndex = new Date(`${monthText} 1, ${year}`).getMonth();
-  const date = new Date(Number(year), monthIndex, Number(day));
-  return isNaN(date.getTime()) ? null : date;
+  // 3. Cross-month range (e.g. '30 May – 2 June 2025')
+  const crossMonth = raw.match(/[\u2013\u2014-]\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+  if (crossMonth) {
+    const [, endDay, monthText, year] = crossMonth;
+    const monthIndex = new Date(monthText + ' 1, ' + year).getMonth();
+    if (!isNaN(monthIndex)) {
+      return new Date(Number(year), monthIndex, Number(endDay), 23, 59, 59, 999);
+    }
+  }
+
+  // 4. Single formatted date: '19 May 2025', '19 May, 2025', '19-May-2025'
+  const textMatch = raw.match(/^(\d{1,2})[\s-]+([A-Za-z]+)(?:,)?[\s-]+(\d{4})$/);
+  if (textMatch) {
+    const [, day, monthText, year] = textMatch;
+    const monthIndex = new Date(monthText + ' 1, ' + year).getMonth();
+    if (!isNaN(monthIndex)) {
+      return new Date(Number(year), monthIndex, Number(day), 23, 59, 59, 999);
+    }
+  }
+
+  // 5. Month Day, Year: 'May 19, 2025' or 'May 19 2025'
+  const monthFirst = raw.match(/^([A-Za-z]+)\s+(\d{1,2})(?:,)?\s+(\d{4})$/);
+  if (monthFirst) {
+    const [, monthText, day, year] = monthFirst;
+    const monthIndex = new Date(monthText + ' 1, ' + year).getMonth();
+    if (!isNaN(monthIndex)) {
+      return new Date(Number(year), monthIndex, Number(day), 23, 59, 59, 999);
+    }
+  }
+
+  // 6. Generic Date fallback
+  const d = new Date(raw);
+  if (!isNaN(d.getTime())) {
+    d.setHours(23, 59, 59, 999);
+    return d;
+  }
+
+  return null;
 }
 
-export function isEventExpired(event) {
+export function isEventExpired(event, now = new Date()) {
   if (!event) return false;
-
-  const now = new Date();
-  const start = parseEventDate(event.startDate || event.date?.start || event.date);
-  const end = parseEventDate(event.endDate || event.date?.end || '');
-
-  if (end) {
-    const endAt = new Date(end);
-    endAt.setHours(23, 59, 59, 999);
-    return endAt < now;
-  }
-
-  if (start) {
-    const startAt = new Date(start);
-    startAt.setHours(23, 59, 59, 999);
-    return startAt < now;
-  }
-
-  return false;
+  const endDate = event.endDate || event.date?.end || '';
+  const startDate = event.startDate || event.date?.start || (typeof event.date === 'string' ? event.date : '');
+  const end = parseEventEndDate(endDate, startDate);
+  if (!end) return false;
+  return end.getTime() < now.getTime();
 }
 
-export function sortEventsByStatus(events, comparator) {
+export function sortEventsByStatus(events, comparator, now = new Date()) {
+  if (!Array.isArray(events)) return [];
   const active = [];
   const expired = [];
 
   events.forEach(event => {
-    if (event && isEventExpired(event)) expired.push(event);
-    else active.push(event);
+    if (event && isEventExpired(event, now)) expired.push(event);
+    else if (event) active.push(event);
   });
 
   if (comparator) {
