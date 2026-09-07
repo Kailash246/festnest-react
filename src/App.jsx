@@ -58,6 +58,22 @@ export default function App() {
     return isMobile() ? <MobileLanding /> : <Landing />;
   }
 
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    return (
+      <>
+        <ScrollToTop />
+        <AuthOverlay />
+        <Routes>
+          <Route path="/admin"   element={<AdminDashboard />} />
+          <Route path="/admin/*" element={<AdminDashboard />} />
+        </Routes>
+        <ToastContainer />
+      </>
+    );
+  }
+
   if (STANDALONE_ROUTES.includes(location.pathname)) {
     return (
       <>
