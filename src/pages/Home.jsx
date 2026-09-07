@@ -614,7 +614,7 @@ export default function Home() {
       )}
 
       {/* Empty state */}
-      {!feedLoading && !error && displayedEvents.length === 0 && (
+      {!feedLoading && !error && allEvents.length === 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center px-4 py-20 text-center">
           <Search size={56} strokeWidth={1.5} className="text-text-3 mb-4" />
           <div className="font-heading font-bold text-[18px] text-text-1 mb-2">No events found</div>
@@ -624,10 +624,10 @@ export default function Home() {
       )}
 
       {/* Feed */}
-      {!feedLoading && !error && displayedEvents.length > 0 && (
+      {!feedLoading && !error && allEvents.length > 0 && (
         <>
           <div className="feed-grid" role="list" aria-label="Event feed">
-            {displayedEvents.map((ev, i) => (
+            {allEvents.map((ev, i) => (
               <motion.div key={ev.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.16, delay: Math.min(i * 0.04, 0.24) }}
                 onClickCapture={() => {

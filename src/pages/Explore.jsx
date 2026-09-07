@@ -105,7 +105,7 @@ export default function Explore() {
     eventsApi.list(params)
       .then(r => {
         const evts = normaliseEvents(r.data.events);
-        setAllEvents(sortEventsByStatus(evts));
+        setAllEvents(evts);
         if (r.data.pagination) {
           setTotalPages(r.data.pagination.pages || 1);
           setTotalEvents(r.data.pagination.total || evts.length);

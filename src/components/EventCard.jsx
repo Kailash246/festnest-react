@@ -157,22 +157,39 @@ export function isEventExpired(event, now = new Date()) {
   return end.getTime() < now.getTime();
 }
 
+export function isEventFeatured(ev) {
+  if (!ev) return false;
+  return Boolean(ev.isFeatured || ev.featured || ev.badgeText === 'Featured' || ev.badge?.text === 'Featured');
+}
+
 export function sortEventsByStatus(events, comparator, now = new Date()) {
   if (!Array.isArray(events)) return [];
-  const active = [];
-  const expired = [];
+  const featuredActive = [];
+  const nonFeaturedActive = [];
+  const featuredExpired = [];
+  const nonFeaturedExpired = [];
 
-  events.forEach(event => {
-    if (event && isEventExpired(event, now)) expired.push(event);
-    else if (event) active.push(event);
-  });
-
-  if (comparator) {
-    active.sort(comparator);
-    expired.sort(comparator);
+  for (const event of events) {
+    if (!event) continue;
+    const expired = isEventExpired(event, now);
+    const featured = isEventFeatured(event);
+    if (expired) {
+      if (featured) featuredExpired.push(event);
+      else nonFeaturedExpired.push(event);
+    } else {
+      if (featured) featuredActive.push(event);
+      else nonFeaturedActive.push(event);
+    }
   }
 
-  return [...active, ...expired];
+  if (comparator) {
+    featuredActive.sort(comparator);
+    nonFeaturedActive.sort(comparator);
+    featuredExpired.sort(comparator);
+    nonFeaturedExpired.sort(comparator);
+  }
+
+  return [...featuredActive, ...nonFeaturedActive, ...featuredExpired, ...nonFeaturedExpired];
 }
 
 const PrizeBadge = ({ amount, featured }) => (
