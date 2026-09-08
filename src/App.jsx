@@ -76,6 +76,22 @@ export default function App() {
     );
   }
 
+  const isOrganizerRoute = location.pathname.startsWith('/organizer');
+
+  if (isOrganizerRoute) {
+    return (
+      <>
+        <ScrollToTop />
+        <AuthOverlay />
+        <Routes>
+          <Route path="/organizer"   element={<OrganizerDashboard />} />
+          <Route path="/organizer/*" element={<OrganizerDashboard />} />
+        </Routes>
+        <ToastContainer />
+      </>
+    );
+  }
+
   if (STANDALONE_ROUTES.includes(location.pathname)) {
     return (
       <>
