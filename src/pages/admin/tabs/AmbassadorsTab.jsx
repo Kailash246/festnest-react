@@ -92,6 +92,7 @@ export default function AmbassadorsTab({ showToast }) {
     try {
       const res = await admin.approveAmbassador(caId);
       showToast?.(`Approved ${confirmApproveCA.name}! Official ID: ${res.data.ambassador.caId}`, 'success');
+      showToast?.(`Approved ${confirmApproveCA.name}! Official ID: ${res.data?.ambassador?.caId || res.data?.caId || 'Assigned'}`, 'success');
       setConfirmApproveCA(null);
       if (selectedCA?._id === caId) {
         setSelectedCA(res.data.ambassador);

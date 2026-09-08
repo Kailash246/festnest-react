@@ -562,7 +562,17 @@ export default function HostEvent() {
         showToast('Event updated successfully.', 'success');
         navigate(`/event/${response.data?.event?.slug || editEventId}`, { replace: true });
       } else {
+        const storedRef = localStorage.getItem('fn_referral_code');
+        if (storedRef && storedRef.trim()) {
+          fd.append('referredByCode', storedRef.trim().toUpperCase());
+        }
+
         await eventsApi.host(fd);
+
+        if (storedRef) {
+          localStorage.removeItem('fn_referral_code');
+        }
+
         purgeDraft();
         setDone(true);
       }

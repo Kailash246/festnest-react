@@ -53,6 +53,15 @@ export default function App() {
     trackPageView(location.pathname + location.search);
   }, [location]);
 
+  // Capture ?ref= query parameter into localStorage for CA referral attribution
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const ref = params.get('ref');
+    if (ref && ref.trim()) {
+      localStorage.setItem('fn_referral_code', ref.trim().toUpperCase());
+    }
+  }, [location.search]);
+
   // Landing page is only ever shown at the explicit /landing route
   const isLandingRoute = location.pathname === '/landing';
 

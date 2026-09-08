@@ -223,6 +223,12 @@ export const ca = {
   apply: (body) => post('/ca/apply', body),
   me:    ()     => get('/ca/me'),
   card:  (caId) => get(`/ca/card/${caId}`),
+  apply:        (body) => post('/ca/apply', body),
+  applications: (params = {}) => get('/ca/applications' + buildQs(params)),
+  approve:      (id, body) => post(`/ca/${id}/approve`, body || {}),
+  reject:       (id, reason) => post(`/ca/${id}/reject`, typeof reason === 'string' ? { reason } : (reason || {})),
+  me:           () => get('/ca/me'),
+  card:         (caId) => get(`/ca/card/${caId}`),
 };
 
 /* ─── Query-string builder — strips undefined/null/empty values ── */

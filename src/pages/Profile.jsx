@@ -11,6 +11,7 @@ import { useApp } from '../context/AppContext';
 import Seo from '../components/Seo';
 import LogoutConfirmModal from '../components/LogoutConfirmModal';
 import { users as usersApi, events as eventsApi } from '../services/api';
+import { users as usersApi, events as eventsApi, ca as caApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
 
 /* ══════════════════════════════════════════════════
@@ -858,6 +859,7 @@ function ActivityCard({ Icon: IconCmp, iconBg, title, desc, onClick }) {
 }
 
 function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
+function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout, caProfile }) {
   const studentItems = [
     { Icon: Bell,          iconBg: 'bg-[#EEF2FF] text-primary',       title: 'Notifications',      desc: 'Deadlines & announcements',     onClick: () => navigate('/notifications') },
     { Icon: Bookmark,      iconBg: 'bg-[#F0FDF4] text-[#16A34A]',     title: 'Saved Events',       desc: `${savedCount} bookmarked`,      onClick: () => navigate('/saved') },
@@ -876,6 +878,16 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
   ];
 
   const items = isOrg ? orgItems : studentItems;
+  const baseItems = isOrg ? orgItems : studentItems;
+  const caItem = caProfile ? [{
+    Icon: Award,
+    iconBg: 'bg-[#FDF4FF] text-[#C026D3]',
+    title: caProfile.status === 'approved' ? 'Ambassador Portal' : 'Ambassador Status',
+    desc: caProfile.status === 'approved' ? `ID: ${caProfile.caId} (${caProfile.tier})` : 'Application under review',
+    onClick: () => navigate('/ca/dashboard'),
+  }] : [];
+
+  const items = [...caItem, ...baseItems];
 
   return (
     <div className="bg-white border border-border rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
@@ -931,6 +943,7 @@ export default function Profile() {
   const [savedLoading,     setSavedLoading]     = useState(false);
   const [savedFetched,     setSavedFetched]     = useState(false);
   const [showLogoutModal,  setShowLogoutModal]  = useState(false);
+  const [caProfile,        setCaProfile]        = useState(null);
 
   const role  = profile?.role || currentUser?.role || 'user';
   const isOrg = role === 'organizer';
@@ -955,8 +968,10 @@ export default function Profile() {
     const userRole = currentUser?.role || 'user';
     try {
       const [meRes, secondRes] = await Promise.all([
+      const [meRes, secondRes, caRes] = await Promise.allSettled([
         usersApi.me(),
         userRole === 'organizer' ? usersApi.hosted() : usersApi.registrations(),
+        caApi.me(),
       ]);
       const u = meRes.data.user;
       setProfile(u);
@@ -968,6 +983,28 @@ export default function Profile() {
           .map(r => ({ ev: normaliseEvent(r.event), status: r.status }))
           .filter(r => r.ev);
         setRegistrations(regs);
+
+      if (meRes.status === 'fulfilled') {
+        const u = meRes.value.data?.user;
+        setProfile(u);
+        setStats(meRes.value.data?.stats || {});
+      } else if (currentUser) {
+        setProfile(currentUser);
+      }
+
+      if (secondRes.status === 'fulfilled') {
+        if (userRole === 'organizer') {
+          setHostedEvents(secondRes.value.data?.hostedEvents || []);
+        } else {
+          const regs = (secondRes.value.data?.registrations || [])
+            .map(r => ({ ev: normaliseEvent(r.event), status: r.status }))
+            .filter(r => r.ev);
+          setRegistrations(regs);
+        }
+      }
+
+      if (caRes.status === 'fulfilled' && caRes.value.data?.profile) {
+        setCaProfile(caRes.value.data.profile);
       }
     } catch {
       if (currentUser) setProfile(currentUser);
@@ -1001,6 +1038,45 @@ export default function Profile() {
           user={displayUser} role={role} loading={loading}
           onEdit={() => navigate('/profile/edit')}
         />
+
+        {caProfile && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(79,70,229,0.12)' }}
+            onClick={() => navigate('/ca/dashboard')}
+            className="cursor-pointer relative overflow-hidden rounded-lg border border-indigo-200 bg-gradient-to-r from-indigo-50/90 via-white to-fuchsia-50/90 p-4 shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-all"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+                  <Award size={20} />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-heading font-bold text-[14px] text-text-1">
+                      {caProfile.status === 'approved' ? 'FestNest Campus Ambassador' : 'Campus Ambassador Applicant'}
+                    </span>
+                    <span className="rounded-md bg-indigo-100 px-2 py-0.5 text-[10px] font-bold text-indigo-700 font-mono uppercase">
+                      {caProfile.tier || caProfile.status}
+                    </span>
+                  </div>
+                  <p className="text-[12px] text-text-3 mt-0.5 truncate">
+                    {caProfile.status === 'approved'
+                      ? `Official ID: ${caProfile.caId} · Open Live Credential & Referral Hub`
+                      : 'Your application is currently under campus screening'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 text-xs font-semibold text-indigo-600 shrink-0 pl-3">
+                <span className="hidden sm:inline">Open Portal</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {!isOrg && (
           <>
@@ -1042,6 +1118,7 @@ export default function Profile() {
           navigate={navigate}
           showToast={showToast}
           onLogout={() => setShowLogoutModal(true)}
+          caProfile={caProfile}
         />
 
         <LogoutConfirmModal

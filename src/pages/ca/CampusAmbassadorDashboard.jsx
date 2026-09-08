@@ -63,6 +63,256 @@ function QRMark({ size = 68 }) {
   );
 }
 
+function exportCardAsPNG(profile) {
+  return new Promise((resolve, reject) => {
+    try {
+      const scale = 2; // 2x for retina crispness
+      const w = 620;
+      const h = 380;
+      const canvas = document.createElement('canvas');
+      canvas.width = w * scale;
+      canvas.height = h * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+
+      function roundRect(x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+      }
+
+      // Outer gradient border
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#4f46e5');
+      grad.addColorStop(0.5, '#6366f1');
+      grad.addColorStop(1, '#c026d3');
+
+      ctx.fillStyle = grad;
+      roundRect(8, 8, w - 16, h - 16, 22);
+      ctx.fill();
+
+      // Inner card background
+      ctx.fillStyle = '#ffffff';
+      roundRect(10, 10, w - 20, h - 20, 20);
+      ctx.fill();
+
+      // Top header sheen
+      const sheen = ctx.createLinearGradient(10, 10, w - 20, 100);
+      sheen.addColorStop(0, 'rgba(238, 242, 255, 0.45)');
+      sheen.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = sheen;
+      roundRect(10, 10, w - 20, 100, 20);
+      ctx.fill();
+
+      // Header Brand
+      ctx.fillStyle = '#4f46e5';
+      ctx.font = 'bold 24px "Clash Display", sans-serif';
+      ctx.fillText('FestNest', 36, 50);
+
+      // Header Badge (Official Ambassador)
+      const badgeText = 'OFFICIAL AMBASSADOR';
+      ctx.font = 'bold 11px "JetBrains Mono", monospace';
+      const badgeMetrics = ctx.measureText(badgeText);
+      const badgeW = badgeMetrics.width + 20;
+      const badgeH = 24;
+      const badgeX = w - 36 - badgeW;
+      const badgeY = 34;
+
+      ctx.fillStyle = '#fdf4ff';
+      roundRect(badgeX, badgeY, badgeW, badgeH, 12);
+      ctx.fill();
+      ctx.strokeStyle = '#f5d0fe';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = '#c026d3';
+      ctx.fillText(badgeText, badgeX + 10, badgeY + 16);
+
+      // Draw Avatar
+      const avatarX = 36;
+      const avatarY = 82;
+      const avatarSize = 74;
+
+      const finishDrawingContent = (img) => {
+        if (img) {
+          ctx.save();
+          roundRect(avatarX, avatarY, avatarSize, avatarSize, 16);
+          ctx.clip();
+          ctx.drawImage(img, avatarX, avatarY, avatarSize, avatarSize);
+          ctx.restore();
+          ctx.strokeStyle = '#e0e7ff';
+          ctx.lineWidth = 1.5;
+          roundRect(avatarX, avatarY, avatarSize, avatarSize, 16);
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = '#eef2ff';
+          roundRect(avatarX, avatarY, avatarSize, avatarSize, 16);
+          ctx.fill();
+          ctx.strokeStyle = '#e0e7ff';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = '#4f46e5';
+          ctx.font = 'bold 26px "Clash Display", sans-serif';
+          ctx.textAlign = 'center';
+          const initials = profile.name
+            ? profile.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+            : 'CA';
+          ctx.fillText(initials, avatarX + avatarSize / 2, avatarY + avatarSize / 2 + 9);
+          ctx.textAlign = 'left';
+        }
+
+        // Name & College
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 22px "Clash Display", sans-serif';
+        const displayName = profile.name || 'Campus Ambassador';
+        ctx.fillText(displayName, 126, 110);
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '13px "Satoshi", sans-serif';
+        const sub = `${profile.college || 'College'}, ${profile.city || 'India'}`;
+        ctx.fillText(sub.length > 40 ? sub.slice(0, 38) + '…' : sub, 126, 132);
+
+        // Tier pill
+        const tier = (profile.tier || 'Bronze').toUpperCase() + ' TIER';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        const tierMetrics = ctx.measureText(tier);
+        const tierW = tierMetrics.width + 16;
+        const tierH = 22;
+        const tierX = 126;
+        const tierY = 142;
+
+        let tierBg = '#fffbeb';
+        let tierColor = '#b45309';
+        let tierBorder = '#fef3c7';
+        if (profile.tier === 'City Lead') {
+          tierBg = '#fdf4ff';
+          tierColor = '#c026d3';
+          tierBorder = '#f5d0fe';
+        } else if (profile.tier === 'Gold') {
+          tierBg = '#fffbeb';
+          tierColor = '#d97706';
+          tierBorder = '#fde68a';
+        } else if (profile.tier === 'Silver') {
+          tierBg = '#f8fafc';
+          tierColor = '#475569';
+          tierBorder = '#e2e8f0';
+        }
+
+        ctx.fillStyle = tierBg;
+        roundRect(tierX, tierY, tierW, tierH, 11);
+        ctx.fill();
+        ctx.strokeStyle = tierBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = tierColor;
+        ctx.fillText(tier, tierX + 8, tierY + 15);
+
+        // Divider line
+        ctx.strokeStyle = '#f1f5f9';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(36, 184);
+        ctx.lineTo(w - 36, 184);
+        ctx.stroke();
+
+        // Ambassador ID
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.fillText('AMBASSADOR ID', 36, 216);
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 19px "JetBrains Mono", monospace';
+        ctx.fillText(profile.caId || 'FN-CA-PENDING', 36, 242);
+
+        // Valid Thru
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.fillText('VALID THRU', 36, 274);
+
+        ctx.fillStyle = '#475569';
+        ctx.font = 'bold 13px "JetBrains Mono", monospace';
+        ctx.fillText(profile.validThru || '09 / 2028', 36, 296);
+
+        // Referral Code
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.fillText('REFERRAL CODE', 220, 216);
+
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = 'bold 16px "JetBrains Mono", monospace';
+        ctx.fillText(profile.referralCode || '—', 220, 242);
+
+        // Campus Region
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.fillText('CAMPUS REGION', 220, 274);
+
+        ctx.fillStyle = '#475569';
+        ctx.font = 'bold 13px "JetBrains Mono", monospace';
+        ctx.fillText(profile.city || 'India', 220, 296);
+
+        // QR Pattern
+        const qrSize = 88;
+        const qrX = w - 36 - qrSize;
+        const qrY = 208;
+        const cellSize = qrSize / QR_ROWS.length;
+
+        ctx.fillStyle = '#ffffff';
+        roundRect(qrX - 6, qrY - 6, qrSize + 12, qrSize + 12, 10);
+        ctx.fill();
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#1e1b4b';
+        for (let r = 0; r < QR_ROWS.length; r++) {
+          for (let c = 0; c < QR_ROWS[r].length; c++) {
+            if (QR_ROWS[r][c]) {
+              ctx.fillRect(qrX + c * cellSize, qrY + r * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+
+        // Export to Blob
+        canvas.toBlob((blob) => {
+          if (!blob) return reject(new Error('Canvas export failed'));
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `FestNest-Ambassador-${profile.caId || 'Card'}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          resolve();
+        }, 'image/png');
+      };
+
+      if (profile.photoUrl) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => finishDrawingContent(img);
+        img.onerror = () => finishDrawingContent(null);
+        img.src = profile.photoUrl;
+      } else {
+        finishDrawingContent(null);
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
 function LiveIDCard({ profile, tilt = false }) {
   const tierColor =
     profile.tier === 'City Lead'
@@ -103,6 +353,24 @@ function LiveIDCard({ profile, tilt = false }) {
                   .slice(0, 2)
               : 'CA'}
           </div>
+          {profile.photoUrl ? (
+            <img
+              src={profile.photoUrl}
+              alt={profile.name}
+              className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-xl object-cover border border-indigo-100 shadow-sm"
+            />
+          ) : (
+            <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-500 font-bold text-lg fn-display">
+              {profile.name
+                ? profile.name
+                    .split(' ')
+                    .map((w) => w[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2)
+                : 'CA'}
+            </div>
+          )}
           <div className="flex flex-col min-w-0">
             <span className="fn-display text-lg sm:text-xl font-bold text-slate-900 leading-tight truncate">
               {profile.name}
@@ -140,6 +408,21 @@ export default function CampusAmbassadorDashboard() {
   const [profile, setProfile] = useState(null);
   const [copied, setCopied] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadCard = async () => {
+    if (!profile) return;
+    setDownloading(true);
+    try {
+      await exportCardAsPNG(profile);
+      showToast?.('Ambassador ID Card downloaded as PNG!', 'success');
+    } catch (err) {
+      console.error('Failed to export card PNG', err);
+      showToast?.('Failed to download card. Please try again.', 'error');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const fetchProfile = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -387,27 +670,37 @@ export default function CampusAmbassadorDashboard() {
   };
 
   // Tier thresholds: Bronze (0-2), Silver (3-7), Gold (8-14), City Lead (15+)
+  // Tier thresholds: Bronze (0–2), Silver (3–7), Gold (8–15), City Lead (16+)
   const currentOrganizers = stats.organizersOnboarded;
   let nextTierName = 'Silver';
   let nextThreshold = 3;
   let currentBase = 0;
 
   if (currentOrganizers >= 15) {
+  if (currentOrganizers >= 16) {
     nextTierName = 'Maximum Tier (City Lead)';
     nextThreshold = 15;
     currentBase = 15;
+    nextThreshold = 16;
+    currentBase = 16;
   } else if (currentOrganizers >= 8) {
     nextTierName = 'City Lead';
     nextThreshold = 15;
+    nextThreshold = 16;
     currentBase = 8;
   } else if (currentOrganizers >= 3) {
     nextTierName = 'Gold';
     nextThreshold = 8;
     currentBase = 3;
+  } else {
+    nextTierName = 'Silver';
+    nextThreshold = 3;
+    currentBase = 0;
   }
 
   const progressPct =
     currentOrganizers >= 15
+    currentOrganizers >= 16
       ? 100
       : Math.min(100, Math.round(((currentOrganizers - currentBase) / (nextThreshold - currentBase)) * 100));
 
@@ -492,8 +785,18 @@ export default function CampusAmbassadorDashboard() {
 
               <div className="mt-6 flex flex-col gap-2.5">
                 <button
+                  onClick={handleDownloadCard}
+                  disabled={downloading}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm transition disabled:opacity-60"
+                >
+                  <Download size={15} className={downloading ? 'animate-bounce' : ''} />
+                  <span>{downloading ? 'Generating PNG Card...' : 'Download ID Card (PNG)'}</span>
+                </button>
+
+                <button
                   onClick={handleCopyReferral}
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm transition"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
                 >
                   {copied ? <Check size={15} /> : <Copy size={15} />}
                   <span>{copied ? 'Referral Link Copied!' : 'Copy Referral Link'}</span>
@@ -609,8 +912,10 @@ export default function CampusAmbassadorDashboard() {
                   </span>
                   <p className="text-xs text-slate-500 mt-0.5">
                     {currentOrganizers >= 15
+                    {currentOrganizers >= 16
                       ? 'Top tier achieved!'
                       : `${nextThreshold - currentOrganizers} more organizers needed`}
+                      : `${nextThreshold - currentOrganizers} more organizer${nextThreshold - currentOrganizers === 1 ? '' : 's'} needed`}
                   </p>
                 </div>
               </div>
@@ -628,6 +933,7 @@ export default function CampusAmbassadorDashboard() {
                 <span>Silver (3)</span>
                 <span>Gold (8)</span>
                 <span>City Lead (15+)</span>
+                <span>City Lead (16+)</span>
               </div>
             </div>
 

@@ -4,6 +4,7 @@ import {
   Users, Trophy, Rocket, Megaphone, GraduationCap, QrCode, IdCard,
   ChevronDown, CheckCircle2, MapPin, Star, Handshake, Sparkles,
   AlertCircle, Loader2, ArrowRight, ArrowLeft
+  AlertCircle, Loader2, ArrowRight, ArrowLeft, Upload, Camera
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ca } from '../services/api';
@@ -151,6 +152,9 @@ export default function CampusAmbassadorPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitSuccessMsg, setSubmitSuccessMsg] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoError, setPhotoError] = useState('');
 
   const [existingCA, setExistingCA] = useState(null);
   const [checkingCA, setCheckingCA] = useState(false);
@@ -184,6 +188,13 @@ export default function CampusAmbassadorPage() {
     }
   }, [currentUser]);
 
+  // Cleanup photo preview URL on unmount or file change
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+    };
+  }, [photoPreview]);
+
   // Check if logged-in user already has a CA application
   useEffect(() => {
     if (isLoggedIn) {
@@ -206,6 +217,36 @@ export default function CampusAmbassadorPage() {
     if (submitError) setSubmitError('');
   };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    setPhotoError('');
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setPhotoError('Please select a valid image file (JPG, PNG, or WEBP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setPhotoError('Image size must be 5MB or less.');
+      return;
+    }
+
+    setPhotoFile(file);
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+      setPhotoPreview(null);
+    }
+    setPhotoError('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError('');
@@ -213,6 +254,21 @@ export default function CampusAmbassadorPage() {
 
     try {
       const res = await ca.apply(form);
+      let payload;
+      if (photoFile) {
+        const fd = new FormData();
+        Object.entries(form).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') {
+            fd.append(k, v);
+          }
+        });
+        fd.append('photo', photoFile);
+        payload = fd;
+      } else {
+        payload = form;
+      }
+
+      const res = await ca.apply(payload);
       setSubmitted(true);
       setSubmitSuccessMsg(
         res.message || "Application received! We'll review your application within 5–7 days."
@@ -498,6 +554,45 @@ export default function CampusAmbassadorPage() {
                 </div>
               </div>
             )}
+
+            {/* Optional Ambassador Photo */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 rounded-xl border border-dashed border-slate-300 bg-slate-50/70">
+              <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-slate-200 border border-slate-300 flex items-center justify-center shrink-0">
+                {photoPreview ? (
+                  <img src={photoPreview} alt="Ambassador preview" className="w-full h-full object-cover" />
+                ) : (
+                  <Users className="text-slate-400" size={32} />
+                )}
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <div className="text-sm font-semibold text-slate-800">Profile Photo (Optional)</div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Featured on your digital badge and public ambassador card. JPG, PNG or WEBP, max 5MB.
+                </p>
+                <div className="mt-2.5 flex items-center justify-center sm:justify-start gap-3">
+                  <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm transition">
+                    <Upload size={13} />
+                    <span>{photoFile ? 'Change Photo' : 'Upload Photo'}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                    />
+                  </label>
+                  {photoFile && (
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      className="text-xs text-rose-600 hover:text-rose-700 font-medium transition"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                {photoError && <p className="text-xs text-rose-600 mt-1.5">{photoError}</p>}
+              </div>
+            </div>
 
             <div className="grid gap-5 md:grid-cols-2">
               <div>
