@@ -68,20 +68,50 @@ async function request(path, options = {}) {
     }
     _refreshing = true;
     try {
-      const rfRes = await fetch(`${BASE}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken: tokens.getRefresh() }),
-      });
-      if (!rfRes.ok) throw new Error('refresh_failed');
+      const refreshTok = tokens.getRefresh();
+      if (!refreshTok) {
+        tokens.clear();
+        const authErr = Object.assign(new Error('Your session has expired. Please log in again.'), { status: 401 });
+        _queue.forEach(p => p.reject(authErr));
+        window.dispatchEvent(new CustomEvent('festnest:logout'));
+        throw authErr;
+      }
+
+      let rfRes;
+      try {
+        rfRes = await fetch(`${BASE}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken: refreshTok }),
+        });
+      } catch {
+        // Network/connection failure (server restarting/deploying, offline, DNS drop).
+        // DO NOT clear tokens. Preserve session so user stays authenticated once online.
+        const netErr = Object.assign(new Error('Connection error. Check your internet.'), { status: 0, network: true });
+        _queue.forEach(p => p.reject(netErr));
+        throw netErr;
+      }
+
+      if (rfRes.status === 401 || rfRes.status === 403) {
+        // Genuine authentication failure: refresh token is expired, revoked, or cryptographically invalid.
+        tokens.clear();
+        const authErr = Object.assign(new Error('Your session has expired. Please log in again.'), { status: 401 });
+        _queue.forEach(p => p.reject(authErr));
+        window.dispatchEvent(new CustomEvent('festnest:logout'));
+        throw authErr;
+      }
+
+      if (!rfRes.ok) {
+        // Temporary server / infrastructure error (500, 502, 503, 504, etc.) during redeploy.
+        // DO NOT clear tokens. Keep the session intact and propagate the real server error.
+        const serverErr = Object.assign(new Error(statusFallback(rfRes.status)), { status: rfRes.status });
+        _queue.forEach(p => p.reject(serverErr));
+        throw serverErr;
+      }
+
       const { data } = await rfRes.json();
       tokens.set(data.accessToken, data.refreshToken);
       _queue.forEach(p => p.resolve());
-    } catch {
-      tokens.clear();
-      _queue.forEach(p => p.reject());
-      window.dispatchEvent(new CustomEvent('festnest:logout'));
-      throw Object.assign(new Error('Your session has expired. Please log in again.'), { status: 401 });
     } finally {
       _queue = [];
       _refreshing = false;
