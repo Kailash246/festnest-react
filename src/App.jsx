@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { trackPageView } from './utils/analytics';
@@ -39,6 +39,8 @@ import TopColleges        from './pages/blog/TopColleges';
 import BestCollegeEvents  from './pages/blog/BestCollegeEvents';
 import CampusAmbassadorPage      from './pages/festnest_ca_page';
 import CampusAmbassadorDashboard from './pages/ca/CampusAmbassadorDashboard';
+import Feedback          from './pages/Feedback';
+import { MessageSquarePlus } from 'lucide-react';
 
 const isMobile = () => window.innerWidth < 768;
 
@@ -179,6 +181,7 @@ export default function App() {
               <Route path="/event/:id/edit" element={<HostEvent />} />
               <Route path="/about"         element={<AboutFounder />} />
               <Route path="/support"       element={<Support />} />
+              <Route path="/feedback"      element={<Feedback />} />
               <Route path="/discover"      element={<HubPage />} />
               <Route path="/events/:city"  element={<CityPage />} />
               <Route path="/category/:category" element={<CategoryPage />} />
@@ -200,6 +203,26 @@ export default function App() {
           </AnimatePresence>
         </main>
       </div>
+
+      {location.pathname !== '/feedback' && (
+        <Link
+          to="/feedback"
+          aria-label="Help us improve FestNest"
+          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-30
+                     flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-2.5
+                     bg-white text-text-1 hover:text-primary
+                     border border-[#E4E4E0] hover:border-primary/40
+                     rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_6px_24px_rgba(79,70,229,0.18)]
+                     transition-all duration-200 group active:scale-95"
+        >
+          <span className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200 flex-shrink-0">
+            <MessageSquarePlus className="w-4 h-4" />
+          </span>
+          <span className="hidden sm:inline font-sans text-xs md:text-sm font-semibold tracking-tight">
+            Help us improve
+          </span>
+        </Link>
+      )}
 
       <MobileDrawer />
       <BottomNav />

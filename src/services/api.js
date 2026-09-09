@@ -218,6 +218,12 @@ export const support = {
   replyToTicket: (id, msg) => post(`/support/tickets/${id}/reply`,   { message: msg }),
 };
 
+/* ─── Feedback ───────────────────────────────────────────── */
+export const feedback = {
+  submit: (body) => post('/feedback', body),
+};
+
+
 /* ─── Campus Ambassador ──────────────────────────────────── */
 export const ca = {
   apply: (body) => post('/ca/apply', body),
@@ -279,4 +285,4 @@ export const admin = {
   adjustAmbassadorStats: (id, body)  => patch(`/admin/ca/${id}/adjust`, body),
 };
 
-export default { auth, events, users, notifications, leaderboard, college, support, admin, ca, tokens };
+export default { auth, events, users, notifications, leaderboard, college, support, feedback, admin, ca, tokens };
