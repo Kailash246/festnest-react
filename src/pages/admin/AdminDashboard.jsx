@@ -23,6 +23,7 @@ import FeaturedTab from './tabs/FeaturedTab';
 import BroadcastTab from './tabs/BroadcastTab';
 import CollegesTab from './tabs/CollegesTab';
 import AmbassadorsTab from './tabs/AmbassadorsTab';
+import FeedbackTab from './tabs/FeedbackTab';
 
 class AdminErrorBoundary extends Component {
   constructor(props) {
@@ -326,6 +327,10 @@ function AdminDashboardContent() {
 
               {activeTab === 'ambassadors' && (
                 <AmbassadorsTab showToast={showToast} />
+              )}
+
+              {activeTab === 'feedback' && (
+                <FeedbackTab showToast={showToast} />
               )}
             </motion.div>
           </AnimatePresence>

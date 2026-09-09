@@ -283,6 +283,10 @@ export const admin = {
   rejectAmbassador:      (id, body)  => patch(`/admin/ca/${id}/reject`, body || {}),
   updateAmbassadorStatus:(id, body)  => patch(`/admin/ca/${id}/status`, body || {}),
   adjustAmbassadorStats: (id, body)  => patch(`/admin/ca/${id}/adjust`, body),
+  // Feedback
+  feedback:              (params={}) => get('/admin/feedback' + buildQs(params)),
+  getFeedback:           (id)        => get(`/admin/feedback/${id}`),
+  deleteFeedback:        (id)        => del(`/admin/feedback/${id}`),
 };
 
 export default { auth, events, users, notifications, leaderboard, college, support, feedback, admin, ca, tokens };

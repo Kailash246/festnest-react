@@ -189,7 +189,7 @@ export default function MobileDrawer() {
                   <Btn onClick={() => go('/admin')} Icon={ShieldCheck} label="Admin Dashboard" accent />
                 </>
               )}
-              <Btn onClick={() => {}}             Icon={MessageCircle} label="Send Feedback" />
+              <Btn onClick={() => go('/feedback')} Icon={MessageCircle} label="Send Feedback" />
             </div>
 
             {/* Footer */}
