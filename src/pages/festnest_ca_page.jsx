@@ -4,6 +4,7 @@ import {
   Users, Trophy, Rocket, Megaphone, GraduationCap, QrCode, IdCard,
   ChevronDown, CheckCircle2, MapPin, Star, Handshake, Sparkles,
   AlertCircle, Loader2, ArrowRight, ArrowLeft, Upload, Camera
+  AlertCircle, Loader2, ArrowRight, ArrowLeft
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ca } from '../services/api';
@@ -267,6 +268,7 @@ export default function CampusAmbassadorPage() {
       }
 
       const res = await ca.apply(payload);
+      const res = await ca.apply(form);
       setSubmitted(true);
       setSubmitSuccessMsg(
         res.message || "Application received! We'll review your application within 5–7 days."
