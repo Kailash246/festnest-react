@@ -499,9 +499,6 @@ export default function HostEvent() {
       const rawCat = cleanStr(raw.category);
       let categoryNeedsReview = false;
       if (rawCat) {
-        const match = EVENT_TYPES.find(t => t.name.toLowerCase() === rawCat.toLowerCase())?.name || 'Other';
-        updates.category = match;
-        newFilled.add('category');
         const match = EVENT_TYPES.find(t => t.name.toLowerCase() === rawCat.toLowerCase())?.name;
         if (match) {
           updates.category = match;
@@ -514,7 +511,6 @@ export default function HostEvent() {
       }
 
       // 2. eventTitle -> title
-      const rawTitle = cleanStr(raw.eventTitle || raw.title || raw.eventName);
       const rawTitle = cleanStr(raw.eventTitle);
       if (rawTitle) {
         updates.title = rawTitle.slice(0, 100);
@@ -522,7 +518,6 @@ export default function HostEvent() {
       }
 
       // 3. description -> description
-      const rawDesc = cleanStr(raw.description || raw.about);
       const rawDesc = cleanStr(raw.description);
       if (rawDesc) {
         updates.description = rawDesc.slice(0, 5000);
@@ -560,7 +555,6 @@ export default function HostEvent() {
       }
 
       // 7. collegeOrganization -> college
-      const rawCollege = cleanStr(raw.collegeOrganization || raw.college);
       const rawCollege = cleanStr(raw.collegeOrganization);
       if (rawCollege) {
         updates.college = rawCollege.slice(0, 100);
@@ -568,7 +562,6 @@ export default function HostEvent() {
       }
 
       // 8. cityState -> cityState
-      const rawCity = cleanStr(raw.cityState || raw.city);
       const rawCity = cleanStr(raw.cityState);
       if (rawCity) {
         updates.cityState = rawCity.slice(0, 200);
@@ -582,9 +575,6 @@ export default function HostEvent() {
         newFilled.add('venue');
       }
 
-      // 10. hasPrizePool & totalPrizeAmount
-      const rawHasPrize = typeof raw.hasPrizePool === 'boolean' ? raw.hasPrizePool : (typeof raw.hasPrize === 'boolean' ? raw.hasPrize : null);
-      const rawTotalPrize = cleanStr(raw.totalPrizeAmount || raw.totalPrize);
       // 10. hasPrizePool & totalPrizeAmount (canonical only, no sub-event calculation)
       const rawHasPrize = typeof raw.hasPrizePool === 'boolean' ? raw.hasPrizePool : null;
       const rawTotalPrize = cleanStr(raw.totalPrizeAmount);
@@ -598,8 +588,6 @@ export default function HostEvent() {
       }
 
       if (rawTotalPrize) {
-        const numericPrize = rawTotalPrize.replace(/[^\d.]/g, '');
-        if (numericPrize) {
         // Strip ₹, currency codes, commas, and other non-digit characters except single decimal point
         // e.g. "₹5,00,000" -> "500000", "₹5,00,000.50" -> "500000.50"
         let numericPrize = rawTotalPrize
@@ -621,7 +609,6 @@ export default function HostEvent() {
       }
 
       // 11. registrationFee -> regFee
-      const rawFee = cleanStr(raw.registrationFee || raw.entryFee || raw.regFee);
       const rawFee = cleanStr(raw.registrationFee);
       if (rawFee) {
         updates.regFee = rawFee;
@@ -629,7 +616,6 @@ export default function HostEvent() {
       }
 
       // 12. registrationLink -> regLink
-      const rawLink = cleanStr(raw.registrationLink || raw.registrationUrl || raw.regLink);
       const rawLink = cleanStr(raw.registrationLink);
       if (rawLink) {
         updates.regLink = rawLink;
@@ -637,7 +623,6 @@ export default function HostEvent() {
       }
 
       // 13. otherPerks -> perks
-      const rawPerks = cleanStr(raw.otherPerks || raw.perks);
       const rawPerks = cleanStr(raw.otherPerks);
       if (rawPerks) {
         updates.perks = rawPerks;
@@ -666,7 +651,6 @@ export default function HostEvent() {
       }
 
       // 17. phone -> phone
-      const rawPhone = cleanStr(raw.phone || raw.pocPhone);
       const rawPhone = cleanStr(raw.phone);
       if (rawPhone) {
         updates.phone = rawPhone;
@@ -674,7 +658,6 @@ export default function HostEvent() {
       }
 
       // 18. email -> email
-      const rawEmail = cleanStr(raw.email || raw.pocEmail);
       const rawEmail = cleanStr(raw.email);
       if (rawEmail) {
         updates.email = rawEmail;
@@ -688,23 +671,18 @@ export default function HostEvent() {
         newFilled.add('website');
       }
 
-      // Sub-events mapping
       // Sub-events mapping: canonical fields only (no fallback to s.name, s.venue, s.duration, s.rules)
       if (Array.isArray(raw.subEvents) && raw.subEvents.length > 0) {
         const mapped = raw.subEvents.map(s => ({
-          name: cleanStr(s.trackName || s.name) || '',
           name: cleanStr(s.trackName) || '',
           registrationFee: cleanStr(s.registrationFee) || '',
           prizeDetails: cleanStr(s.prizeDetails) || '',
-          venue: cleanStr(s.venuePlatform || s.venue) || '',
           venue: cleanStr(s.venuePlatform) || '',
           teamSize: cleanStr(s.teamSize) || '',
           eligibility: cleanStr(s.eligibility) || '',
-          duration: cleanStr(s.durationRounds || s.duration) || '',
           duration: cleanStr(s.durationRounds) || '',
           registrationLink: cleanStr(s.registrationLink) || '',
           description: cleanStr(s.description) || '',
-          rules: cleanStr(s.rulesGuidelines || s.rules) || '',
           rules: cleanStr(s.rulesGuidelines) || '',
         }));
         setExtractedSubEvents(mapped);
@@ -726,8 +704,6 @@ export default function HostEvent() {
       if (!rawLink) missing.push('registration link');
       if (!rawPoc || (!rawPhone && !rawEmail)) missing.push('contact info');
 
-      if (missing.length > 0 && newFilled.size < 6) {
-        setAiMissingSummary(`We found some details, but ${missing.join(', ')} were missing from the poster. Please review the highlighted fields below.`);
       if (categoryNeedsReview || (missing.length > 0 && newFilled.size < 6)) {
         setAiMissingSummary(`We found some details, but ${missing.join(', ')} need manual review. Please check the fields below.`);
         setAiState('partial');
