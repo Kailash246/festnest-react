@@ -2,16 +2,17 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
-import { events as eventsApi } from '../services/api';
+import { events as eventsApi, ai as aiApi } from '../services/api';
 import FeaturedEventCard from '../components/FeaturedEventCard';
 import Seo from '../components/Seo';
 import { normaliseEvents } from '../services/normalise';
 import ImageCropper from '../components/ImageCropper';
+import AiPosterUploadCard from '../components/AiPosterUploadCard';
 import { CATEGORIES } from '../data/categories';
 import {
   Code2, Music4, Wrench, Trophy, Mic, Zap,
   ClipboardList, MapPin, Phone, Image, FileText,
-  Building2, Globe, Layers,
+  Building2, Globe, Layers, Sparkles,
   CalendarDays, Star, AlertTriangle, CheckCircle2, ScrollText, PartyPopper, Clock,
 } from 'lucide-react';
 
@@ -39,14 +40,26 @@ const STEPS = [
 const inputBase = `w-full px-4 py-[11px] border-[1.5px] rounded-md font-sans text-[14px] text-text-1 bg-white placeholder:text-text-4
   focus:border-primary focus:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all duration-150 outline-none`;
 
-function Field({ label, required, hint, error, prefix, children }) {
+function AiFilledBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary bg-primary-light px-2 py-0.5 rounded border border-[#C7D2FE] select-none">
+      <Sparkles size={11} className="text-primary" />
+      AI filled
+    </span>
+  );
+}
+
+function Field({ label, required, hint, error, prefix, badge, children }) {
   return (
     <div>
       {label && (
-        <label className="flex items-center gap-1 text-[13px] font-semibold text-text-1 mb-1.5">
-          {label}
-          {required && <span className="text-red text-[14px] leading-none">*</span>}
-        </label>
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <label className="flex items-center gap-1 text-[13px] font-semibold text-text-1">
+            {label}
+            {required && <span className="text-red text-[14px] leading-none">*</span>}
+          </label>
+          {badge}
+        </div>
       )}
       <div className={prefix ? 'relative' : ''}>
         {prefix && (
@@ -65,17 +78,17 @@ function Field({ label, required, hint, error, prefix, children }) {
   );
 }
 
-function Input({ label, required, hint, error, prefix, className = '', ...props }) {
+function Input({ label, required, hint, error, prefix, badge, className = '', ...props }) {
   return (
-    <Field label={label} required={required} hint={hint} error={error} prefix={prefix}>
+    <Field label={label} required={required} hint={hint} error={error} prefix={prefix} badge={badge}>
       <input className={`${inputBase} ${prefix ? 'pl-8' : ''} ${error ? 'border-red focus:border-red focus:shadow-[0_0_0_3px_rgba(220,38,38,0.08)]' : 'border-[#CBCBC6]'} ${className}`} {...props} />
     </Field>
   );
 }
 
-function Textarea({ label, required, hint, error, className = '', ...props }) {
+function Textarea({ label, required, hint, error, badge, className = '', ...props }) {
   return (
-    <Field label={label} required={required} hint={hint} error={error}>
+    <Field label={label} required={required} hint={hint} error={error} badge={badge}>
       <textarea
         className={`${inputBase} resize-y overflow-x-hidden min-h-[110px] ${error ? 'border-red focus:border-red focus:shadow-[0_0_0_3px_rgba(220,38,38,0.08)]' : 'border-[#CBCBC6]'} ${className}`}
         {...props}
@@ -84,9 +97,9 @@ function Textarea({ label, required, hint, error, className = '', ...props }) {
   );
 }
 
-function Select({ label, required, hint, error, children, ...props }) {
+function Select({ label, required, hint, error, badge, children, ...props }) {
   return (
-    <Field label={label} required={required} hint={hint} error={error}>
+    <Field label={label} required={required} hint={hint} error={error} badge={badge}>
       <select className={`${inputBase} cursor-pointer ${error ? 'border-red' : 'border-[#CBCBC6]'}`} {...props}>
         {children}
       </select>
@@ -286,6 +299,14 @@ export default function HostEvent() {
   const [hasPrize,  setHasPrize]  = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors,    setErrors]    = useState({});
+  const [aiState, setAiState] = useState('empty'); // 'empty' | 'processing' | 'success' | 'partial' | 'failure'
+  const [aiPageCount, setAiPageCount] = useState(0);
+  const [aiFileName, setAiFileName] = useState('');
+  const [aiFileSize, setAiFileSize] = useState(0);
+  const [aiErrorMessage, setAiErrorMessage] = useState('');
+  const [aiMissingSummary, setAiMissingSummary] = useState('');
+  const [aiFilledFields, setAiFilledFields] = useState(new Set());
+  const [extractedSubEvents, setExtractedSubEvents] = useState([]);
   const [draftBanner, setDraftBanner] = useState(null); // detected draft waiting for resume/discard
   const [draftSaved,  setDraftSaved]  = useState(false); // transient "Draft saved" indicator
   const draftAutoRef    = useRef(null); // debounce timer
@@ -389,7 +410,16 @@ export default function HostEvent() {
     return () => URL.revokeObjectURL(url);
   }, [posterFile]);
 
-  const upd = (k, v) => { setF(prev => ({ ...prev, [k]: v })); if (errors[k]) setErrors(e => ({ ...e, [k]: '' })); };
+  const upd = (k, v) => {
+    setF(prev => ({ ...prev, [k]: v }));
+    if (errors[k]) setErrors(e => ({ ...e, [k]: '' }));
+    setAiFilledFields(prev => {
+      if (!prev.has(k)) return prev;
+      const next = new Set(prev);
+      next.delete(k);
+      return next;
+    });
+  };
 
   // Numeric-only update: strips letters/symbols/commas at the keystroke level,
   // keeping digits and at most one decimal point. Used for the Prize Pool field.
@@ -398,6 +428,319 @@ export default function HostEvent() {
     const dot = v.indexOf('.');
     if (dot !== -1) v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, '');
     upd(k, v);
+  };
+
+  const toggleHasPrize = () => {
+    setHasPrize(p => !p);
+    setAiFilledFields(prev => {
+      if (!prev.has('hasPrize') && !prev.has('totalPrize')) return prev;
+      const next = new Set(prev);
+      next.delete('hasPrize');
+      next.delete('totalPrize');
+      return next;
+    });
+  };
+
+  /* ── AI Autofill handlers ── */
+  const handleAiReset = () => {
+    setAiState('empty');
+    setAiFileName('');
+    setAiFileSize(0);
+    setAiPageCount(0);
+    setAiErrorMessage('');
+    setAiMissingSummary('');
+  };
+
+  const handleAiFillManually = () => {
+    // Graceful fallback to manual flow; form remains fully accessible
+  };
+
+  const handleAiUpload = async (file) => {
+    if (!file) return;
+
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      setAiState('failure');
+      setAiErrorMessage('Only PDF files are supported. Please upload a PDF poster or brochure.');
+      return;
+    }
+
+    if (file.size > 30 * 1024 * 1024) {
+      setAiState('failure');
+      setAiErrorMessage('File size exceeds the 30 MB limit. Please upload a smaller PDF.');
+      return;
+    }
+
+    setAiFileName(file.name);
+    setAiFileSize(file.size);
+    setAiState('processing');
+    setAiErrorMessage('');
+    setAiMissingSummary('');
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+
+      const res = await aiApi.parseEventPoster(fd);
+
+      if (!res || !res.success || !res.data) {
+        throw new Error(res?.message || "Couldn't read PDF");
+      }
+
+      const raw = res.data;
+      const pages = res.pageCount || 1;
+      setAiPageCount(pages);
+
+      const newFilled = new Set();
+      const updates = {};
+      const cleanStr = (val) => (typeof val === 'string' && val.trim().length > 0 ? val.trim() : null);
+
+      // 1. category
+      const rawCat = cleanStr(raw.category);
+      let categoryNeedsReview = false;
+      if (rawCat) {
+        const match = EVENT_TYPES.find(t => t.name.toLowerCase() === rawCat.toLowerCase())?.name || 'Other';
+        updates.category = match;
+        newFilled.add('category');
+        const match = EVENT_TYPES.find(t => t.name.toLowerCase() === rawCat.toLowerCase())?.name;
+        if (match) {
+          updates.category = match;
+          newFilled.add('category');
+        } else {
+          // AI category does not match an existing FestNest category:
+          // Leave existing category unchanged and mark for manual review
+          categoryNeedsReview = true;
+        }
+      }
+
+      // 2. eventTitle -> title
+      const rawTitle = cleanStr(raw.eventTitle || raw.title || raw.eventName);
+      const rawTitle = cleanStr(raw.eventTitle);
+      if (rawTitle) {
+        updates.title = rawTitle.slice(0, 100);
+        newFilled.add('title');
+      }
+
+      // 3. description -> description
+      const rawDesc = cleanStr(raw.description || raw.about);
+      const rawDesc = cleanStr(raw.description);
+      if (rawDesc) {
+        updates.description = rawDesc.slice(0, 5000);
+        newFilled.add('description');
+      }
+
+      // 4. mode -> mode
+      const rawMode = cleanStr(raw.mode);
+      if (rawMode) {
+        const matchMode = ['Offline', 'Online', 'Hybrid'].find(m => m.toLowerCase() === rawMode.toLowerCase());
+        if (matchMode) {
+          updates.mode = matchMode;
+          newFilled.add('mode');
+        }
+      }
+
+      // 5. startDate -> startDate
+      const rawStart = cleanStr(raw.startDate);
+      if (rawStart) {
+        const normStart = /^\d{4}-\d{2}-\d{2}$/.test(rawStart) ? rawStart : (!isNaN(new Date(rawStart).getTime()) ? new Date(rawStart).toISOString().slice(0, 10) : null);
+        if (normStart) {
+          updates.startDate = normStart;
+          newFilled.add('startDate');
+        }
+      }
+
+      // 6. endDate -> endDate
+      const rawEnd = cleanStr(raw.endDate);
+      if (rawEnd) {
+        const normEnd = /^\d{4}-\d{2}-\d{2}$/.test(rawEnd) ? rawEnd : (!isNaN(new Date(rawEnd).getTime()) ? new Date(rawEnd).toISOString().slice(0, 10) : null);
+        if (normEnd) {
+          updates.endDate = normEnd;
+          newFilled.add('endDate');
+        }
+      }
+
+      // 7. collegeOrganization -> college
+      const rawCollege = cleanStr(raw.collegeOrganization || raw.college);
+      const rawCollege = cleanStr(raw.collegeOrganization);
+      if (rawCollege) {
+        updates.college = rawCollege.slice(0, 100);
+        newFilled.add('college');
+      }
+
+      // 8. cityState -> cityState
+      const rawCity = cleanStr(raw.cityState || raw.city);
+      const rawCity = cleanStr(raw.cityState);
+      if (rawCity) {
+        updates.cityState = rawCity.slice(0, 200);
+        newFilled.add('cityState');
+      }
+
+      // 9. venue -> venue
+      const rawVenue = cleanStr(raw.venue);
+      if (rawVenue) {
+        updates.venue = rawVenue;
+        newFilled.add('venue');
+      }
+
+      // 10. hasPrizePool & totalPrizeAmount
+      const rawHasPrize = typeof raw.hasPrizePool === 'boolean' ? raw.hasPrizePool : (typeof raw.hasPrize === 'boolean' ? raw.hasPrize : null);
+      const rawTotalPrize = cleanStr(raw.totalPrizeAmount || raw.totalPrize);
+      // 10. hasPrizePool & totalPrizeAmount (canonical only, no sub-event calculation)
+      const rawHasPrize = typeof raw.hasPrizePool === 'boolean' ? raw.hasPrizePool : null;
+      const rawTotalPrize = cleanStr(raw.totalPrizeAmount);
+
+      if (rawHasPrize !== null) {
+        setHasPrize(rawHasPrize);
+        newFilled.add('hasPrize');
+      } else if (rawTotalPrize && parseFloat(rawTotalPrize) > 0) {
+        setHasPrize(true);
+        newFilled.add('hasPrize');
+      }
+
+      if (rawTotalPrize) {
+        const numericPrize = rawTotalPrize.replace(/[^\d.]/g, '');
+        if (numericPrize) {
+        // Strip ₹, currency codes, commas, and other non-digit characters except single decimal point
+        // e.g. "₹5,00,000" -> "500000", "₹5,00,000.50" -> "500000.50"
+        let numericPrize = rawTotalPrize
+          .replace(/Rs\./gi, '')
+          .replace(/₹|INR|,|\s|\/-/gi, '')
+          .replace(/[^\d.]/g, '');
+        const dot = numericPrize.indexOf('.');
+        if (dot !== -1) {
+          numericPrize = numericPrize.slice(0, dot + 1) + numericPrize.slice(dot + 1).replace(/\./g, '');
+        }
+        if (numericPrize && parseFloat(numericPrize) >= 0) {
+          updates.totalPrize = numericPrize;
+          newFilled.add('totalPrize');
+          if (parseFloat(numericPrize) > 0 && rawHasPrize === null) {
+            setHasPrize(true);
+            newFilled.add('hasPrize');
+          }
+        }
+      }
+
+      // 11. registrationFee -> regFee
+      const rawFee = cleanStr(raw.registrationFee || raw.entryFee || raw.regFee);
+      const rawFee = cleanStr(raw.registrationFee);
+      if (rawFee) {
+        updates.regFee = rawFee;
+        newFilled.add('regFee');
+      }
+
+      // 12. registrationLink -> regLink
+      const rawLink = cleanStr(raw.registrationLink || raw.registrationUrl || raw.regLink);
+      const rawLink = cleanStr(raw.registrationLink);
+      if (rawLink) {
+        updates.regLink = rawLink;
+        newFilled.add('regLink');
+      }
+
+      // 13. otherPerks -> perks
+      const rawPerks = cleanStr(raw.otherPerks || raw.perks);
+      const rawPerks = cleanStr(raw.otherPerks);
+      if (rawPerks) {
+        updates.perks = rawPerks;
+        newFilled.add('perks');
+      }
+
+      // 14. eligibility -> eligibility
+      const rawElig = cleanStr(raw.eligibility);
+      if (rawElig) {
+        updates.eligibility = rawElig;
+        newFilled.add('eligibility');
+      }
+
+      // 15. rules -> rules
+      const rawRules = cleanStr(raw.rules);
+      if (rawRules) {
+        updates.rules = rawRules;
+        newFilled.add('rules');
+      }
+
+      // 16. pocName -> pocName
+      const rawPoc = cleanStr(raw.pocName);
+      if (rawPoc) {
+        updates.pocName = rawPoc.slice(0, 100);
+        newFilled.add('pocName');
+      }
+
+      // 17. phone -> phone
+      const rawPhone = cleanStr(raw.phone || raw.pocPhone);
+      const rawPhone = cleanStr(raw.phone);
+      if (rawPhone) {
+        updates.phone = rawPhone;
+        newFilled.add('phone');
+      }
+
+      // 18. email -> email
+      const rawEmail = cleanStr(raw.email || raw.pocEmail);
+      const rawEmail = cleanStr(raw.email);
+      if (rawEmail) {
+        updates.email = rawEmail;
+        newFilled.add('email');
+      }
+
+      // 19. website -> website
+      const rawWeb = cleanStr(raw.website);
+      if (rawWeb) {
+        updates.website = rawWeb;
+        newFilled.add('website');
+      }
+
+      // Sub-events mapping
+      // Sub-events mapping: canonical fields only (no fallback to s.name, s.venue, s.duration, s.rules)
+      if (Array.isArray(raw.subEvents) && raw.subEvents.length > 0) {
+        const mapped = raw.subEvents.map(s => ({
+          name: cleanStr(s.trackName || s.name) || '',
+          name: cleanStr(s.trackName) || '',
+          registrationFee: cleanStr(s.registrationFee) || '',
+          prizeDetails: cleanStr(s.prizeDetails) || '',
+          venue: cleanStr(s.venuePlatform || s.venue) || '',
+          venue: cleanStr(s.venuePlatform) || '',
+          teamSize: cleanStr(s.teamSize) || '',
+          eligibility: cleanStr(s.eligibility) || '',
+          duration: cleanStr(s.durationRounds || s.duration) || '',
+          duration: cleanStr(s.durationRounds) || '',
+          registrationLink: cleanStr(s.registrationLink) || '',
+          description: cleanStr(s.description) || '',
+          rules: cleanStr(s.rulesGuidelines || s.rules) || '',
+          rules: cleanStr(s.rulesGuidelines) || '',
+        }));
+        setExtractedSubEvents(mapped);
+      }
+
+      // Merge into form state preserving all non-AI fields
+      setF(prev => ({
+        ...prev,
+        ...updates,
+      }));
+
+      setAiFilledFields(newFilled);
+
+      // Determine partial vs full extraction
+      const missing = [];
+      if (categoryNeedsReview) missing.push('category');
+      if (!rawTitle) missing.push('event title');
+      if (!rawStart) missing.push('dates');
+      if (!rawLink) missing.push('registration link');
+      if (!rawPoc || (!rawPhone && !rawEmail)) missing.push('contact info');
+
+      if (missing.length > 0 && newFilled.size < 6) {
+        setAiMissingSummary(`We found some details, but ${missing.join(', ')} were missing from the poster. Please review the highlighted fields below.`);
+      if (categoryNeedsReview || (missing.length > 0 && newFilled.size < 6)) {
+        setAiMissingSummary(`We found some details, but ${missing.join(', ')} need manual review. Please check the fields below.`);
+        setAiState('partial');
+      } else {
+        setAiState('success');
+      }
+
+      showToast('Event details extracted with AI ✓', 'success');
+    } catch (err) {
+      console.error('[AI Poster Parse Error]:', err);
+      setAiState('failure');
+      setAiErrorMessage(err.message || "Couldn't read PDF");
+    }
   };
 
   /* ── Validation rules ── */
@@ -750,13 +1093,29 @@ export default function HostEvent() {
               exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.2 }}
               className="space-y-4">
 
+              {/* ── Optional Collapsible AI Autofill Section ── */}
+              <AiPosterUploadCard
+                state={aiState}
+                pageCount={aiPageCount}
+                fileName={aiFileName}
+                fileSize={aiFileSize}
+                errorMessage={aiErrorMessage}
+                missingSummary={aiMissingSummary}
+                onUpload={handleAiUpload}
+                onReset={handleAiReset}
+                onFillManually={handleAiFillManually}
+              />
+
               <SectionCard icon={<ClipboardList size={16} strokeWidth={1.8} className="text-primary" />} title="Basic Information" sub="Tell us about your event">
 
                 {/* Category tiles */}
                 <div id="host-category" style={{ scrollMarginTop: '90px' }}>
-                  <label className="flex items-center gap-1 text-[13px] font-semibold text-text-1 mb-2">
-                    Category <span className="text-red text-[14px] leading-none">*</span>
-                  </label>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <label className="flex items-center gap-1 text-[13px] font-semibold text-text-1">
+                      Category <span className="text-red text-[14px] leading-none">*</span>
+                    </label>
+                    {aiFilledFields.has('category') && <AiFilledBadge />}
+                  </div>
                   <div className="grid grid-cols-3 gap-2">
                     {EVENT_TYPES.map(({ Icon: ETypeIcon, name, label, color }) => (
                       <motion.button key={name} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
@@ -779,18 +1138,23 @@ export default function HostEvent() {
 
                 <Input id="host-title" label="Event Title" required placeholder="e.g. TechFest 2025"
                   maxLength={100}
+                  badge={aiFilledFields.has('title') ? <AiFilledBadge /> : null}
                   value={f.title} onChange={e => upd('title', e.target.value)} error={errors.title}
                   hint={f.title.length > 80 ? `${f.title.length}/100 characters` : undefined} />
 
                 <Textarea id="host-description" label="Description" required
                   placeholder="Describe your event — what will participants do, learn, or win?"
+                  badge={aiFilledFields.has('description') ? <AiFilledBadge /> : null}
                   rows={8} maxLength={5000} value={f.description} onChange={e => upd('description', e.target.value)}
                   className="min-h-[240px] md:min-h-[280px] py-4 px-4 leading-7 text-[14px] whitespace-pre-wrap break-words"
                   error={errors.description} />
 
                 {/* Mode */}
                 <div>
-                  <label className="block text-[13px] font-semibold text-text-1 mb-2">Mode</label>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <label className="block text-[13px] font-semibold text-text-1">Mode</label>
+                    {aiFilledFields.has('mode') && <AiFilledBadge />}
+                  </div>
                   <div className="grid grid-cols-3 gap-2.5">
                     {MODES.map(({ id, label, Icon: MIcon, desc }) => {
                       const active = f.mode === id;
@@ -845,9 +1209,11 @@ export default function HostEvent() {
               <SectionCard icon={<CalendarDays size={16} strokeWidth={1.8} className="text-primary" />} title="Date and Location" sub="When and where is it happening?">
                 <div className="grid grid-cols-2 gap-3">
                   <Input id="host-startDate" label="Start Date" required type="date"
+                    badge={aiFilledFields.has('startDate') ? <AiFilledBadge /> : null}
                     value={f.startDate} onChange={e => upd('startDate', e.target.value)}
                     error={errors.startDate} />
                   <Input id="host-endDate" label="End Date" type="date"
+                    badge={aiFilledFields.has('endDate') ? <AiFilledBadge /> : null}
                     value={f.endDate} onChange={e => upd('endDate', e.target.value)}
                     error={errors.endDate} />
                 </div>
@@ -855,17 +1221,20 @@ export default function HostEvent() {
                 <Input id="host-college" label="College / Organization" required
                   placeholder="e.g. IIT Bombay"
                   maxLength={100}
+                  badge={aiFilledFields.has('college') ? <AiFilledBadge /> : null}
                   value={f.college} onChange={e => upd('college', e.target.value)}
                   error={errors.college} />
 
                 <Input id="host-cityState" label="City / State"
                   placeholder="e.g. Mumbai, MH"
                   maxLength={200}
+                  badge={aiFilledFields.has('cityState') ? <AiFilledBadge /> : null}
                   value={f.cityState} onChange={e => upd('cityState', e.target.value)}
                   error={errors.cityState} />
 
                 <Input label="Venue"
                   placeholder="e.g. Main Auditorium"
+                  badge={aiFilledFields.has('venue') ? <AiFilledBadge /> : null}
                   value={f.venue} onChange={e => upd('venue', e.target.value)} />
               </SectionCard>
 
@@ -889,10 +1258,13 @@ export default function HostEvent() {
               <SectionCard icon={<Trophy size={16} strokeWidth={1.8} className="text-primary" />} title="Prizes and Registration" sub="Optional — fill what's applicable">
                 {/* Prize pool toggle */}
                 <div className="flex items-center justify-between p-4 bg-surface-2 rounded-md border border-border">
-                  <span className="text-[14px] font-medium text-text-1">Has a Prize Pool?</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-medium text-text-1">Has a Prize Pool?</span>
+                    {aiFilledFields.has('hasPrize') && <AiFilledBadge />}
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setHasPrize(p => !p)}
+                    onClick={toggleHasPrize}
                     className={`relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0
                       ${hasPrize ? 'bg-primary' : 'bg-[#D1D5DB]'}`}
                   >
@@ -906,6 +1278,7 @@ export default function HostEvent() {
                     placeholder="e.g. 200000 or 2500.50"
                     inputMode="decimal"
                     hint="Numbers only — no commas or symbols"
+                    badge={aiFilledFields.has('totalPrize') ? <AiFilledBadge /> : null}
                     value={f.totalPrize} onChange={e => updNumeric('totalPrize', e.target.value)}
                     error={errors.totalPrize} />
                 )}
@@ -914,27 +1287,32 @@ export default function HostEvent() {
 
                 <Input id="host-regFee" label="Registration Fee"
                   placeholder='e.g. 200 or "Free"'
+                  badge={aiFilledFields.has('regFee') ? <AiFilledBadge /> : null}
                   value={f.regFee} onChange={e => upd('regFee', e.target.value)}
                   error={errors.regFee} />
 
                 <Input id="host-regLink" label="Registration Link" type="url" required
                   placeholder="https://forms.gle/..."
+                  badge={aiFilledFields.has('regLink') ? <AiFilledBadge /> : null}
                   value={f.regLink} onChange={e => upd('regLink', e.target.value)}
                   error={errors.regLink}
                   hint="Students will be redirected to this link to register. Make sure it's the official registration form." />
 
                 <Textarea label="Other Perks"
                   placeholder="Internship offers, goodies, certificates, swag..."
+                  badge={aiFilledFields.has('perks') ? <AiFilledBadge /> : null}
                   rows={3} value={f.perks} onChange={e => upd('perks', e.target.value)} />
               </SectionCard>
 
               <SectionCard icon={<ScrollText size={16} strokeWidth={1.8} className="text-primary" />} title="Rules and Eligibility" sub="Optional but recommended">
                 <Textarea label="Eligibility"
                   placeholder="Who can participate? Year, branch, college restrictions..."
+                  badge={aiFilledFields.has('eligibility') ? <AiFilledBadge /> : null}
                   rows={3} value={f.eligibility} onChange={e => upd('eligibility', e.target.value)} />
 
                 <Textarea label="Rules"
                   placeholder="Important rules, dos and don'ts..."
+                  badge={aiFilledFields.has('rules') ? <AiFilledBadge /> : null}
                   rows={3} value={f.rules} onChange={e => upd('rules', e.target.value)} />
               </SectionCard>
 
@@ -959,22 +1337,26 @@ export default function HostEvent() {
                 <Input id="host-pocName" label="POC Name" required
                   placeholder="Contact person name"
                   maxLength={100}
+                  badge={aiFilledFields.has('pocName') ? <AiFilledBadge /> : null}
                   value={f.pocName} onChange={e => upd('pocName', e.target.value)}
                   error={errors.pocName} />
 
                 <div className="grid grid-cols-2 gap-3">
                   <Input id="host-phone" label="Phone" required type="tel"
                     placeholder="+91 XXXXX XXXXX"
+                    badge={aiFilledFields.has('phone') ? <AiFilledBadge /> : null}
                     value={f.phone} onChange={e => upd('phone', e.target.value)}
                     error={errors.phone} />
                   <Input id="host-email" label="Email" required type="email"
                     placeholder="poc@college.edu"
+                    badge={aiFilledFields.has('email') ? <AiFilledBadge /> : null}
                     value={f.email} onChange={e => upd('email', e.target.value)}
                     error={errors.email} />
                 </div>
 
                 <Input id="host-website" label="Website" type="url"
                   placeholder="https://yourfest.edu"
+                  badge={aiFilledFields.has('website') ? <AiFilledBadge /> : null}
                   value={f.website} onChange={e => upd('website', e.target.value)}
                   error={errors.website}
                   hint="Optional — your event website or social page" />

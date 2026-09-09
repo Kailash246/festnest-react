@@ -319,4 +319,9 @@ export const admin = {
   deleteFeedback:        (id)        => del(`/admin/feedback/${id}`),
 };
 
-export default { auth, events, users, notifications, leaderboard, college, support, feedback, admin, ca, tokens };
+/* ─── AI Poster Autofill ─────────────────────────────────── */
+export const ai = {
+  parseEventPoster: (formData) => post('/ai/parse-event-poster', formData),
+};
+
+export default { auth, events, users, notifications, leaderboard, college, support, feedback, admin, ca, tokens, ai };
