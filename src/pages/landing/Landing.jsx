@@ -319,7 +319,7 @@ function CategoryStrip() {
           const CatIcon = c.icon;
           return (
             <button key={c.cat} onClick={() => navigate(`/explore?cat=${encodeURIComponent(c.cat)}`)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white border border-border rounded-full
+              className="flex items-center gap-2 px-5 py-2.5 bg-white border border-border rounded-md
                          text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary
                          transition-all duration-200 hover:-translate-y-0.5">
               <CatIcon className={`w-4 h-4 ${c.iconColor}`} />

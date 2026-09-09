@@ -48,7 +48,7 @@ export default function Topnav() {
         <button
           onClick={() => navigate('/explore')}
           className="hidden md:flex items-center gap-2 flex-1 min-w-0
-                     px-3 py-2 rounded-full
+                     px-3 py-2 rounded-md
                      bg-[#F1F0ED] border border-[#E4E4E0]
                      text-[#8A8A85] text-[13px]
                      hover:border-[#CBCBC6] hover:bg-[#E9E9E5]

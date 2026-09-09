@@ -1171,19 +1171,19 @@ export default function HostEvent() {
           {featuredLoading ? (
             <>
               {[0, 1].map(i => (
-                <div key={i} className="bg-white border border-[#E4E4E0] rounded-[18px] overflow-hidden animate-pulse">
+                <div key={i} className="bg-white border border-[#E4E4E0] rounded-lg overflow-hidden animate-pulse">
                   <div className="h-[140px] bg-surface-3" />
                   <div className="p-4 space-y-2">
                     <div className="h-2.5 w-16 bg-surface-3 rounded-full" />
                     <div className="h-4 w-3/4 bg-surface-3 rounded-full" />
                     <div className="h-3 w-1/2 bg-surface-3 rounded-full" />
-                    <div className="h-9 bg-surface-3 rounded-[10px] mt-2" />
+                    <div className="h-9 bg-surface-3 rounded-md mt-2" />
                   </div>
                 </div>
               ))}
             </>
           ) : featuredEvents.length === 0 ? (
-            <div className="bg-surface border border-border rounded-[18px] p-5 text-center">
+            <div className="bg-surface border border-border rounded-lg p-5 text-center">
               <div className="flex justify-center mb-2"><Star size={28} strokeWidth={1.5} className="text-amber-400" /></div>
               <div className="text-[12px] font-semibold text-text-2 mb-0.5">No featured events yet</div>
               <div className="text-[11px] text-text-3">Check back soon!</div>

@@ -54,12 +54,15 @@ export default {
 
       /* ── Border Radius ── */
       borderRadius: {
+        none: '0px',
         xs:   '4px',
         sm:   '6px',
-        md:   '10px',
-        lg:   '16px',
-        xl:   '22px',
-        '2xl':'28px',
+        DEFAULT: '8px',
+        md:   '8px',
+        lg:   '10px',
+        xl:   '10px',
+        '2xl':'12px',
+        '3xl':'14px',
         full: '9999px',
       },
 

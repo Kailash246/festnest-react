@@ -70,7 +70,7 @@ export default function BottomNav() {
             aria-label={label}
             aria-current={active ? 'page' : undefined}
             className="flex-1 flex flex-col items-center gap-[3px] py-1.5 px-1
-                       rounded-xl min-w-0 transition-colors duration-150
+                       rounded-md min-w-0 transition-colors duration-150
                        hover:bg-[#F1F0ED] active:bg-[#E9E9E5] relative"
           >
             <span className={`transition-all duration-150

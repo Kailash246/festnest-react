@@ -22,7 +22,7 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
     <motion.div
       whileHover={{ y: -2, boxShadow: '0 6px 20px rgba(0,0,0,0.10)' }}
       onClick={() => navigate(`/event/${slug}`)}
-      className={`bg-white border border-[#E4E4E0] rounded-[18px] overflow-hidden
+      className={`bg-white border border-[#E4E4E0] rounded-lg overflow-hidden
                   shadow-[0_2px_8px_rgba(0,0,0,0.05)] cursor-pointer flex-shrink-0 ${className}`}
     >
       {/* Image area */}
@@ -32,11 +32,11 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
           : <span className="text-[52px] select-none" aria-hidden>{ev.emoji || '🎉'}</span>
         }
         <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-[5px] px-2.5 py-[3px]
-                         rounded-full text-[10px] font-bold bg-primary text-white shadow-sm">
+                         rounded-md text-[10px] font-bold bg-primary text-white shadow-sm">
           🔥 Featured
         </span>
         <span className={`absolute top-2.5 right-2.5 inline-flex items-center px-2.5 py-[3px]
-                          rounded-full text-[10px] font-bold border ${pillStyle}`}>
+                          rounded-md text-[10px] font-bold border ${pillStyle}`}>
           {pillLabel}
         </span>
       </div>
@@ -75,7 +75,7 @@ export default function FeaturedEventCard({ event: ev, className = '' }) {
           )}
         </div>
         <button
-          className="w-full mt-1 py-2.5 bg-primary text-white rounded-[10px] text-[12px] font-bold
+          className="w-full mt-1 py-2.5 bg-primary text-white rounded-md text-[12px] font-bold
                      hover:bg-primary-dark transition-colors duration-150"
           onClick={e => { e.stopPropagation(); navigate(`/event/${slug}`); }}
         >

@@ -48,7 +48,7 @@ export default function Leaderboard() {
       <div className="flex gap-2 px-4 md:px-12 pb-2 md:max-w-[1000px] md:mx-auto">
         {PERIODS.map((p, i) => (
           <button key={p} onClick={() => { setPeriod(i); showToast(p + ' rankings', 'info'); }}
-            className={`px-[13px] py-1.5 rounded-full border-[1.5px] text-[13px] font-medium
+            className={`px-[13px] py-1.5 rounded-md border-[1.5px] text-[13px] font-medium
                         transition-all duration-fast
                         ${period === i
                           ? 'bg-primary-light border-primary text-primary'
@@ -127,7 +127,7 @@ export default function Leaderboard() {
 
         <div className="text-center mt-5">
           <button onClick={() => showToast('Loading more rankings…', 'info')}
-            className="px-6 py-2.5 border-[1.5px] border-border rounded-full text-[14px] font-medium
+            className="px-6 py-2.5 border-[1.5px] border-border rounded-md text-[14px] font-medium
                        text-text-2 hover:border-primary hover:text-primary transition-all">
             Load more rankings
           </button>

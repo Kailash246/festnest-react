@@ -728,7 +728,7 @@ export default function Support() {
                             key={topic}
                             whileTap={{ scale: 0.94 }}
                             onClick={() => setSelectedTopic(topic)}
-                            className={`px-3.5 py-2 rounded-full border-[1.5px] text-[13px] font-medium
+                            className={`px-3.5 py-2 rounded-md border-[1.5px] text-[13px] font-medium
                                         transition-all duration-fast
                                         ${selectedTopic === topic
                                           ? 'bg-primary-light border-primary text-primary shadow-[0_0_0_2px_rgba(79,70,229,0.15)]'
@@ -854,12 +854,12 @@ export default function Support() {
                     <div className="flex gap-2 flex-wrap mb-5">
                       {FILTERS.map(f => (
                         <button key={f.id} onClick={() => setTicketFilter(f.id)}
-                          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-semibold
+                          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-[12px] font-semibold
                                       border transition-all ${ticketFilter === f.id
                                         ? 'bg-primary text-white border-primary'
                                         : 'bg-white text-text-2 border-border hover:border-primary/40 hover:text-primary'}`}>
                           {f.label}
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold
                                             ${ticketFilter === f.id ? 'bg-white/20 text-white' : 'bg-surface-3 text-text-3'}`}>
                             {counts[f.id]}
                           </span>

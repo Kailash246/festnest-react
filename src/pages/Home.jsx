@@ -70,7 +70,7 @@ const PinIcon = () => (
    SKELETON CARD  (loading placeholder)
 ───────────────────────────────────────── */
 const SkeletonCard = () => (
-  <div className="rounded-[18px] overflow-hidden border border-border bg-white">
+  <div className="rounded-lg overflow-hidden border border-border bg-white">
     <div className="skeleton w-full" style={{ paddingTop: '56.25%' }} />
     <div className="p-3 space-y-2">
       <div className="skeleton h-4 w-3/4" />

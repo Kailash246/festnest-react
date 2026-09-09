@@ -216,7 +216,7 @@ const PrizeBadge = ({ amount, featured }) => (
       background: 'linear-gradient(135deg, #FEF9C3 0%, #FDE68A 100%)',
       color: '#78350F',
       border: '1px solid #FCD34D',
-      borderRadius: 999,
+      borderRadius: 6,
       fontSize: 10,
       fontWeight: 700,
       padding: '3px 8px',
@@ -287,7 +287,7 @@ export default function EventCard({ event, onDelete, featured }) {
       style={{
         background: '#fff',
         border: isFeaturedCard ? '1px solid #fde68a' : '1px solid #E4E4E0',
-        borderRadius: 18,
+        borderRadius: 10,
         overflow: 'hidden',
         cursor: 'pointer',
         display: 'flex',
@@ -401,7 +401,7 @@ export default function EventCard({ event, onDelete, featured }) {
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               background: '#FEE2E2', color: '#991B1B', border: '1px solid #FECACA',
-              borderRadius: 999, fontSize: 10, fontWeight: 800,
+              borderRadius: 6, fontSize: 10, fontWeight: 800,
               padding: '3px 8px', letterSpacing: '0.04em', whiteSpace: 'nowrap',
               textTransform: 'uppercase', flexShrink: 0,
             }}>
@@ -518,7 +518,7 @@ export default function EventCard({ event, onDelete, featured }) {
                 onClick={e => e.stopPropagation()}
                 style={{
                   background: '#fff',
-                  borderRadius: 18,
+                  borderRadius: 10,
                   padding: '28px 24px 24px',
                   maxWidth: 360,
                   width: '100%',
@@ -547,7 +547,7 @@ export default function EventCard({ event, onDelete, featured }) {
                     disabled={deleting}
                     style={{
                       flex: 1, padding: '10px 0',
-                      border: '1.5px solid #E4E4E0', borderRadius: 10,
+                      border: '1.5px solid #E4E4E0', borderRadius: 8,
                       fontSize: 14, fontWeight: 600,
                       color: '#6B7280', background: '#fff',
                       cursor: deleting ? 'not-allowed' : 'pointer',
@@ -562,7 +562,7 @@ export default function EventCard({ event, onDelete, featured }) {
                     disabled={deleting}
                     style={{
                       flex: 1, padding: '10px 0',
-                      border: 'none', borderRadius: 10,
+                      border: 'none', borderRadius: 8,
                       fontSize: 14, fontWeight: 700,
                       color: '#fff',
                       background: deleting ? '#FCA5A5' : '#DC2626',

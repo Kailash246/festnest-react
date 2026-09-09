@@ -212,7 +212,7 @@ export default function App() {
                      flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-2.5
                      bg-white text-text-1 hover:text-primary
                      border border-[#E4E4E0] hover:border-primary/40
-                     rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_6px_24px_rgba(79,70,229,0.18)]
+                     rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_6px_24px_rgba(79,70,229,0.18)]
                      transition-all duration-200 group active:scale-95"
         >
           <span className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200 flex-shrink-0">

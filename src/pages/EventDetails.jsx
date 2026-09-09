@@ -1200,7 +1200,7 @@ export default function EventDetails() {
             <div className="flex flex-col items-start min-w-0">
               {/* Badges */}
               <div className="mb-4 flex flex-wrap items-center gap-2.5">
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold tracking-wider uppercase border shadow-sm ${
+                <span className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-bold tracking-wider uppercase border shadow-sm ${
                   registrationStatus === 'Closing soon'
                     ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
                     : registrationStatus === 'Event ended'
@@ -1213,7 +1213,7 @@ export default function EventDetails() {
                   {registrationStatus}
                 </span>
 
-                <span className="rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 px-3 py-1 text-[11px] font-bold tracking-wider uppercase shadow-sm">
+                <span className="rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30 px-3 py-1 text-[11px] font-bold tracking-wider uppercase shadow-sm">
                   {ev.category || 'Event'}
                 </span>
               </div>
@@ -1475,7 +1475,7 @@ export default function EventDetails() {
           {ev.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {ev.tags.map(tag => (
-                <span key={tag} className="px-3 py-1.5 text-[12px] font-semibold bg-surface-2 border border-border rounded-full text-text-2">
+                <span key={tag} className="px-3 py-1.5 text-[12px] font-semibold bg-surface-2 border border-border rounded-md text-text-2">
                   #{tag}
                 </span>
               ))}
@@ -1999,7 +1999,7 @@ export default function EventDetails() {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[36px]">{sidebarFeaturedEvent.emoji || '🔥'}</div>
                   )}
-                  <span className="absolute top-2.5 left-2.5 bg-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                  <span className="absolute top-2.5 left-2.5 bg-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md">
                     Featured
                   </span>
                 </div>
