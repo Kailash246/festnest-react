@@ -437,3 +437,8 @@ input:focus:required {
   color: #1F2937;
   font-weight: 600;
 }
+
+/* ── Floating feedback button pill/circular shape override ── */
+.floating-feedback-btn {
+  border-radius: 9999px !important;
+}
