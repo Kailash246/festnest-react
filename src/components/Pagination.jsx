@@ -67,7 +67,7 @@ export default function Pagination({
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
           aria-label="Previous page"
-          className={`flex items-center gap-1 px-3 sm:px-3.5 h-10 rounded-xl text-[13px] font-semibold transition-all duration-150
+          className={`flex items-center gap-1 px-3 sm:px-3.5 h-10 rounded-[8px] text-[13px] font-semibold transition-all duration-150
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1
                      ${
                        page <= 1
@@ -104,7 +104,7 @@ export default function Pagination({
                 onClick={() => onPageChange(p)}
                 aria-label={`Page ${p}`}
                 aria-current={isActive ? 'page' : undefined}
-                className={`min-w-[40px] h-10 px-2 rounded-xl text-[13px] font-semibold flex items-center justify-center transition-all duration-150 tabular-nums
+                className={`min-w-[40px] h-10 px-2 rounded-[8px] text-[13px] font-semibold flex items-center justify-center transition-all duration-150 tabular-nums
                            focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1
                            ${
                              isActive
@@ -124,7 +124,7 @@ export default function Pagination({
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
           aria-label="Next page"
-          className={`flex items-center gap-1 px-3 sm:px-3.5 h-10 rounded-xl text-[13px] font-semibold transition-all duration-150
+          className={`flex items-center gap-1 px-3 sm:px-3.5 h-10 rounded-[8px] text-[13px] font-semibold transition-all duration-150
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1
                      ${
                        page >= totalPages
