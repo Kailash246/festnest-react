@@ -343,16 +343,6 @@ function LiveIDCard({ profile, tilt = false }) {
         </div>
 
         <div className="mt-5 flex gap-4 items-center">
-          <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-500 font-bold text-lg fn-display">
-            {profile.name
-              ? profile.name
-                  .split(' ')
-                  .map((w) => w[0])
-                  .join('')
-                  .toUpperCase()
-                  .slice(0, 2)
-              : 'CA'}
-          </div>
           {profile.photoUrl ? (
             <img
               src={profile.photoUrl}
@@ -669,23 +659,18 @@ export default function CampusAmbassadorDashboard() {
     tier: profile.tier || 'Bronze',
   };
 
-  // Tier thresholds: Bronze (0-2), Silver (3-7), Gold (8-14), City Lead (15+)
   // Tier thresholds: Bronze (0–2), Silver (3–7), Gold (8–15), City Lead (16+)
   const currentOrganizers = stats.organizersOnboarded;
   let nextTierName = 'Silver';
   let nextThreshold = 3;
   let currentBase = 0;
 
-  if (currentOrganizers >= 15) {
   if (currentOrganizers >= 16) {
     nextTierName = 'Maximum Tier (City Lead)';
-    nextThreshold = 15;
-    currentBase = 15;
     nextThreshold = 16;
     currentBase = 16;
   } else if (currentOrganizers >= 8) {
     nextTierName = 'City Lead';
-    nextThreshold = 15;
     nextThreshold = 16;
     currentBase = 8;
   } else if (currentOrganizers >= 3) {
@@ -699,7 +684,6 @@ export default function CampusAmbassadorDashboard() {
   }
 
   const progressPct =
-    currentOrganizers >= 15
     currentOrganizers >= 16
       ? 100
       : Math.min(100, Math.round(((currentOrganizers - currentBase) / (nextThreshold - currentBase)) * 100));
@@ -795,7 +779,6 @@ export default function CampusAmbassadorDashboard() {
 
                 <button
                   onClick={handleCopyReferral}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm transition"
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
                 >
                   {copied ? <Check size={15} /> : <Copy size={15} />}
@@ -911,10 +894,8 @@ export default function CampusAmbassadorDashboard() {
                     Next: {nextTierName}
                   </span>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {currentOrganizers >= 15
                     {currentOrganizers >= 16
                       ? 'Top tier achieved!'
-                      : `${nextThreshold - currentOrganizers} more organizers needed`}
                       : `${nextThreshold - currentOrganizers} more organizer${nextThreshold - currentOrganizers === 1 ? '' : 's'} needed`}
                   </p>
                 </div>
@@ -932,7 +913,6 @@ export default function CampusAmbassadorDashboard() {
                 <span>Bronze (0)</span>
                 <span>Silver (3)</span>
                 <span>Gold (8)</span>
-                <span>City Lead (15+)</span>
                 <span>City Lead (16+)</span>
               </div>
             </div>

@@ -10,7 +10,6 @@ import {
 import { useApp } from '../context/AppContext';
 import Seo from '../components/Seo';
 import LogoutConfirmModal from '../components/LogoutConfirmModal';
-import { users as usersApi, events as eventsApi } from '../services/api';
 import { users as usersApi, events as eventsApi, ca as caApi } from '../services/api';
 import { normaliseEvent, normaliseEvents } from '../services/normalise';
 
@@ -858,7 +857,6 @@ function ActivityCard({ Icon: IconCmp, iconBg, title, desc, onClick }) {
   );
 }
 
-function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout }) {
 function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout, caProfile }) {
   const studentItems = [
     { Icon: Bell,          iconBg: 'bg-[#EEF2FF] text-primary',       title: 'Notifications',      desc: 'Deadlines & announcements',     onClick: () => navigate('/notifications') },
@@ -877,7 +875,6 @@ function ActivityCenter({ isOrg, savedCount, navigate, showToast, onLogout, caPr
     { Icon: CircleHelp,      iconBg: 'bg-[#FEF2F2] text-[#DC2626]',    title: 'Help & Support',     desc: 'FAQs and contact support',      onClick: () => navigate('/support') },
   ];
 
-  const items = isOrg ? orgItems : studentItems;
   const baseItems = isOrg ? orgItems : studentItems;
   const caItem = caProfile ? [{
     Icon: Award,
@@ -967,22 +964,11 @@ export default function Profile() {
     setLoading(true);
     const userRole = currentUser?.role || 'user';
     try {
-      const [meRes, secondRes] = await Promise.all([
       const [meRes, secondRes, caRes] = await Promise.allSettled([
         usersApi.me(),
         userRole === 'organizer' ? usersApi.hosted() : usersApi.registrations(),
         caApi.me(),
       ]);
-      const u = meRes.data.user;
-      setProfile(u);
-      setStats(meRes.data.stats || {});
-      if (u.role === 'organizer') {
-        setHostedEvents(secondRes.data.hostedEvents || []);
-      } else {
-        const regs = (secondRes.data.registrations || [])
-          .map(r => ({ ev: normaliseEvent(r.event), status: r.status }))
-          .filter(r => r.ev);
-        setRegistrations(regs);
 
       if (meRes.status === 'fulfilled') {
         const u = meRes.value.data?.user;

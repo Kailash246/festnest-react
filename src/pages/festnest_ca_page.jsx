@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   Users, Trophy, Rocket, Megaphone, GraduationCap, QrCode, IdCard,
   ChevronDown, CheckCircle2, MapPin, Star, Handshake, Sparkles,
-  AlertCircle, Loader2, ArrowRight, ArrowLeft
   AlertCircle, Loader2, ArrowRight, ArrowLeft, Upload, Camera
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -253,7 +252,6 @@ export default function CampusAmbassadorPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await ca.apply(form);
       let payload;
       if (photoFile) {
         const fd = new FormData();

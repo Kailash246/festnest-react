@@ -275,7 +275,7 @@ const DetailSkeleton = () => {
                   <div className="skeleton h-5 w-3/4 rounded" />
                   <div className="skeleton h-3.5 w-full rounded" />
                   <div className="skeleton h-3.5 w-2/3 rounded" />
-                  <div className="skeleton h-2 w-full rounded-full mt-4" />
+                  <div className="skeleton h-4 w-24 rounded mt-4" />
                 </div>
               ))}
             </div>
@@ -1557,10 +1557,6 @@ export default function EventDetails() {
                 className="flex gap-4 overflow-x-auto pb-3 no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex-nowrap"
               >
                 {individualCompetitions.map((competition, competitionIndex) => {
-                  const registeredCount = competition.currentTeams ?? competition.registeredTeams ?? (competitionIndex % 2 === 0 ? 142 : 67);
-                  const capacityCount = competition.capacity ?? competition.maxTeams ?? (competitionIndex % 2 === 0 ? 200 : 80);
-                  const pct = Math.min(100, Math.round((registeredCount / capacityCount) * 100));
-                  const isAlmostFull = pct >= 80;
                   const catLabel = competition.category || competition.type || competition.format || 'COMPETITION';
 
                   const badgeColors = [
@@ -1594,7 +1590,7 @@ export default function EventDetails() {
                         </div>
 
                         {/* Title & Description */}
-                        <div className="px-4 pt-2 pb-2">
+                        <div className="px-4 pt-2 pb-3.5">
                           <h3 className="font-heading font-bold text-[16px] leading-snug text-text-1 mb-1.5 break-words pr-7">
                             {competition.name}
                           </h3>
@@ -1626,34 +1622,15 @@ export default function EventDetails() {
                         </div>
                       </div>
 
-                      {/* Card Bottom: Progress & CTA */}
-                      <div className="pt-2">
-                        {/* Capacity Progress Bar */}
-                        <div className="px-4 pb-3">
-                          <div className="flex items-center justify-between text-[11px] mb-1 font-semibold text-text-3">
-                            <span>{registeredCount}/{capacityCount} teams</span>
-                            <span className={isAlmostFull ? 'text-amber-600 font-bold' : 'text-text-3'}>
-                              {isAlmostFull ? 'Almost full' : `${pct}%`}
-                            </span>
-                          </div>
-                          <div className="w-full h-1.5 bg-surface-2 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all ${isAlmostFull ? 'bg-amber-500' : 'bg-primary'}`}
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* View Details Link */}
-                        <div className="border-t border-border px-4 py-2.5 bg-surface/50">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedCompetition(competitionIndex)}
-                            className="flex items-center gap-1 text-[13px] font-bold text-primary hover:text-primary-dark transition-colors"
-                          >
-                            View Details <ChevronRight size={14} />
-                          </button>
-                        </div>
+                      {/* Card Bottom: View Details Link */}
+                      <div className="border-t border-border px-4 py-2.5 bg-surface/50">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCompetition(competitionIndex)}
+                          className="flex items-center gap-1 text-[13px] font-bold text-primary hover:text-primary-dark transition-colors"
+                        >
+                          View Details <ChevronRight size={14} />
+                        </button>
                       </div>
                     </div>
                   );
