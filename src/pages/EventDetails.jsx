@@ -151,7 +151,7 @@ function MultilineText({ text, className = '' }) {
 
 const ENTRY_CONFIG = {
   free:  { label: 'Register Free', color: 'bg-[#16A34A] hover:bg-[#15803D]', shadow: 'hover:shadow-[0_4px_14px_rgba(22,163,74,0.35)]',  pill: 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]' },
-  paid:  { label: 'Book Tickets',  color: 'bg-primary hover:bg-primary-dark', shadow: 'hover:shadow-indigo', pill: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]' },
+  paid:  { label: 'Register Now',  color: 'bg-primary hover:bg-primary-dark', shadow: 'hover:shadow-indigo', pill: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]' },
   prize: { label: 'Register Now',  color: 'bg-primary hover:bg-primary-dark', shadow: 'hover:shadow-indigo', pill: 'bg-primary-light text-primary border-[#C7D2FE]' },
 };
 
@@ -758,7 +758,7 @@ function TicketCountdownCard({
             <>Registration Closed</>
           ) : (
             <>
-              {cfg?.label || 'Book Tickets'} <ArrowRight size={16} />
+              {cfg?.label || 'Register Now'} <ArrowRight size={16} />
             </>
           )}
         </motion.button>
@@ -1268,7 +1268,7 @@ export default function EventDetails() {
                     <>Registration Closed</>
                   ) : (
                     <>
-                      {cfg?.label || 'Book Tickets'} <ArrowRight size={16} />
+                      {cfg?.label || 'Register Now'} <ArrowRight size={16} />
                     </>
                   )}
                 </motion.button>
@@ -2117,7 +2117,7 @@ export default function EventDetails() {
               <>Registration Closed</>
             ) : (
               <>
-                {cfg?.label || 'Book Tickets'} <ArrowRight size={15} />
+                {cfg?.label || 'Register Now'} <ArrowRight size={15} />
               </>
             )}
           </motion.button>
