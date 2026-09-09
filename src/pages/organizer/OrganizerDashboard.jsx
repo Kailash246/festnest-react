@@ -25,6 +25,7 @@ import EventsTab from './tabs/EventsTab';
 import ParticipantsTab from './tabs/ParticipantsTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import TipsTab from './tabs/TipsTab';
+import { SHOW_ENGAGEMENT_ANALYTICS } from './config';
 
 // Re-export CompetitionManager for backward compatibility with EventDetails.jsx
 export { CompetitionManager };
@@ -229,7 +230,7 @@ function OrganizerDashboardContent() {
         user={user}
         counts={{
           totalEvents: events.length,
-          totalRegistrations: totalRegistrationsCount,
+          totalRegistrations: SHOW_ENGAGEMENT_ANALYTICS ? totalRegistrationsCount : null,
           pendingEvents: pendingCount,
         }}
       />
@@ -250,8 +251,12 @@ function OrganizerDashboardContent() {
           {loading ? (
             <div className="space-y-6 animate-pulse">
               <div className="h-44 rounded-2xl bg-surface-2" />
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                {[...Array(6)].map((_, i) => (
+              <div className={`grid gap-4 ${
+                SHOW_ENGAGEMENT_ANALYTICS
+                  ? 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-6'
+                  : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-4'
+              }`}>
+                {[...Array(SHOW_ENGAGEMENT_ANALYTICS ? 6 : 4)].map((_, i) => (
                   <div key={i} className="h-28 rounded-xl bg-surface-2" />
                 ))}
               </div>

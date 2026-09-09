@@ -1,5 +1,6 @@
 // src/pages/organizer/tabs/EventsTab.jsx
 import React, { useState, useMemo } from 'react';
+import { SHOW_ENGAGEMENT_ANALYTICS } from '../config';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -140,8 +141,12 @@ export default function EventsTab({
             >
               <option value="latest">Latest First</option>
               <option value="oldest">Oldest First</option>
-              <option value="views">Most Views</option>
-              <option value="regs">Most Registrations</option>
+              {SHOW_ENGAGEMENT_ANALYTICS && (
+                <>
+                  <option value="views">Most Views</option>
+                  <option value="regs">Most Registrations</option>
+                </>
+              )}
             </select>
 
             {/* View switcher */}
@@ -326,14 +331,20 @@ export default function EventsTab({
 
                 {/* Card Footer: Metrics & Actions */}
                 <div className="pt-3 border-t border-border flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-3 text-[11px] text-text-3 font-mono">
-                    <span className="flex items-center gap-1" title="Views">
-                      <Eye size={12} className="text-text-4" /> {views}
-                    </span>
-                    <span className="flex items-center gap-1 font-semibold text-text-1" title="Registrations">
-                      <Users size={12} className="text-text-4" /> {regs}
-                    </span>
-                  </div>
+                  {SHOW_ENGAGEMENT_ANALYTICS ? (
+                    <div className="flex items-center gap-3 text-[11px] text-text-3 font-mono">
+                      <span className="flex items-center gap-1" title="Views">
+                        <Eye size={12} className="text-text-4" /> {views}
+                      </span>
+                      <span className="flex items-center gap-1 font-semibold text-text-1" title="Registrations">
+                        <Users size={12} className="text-text-4" /> {regs}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-text-4 font-mono">
+                      {ev.city || ev.mode || 'Campus'}
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-1.5">
                     {ev.status === 'approved' && linkedId && (
@@ -405,8 +416,12 @@ export default function EventsTab({
                   <th className="py-3.5 px-3">Status</th>
                   <th className="py-3.5 px-3">Category</th>
                   <th className="py-3.5 px-3">Date</th>
-                  <th className="py-3.5 px-3">Views</th>
-                  <th className="py-3.5 px-3">Regs</th>
+                  {SHOW_ENGAGEMENT_ANALYTICS && (
+                    <>
+                      <th className="py-3.5 px-3">Views</th>
+                      <th className="py-3.5 px-3">Regs</th>
+                    </>
+                  )}
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -456,12 +471,16 @@ export default function EventsTab({
                       <td className="py-3 px-3 font-mono text-text-3 whitespace-nowrap">
                         {ev.startDate || 'TBA'}
                       </td>
-                      <td className="py-3 px-3 font-mono text-text-3 whitespace-nowrap">
-                        {views}
-                      </td>
-                      <td className="py-3 px-3 font-mono font-bold text-text-1 whitespace-nowrap">
-                        {regs}
-                      </td>
+                      {SHOW_ENGAGEMENT_ANALYTICS && (
+                        <>
+                          <td className="py-3 px-3 font-mono text-text-3 whitespace-nowrap">
+                            {views}
+                          </td>
+                          <td className="py-3 px-3 font-mono font-bold text-text-1 whitespace-nowrap">
+                            {regs}
+                          </td>
+                        </>
+                      )}
                       <td className="py-3 px-4 text-right whitespace-nowrap">
                         <div className="inline-flex items-center gap-1.5 justify-end">
                           {ev.status === 'approved' && linkedId && (

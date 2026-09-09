@@ -31,6 +31,7 @@ import {
   Legend,
 } from 'recharts';
 import OrganizerStatCard from '../components/OrganizerStatCard';
+import { SHOW_ENGAGEMENT_ANALYTICS } from '../config';
 
 const STATUS_MAP = {
   pending:  { label: 'Under Review', cls: 'bg-amber-50 text-amber-700 border-amber-200', Icon: Clock },
@@ -144,7 +145,9 @@ export default function OverviewTab({
         </div>
 
         {/* Quick summary pill strip */}
-        <div className="relative z-10 mt-6 pt-5 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className={`relative z-10 mt-6 pt-5 border-t border-white/15 grid gap-4 ${
+          SHOW_ENGAGEMENT_ANALYTICS ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'
+        }`}>
           <div>
             <div className="font-mono text-[20px] font-bold leading-none">{total}</div>
             <div className="text-[11px] text-white/70 mt-1">Submitted Events</div>
@@ -157,15 +160,21 @@ export default function OverviewTab({
             <div className="font-mono text-[20px] font-bold leading-none text-amber-300">{pending}</div>
             <div className="text-[11px] text-white/70 mt-1">Under Review</div>
           </div>
-          <div>
-            <div className="font-mono text-[20px] font-bold leading-none text-purple-200">{totalRegs}</div>
-            <div className="text-[11px] text-white/70 mt-1">Total Registrations</div>
-          </div>
+          {SHOW_ENGAGEMENT_ANALYTICS && (
+            <div>
+              <div className="font-mono text-[20px] font-bold leading-none text-purple-200">{totalRegs}</div>
+              <div className="text-[11px] text-white/70 mt-1">Total Registrations</div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* ── Key Metrics KPI Grid ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      <div className={`grid gap-3 sm:gap-4 ${
+        SHOW_ENGAGEMENT_ANALYTICS
+          ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+          : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-4'
+      }`}>
         <OrganizerStatCard
           icon={CalendarDays}
           label="Total Events"
@@ -188,88 +197,158 @@ export default function OverviewTab({
           color="amber"
           onClick={() => onSelectTab('events')}
         />
-        <OrganizerStatCard
-          icon={Users}
-          label="Registrations"
-          value={totalRegs}
-          color="purple"
-          onClick={() => onSelectTab('participants')}
-        />
-        <OrganizerStatCard
-          icon={Eye}
-          label="Event Views"
-          value={totalViews}
-          color="blue"
-          onClick={() => onSelectTab('analytics')}
-        />
+        {SHOW_ENGAGEMENT_ANALYTICS && (
+          <>
+            <OrganizerStatCard
+              icon={Users}
+              label="Registrations"
+              value={totalRegs}
+              color="purple"
+              onClick={() => onSelectTab('participants')}
+            />
+            <OrganizerStatCard
+              icon={Eye}
+              label="Event Views"
+              value={totalViews}
+              color="blue"
+              onClick={() => onSelectTab('analytics')}
+            />
+          </>
+        )}
         <OrganizerStatCard
           icon={Trophy}
           label="Prize Pool"
           value={totalPrizePool > 0 ? `₹${totalPrizePool.toLocaleString('en-IN')}` : '—'}
-          color="amber"
+          color="purple"
           onClick={() => onSelectTab('analytics')}
         />
       </div>
 
-      {/* ── Visual Analytics & Quick Actions Split ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Performance Chart (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div>
-              <h3 className="font-heading font-bold text-[15px] text-text-1">Event Engagement</h3>
-              <p className="text-[12px] text-text-3">Views vs Registrations across your recent submissions</p>
+      {/* ── Visual Analytics & Quick Actions Section ── */}
+      {SHOW_ENGAGEMENT_ANALYTICS ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Performance Chart (2 cols) */}
+          <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="font-heading font-bold text-[15px] text-text-1">Event Engagement</h3>
+                <p className="text-[12px] text-text-3">Views vs Registrations across your recent submissions</p>
+              </div>
+              <button
+                onClick={() => onSelectTab('analytics')}
+                className="text-[12px] font-semibold text-primary hover:underline flex items-center gap-1"
+              >
+                Detailed Analytics <ArrowRight size={12} />
+              </button>
             </div>
-            <button
-              onClick={() => onSelectTab('analytics')}
-              className="text-[12px] font-semibold text-primary hover:underline flex items-center gap-1"
-            >
-              Detailed Analytics <ArrowRight size={12} />
-            </button>
+
+            <div className="flex-1 min-h-[240px]">
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#F1F1EF" />
+                    <XAxis dataKey="name" stroke="#8E8E93" fontSize={11} tickLine={false} />
+                    <YAxis stroke="#8E8E93" fontSize={11} tickLine={false} allowDecimals={false} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: '12px',
+                        border: '1px solid #E4E4E0',
+                        fontSize: '12px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                      }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
+                    <Bar dataKey="views" name="Views" fill="#6366F1" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="registrations" name="Registrations" fill="#10B981" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-surface-1 rounded-xl border border-dashed border-border">
+                  <BarChart2 size={32} className="text-text-4 mb-2" />
+                  <div className="font-heading text-[14px] font-bold text-text-2">No event analytics yet</div>
+                  <div className="text-[12px] text-text-4 mt-0.5">Post an event to start tracking views and signups</div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="flex-1 min-h-[240px]">
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F1EF" />
-                  <XAxis dataKey="name" stroke="#8E8E93" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#8E8E93" fontSize={11} tickLine={false} allowDecimals={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: '12px',
-                      border: '1px solid #E4E4E0',
-                      fontSize: '12px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                    }}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                  <Bar dataKey="views" name="Views" fill="#6366F1" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="registrations" name="Registrations" fill="#10B981" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-surface-1 rounded-xl border border-dashed border-border">
-                <BarChart2 size={32} className="text-text-4 mb-2" />
-                <div className="font-heading text-[14px] font-bold text-text-2">No event analytics yet</div>
-                <div className="text-[12px] text-text-4 mt-0.5">Post an event to start tracking views and signups</div>
-              </div>
-            )}
+          {/* Quick Operations (1 col) */}
+          <div className="bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
+            <h3 className="font-heading font-bold text-[15px] text-text-1 mb-1">Quick Actions</h3>
+            <p className="text-[12px] text-text-3 mb-4">Fast shortcuts to common operations</p>
+
+            <div className="space-y-2.5 flex-1">
+              <button
+                onClick={() => navigate('/host')}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              >
+                <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                  <Plus size={18} strokeWidth={2.4} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] font-bold text-text-1">Post New Event</div>
+                  <div className="text-[11px] text-text-3 truncate">Submit fest, hackathon, or workshop</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => onSelectTab('participants')}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              >
+                <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0 border border-purple-200">
+                  <FileSpreadsheet size={18} strokeWidth={2} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] font-bold text-text-1">Export Participants</div>
+                  <div className="text-[11px] text-text-3 truncate">Download attendee list to CSV</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => onSelectTab('tips')}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              >
+                <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0 border border-amber-200">
+                  <Sparkles size={18} strokeWidth={2} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] font-bold text-text-1">Growth Playbook</div>
+                  <div className="text-[11px] text-text-3 truncate">Tactics to boost registrations 3×</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigate('/profile')}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              >
+                <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center flex-shrink-0 border border-slate-200">
+                  <TrendingUp size={18} strokeWidth={2} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] font-bold text-text-1">Organizer Profile</div>
+                  <div className="text-[11px] text-text-3 truncate">Update college & contact info</div>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
+      ) : (
+        /* Full-width Quick Actions Grid when engagement analytics are hidden */
+        <div className="bg-white border border-border rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 className="font-heading font-bold text-[15px] text-text-1">Quick Actions</h3>
+              <p className="text-[12px] text-text-3">Direct shortcuts for managing your campus events</p>
+            </div>
+          </div>
 
-        {/* Quick Operations (1 col) */}
-        <div className="bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
-          <h3 className="font-heading font-bold text-[15px] text-text-1 mb-1">Quick Actions</h3>
-          <p className="text-[12px] text-text-3 mb-4">Fast shortcuts to common operations</p>
-
-          <div className="space-y-2.5 flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <button
               onClick={() => navigate('/host')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              className="flex items-center gap-3 p-3.5 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left group"
             >
-              <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center flex-shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                 <Plus size={18} strokeWidth={2.4} />
               </div>
               <div className="min-w-0 flex-1">
@@ -279,46 +358,46 @@ export default function OverviewTab({
             </button>
 
             <button
-              onClick={() => onSelectTab('participants')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              onClick={() => onSelectTab('events')}
+              className="flex items-center gap-3 p-3.5 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left group"
             >
-              <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0 border border-purple-200">
-                <FileSpreadsheet size={18} strokeWidth={2} />
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center flex-shrink-0 border border-indigo-200 group-hover:scale-105 transition-transform">
+                <Layers size={18} strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-[13px] font-bold text-text-1">Export Participants</div>
-                <div className="text-[11px] text-text-3 truncate">Download attendee list to CSV</div>
+                <div className="text-[13px] font-bold text-text-1">Manage Tracks</div>
+                <div className="text-[11px] text-text-3 truncate">Edit competitions & schedules</div>
               </div>
             </button>
 
             <button
               onClick={() => onSelectTab('tips')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              className="flex items-center gap-3 p-3.5 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left group"
             >
-              <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0 border border-amber-200">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center flex-shrink-0 border border-amber-200 group-hover:scale-105 transition-transform">
                 <Sparkles size={18} strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[13px] font-bold text-text-1">Growth Playbook</div>
-                <div className="text-[11px] text-text-3 truncate">Tactics to boost registrations 3×</div>
+                <div className="text-[11px] text-text-3 truncate">Tactics to boost your fest reach</div>
               </div>
             </button>
 
             <button
               onClick={() => navigate('/profile')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
+              className="flex items-center gap-3 p-3.5 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left group"
             >
-              <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center flex-shrink-0 border border-slate-200">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center flex-shrink-0 border border-slate-200 group-hover:scale-105 transition-transform">
                 <TrendingUp size={18} strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[13px] font-bold text-text-1">Organizer Profile</div>
-                <div className="text-[11px] text-text-3 truncate">Update college & contact info</div>
+                <div className="text-[11px] text-text-3 truncate">Update college & coordinator info</div>
               </div>
             </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── Recent Event Submissions ── */}
       <div className="bg-white border border-border rounded-2xl p-5 shadow-xs">
