@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 import { feedback } from '../services/api';
 import {
   Bug, Palette, Lightbulb, Compass, MessageSquare,
-  HelpCircle, Send, CheckCircle2, ArrowLeft, Sparkles,
+  HelpCircle, Send, CheckCircle2, ArrowLeft, Sparkles, Star,
 } from 'lucide-react';
 
 /* ─── Category config ───────────────────────────────── */
@@ -18,13 +18,13 @@ const CATEGORIES = [
   { id: 'other',           label: 'Other',           Icon: HelpCircle,    color: 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100',       active: 'border-gray-400 bg-gray-100 text-gray-800 ring-2 ring-gray-300' },
 ];
 
-/* ─── Rating emoji config ───────────────────────────── */
+/* ─── Rating config ─────────────────────────────────── */
 const RATINGS = [
-  { value: 1, emoji: '😞', label: 'Very poor' },
-  { value: 2, emoji: '😕', label: 'Poor' },
-  { value: 3, emoji: '😐', label: 'Okay' },
-  { value: 4, emoji: '🙂', label: 'Good' },
-  { value: 5, emoji: '😍', label: 'Excellent' },
+  { value: 1, label: 'Very poor' },
+  { value: 2, label: 'Poor' },
+  { value: 3, label: 'Okay' },
+  { value: 4, label: 'Good' },
+  { value: 5, label: 'Excellent' },
 ];
 
 /* ─── Simple fade-in animation ──────────────────────── */
@@ -41,7 +41,8 @@ export default function Feedback() {
   const [category, setCategory] = useState('');
   const [message,  setMessage]  = useState('');
   const [email,    setEmail]    = useState('');
-  const [rating,   setRating]   = useState(null);
+  const [rating,      setRating]      = useState(null);
+  const [hoverRating, setHoverRating] = useState(null);
   const [loading,  setLoading]  = useState(false);
   const [success,  setSuccess]  = useState(false);
   const [errors,   setErrors]   = useState({});
@@ -88,6 +89,7 @@ export default function Feedback() {
     setMessage('');
     setEmail('');
     setRating(null);
+    setHoverRating(null);
     setErrors({});
     setSuccess(false);
   };
@@ -272,33 +274,90 @@ export default function Feedback() {
 
         {/* ── Rating ── */}
         <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }} className="mb-8">
-          <label className="block font-heading text-sm font-semibold text-text-2 mb-2.5">
-            How was your experience?
-            <span className="font-normal text-text-4 ml-1.5 text-xs">(optional)</span>
-          </label>
-          <div className="flex gap-2" role="radiogroup" aria-label="Rate your experience">
-            {RATINGS.map(({ value, emoji, label }) => (
+          <div className="flex items-center justify-between max-w-sm sm:max-w-md mb-2.5">
+            <label className="block font-heading text-sm font-semibold text-text-2">
+              How was your experience?
+              <span className="font-normal text-text-4 ml-1.5 text-xs">(optional)</span>
+            </label>
+            {rating && (
               <button
-                key={value}
                 type="button"
-                onClick={() => setRating(rating === value ? null : value)}
-                className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl border text-xl flex items-center justify-center
-                           transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30
-                           ${rating === value
-                             ? 'border-primary bg-primary/10 scale-110 shadow-sm'
-                             : 'border-border bg-white hover:bg-surface-2 hover:scale-105'}`}
-                role="radio"
-                aria-checked={rating === value}
-                aria-label={label}
-                title={label}
+                onClick={() => setRating(null)}
+                className="text-xs text-text-4 hover:text-primary transition-colors cursor-pointer"
+                aria-label="Clear rating"
               >
-                {emoji}
+                Clear
               </button>
-            ))}
+            )}
           </div>
-          {rating && (
-            <p className="text-text-4 text-xs mt-1.5">
-              {RATINGS.find(r => r.value === rating)?.label}
+
+          <div
+            role="radiogroup"
+            aria-label="Rate your experience from 1 to 5 stars"
+            className="grid grid-cols-5 gap-1.5 sm:gap-2.5 max-w-sm sm:max-w-md select-none"
+            onMouseLeave={() => setHoverRating(null)}
+          >
+            {RATINGS.map(({ value, label }) => {
+              const activeValue = hoverRating || rating || 0;
+              const isFilled = value <= activeValue;
+              const isSelected = rating === value;
+
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={`${value} star${value > 1 ? 's' : ''} - ${label}`}
+                  onClick={() => setRating(prev => (prev === value ? null : value))}
+                  onMouseEnter={() => setHoverRating(value)}
+                  onFocus={() => setHoverRating(value)}
+                  onBlur={() => setHoverRating(null)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      setRating(Math.min(5, (rating || 0) + 1));
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      setRating(Math.max(1, (rating || 2) - 1));
+                    }
+                  }}
+                  className={`group flex flex-col items-center justify-center gap-1.5 py-2.5 px-1 sm:px-2 rounded-xl border transition-all duration-150 cursor-pointer
+                             focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1
+                             ${isSelected
+                               ? 'bg-amber-50/90 border-amber-300 shadow-xs scale-[1.02]'
+                               : 'bg-white border-[#E4E4E0] hover:border-amber-200 hover:bg-amber-50/30 active:scale-95'
+                             }`}
+                >
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center transition-transform duration-150 group-hover:scale-110">
+                    <Star
+                      className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-150 ${
+                        isFilled
+                          ? 'fill-amber-400 text-amber-400 drop-shadow-[0_1px_2px_rgba(245,158,11,0.25)]'
+                          : 'fill-transparent text-neutral-300 group-hover:text-amber-300'
+                      }`}
+                      strokeWidth={isFilled ? 1.5 : 1.75}
+                    />
+                  </div>
+                  <span
+                    className={`text-[11px] sm:text-xs text-center leading-tight transition-colors duration-150 ${
+                      isSelected
+                        ? 'font-semibold text-amber-900'
+                        : isFilled
+                        ? 'font-medium text-amber-700'
+                        : 'font-normal text-text-3 group-hover:text-text-2'
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {(rating || hoverRating) && (
+            <p className="text-xs font-medium text-amber-800 mt-2.5 transition-all">
+              {RATINGS.find(r => r.value === (hoverRating || rating))?.label} ({hoverRating || rating} of 5 stars)
             </p>
           )}
         </motion.div>
