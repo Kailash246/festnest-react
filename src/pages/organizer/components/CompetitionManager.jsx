@@ -24,6 +24,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { events as eventsApi, ai as aiApi } from '../../../services/api';
+import BulkTrackImportModal from './BulkTrackImportModal';
 
 function AiFilledBadge() {
   return (
@@ -320,6 +321,7 @@ export default function CompetitionManager({
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_COMPETITION);
   const [saving, setSaving] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
 
   // AI Autofill states for Competition Track modal
   const [aiFilledFields, setAiFilledFields] = useState(new Set());
@@ -640,6 +642,18 @@ export default function CompetitionManager({
             <span className="mt-1.5 text-[12px] font-bold">Add Sub-Event / Track</span>
             <span className="text-[10px] text-primary/70">Create a sub-competition card</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setBulkImportOpen(true)}
+            className="flex min-h-[96px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#C7D2FE] bg-primary-xlight p-3 text-center text-primary transition-all hover:border-primary hover:bg-primary-light"
+          >
+            <div className="w-8 h-8 rounded-lg bg-white/80 flex items-center justify-center shadow-xs">
+              <Sparkles size={18} strokeWidth={2.4} className="text-primary" />
+            </div>
+            <span className="mt-1.5 text-[12px] font-bold">Import tracks from poster</span>
+            <span className="text-[10px] text-primary/70">Auto-extract multiple tracks from PDF</span>
+          </button>
         </div>
       )}
 
@@ -859,6 +873,19 @@ export default function CompetitionManager({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Bulk Track Import Modal */}
+      <BulkTrackImportModal
+        isOpen={bulkImportOpen}
+        onClose={() => setBulkImportOpen(false)}
+        eventKey={eventKey}
+        eventName={eventName}
+        showToast={showToast}
+        onTracksCreated={() => {
+          loadCompetitions();
+          onCompetitionsChanged?.();
+        }}
+      />
     </div>
   );
 }
