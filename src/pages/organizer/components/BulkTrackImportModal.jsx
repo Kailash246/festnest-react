@@ -142,7 +142,7 @@ export default function BulkTrackImportModal({
             venue: t.venuePlatform || '',
             teamSize: t.teamSize || '',
             eligibility: t.eligibility || '',
-            duration: t.durationRounds || '',
+            duration: (t.durationRounds || '').slice(0, 200),
             registrationLink: t.registrationLink || '',
             description: (t.description || '').slice(0, 2000),
             rules: (t.rulesGuidelines || '').slice(0, 1500),
@@ -754,6 +754,7 @@ export default function BulkTrackImportModal({
                                   onChange={(e) =>
                                     updateTrackField(track.id, 'duration', e.target.value)
                                   }
+                                  maxLength={200}
                                   placeholder="e.g. 24 Hours, 3 Rounds"
                                   className="w-full rounded-lg border border-border bg-white px-3 py-2 text-[13px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
                                 />

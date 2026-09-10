@@ -335,6 +335,7 @@ export default function CompetitionManager({
                     <input
                       value={form.duration}
                       onChange={e => update('duration', e.target.value)}
+                      maxLength={200}
                       placeholder="e.g. 24 Hours, 3 Rounds"
                       className="w-full rounded-lg border border-border px-3.5 py-2.5 text-[13px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
                     />
