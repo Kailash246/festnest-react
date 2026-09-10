@@ -144,7 +144,7 @@ export default function BulkTrackImportModal({
             eligibility: t.eligibility || '',
             duration: t.durationRounds || '',
             registrationLink: t.registrationLink || '',
-            description: (t.description || '').slice(0, 1000),
+            description: (t.description || '').slice(0, 2000),
             rules: (t.rulesGuidelines || '').slice(0, 1500),
           },
         };
@@ -800,7 +800,7 @@ export default function BulkTrackImportModal({
                                 onChange={(e) =>
                                   updateTrackField(track.id, 'description', e.target.value)
                                 }
-                                maxLength={1000}
+                                maxLength={2000}
                                 placeholder="Challenge or objective of this competition..."
                                 className="w-full rounded-lg border border-border bg-white px-3 py-2 text-[13px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-y"
                               />
