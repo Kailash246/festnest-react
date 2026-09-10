@@ -308,9 +308,7 @@ export default function HostEvent() {
   const [aiFilledFields, setAiFilledFields] = useState(new Set());
   const [extractedSubEvents, setExtractedSubEvents] = useState([]);
   const [draftBanner, setDraftBanner] = useState(null); // detected draft waiting for resume/discard
-  const [draftSaved,  setDraftSaved]  = useState(false); // transient "Draft saved" indicator
   const draftAutoRef    = useRef(null); // debounce timer
-  const draftIndicRef   = useRef(null); // indicator hide timer
   const [featuredEvents,     setFeaturedEvents]     = useState([]);
   const [featuredLoading,    setFeaturedLoading]    = useState(true);
 
@@ -353,9 +351,6 @@ export default function HostEvent() {
     clearTimeout(draftAutoRef.current);
     draftAutoRef.current = setTimeout(() => {
       persistDraft(step, f);
-      setDraftSaved(true);
-      clearTimeout(draftIndicRef.current);
-      draftIndicRef.current = setTimeout(() => setDraftSaved(false), 2000);
     }, 800);
     return () => clearTimeout(draftAutoRef.current);
   }, [f, step, isEditMode]);
@@ -1165,12 +1160,6 @@ export default function HostEvent() {
                 </div>
               </SectionCard>
 
-              {draftSaved && (
-                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Draft autosaved
-                </div>
-              )}
               <NavButtons step={step} totalSteps={5} onNext={goNext} nextLabel="Date & Location →" />
             </motion.div>
           )}
@@ -1214,12 +1203,6 @@ export default function HostEvent() {
                   value={f.venue} onChange={e => upd('venue', e.target.value)} />
               </SectionCard>
 
-              {draftSaved && (
-                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Draft autosaved
-                </div>
-              )}
               <NavButtons step={step} totalSteps={5} onBack={goBack} onNext={goNext} nextLabel="Prizes & Registration →" />
             </motion.div>
           )}
@@ -1292,12 +1275,6 @@ export default function HostEvent() {
                   rows={3} value={f.rules} onChange={e => upd('rules', e.target.value)} />
               </SectionCard>
 
-              {draftSaved && (
-                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Draft autosaved
-                </div>
-              )}
               <NavButtons step={step} totalSteps={5} onBack={goBack} onNext={goNext} nextLabel="Contact Info →" />
             </motion.div>
           )}
@@ -1338,12 +1315,6 @@ export default function HostEvent() {
                   hint="Optional — your event website or social page" />
               </SectionCard>
 
-              {draftSaved && (
-                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Draft autosaved
-                </div>
-              )}
               <NavButtons step={step} totalSteps={5} onBack={goBack} onNext={goNext} nextLabel="Upload Media →" />
             </motion.div>
           )}
@@ -1470,12 +1441,6 @@ export default function HostEvent() {
                 </div>
               )}
 
-              {draftSaved && (
-                <div className="flex items-center gap-1.5 text-[11px] text-text-4 mt-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Draft autosaved
-                </div>
-              )}
               {!isEditMode && <div className={`rounded-md border-[1.5px] px-4 py-3.5 ${errors.termsAgreement ? 'border-red bg-red-bg/40' : 'border-[#E4E4E0] bg-white'}`}>
                 <div className="flex items-start gap-3">
                   <input
