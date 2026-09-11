@@ -5,26 +5,12 @@ import {
   Users, Trophy, Rocket, Megaphone, GraduationCap, QrCode, IdCard,
   ChevronDown, CheckCircle2, MapPin, Star, Handshake, Sparkles,
   Copy, Check, Share2, ExternalLink, ArrowLeft, ArrowRight,
-  Clock, AlertCircle, RefreshCw, ShieldCheck, Download, Award
+  Clock, AlertCircle, RefreshCw, ShieldCheck, Download, Award,
+  Building, Calendar
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ca } from '../../services/api';
-
-const GlobalStyle = () => (
-  <style>{`
-    @import url('https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@400,500,700,900&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');
-    .fn-display { font-family: 'Clash Display', sans-serif; }
-    .fn-body { font-family: 'Satoshi', sans-serif; }
-    .fn-mono { font-family: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace; }
-    @keyframes fn-sheen {
-      0% { transform: translateX(-160%) translateY(-160%) rotate(20deg); }
-      100% { transform: translateX(160%) translateY(160%) rotate(20deg); }
-    }
-    .fn-sheen { animation: fn-sheen 4.5s ease-in-out infinite; }
-    @media (prefers-reduced-motion: reduce) { .fn-sheen { animation: none; } }
-  `}</style>
-);
+import { PUBLIC_SITE_URL } from '../../config/site';
 
 const QR_ROWS = [
   [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
@@ -114,12 +100,12 @@ function exportCardAsPNG(profile) {
 
       // Header Brand
       ctx.fillStyle = '#4f46e5';
-      ctx.font = 'bold 24px "Clash Display", sans-serif';
+      ctx.font = 'bold 24px "DM Sans", sans-serif';
       ctx.fillText('FestNest', 36, 50);
 
       // Header Badge (Official Ambassador)
       const badgeText = 'OFFICIAL AMBASSADOR';
-      ctx.font = 'bold 11px "JetBrains Mono", monospace';
+      ctx.font = 'bold 11px "Geist Mono", monospace';
       const badgeMetrics = ctx.measureText(badgeText);
       const badgeW = badgeMetrics.width + 20;
       const badgeH = 24;
@@ -227,38 +213,38 @@ function exportCardAsPNG(profile) {
 
         // Ambassador ID
         ctx.fillStyle = '#94a3b8';
-        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.font = 'bold 10px "Geist Mono", monospace';
         ctx.fillText('AMBASSADOR ID', 36, 216);
 
         ctx.fillStyle = '#1e293b';
-        ctx.font = 'bold 19px "JetBrains Mono", monospace';
+        ctx.font = 'bold 19px "Geist Mono", monospace';
         ctx.fillText(profile.caId || 'FN-CA-PENDING', 36, 242);
 
         // Valid Thru
         ctx.fillStyle = '#94a3b8';
-        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.font = 'bold 10px "Geist Mono", monospace';
         ctx.fillText('VALID THRU', 36, 274);
 
         ctx.fillStyle = '#475569';
-        ctx.font = 'bold 13px "JetBrains Mono", monospace';
+        ctx.font = 'bold 13px "Geist Mono", monospace';
         ctx.fillText(profile.validThru || '09 / 2028', 36, 296);
 
         // Referral Code
         ctx.fillStyle = '#94a3b8';
-        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.font = 'bold 10px "Geist Mono", monospace';
         ctx.fillText('REFERRAL CODE', 220, 216);
 
         ctx.fillStyle = '#4f46e5';
-        ctx.font = 'bold 16px "JetBrains Mono", monospace';
+        ctx.font = 'bold 16px "Geist Mono", monospace';
         ctx.fillText(profile.referralCode || '—', 220, 242);
 
         // Campus Region
         ctx.fillStyle = '#94a3b8';
-        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.font = 'bold 10px "Geist Mono", monospace';
         ctx.fillText('CAMPUS REGION', 220, 274);
 
         ctx.fillStyle = '#475569';
-        ctx.font = 'bold 13px "JetBrains Mono", monospace';
+        ctx.font = 'bold 13px "Geist Mono", monospace';
         ctx.fillText(profile.city || 'India', 220, 296);
 
         // QR Pattern
@@ -336,8 +322,8 @@ function LiveIDCard({ profile, tilt = false }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="fn-display text-base font-bold tracking-tight text-indigo-600">FestNest</span>
-          <span className="rounded-full bg-fuchsia-50 border border-fuchsia-100 px-2.5 py-0.5 text-[10px] font-bold text-fuchsia-600 fn-mono">
+          <span className="font-heading text-base font-bold tracking-tight text-indigo-600">FestNest</span>
+          <span className="rounded-full bg-fuchsia-50 border border-fuchsia-100 px-2.5 py-0.5 text-[10px] font-bold text-fuchsia-600 font-mono">
             OFFICIAL AMBASSADOR
           </span>
         </div>
@@ -350,7 +336,7 @@ function LiveIDCard({ profile, tilt = false }) {
               className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-xl object-cover border border-indigo-100 shadow-sm"
             />
           ) : (
-            <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-500 font-bold text-lg fn-display">
+            <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-500 font-bold text-lg font-heading">
               {profile.name
                 ? profile.name
                     .split(' ')
@@ -362,13 +348,13 @@ function LiveIDCard({ profile, tilt = false }) {
             </div>
           )}
           <div className="flex flex-col min-w-0">
-            <span className="fn-display text-lg sm:text-xl font-bold text-slate-900 leading-tight truncate">
+            <span className="font-heading text-lg sm:text-xl font-bold text-slate-900 leading-tight truncate">
               {profile.name}
             </span>
-            <span className="fn-body text-xs sm:text-sm text-slate-500 truncate mt-0.5">
+            <span className="font-sans text-xs sm:text-sm text-slate-500 truncate mt-0.5">
               {profile.college}, {profile.city}
             </span>
-            <span className={`mt-2 inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold fn-mono ${tierColor}`}>
+            <span className={`mt-2 inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold font-mono ${tierColor}`}>
               {profile.tier?.toUpperCase()} TIER
             </span>
           </div>
@@ -376,12 +362,12 @@ function LiveIDCard({ profile, tilt = false }) {
 
         <div className="mt-6 flex items-end justify-between border-t border-slate-100 pt-4">
           <div>
-            <div className="fn-mono text-[9px] font-semibold tracking-wider text-slate-400">AMBASSADOR ID</div>
-            <div className="fn-mono text-sm sm:text-base font-bold text-slate-800 tracking-tight">
+            <div className="font-mono text-[9px] font-semibold tracking-wider text-slate-400">AMBASSADOR ID</div>
+            <div className="font-mono text-sm sm:text-base font-bold text-slate-800 tracking-tight">
               {profile.caId || 'FN-CA-PENDING'}
             </div>
-            <div className="fn-mono mt-2 text-[9px] font-semibold tracking-wider text-slate-400">VALID THRU</div>
-            <div className="fn-mono text-xs font-medium text-slate-600">{profile.validThru || '09 / 2028'}</div>
+            <div className="font-mono mt-2 text-[9px] font-semibold tracking-wider text-slate-400">VALID THRU</div>
+            <div className="font-mono text-xs font-medium text-slate-600">{profile.validThru || '09 / 2028'}</div>
           </div>
           <QRMark size={64} />
         </div>
@@ -399,6 +385,9 @@ export default function CampusAmbassadorDashboard() {
   const [copied, setCopied] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [impactLogs, setImpactLogs] = useState([]);
+  const [impactLoading, setImpactLoading] = useState(false);
+  const [impactTotal, setImpactTotal] = useState(0);
 
   const handleDownloadCard = async () => {
     if (!profile) return;
@@ -414,6 +403,19 @@ export default function CampusAmbassadorDashboard() {
     }
   };
 
+  const fetchImpact = async () => {
+    setImpactLoading(true);
+    try {
+      const res = await ca.myImpact({ page: 1, limit: 50 });
+      setImpactLogs(res.data?.logs || []);
+      setImpactTotal(res.data?.total || 0);
+    } catch (err) {
+      console.error('Failed to load CA impact logs', err);
+    } finally {
+      setImpactLoading(false);
+    }
+  };
+
   const fetchProfile = async (silent = false) => {
     if (!silent) setLoading(true);
     else setRefreshing(true);
@@ -421,6 +423,7 @@ export default function CampusAmbassadorDashboard() {
     try {
       const res = await ca.me();
       setProfile(res.data?.profile || null);
+      fetchImpact();
     } catch (err) {
       console.error('Failed to load CA profile', err);
     } finally {
@@ -432,6 +435,7 @@ export default function CampusAmbassadorDashboard() {
   useEffect(() => {
     if (isLoggedIn) {
       fetchProfile();
+      fetchImpact();
     } else {
       setLoading(false);
     }
@@ -439,7 +443,7 @@ export default function CampusAmbassadorDashboard() {
 
   const handleCopyReferral = () => {
     if (!profile?.referralCode) return;
-    const url = profile.referralUrl || `https://festnest.in?ref=${profile.referralCode}`;
+    const url = profile.referralUrl || `${PUBLIC_SITE_URL}?ref=${profile.referralCode}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     showToast?.('Referral link copied to clipboard!', 'success');
@@ -451,7 +455,7 @@ export default function CampusAmbassadorDashboard() {
     const shareData = {
       title: `${profile.name} - FestNest Campus Ambassador`,
       text: `Join FestNest to discover verified college fests, hackathons, and competitions! Use code ${profile.referralCode}`,
-      url: profile.referralUrl || `https://festnest.in?ref=${profile.referralCode}`,
+      url: profile.referralUrl || `${PUBLIC_SITE_URL}?ref=${profile.referralCode}`,
     };
     if (navigator.share) {
       navigator.share(shareData).catch(() => {});
@@ -463,14 +467,13 @@ export default function CampusAmbassadorDashboard() {
   // State 1: Unauthenticated
   if (!isLoggedIn) {
     return (
-      <div className="fn-body min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <GlobalStyle />
+      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-lg">
           <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center mb-4">
             <IdCard size={24} />
           </div>
-          <h2 className="fn-display text-2xl font-bold text-slate-900">Campus Ambassador Portal</h2>
-          <p className="fn-body mt-2 text-sm text-slate-600">
+          <h2 className="font-heading text-2xl font-bold text-slate-900">Campus Ambassador Portal</h2>
+          <p className="font-sans mt-2 text-sm text-slate-600">
             Please log in with your FestNest account to access your ambassador credentials, live referral link, and platform impact stats.
           </p>
           <div className="mt-6 flex flex-col gap-3">
@@ -495,13 +498,12 @@ export default function CampusAmbassadorDashboard() {
   // State 2: Loading
   if (loading) {
     return (
-      <div className="fn-body min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <GlobalStyle />
+      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="text-center">
           <div className="inline-block animate-spin text-indigo-600 mb-3">
             <RefreshCw size={28} />
           </div>
-          <p className="fn-body text-sm text-slate-500 font-medium">Verifying ambassador credentials...</p>
+          <p className="font-sans text-sm text-slate-500 font-medium">Verifying ambassador credentials...</p>
         </div>
       </div>
     );
@@ -510,14 +512,13 @@ export default function CampusAmbassadorDashboard() {
   // State 3: Logged In, Not Applied
   if (!profile) {
     return (
-      <div className="fn-body min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <GlobalStyle />
+      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-lg">
           <div className="w-12 h-12 rounded-xl bg-fuchsia-50 text-fuchsia-600 mx-auto flex items-center justify-center mb-4">
             <Sparkles size={24} />
           </div>
-          <h2 className="fn-display text-2xl font-bold text-slate-900">Become an Ambassador</h2>
-          <p className="fn-body mt-2 text-sm text-slate-600">
+          <h2 className="font-heading text-2xl font-bold text-slate-900">Become an Ambassador</h2>
+          <p className="font-sans mt-2 text-sm text-slate-600">
             You haven't applied for the FestNest Campus Ambassador program yet. Represent your college, onboard clubs, and receive official digital credentials.
           </p>
           <div className="mt-6 flex flex-col gap-3">
@@ -542,15 +543,14 @@ export default function CampusAmbassadorDashboard() {
   // State 4: Application Submitted / Screening
   if (profile.status === 'applied' || profile.status === 'screening') {
     return (
-      <div className="fn-body min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <GlobalStyle />
+      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
           <div className="flex items-center justify-between pb-6 border-b border-slate-100">
             <div>
-              <span className="fn-display text-xl font-bold text-indigo-600">FestNest</span>
-              <h2 className="fn-display text-2xl font-bold text-slate-900 mt-1">Application Status</h2>
+              <span className="font-heading text-xl font-bold text-indigo-600">FestNest</span>
+              <h2 className="font-heading text-2xl font-bold text-slate-900 mt-1">Application Status</h2>
             </div>
-            <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-700 fn-mono uppercase">
+            <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-700 font-mono uppercase">
               {profile.status}
             </span>
           </div>
@@ -561,8 +561,8 @@ export default function CampusAmbassadorDashboard() {
                 <Check size={16} strokeWidth={2.5} />
               </div>
               <div>
-                <h4 className="fn-body font-semibold text-slate-900 text-sm">Application Submitted</h4>
-                <p className="fn-body text-xs text-slate-500 mt-0.5">
+                <h4 className="font-sans font-semibold text-slate-900 text-sm">Application Submitted</h4>
+                <p className="font-sans text-xs text-slate-500 mt-0.5">
                   Applied for {profile.college}, {profile.city}
                 </p>
               </div>
@@ -573,8 +573,8 @@ export default function CampusAmbassadorDashboard() {
                 <Clock size={16} />
               </div>
               <div>
-                <h4 className="fn-body font-semibold text-slate-900 text-sm">Campus Screening &amp; Review</h4>
-                <p className="fn-body text-xs text-slate-500 mt-0.5">
+                <h4 className="font-sans font-semibold text-slate-900 text-sm">Campus Screening &amp; Review</h4>
+                <p className="font-sans text-xs text-slate-500 mt-0.5">
                   Our team reviews each applicant's campus involvement. You will receive an update via email.
                 </p>
               </div>
@@ -585,8 +585,8 @@ export default function CampusAmbassadorDashboard() {
                 <IdCard size={16} />
               </div>
               <div>
-                <h4 className="fn-body font-semibold text-slate-900 text-sm">Credential &amp; ID Card Issuance</h4>
-                <p className="fn-body text-xs text-slate-500 mt-0.5">
+                <h4 className="font-sans font-semibold text-slate-900 text-sm">Credential &amp; ID Card Issuance</h4>
+                <p className="font-sans text-xs text-slate-500 mt-0.5">
                   Upon approval, your official CA ID (e.g. FN-CA-BLR-014) and referral link unlock here.
                 </p>
               </div>
@@ -617,14 +617,13 @@ export default function CampusAmbassadorDashboard() {
   // State 5: Rejected
   if (profile.status === 'rejected') {
     return (
-      <div className="fn-body min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <GlobalStyle />
+      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-lg">
           <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-500 mx-auto flex items-center justify-center mb-4">
             <AlertCircle size={24} />
           </div>
-          <h2 className="fn-display text-2xl font-bold text-slate-900">Application Update</h2>
-          <p className="fn-body mt-2 text-sm text-slate-600">
+          <h2 className="font-heading text-2xl font-bold text-slate-900">Application Update</h2>
+          <p className="font-sans mt-2 text-sm text-slate-600">
             Thank you for your interest in representing {profile.college}. We were unable to move forward with your application for the current cohort.
           </p>
           {profile.rejectionReason && (
@@ -689,8 +688,7 @@ export default function CampusAmbassadorDashboard() {
       : Math.min(100, Math.round(((currentOrganizers - currentBase) / (nextThreshold - currentBase)) * 100));
 
   return (
-    <div className="fn-body min-h-screen bg-slate-50 text-slate-900 pb-16">
-      <GlobalStyle />
+    <div className="font-sans min-h-screen bg-slate-50 text-slate-900 pb-16">
 
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200">
@@ -704,7 +702,7 @@ export default function CampusAmbassadorDashboard() {
               <span>FestNest</span>
             </Link>
             <span className="text-slate-300">|</span>
-            <span className="fn-display text-lg font-bold text-slate-900 tracking-tight">
+            <span className="font-heading text-lg font-bold text-slate-900 tracking-tight">
               Ambassador Portal
             </span>
           </div>
@@ -734,19 +732,19 @@ export default function CampusAmbassadorDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="fn-display text-2xl sm:text-3xl font-bold text-slate-900">
+              <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
                 Welcome, {profile.name}
               </h1>
               <ShieldCheck size={22} className="text-indigo-600" />
             </div>
-            <p className="fn-body text-sm text-slate-500 mt-1">
+            <p className="font-sans text-sm text-slate-500 mt-1">
               Official Ambassador for <span className="font-semibold text-slate-700">{profile.college}</span> · ID:{' '}
               <span className="font-mono font-bold text-indigo-600">{profile.caId}</span>
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1 text-xs font-bold text-indigo-700 fn-mono">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1 text-xs font-bold text-indigo-700 font-mono">
               <Award size={14} />
               {profile.tier?.toUpperCase()} AMBASSADOR
             </span>
@@ -758,7 +756,7 @@ export default function CampusAmbassadorDashboard() {
           {/* Left Column: ID Card & Credentials (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="fn-display text-base font-bold text-slate-900 mb-4 flex items-center justify-between">
+              <h3 className="font-heading text-base font-bold text-slate-900 mb-4 flex items-center justify-between">
                 <span>Official Digital Credential</span>
                 <span className="text-xs font-normal text-slate-400">Verified</span>
               </h3>
@@ -797,7 +795,7 @@ export default function CampusAmbassadorDashboard() {
 
             {/* Quick Community & Resources */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-              <h3 className="fn-display text-base font-bold text-slate-900">Ambassador Toolkit</h3>
+              <h3 className="font-heading text-base font-bold text-slate-900">Ambassador Toolkit</h3>
 
               <div className="space-y-2.5 text-xs">
                 <a
@@ -845,10 +843,10 @@ export default function CampusAmbassadorDashboard() {
                 <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
                   <Trophy size={18} />
                 </div>
-                <div className="fn-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
                   {stats.organizersOnboarded}
                 </div>
-                <div className="fn-body text-xs font-medium text-slate-500 mt-1 leading-tight">
+                <div className="font-sans text-xs font-medium text-slate-500 mt-1 leading-tight">
                   Organizers Onboarded
                 </div>
               </div>
@@ -857,10 +855,10 @@ export default function CampusAmbassadorDashboard() {
                 <div className="w-9 h-9 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center mb-3">
                   <Rocket size={18} />
                 </div>
-                <div className="fn-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
                   {stats.eventsSourced}
                 </div>
-                <div className="fn-body text-xs font-medium text-slate-500 mt-1 leading-tight">
+                <div className="font-sans text-xs font-medium text-slate-500 mt-1 leading-tight">
                   Events Sourced
                 </div>
               </div>
@@ -869,10 +867,10 @@ export default function CampusAmbassadorDashboard() {
                 <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3">
                   <Users size={18} />
                 </div>
-                <div className="fn-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
                   {stats.referralSignups}
                 </div>
-                <div className="fn-body text-xs font-medium text-slate-500 mt-1 leading-tight">
+                <div className="font-sans text-xs font-medium text-slate-500 mt-1 leading-tight">
                   Student Signups
                 </div>
               </div>
@@ -882,15 +880,15 @@ export default function CampusAmbassadorDashboard() {
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="fn-mono text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  <span className="font-mono text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Current Tier
                   </span>
-                  <h3 className="fn-display text-xl font-bold text-slate-900 mt-0.5">
+                  <h3 className="font-heading text-xl font-bold text-slate-900 mt-0.5">
                     {profile.tier} Ambassador
                   </h3>
                 </div>
                 <div className="text-right">
-                  <span className="fn-mono text-xs font-semibold text-indigo-600">
+                  <span className="font-mono text-xs font-semibold text-indigo-600">
                     Next: {nextTierName}
                   </span>
                   <p className="text-xs text-slate-500 mt-0.5">
@@ -909,7 +907,7 @@ export default function CampusAmbassadorDashboard() {
                 />
               </div>
 
-              <div className="mt-4 flex items-center justify-between text-xs text-slate-500 fn-mono">
+              <div className="mt-4 flex items-center justify-between text-xs text-slate-500 font-mono">
                 <span>Bronze (0)</span>
                 <span>Silver (3)</span>
                 <span>Gold (8)</span>
@@ -917,19 +915,87 @@ export default function CampusAmbassadorDashboard() {
               </div>
             </div>
 
+            {/* Real Impact Activity Ledger */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-heading text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Award size={18} className="text-indigo-600" />
+                    <span>Recent Activity &amp; Referrals</span>
+                  </h3>
+                  <p className="font-sans text-xs text-slate-500 mt-0.5">
+                    Real-time log of organizers, students, and events attributed to you.
+                  </p>
+                </div>
+                <span className="font-mono text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-bold">
+                  {impactTotal} recorded
+                </span>
+              </div>
+
+              {impactLoading ? (
+                <div className="py-8 text-center text-slate-400 text-xs">
+                  <RefreshCw size={16} className="animate-spin mx-auto mb-2 text-indigo-600" />
+                  Loading your referral activity...
+                </div>
+              ) : impactLogs.length === 0 ? (
+                <div className="py-8 text-center bg-slate-50 rounded-xl border border-slate-100 p-4">
+                  <p className="text-xs text-slate-600 font-medium">No referral activity logged yet.</p>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Share your referral link with students and event organizers to see them appear here!
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto pr-1">
+                  {impactLogs.map((log) => {
+                    const isOrg = log.type === 'organizer';
+                    const isEvent = log.type === 'event';
+                    return (
+                      <div key={log._id} className="py-3 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold border shrink-0 ${
+                              isOrg
+                                ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                : isEvent
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-blue-50 text-blue-700 border-blue-200'
+                            }`}
+                          >
+                            {isOrg ? <Building size={11} /> : isEvent ? <Calendar size={11} /> : <GraduationCap size={11} />}
+                            <span className="capitalize">{log.type}</span>
+                          </span>
+                          <span className="font-semibold text-slate-800 text-xs truncate">
+                            {log.label}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-mono shrink-0 whitespace-nowrap">
+                          {new Date(log.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* Referral Hub Card */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="fn-display text-base font-bold text-slate-900 flex items-center gap-2">
+              <h3 className="font-heading text-base font-bold text-slate-900 flex items-center gap-2">
                 <Megaphone size={18} className="text-indigo-600" />
                 <span>Your Campus Referral Hub</span>
               </h3>
-              <p className="fn-body text-xs text-slate-600 mt-1 leading-relaxed">
+              <p className="font-sans text-xs text-slate-600 mt-1 leading-relaxed">
                 When student organizers sign up or host events using your code, FestNest automatically attributes verified impact to your ambassador profile.
               </p>
 
               <div className="mt-4 flex flex-col sm:flex-row gap-3">
                 <div className="flex-1 flex items-center rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-mono text-slate-800 select-all overflow-x-auto">
-                  {profile.referralUrl || `https://festnest.in?ref=${profile.referralCode}`}
+                  {profile.referralUrl || `${PUBLIC_SITE_URL}?ref=${profile.referralCode}`}
                 </div>
                 <button
                   onClick={handleCopyReferral}

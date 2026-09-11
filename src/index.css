@@ -442,3 +442,11 @@ input:focus:required {
 .floating-feedback-btn {
   border-radius: 9999px !important;
 }
+
+/* ── Campus Ambassador card sheen ── */
+@keyframes fn-sheen {
+  0% { transform: translateX(-160%) translateY(-160%) rotate(20deg); }
+  100% { transform: translateX(160%) translateY(160%) rotate(20deg); }
+}
+.fn-sheen { animation: fn-sheen 4.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .fn-sheen { animation: none; } }

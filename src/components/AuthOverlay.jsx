@@ -299,6 +299,7 @@ export default function AuthOverlay() {
   const submitRegistration = async () => {
     const code  = otpDigits.join('');
     const isOrg = role === 'organizer';
+    const storedRef = (localStorage.getItem('fn_referral_code') || '').trim();
     const r = await authApi.register({
       name:         name.trim(),
       email:        email.trim(),
@@ -311,7 +312,12 @@ export default function AuthOverlay() {
       organization: isOrg ? organization.trim() : '',
       designation:  isOrg ? (designation === 'Other' ? customDesignation.trim() : designation.trim()) : '',
       role:         role,
+      referralCode: storedRef,
+      fn_referral_code: storedRef,
     });
+    if (storedRef) {
+      localStorage.removeItem('fn_referral_code');
+    }
     login(r.data.user);
   };
 

@@ -263,14 +263,13 @@ export const feedback = {
 
 /* ─── Campus Ambassador ──────────────────────────────────── */
 export const ca = {
-  apply: (body) => post('/ca/apply', body),
-  me:    ()     => get('/ca/me'),
-  card:  (caId) => get(`/ca/card/${caId}`),
   apply:        (body) => post('/ca/apply', body),
   applications: (params = {}) => get('/ca/applications' + buildQs(params)),
   approve:      (id, body) => post(`/ca/${id}/approve`, body || {}),
   reject:       (id, reason) => post(`/ca/${id}/reject`, typeof reason === 'string' ? { reason } : (reason || {})),
   me:           () => get('/ca/me'),
+  impact:       (id, params = {}) => get(`/ca/${id}/impact` + buildQs(params)),
+  myImpact:     (params = {}) => get('/ca/me/impact' + buildQs(params)),
   card:         (caId) => get(`/ca/card/${caId}`),
 };
 
@@ -316,6 +315,7 @@ export const admin = {
   // Campus Ambassadors
   ambassadors:           (params={}) => get('/admin/ca' + buildQs(params)),
   getAmbassador:         (id)        => get(`/admin/ca/${id}`),
+  caImpact:              (id, params={}) => get(`/admin/ca/${id}/impact` + buildQs(params)),
   approveAmbassador:     (id, body)  => patch(`/admin/ca/${id}/approve`, body || {}),
   rejectAmbassador:      (id, body)  => patch(`/admin/ca/${id}/reject`, body || {}),
   updateAmbassadorStatus:(id, body)  => patch(`/admin/ca/${id}/status`, body || {}),

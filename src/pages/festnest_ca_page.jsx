@@ -8,21 +8,6 @@ import {
 import { useApp } from '../context/AppContext';
 import { ca } from '../services/api';
 
-const GlobalStyle = () => (
-  <style>{`
-    @import url('https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@400,500,700,900&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');
-    .fn-display { font-family: 'Clash Display', sans-serif; }
-    .fn-body { font-family: 'Satoshi', sans-serif; }
-    .fn-mono { font-family: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace; }
-    @keyframes fn-sheen {
-      0% { transform: translateX(-160%) translateY(-160%) rotate(20deg); }
-      100% { transform: translateX(160%) translateY(160%) rotate(20deg); }
-    }
-    .fn-sheen { animation: fn-sheen 4.5s ease-in-out infinite; }
-    @media (prefers-reduced-motion: reduce) { .fn-sheen { animation: none; } }
-  `}</style>
-);
 
 // Deterministic finder-pattern QR-style mark (decorative, not a real QR)
 const QR_ROWS = [
@@ -78,8 +63,8 @@ function IDCard({ tilt = true }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="fn-display text-sm font-semibold tracking-tight text-indigo-600">FestNest</span>
-          <span className="rounded-full bg-fuchsia-50 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-600 fn-mono">CAMPUS AMBASSADOR</span>
+          <span className="font-heading text-sm font-semibold tracking-tight text-indigo-600">FestNest</span>
+          <span className="rounded-full bg-fuchsia-50 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-600 font-mono">CAMPUS AMBASSADOR</span>
         </div>
 
         <div className="mt-4 flex gap-4">
@@ -87,18 +72,18 @@ function IDCard({ tilt = true }) {
             <Users size={28} />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="fn-display text-lg font-semibold text-slate-900 leading-tight">Aditi Sharma</span>
-            <span className="fn-body text-sm text-slate-500">Christ University, Bangalore</span>
-            <span className="mt-1 inline-flex w-fit items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-600 fn-mono">GOLD TIER</span>
+            <span className="font-heading text-lg font-semibold text-slate-900 leading-tight">Aditi Sharma</span>
+            <span className="font-sans text-sm text-slate-500">Christ University, Bangalore</span>
+            <span className="mt-1 inline-flex w-fit items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-600 font-mono">GOLD TIER</span>
           </div>
         </div>
 
         <div className="mt-5 flex items-end justify-between border-t border-slate-100 pt-4">
           <div>
-            <div className="fn-mono text-[10px] text-slate-400">ID NUMBER</div>
-            <div className="fn-mono text-sm font-bold text-slate-800">FN-CA-BLR-014</div>
-            <div className="fn-mono mt-2 text-[10px] text-slate-400">VALID THRU</div>
-            <div className="fn-mono text-xs text-slate-600">08 / 2027</div>
+            <div className="font-mono text-[10px] text-slate-400">ID NUMBER</div>
+            <div className="font-mono text-sm font-bold text-slate-800">FN-CA-BLR-014</div>
+            <div className="font-mono mt-2 text-[10px] text-slate-400">VALID THRU</div>
+            <div className="font-mono text-xs text-slate-600">08 / 2027</div>
           </div>
           <QRMark />
         </div>
@@ -134,10 +119,10 @@ function FAQItem({ item, open, onToggle }) {
   return (
     <div className="border-b border-slate-200 py-4">
       <button onClick={onToggle} className="flex w-full items-center justify-between text-left">
-        <span className="fn-body font-medium text-slate-900">{item.q}</span>
+        <span className="font-sans font-medium text-slate-900">{item.q}</span>
         <ChevronDown size={18} className={`text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-      {open && <p className="fn-body mt-2 text-sm leading-relaxed text-slate-600">{item.a}</p>}
+      {open && <p className="font-sans mt-2 text-sm leading-relaxed text-slate-600">{item.a}</p>}
     </div>
   );
 }
@@ -227,8 +212,7 @@ export default function CampusAmbassadorPage() {
   };
 
   return (
-    <div className="fn-body min-h-screen bg-gray-50 text-slate-900">
-      <GlobalStyle />
+    <div className="font-sans min-h-screen bg-gray-50 text-slate-900">
 
       {/* Nav */}
       <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-200">
@@ -242,7 +226,7 @@ export default function CampusAmbassadorPage() {
               <span>FestNest</span>
             </Link>
             <span className="text-slate-300">|</span>
-            <Link to="/ca" className="fn-display text-xl font-bold tracking-tight text-indigo-600">
+            <Link to="/ca" className="font-heading text-xl font-bold tracking-tight text-indigo-600">
               Campus Ambassador
             </Link>
           </div>
@@ -290,10 +274,10 @@ export default function CampusAmbassadorPage() {
             <Sparkles size={13} />
             Campus Ambassador Program 2025–26
           </span>
-          <h1 className="fn-display mt-5 text-4xl font-bold leading-[1.1] text-slate-900 md:text-5xl">
+          <h1 className="font-heading mt-5 text-4xl font-bold leading-[1.1] text-slate-900 md:text-5xl">
             Your campus. Your ID. Your movement.
           </h1>
-          <p className="fn-body mt-5 max-w-md text-lg text-slate-600 leading-relaxed">
+          <p className="font-sans mt-5 max-w-md text-lg text-slate-600 leading-relaxed">
             Every fest, hackathon, and workshop on FestNest starts with someone on the ground. Be that person for your college — and get an official verified credential to show for it.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -323,15 +307,15 @@ export default function CampusAmbassadorPage() {
           </div>
           <div className="mt-10 flex gap-8 border-t border-slate-200/80 pt-6">
             <div>
-              <div className="fn-mono text-2xl font-bold text-slate-900">1,000+</div>
+              <div className="font-mono text-2xl font-bold text-slate-900">1,000+</div>
               <div className="text-xs text-slate-500 font-medium">Student community</div>
             </div>
             <div>
-              <div className="fn-mono text-2xl font-bold text-slate-900">12+</div>
+              <div className="font-mono text-2xl font-bold text-slate-900">12+</div>
               <div className="text-xs text-slate-500 font-medium">Launch cities</div>
             </div>
             <div>
-              <div className="fn-mono text-2xl font-bold text-slate-900">40+</div>
+              <div className="font-mono text-2xl font-bold text-slate-900">40+</div>
               <div className="text-xs text-slate-500 font-medium">Ambassadors onboard</div>
             </div>
           </div>
@@ -344,11 +328,11 @@ export default function CampusAmbassadorPage() {
       {/* What is it */}
       <section className="border-y border-slate-200 bg-white py-16">
         <div className="mx-auto max-w-3xl px-6">
-          <h2 className="fn-display text-2xl font-semibold text-slate-900">What is a FestNest Campus Ambassador?</h2>
-          <p className="fn-body mt-4 text-slate-600 leading-relaxed">
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">What is a FestNest Campus Ambassador?</h2>
+          <p className="font-sans mt-4 text-slate-600 leading-relaxed">
             FestNest replaces scattered WhatsApp groups with one verified feed for every hackathon, fest, and workshop happening across Indian colleges. Ambassadors are our on-ground reps — the students who bring their college's clubs and events onto the platform, and make sure their campus never misses out on what's happening elsewhere.
           </p>
-          <p className="fn-body mt-4 text-slate-600 leading-relaxed">
+          <p className="font-sans mt-4 text-slate-600 leading-relaxed">
             In return, you get an official verified identity within FestNest — not just a title, but a trackable credential that automatically advances your tier as organizers submit events using your referral link.
           </p>
         </div>
@@ -356,7 +340,7 @@ export default function CampusAmbassadorPage() {
 
       {/* Benefits */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <h2 className="fn-display text-2xl font-semibold text-slate-900">Why become a CA</h2>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Why become a CA</h2>
         <div className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
           {BENEFITS.map((b) => (
             <div key={b.title} className="flex gap-4">
@@ -364,8 +348,8 @@ export default function CampusAmbassadorPage() {
                 <b.icon size={20} />
               </div>
               <div>
-                <h3 className="fn-body font-semibold text-slate-900">{b.title}</h3>
-                <p className="fn-body mt-1 text-sm text-slate-600 leading-relaxed">{b.text}</p>
+                <h3 className="font-sans font-semibold text-slate-900">{b.title}</h3>
+                <p className="font-sans mt-1 text-sm text-slate-600 leading-relaxed">{b.text}</p>
               </div>
             </div>
           ))}
@@ -375,15 +359,15 @@ export default function CampusAmbassadorPage() {
       {/* How it works */}
       <section id="how" className="border-y border-slate-200 bg-white py-16">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="fn-display text-2xl font-semibold text-slate-900">How it works</h2>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">How it works</h2>
           <div className="mt-10 grid gap-8 md:grid-cols-4">
             {STEPS.map((s, i) => (
               <div key={s.title} className="relative">
-                <div className="fn-mono flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white shadow-sm">
+                <div className="font-mono flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white shadow-sm">
                   {i + 1}
                 </div>
-                <h3 className="fn-body mt-3 font-semibold text-slate-900">{s.title}</h3>
-                <p className="fn-body mt-1 text-sm text-slate-600 leading-relaxed">{s.text}</p>
+                <h3 className="font-sans mt-3 font-semibold text-slate-900">{s.title}</h3>
+                <p className="font-sans mt-1 text-sm text-slate-600 leading-relaxed">{s.text}</p>
               </div>
             ))}
           </div>
@@ -392,14 +376,14 @@ export default function CampusAmbassadorPage() {
 
       {/* Tiers */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <h2 className="fn-display text-2xl font-semibold text-slate-900">Tiers &amp; recognition</h2>
-        <p className="fn-body mt-2 text-sm text-slate-600">Your tier updates automatically as you onboard organizers — track it live from your ambassador dashboard.</p>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Tiers &amp; recognition</h2>
+        <p className="font-sans mt-2 text-sm text-slate-600">Your tier updates automatically as you onboard organizers — track it live from your ambassador dashboard.</p>
         <div className="mt-8 grid gap-4 md:grid-cols-4">
           {TIERS.map((t) => (
             <div key={t.name} className={`rounded-xl ring-1 ${t.ring} ${t.bg} p-5 shadow-sm`}>
-              <div className={`fn-display font-semibold ${t.color}`}>{t.name}</div>
-              <div className="fn-mono mt-3 text-xs text-slate-500">{t.req}</div>
-              <div className="fn-body mt-2 text-sm text-slate-700 leading-relaxed">{t.perk}</div>
+              <div className={`font-heading font-semibold ${t.color}`}>{t.name}</div>
+              <div className="font-mono mt-3 text-xs text-slate-500">{t.req}</div>
+              <div className="font-sans mt-2 text-sm text-slate-700 leading-relaxed">{t.perk}</div>
             </div>
           ))}
         </div>
@@ -408,7 +392,7 @@ export default function CampusAmbassadorPage() {
       {/* FAQ */}
       <section className="border-t border-slate-200 bg-white py-16">
         <div className="mx-auto max-w-2xl px-6">
-          <h2 className="fn-display text-2xl font-semibold text-slate-900">Common questions</h2>
+          <h2 className="font-heading text-2xl font-semibold text-slate-900">Common questions</h2>
           <div className="mt-6">
             {FAQS.map((item, i) => (
               <FAQItem key={item.q} item={item} open={openFAQ === i} onToggle={() => setOpenFAQ(openFAQ === i ? -1 : i)} />
@@ -419,16 +403,16 @@ export default function CampusAmbassadorPage() {
 
       {/* Application form */}
       <section id="apply" className="mx-auto max-w-2xl px-6 py-20">
-        <h2 className="fn-display text-2xl font-semibold text-slate-900">Apply now</h2>
-        <p className="fn-body mt-2 text-sm text-slate-600">Takes under five minutes. Our team will review and get in touch.</p>
+        <h2 className="font-heading text-2xl font-semibold text-slate-900">Apply now</h2>
+        <p className="font-sans mt-2 text-sm text-slate-600">Takes under five minutes. Our team will review and get in touch.</p>
 
         {existingCA?.status === 'approved' ? (
           <div className="mt-8 rounded-2xl bg-indigo-50 border border-indigo-200 p-6">
             <div className="flex items-start gap-3">
               <CheckCircle2 size={24} className="mt-0.5 text-indigo-600 shrink-0" />
               <div>
-                <h3 className="fn-display font-bold text-indigo-950 text-lg">You are an active Campus Ambassador!</h3>
-                <p className="fn-body mt-1 text-sm text-indigo-700">
+                <h3 className="font-heading font-bold text-indigo-950 text-lg">You are an active Campus Ambassador!</h3>
+                <p className="font-sans mt-1 text-sm text-indigo-700">
                   You already hold official credentials ({existingCA.caId}). Access your live digital badge, referral link, and impact metrics in your dashboard.
                 </p>
                 <div className="mt-4">
@@ -448,8 +432,8 @@ export default function CampusAmbassadorPage() {
             <div className="flex items-start gap-3">
               <Sparkles size={24} className="mt-0.5 text-amber-600 shrink-0" />
               <div>
-                <h3 className="fn-display font-bold text-amber-950 text-lg">Your application is under review</h3>
-                <p className="fn-body mt-1 text-sm text-amber-800">
+                <h3 className="font-heading font-bold text-amber-950 text-lg">Your application is under review</h3>
+                <p className="font-sans mt-1 text-sm text-amber-800">
                   We received your application for {existingCA.college || 'your college'}. Our campus screening team is currently reviewing your submission.
                 </p>
                 <div className="mt-4">
@@ -468,8 +452,8 @@ export default function CampusAmbassadorPage() {
           <div className="mt-8 flex items-start gap-3 rounded-xl bg-green-50 border border-green-200 p-6 text-green-900">
             <CheckCircle2 size={24} className="mt-0.5 text-green-600 shrink-0" />
             <div>
-              <p className="fn-body font-bold text-base">Application received successfully!</p>
-              <p className="fn-body mt-1 text-sm text-green-700 leading-relaxed">
+              <p className="font-sans font-bold text-base">Application received successfully!</p>
+              <p className="font-sans mt-1 text-sm text-green-700 leading-relaxed">
                 {submitSuccessMsg || "We'll email you about next steps and screening within 5–7 business days."}
               </p>
               <div className="mt-4 flex gap-3">
@@ -501,7 +485,7 @@ export default function CampusAmbassadorPage() {
 
             <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">Full name *</label>
+                <label className="font-sans text-sm font-medium text-slate-700">Full name *</label>
                 <input
                   required
                   value={form.name}
@@ -511,7 +495,7 @@ export default function CampusAmbassadorPage() {
                 />
               </div>
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">Email *</label>
+                <label className="font-sans text-sm font-medium text-slate-700">Email *</label>
                 <input
                   required
                   type="email"
@@ -522,7 +506,7 @@ export default function CampusAmbassadorPage() {
                 />
               </div>
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">Phone (10 digits) *</label>
+                <label className="font-sans text-sm font-medium text-slate-700">Phone (10 digits) *</label>
                 <input
                   required
                   type="tel"
@@ -533,7 +517,7 @@ export default function CampusAmbassadorPage() {
                 />
               </div>
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">City *</label>
+                <label className="font-sans text-sm font-medium text-slate-700">City *</label>
                 <input
                   required
                   value={form.city}
@@ -543,7 +527,7 @@ export default function CampusAmbassadorPage() {
                 />
               </div>
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">College name *</label>
+                <label className="font-sans text-sm font-medium text-slate-700">College name *</label>
                 <input
                   required
                   value={form.college}
@@ -553,7 +537,7 @@ export default function CampusAmbassadorPage() {
                 />
               </div>
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">Course &amp; year *</label>
+                <label className="font-sans text-sm font-medium text-slate-700">Course &amp; year *</label>
                 <input
                   required
                   value={form.course}
@@ -563,7 +547,7 @@ export default function CampusAmbassadorPage() {
                 />
               </div>
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">Instagram / LinkedIn (optional)</label>
+                <label className="font-sans text-sm font-medium text-slate-700">Instagram / LinkedIn (optional)</label>
                 <input
                   value={form.instagram}
                   onChange={update('instagram')}
@@ -572,7 +556,7 @@ export default function CampusAmbassadorPage() {
                 />
               </div>
               <div>
-                <label className="fn-body text-sm font-medium text-slate-700">Referral code (optional)</label>
+                <label className="font-sans text-sm font-medium text-slate-700">Referral code (optional)</label>
                 <input
                   value={form.referral}
                   onChange={update('referral')}
@@ -582,7 +566,7 @@ export default function CampusAmbassadorPage() {
               </div>
             </div>
             <div>
-              <label className="fn-body text-sm font-medium text-slate-700">
+              <label className="font-sans text-sm font-medium text-slate-700">
                 Why do you want to be a FestNest CA? * <span className="text-xs text-slate-400 font-normal">(min 20 chars)</span>
               </label>
               <textarea
@@ -617,21 +601,21 @@ export default function CampusAmbassadorPage() {
 
       {/* Footer CTA */}
       <section className="bg-indigo-600 py-14 text-center text-white px-6">
-        <h2 className="fn-display text-2xl font-semibold">Ready to represent your campus?</h2>
-        <p className="fn-body mt-2 text-sm text-indigo-100 max-w-md mx-auto">
+        <h2 className="font-heading text-2xl font-semibold">Ready to represent your campus?</h2>
+        <p className="font-sans mt-2 text-sm text-indigo-100 max-w-md mx-auto">
           Join ambitious student leaders across India bringing fests and hackathons onto one platform.
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <a
             href="#apply"
-            className="fn-body inline-flex items-center gap-1.5 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 transition shadow-sm"
+            className="font-sans inline-flex items-center gap-1.5 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 transition shadow-sm"
           >
             <span>Apply now</span>
             <ArrowRight size={15} />
           </a>
           <Link
             to="/home"
-            className="fn-body inline-flex items-center rounded-lg border border-indigo-400/80 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition"
+            className="font-sans inline-flex items-center rounded-lg border border-indigo-400/80 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition"
           >
             Explore FestNest
           </Link>

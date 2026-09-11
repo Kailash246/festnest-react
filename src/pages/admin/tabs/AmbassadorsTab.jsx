@@ -5,7 +5,7 @@ import {
   Award, Search, CheckCircle2, XCircle, Clock, Eye,
   Building, MapPin, Mail, Phone, Calendar, ArrowRight,
   ShieldCheck, AlertCircle, RefreshCw, Sparkles, User, ExternalLink,
-  ChevronRight, Filter, Plus, Edit3
+  ChevronRight, Filter, Plus, Edit3, ArrowUpDown, ArrowUp, ArrowDown, GraduationCap
 } from 'lucide-react';
 import { admin } from '../../../services/api';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -24,17 +24,29 @@ const TIER_COLORS = {
   'City Lead': 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200',
 };
 
+const TYPE_CONFIG = {
+  organizer: { label: 'Organizer', icon: Building, color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  event:     { label: 'Event', icon: Calendar, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  student:   { label: 'Student', icon: GraduationCap, color: 'bg-blue-50 text-blue-700 border-blue-200' },
+};
+
 export default function AmbassadorsTab({ showToast }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('pending');
+  const [tierFilter, setTierFilter] = useState('all');
+  const [cityFilter, setCityFilter] = useState('');
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState('newest');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortDir, setSortDir] = useState('desc');
   const [counts, setCounts] = useState({ all: 0, pending: 0, approved: 0, rejected: 0 });
 
   // Modals & drawers
   const [selectedCA, setSelectedCA] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [impactLogs, setImpactLogs] = useState([]);
+  const [impactTotal, setImpactTotal] = useState(0);
+  const [impactLoading, setImpactLoading] = useState(false);
   const [confirmApproveCA, setConfirmApproveCA] = useState(null);
   const [rejectingCA, setRejectingCA] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -51,24 +63,56 @@ export default function AmbassadorsTab({ showToast }) {
 
   const loadAmbassadors = useCallback(() => {
     setLoading(true);
-    admin.ambassadors({ status: statusFilter, q: search.trim(), sort, limit: 100 })
+    admin.ambassadors({
+      status: statusFilter,
+      tier: tierFilter,
+      city: cityFilter.trim(),
+      q: search.trim(),
+      sortBy,
+      sortDir,
+      limit: 100,
+    })
       .then((res) => {
         setItems(res.data.ambassadors || []);
         if (res.data.counts) setCounts(res.data.counts);
       })
       .catch((e) => showToast?.(e.message || 'Failed to fetch ambassadors', 'error'))
       .finally(() => setLoading(false));
-  }, [statusFilter, search, sort, showToast]);
+  }, [statusFilter, tierFilter, cityFilter, search, sortBy, sortDir, showToast]);
 
   useEffect(() => {
     const t = setTimeout(loadAmbassadors, 250);
     return () => clearTimeout(t);
   }, [loadAmbassadors]);
 
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(column);
+      setSortDir(['organizersOnboarded', 'eventsSourced', 'referralSignups', 'createdAt'].includes(column) ? 'desc' : 'asc');
+    }
+  };
+
+  const loadImpactLogs = async (caId) => {
+    setImpactLoading(true);
+    try {
+      const res = await admin.caImpact(caId, { page: 1, limit: 50 });
+      setImpactLogs(res.data?.logs || []);
+      setImpactTotal(res.data?.total || 0);
+    } catch (err) {
+      console.error('[Load CA Impact Error]', err);
+    } finally {
+      setImpactLoading(false);
+    }
+  };
+
   const openDetail = async (ca) => {
     setSelectedCA(ca);
     setDetailLoading(true);
     setAdjusting(false);
+    setImpactLogs([]);
+    setImpactTotal(0);
     try {
       const res = await admin.getAmbassador(ca._id);
       setSelectedCA({ ...res.data.ambassador, computedStats: res.data.stats });
@@ -78,11 +122,23 @@ export default function AmbassadorsTab({ showToast }) {
         referralSignups: res.data.ambassador.adjustments?.referralSignups || 0,
         reason: '',
       });
+      loadImpactLogs(ca._id);
     } catch (e) {
       showToast?.(e.message || 'Failed to load details', 'error');
     } finally {
       setDetailLoading(false);
     }
+  };
+
+  const renderSortIndicator = (col) => {
+    if (sortBy !== col) {
+      return <ArrowUpDown size={12} className="opacity-30 group-hover:opacity-70 transition" />;
+    }
+    return sortDir === 'asc' ? (
+      <ArrowUp size={12} className="text-indigo-600 font-bold" />
+    ) : (
+      <ArrowDown size={12} className="text-indigo-600 font-bold" />
+    );
   };
 
   const handleApprove = async () => {
@@ -197,55 +253,73 @@ export default function AmbassadorsTab({ showToast }) {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-xl border border-neutral-200/80 shadow-sm flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-        {/* Status Pill Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-neutral-100 rounded-lg overflow-x-auto text-xs font-semibold text-neutral-600">
-          {[
-            { id: 'pending', label: 'Pending', count: counts.pending },
-            { id: 'approved', label: 'Approved', count: counts.approved },
-            { id: 'rejected', label: 'Rejected', count: counts.rejected },
-            { id: 'all', label: 'All', count: counts.all },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setStatusFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-md transition whitespace-nowrap flex items-center gap-1.5 ${
-                statusFilter === tab.id
-                  ? 'bg-white text-neutral-900 shadow-sm font-bold'
-                  : 'hover:text-neutral-900'
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span className="text-[10px] opacity-70 bg-neutral-200/80 px-1.5 py-0.2 rounded-full">
-                {tab.count}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Search & Sort */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 sm:w-64">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name, college, city..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:border-indigo-500"
-            />
+      {/* CA Manager Filter and Search Bar */}
+      <div className="bg-white p-4 rounded-xl border border-neutral-200/80 shadow-sm space-y-3">
+        <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+          {/* Status Pill Tabs */}
+          <div className="flex items-center gap-1 p-1 bg-neutral-100 rounded-lg overflow-x-auto text-xs font-semibold text-neutral-600">
+            {[
+              { id: 'pending', label: 'Pending', count: counts.pending },
+              { id: 'approved', label: 'Approved', count: counts.approved },
+              { id: 'rejected', label: 'Rejected', count: counts.rejected },
+              { id: 'all', label: 'All', count: counts.all },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id)}
+                className={`px-3 py-1.5 rounded-md transition whitespace-nowrap flex items-center gap-1.5 ${
+                  statusFilter === tab.id
+                    ? 'bg-white text-neutral-900 shadow-sm font-bold'
+                    : 'hover:text-neutral-900'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className="text-[10px] opacity-70 bg-neutral-200/80 px-1.5 py-0.2 rounded-full">
+                  {tab.count}
+                </span>
+              </button>
+            ))}
           </div>
 
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="px-2.5 py-1.5 text-xs rounded-lg border border-neutral-200 bg-white text-neutral-700 focus:outline-none"
-          >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="name">Name</option>
-          </select>
+          {/* Search, Tier & City Filters */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Search Input */}
+            <div className="relative flex-1 sm:w-56 min-w-[180px]">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search name, college, code..."
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            {/* Tier Filter */}
+            <select
+              value={tierFilter}
+              onChange={(e) => setTierFilter(e.target.value)}
+              className="px-2.5 py-1.5 text-xs rounded-lg border border-neutral-200 bg-white text-neutral-700 focus:outline-none focus:border-indigo-500"
+            >
+              <option value="all">All Tiers</option>
+              <option value="Bronze">Bronze</option>
+              <option value="Silver">Silver</option>
+              <option value="Gold">Gold</option>
+              <option value="City Lead">City Lead</option>
+            </select>
+
+            {/* City Filter */}
+            <div className="relative w-36">
+              <MapPin size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
+              <input
+                type="text"
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+                placeholder="Filter city..."
+                className="w-full pl-8 pr-2.5 py-1.5 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -263,13 +337,80 @@ export default function AmbassadorsTab({ showToast }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-neutral-700">
-              <thead className="bg-neutral-50/80 text-neutral-500 font-semibold border-b border-neutral-200">
+              <thead className="bg-neutral-50/80 text-neutral-500 font-semibold border-b border-neutral-200 select-none">
                 <tr>
-                  <th className="py-3 px-4">Applicant</th>
-                  <th className="py-3 px-4">College &amp; City</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Tier / ID</th>
-                  <th className="py-3 px-4">Applied</th>
+                  <th
+                    onClick={() => handleSort('name')}
+                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Applicant</span>
+                      {renderSortIndicator('name')}
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('city')}
+                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>College &amp; City</span>
+                      {renderSortIndicator('city')}
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('status')}
+                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Status</span>
+                      {renderSortIndicator('status')}
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('tier')}
+                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Tier / ID</span>
+                      {renderSortIndicator('tier')}
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('organizersOnboarded')}
+                    className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center justify-center gap-1.5">
+                      <span>Organizers</span>
+                      {renderSortIndicator('organizersOnboarded')}
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('eventsSourced')}
+                    className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center justify-center gap-1.5">
+                      <span>Events</span>
+                      {renderSortIndicator('eventsSourced')}
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('referralSignups')}
+                    className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center justify-center gap-1.5">
+                      <span>Signups</span>
+                      {renderSortIndicator('referralSignups')}
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('createdAt')}
+                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Applied</span>
+                      {renderSortIndicator('createdAt')}
+                    </div>
+                  </th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -317,6 +458,15 @@ export default function AmbassadorsTab({ showToast }) {
                         ) : (
                           <span className="text-neutral-400 text-[11px] italic">Unassigned</span>
                         )}
+                      </td>
+                      <td className="py-3 px-3 text-center font-bold text-neutral-800 font-mono">
+                        {ca.stats?.organizersOnboarded || 0}
+                      </td>
+                      <td className="py-3 px-3 text-center font-bold text-neutral-800 font-mono">
+                        {ca.stats?.eventsSourced || 0}
+                      </td>
+                      <td className="py-3 px-3 text-center font-bold text-indigo-600 font-mono">
+                        {ca.stats?.referralSignups || 0}
                       </td>
                       <td className="py-3 px-4 text-[11px] text-neutral-500 whitespace-nowrap">
                         {new Date(ca.createdAt).toLocaleDateString('en-US', {
@@ -482,6 +632,58 @@ export default function AmbassadorsTab({ showToast }) {
                         </div>
                       </div>
                     )}
+
+                    {/* Impact Activity Ledger */}
+                    <div className="border border-neutral-200 rounded-xl p-4 bg-white space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-bold text-neutral-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                          <Award size={14} className="text-indigo-600" />
+                          <span>Impact Activity Ledger</span>
+                        </h4>
+                        <span className="text-[10px] font-mono bg-neutral-100 px-2 py-0.5 rounded-full font-bold text-neutral-600">
+                          {impactTotal} Entries
+                        </span>
+                      </div>
+
+                      {impactLoading ? (
+                        <div className="py-4 text-center text-neutral-400 text-xs">
+                          <RefreshCw size={14} className="animate-spin mx-auto mb-1 text-indigo-600" />
+                          Loading activity ledger...
+                        </div>
+                      ) : impactLogs.length === 0 ? (
+                        <div className="py-4 text-center text-neutral-400 text-xs italic bg-neutral-50 rounded-lg border border-neutral-100">
+                          No referral activity logged yet.
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-neutral-100 max-h-56 overflow-y-auto pr-1">
+                          {impactLogs.map((log) => {
+                            const conf = TYPE_CONFIG[log.type] || TYPE_CONFIG.student;
+                            const TypeIcon = conf.icon;
+                            return (
+                              <div key={log._id} className="py-2.5 flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border shrink-0 ${conf.color}`}>
+                                    <TypeIcon size={11} />
+                                    <span>{conf.label}</span>
+                                  </span>
+                                  <span className="font-semibold text-neutral-800 truncate text-xs">
+                                    {log.label}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] text-neutral-400 shrink-0 font-mono whitespace-nowrap">
+                                  {new Date(log.createdAt).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
 
                     {/* Manual Adjustment Accordion */}
                     <div className="border border-neutral-200 rounded-xl p-3">
