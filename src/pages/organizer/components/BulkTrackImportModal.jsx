@@ -60,8 +60,16 @@ export default function BulkTrackImportModal({
   const [creationDone, setCreationDone] = useState(false);
 
   const fileInputRef = useRef(null);
+  const abortRef = useRef(null);
 
   const resetAll = () => {
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setStep('upload');
     setDragOver(false);
     setFileName('');
@@ -85,7 +93,31 @@ export default function BulkTrackImportModal({
   };
 
   const handleFile = async (file) => {
+    const reqId = `bulk_ai_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    console.log(`[AI Bulk Track][${reqId}] Starting clean upload attempt: file="${file?.name}", size=${file?.size} bytes, time=${new Date().toISOString()}`);
+
     if (!file) return;
+
+    // 1. Abort any previous in-flight AI extraction request before starting a new one
+    if (abortRef.current) {
+      console.log(`[AI Bulk Track][${reqId}] Aborting previous in-flight AI extraction request`);
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+
+    // 2. Clear input value immediately to allow re-selecting the same file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
+    // 3. Explicitly reset all state variables to initial values at the START of upload
+    setUploadError('');
+    setTracks([]);
+    setPageCount(0);
+    setSearchQuery('');
+    setCreationStatuses({});
+    setIsCreating(false);
+    setCreationDone(false);
 
     const ext = file.name.split('.').pop().toLowerCase();
     if (file.type !== 'application/pdf' && ext !== 'pdf') {
@@ -93,8 +125,8 @@ export default function BulkTrackImportModal({
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      setUploadError('File size exceeds the 15 MB limit. Please upload a smaller PDF.');
+    if (file.size > 25 * 1024 * 1024) {
+      setUploadError('File size exceeds the 25 MB limit. Please upload a smaller PDF.');
       return;
     }
 
@@ -102,12 +134,22 @@ export default function BulkTrackImportModal({
     setUploadError('');
     setStep('processing');
 
+    // 4. Create a fresh AbortController for this upload attempt
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('context', 'sub-event-bulk');
 
     try {
-      const res = await aiApi.parseEventPoster(formData);
+      const res = await aiApi.parseEventPoster(formData, { signal: controller.signal });
+
+      if (controller.signal.aborted) {
+        console.log(`[AI Bulk Track][${reqId}] Request was aborted; discarding response`);
+        return;
+      }
+
       if (!res || !res.success) {
         throw new Error(res?.message || "Couldn't extract competition tracks from PDF");
       }
@@ -160,12 +202,21 @@ export default function BulkTrackImportModal({
       showToast?.(`Extracted ${initialTracks.length} competition tracks from brochure ✓`, 'success');
     } catch (err) {
       console.error('[AI Bulk Parse Error]:', err);
+      if (controller.signal.aborted) {
+        console.log(`[AI Bulk Track][${reqId}] Request aborted; ignoring error`);
+        return;
+      }
+      console.error(`[AI Bulk Track][${reqId}] Error:`, err);
       setStep('upload');
       setUploadError(err.message || "Couldn't read PDF. Make sure it contains readable text or images.");
       if (err.status === 408 || err.isTimeout || err.name === 'AbortError') {
         setUploadError('This PDF took too long to process. Try a smaller or lower-resolution file, or fill in manually.');
       } else {
         setUploadError(err.message || "Couldn't read PDF. Make sure it contains readable text or images.");
+      }
+    } finally {
+      if (abortRef.current === controller) {
+        abortRef.current = null;
       }
     }
   };
@@ -385,6 +436,7 @@ export default function BulkTrackImportModal({
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
+                  e.target.value = '';
                   if (file) handleFile(file);
                 }}
               />
@@ -426,7 +478,7 @@ export default function BulkTrackImportModal({
                   <span>·</span>
                   <span>PDF only</span>
                   <span>·</span>
-                  <span>Max 15 MB</span>
+                  <span>Max 25 MB</span>
                 </div>
               </div>
 
@@ -438,7 +490,7 @@ export default function BulkTrackImportModal({
                     <div className="text-[11px] text-rose-700 mt-0.5">
                       {uploadError?.toLowerCase().includes('too long') || uploadError?.toLowerCase().includes('timed out')
                         ? 'Try a smaller or lower-resolution file, or add tracks manually.'
-                        : 'Ensure your PDF is readable, under 25 pages, and under 15 MB.'}
+                        : 'Ensure your PDF is readable, under 25 pages, and under 25 MB.'}
                     </div>
                   </div>
                 </div>

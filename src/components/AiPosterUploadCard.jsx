@@ -19,6 +19,48 @@ import {
  * - 'partial': partial extraction notice with missing fields hint
  * - 'failure': error message with "Try another PDF" and "Fill manually instead"
  */
+function getErrorDetails(rawErrorMessage) {
+  const msg = (rawErrorMessage || '').toLowerCase();
+
+  // 1. Timeout error: purely timeout messaging, no generic mixing
+  if (msg.includes('too long') || msg.includes('timed out') || msg.includes('timeout')) {
+    return {
+      title: 'This PDF took too long to process',
+      description: 'Try a smaller or lower-resolution file, or fill in manually.',
+    };
+  }
+
+  // 2. File size limit
+  if (msg.includes('25 mb') || msg.includes('15 mb') || msg.includes('size exceeds') || msg.includes('file exceeds')) {
+    return {
+      title: 'File exceeds 25 MB limit',
+      description: 'Please upload a smaller PDF poster or brochure under 25 MB.',
+    };
+  }
+
+  // 3. Page count limit
+  if (msg.includes('25 page') || msg.includes('page limit')) {
+    return {
+      title: 'PDF exceeds 25 page limit',
+      description: 'Your document exceeds the 25-page limit. Please upload a shorter brochure or poster.',
+    };
+  }
+
+  // 4. High demand / rate limit
+  if (msg.includes('high demand') || msg.includes('busy')) {
+    return {
+      title: 'FestNest AI is experiencing high demand',
+      description: 'The AI service is currently busy. Please wait a moment and try again.',
+    };
+  }
+
+  // 5. Generic extraction failure: purely generic messaging
+  return {
+    title: "Couldn't extract event details",
+    description: "We couldn't extract event details from this document. It may be password-protected, corrupted, or contain unreadable text.",
+  };
+}
+
 export default function AiPosterUploadCard({
   state = 'empty',
   pageCount = 0,
@@ -37,6 +79,9 @@ export default function AiPosterUploadCard({
 
   const handleFileSelect = (file) => {
     if (!file) return;
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setSelectedFile(file);
     if (onUpload) {
       onUpload(file);
@@ -77,6 +122,7 @@ export default function AiPosterUploadCard({
 
   const displayFileName = selectedFile?.name || fileName;
   const displayFileSize = selectedFile?.size || fileSize;
+  const { title: errorTitle, description: errorDescription } = getErrorDetails(errorMessage);
 
   return (
     <div className="bg-white border border-[#E4E4E0] rounded-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)] transition-all">
@@ -124,6 +170,20 @@ export default function AiPosterUploadCard({
             className="overflow-hidden"
           >
             <div className="p-5 space-y-4">
+              {/* Permanent hidden file input ensuring ref and value reset persist across all states */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/pdf,.pdf"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  // Clear internal value immediately so re-selecting same file triggers onChange
+                  e.target.value = '';
+                  if (file) handleFileSelect(file);
+                }}
+              />
+
               {/* ────────────────── STATE A: EMPTY ────────────────── */}
               {state === 'empty' && (
                 <div
@@ -152,6 +212,7 @@ export default function AiPosterUploadCard({
                     <span className="font-semibold text-text-2">PDF only</span>
                     <span>·</span>
                     <span>Max 15 MB</span>
+                    <span>Max 25 MB</span>
                   </div>
                   <input
                     ref={fileInputRef}
@@ -278,6 +339,7 @@ export default function AiPosterUploadCard({
                     <div className="flex-1 min-w-0">
                       <h4 className="font-heading font-bold text-[14px] text-red">
                         {errorMessage || "Couldn't read PDF"}
+                        {errorTitle}
                       </h4>
                       <p className="text-[12px] text-text-2 mt-1">
                         {errorMessage?.includes('25 page')
@@ -287,6 +349,7 @@ export default function AiPosterUploadCard({
                           : errorMessage?.includes('15 MB')
                           ? 'Your document exceeds the 15 MB limit. Please upload a smaller PDF file.'
                           : "We couldn't extract event details from this document. It may be password-protected, corrupted, or contain unreadable text."}
+                        {errorDescription}
                       </p>
                     </div>
                   </div>

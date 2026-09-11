@@ -307,6 +307,7 @@ export default function HostEvent() {
   const [aiMissingSummary, setAiMissingSummary] = useState('');
   const [aiFilledFields, setAiFilledFields] = useState(new Set());
   const [extractedSubEvents, setExtractedSubEvents] = useState([]);
+  const aiAbortRef = useRef(null); // holds active AbortController for AI upload
   const [draftBanner, setDraftBanner] = useState(null); // detected draft waiting for resume/discard
   const draftAutoRef    = useRef(null); // debounce timer
   const [featuredEvents,     setFeaturedEvents]     = useState([]);
@@ -438,12 +439,18 @@ export default function HostEvent() {
 
   /* ── AI Autofill handlers ── */
   const handleAiReset = () => {
+    if (aiAbortRef.current) {
+      aiAbortRef.current.abort();
+      aiAbortRef.current = null;
+    }
     setAiState('empty');
     setAiFileName('');
     setAiFileSize(0);
     setAiPageCount(0);
     setAiErrorMessage('');
     setAiMissingSummary('');
+    setAiFilledFields(new Set());
+    setExtractedSubEvents([]);
   };
 
   const handleAiFillManually = () => {
@@ -451,7 +458,27 @@ export default function HostEvent() {
   };
 
   const handleAiUpload = async (file) => {
+    const reqId = `ai_req_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    console.log(`[AI Poster Upload][${reqId}] Starting clean upload attempt: file="${file?.name}", size=${file?.size} bytes, time=${new Date().toISOString()}`);
+
     if (!file) return;
+
+    // 1. Abort any previous in-flight AI extraction request before starting a new one
+    if (aiAbortRef.current) {
+      console.log(`[AI Poster Upload][${reqId}] Aborting previous in-flight AI extraction request`);
+      aiAbortRef.current.abort();
+      aiAbortRef.current = null;
+    }
+
+    // 2. Explicitly reset ALL state to initial values at the START of each upload attempt
+    setAiErrorMessage('');
+    setAiMissingSummary('');
+    setAiPageCount(0);
+    setAiFilledFields(new Set());
+    setExtractedSubEvents([]);
+    setAiFileName(file.name);
+    setAiFileSize(file.size);
+    setAiState('processing');
 
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
     if (!isPdf) {
@@ -460,23 +487,27 @@ export default function HostEvent() {
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
+    if (file.size > 25 * 1024 * 1024) {
       setAiState('failure');
-      setAiErrorMessage('File size exceeds the 15 MB limit. Please upload a smaller PDF.');
+      setAiErrorMessage('File size exceeds the 25 MB limit. Please upload a smaller PDF.');
       return;
     }
 
-    setAiFileName(file.name);
-    setAiFileSize(file.size);
-    setAiState('processing');
-    setAiErrorMessage('');
-    setAiMissingSummary('');
+    // 3. Create a brand new AbortController for this upload attempt
+    const controller = new AbortController();
+    aiAbortRef.current = controller;
 
     try {
       const fd = new FormData();
       fd.append('file', file);
 
-      const res = await aiApi.parseEventPoster(fd);
+      const res = await aiApi.parseEventPoster(fd, { signal: controller.signal });
+
+      // If aborted while waiting, discard response
+      if (controller.signal.aborted) {
+        console.log(`[AI Poster Upload][${reqId}] Request was aborted; discarding response`);
+        return;
+      }
 
       if (!res || !res.success || !res.data) {
         throw new Error(res?.message || "Couldn't read PDF");
@@ -708,12 +739,21 @@ export default function HostEvent() {
 
       showToast('Event details extracted with AI ✓', 'success');
     } catch (err) {
-      console.error('[AI Poster Parse Error]:', err);
+      // If this request was aborted by a subsequent upload or reset, silently ignore
+      if (controller.signal.aborted) {
+        console.log(`[AI Poster Upload][${reqId}] Request was aborted; ignoring error`);
+        return;
+      }
+      console.error(`[AI Poster Upload][${reqId}] Error:`, err);
       setAiState('failure');
       if (err.status === 408 || err.isTimeout || err.name === 'AbortError') {
         setAiErrorMessage('This PDF took too long to process. Try a smaller or lower-resolution file, or fill in manually.');
       } else {
         setAiErrorMessage(err.message || "Couldn't read PDF");
+      }
+    } finally {
+      if (aiAbortRef.current === controller) {
+        aiAbortRef.current = null;
       }
     }
   };

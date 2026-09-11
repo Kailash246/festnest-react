@@ -333,7 +333,11 @@ export const ai = {
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     if (signal) {
-      signal.addEventListener('abort', () => controller.abort());
+      if (signal.aborted) {
+        controller.abort();
+      } else {
+        signal.addEventListener('abort', () => controller.abort(), { once: true });
+      }
     }
 
     return post('/ai/parse-event-poster', formData, { signal: controller.signal })
