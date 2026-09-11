@@ -147,6 +147,7 @@ export default function OverviewTab({
         {/* Quick summary pill strip */}
         <div className={`relative z-10 mt-6 pt-5 border-t border-white/15 grid gap-4 ${
           SHOW_ENGAGEMENT_ANALYTICS ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'
+          SHOW_ENGAGEMENT_ANALYTICS ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
         }`}>
           <div>
             <div className="font-mono text-[20px] font-bold leading-none">{total}</div>
@@ -171,6 +172,7 @@ export default function OverviewTab({
 
       {/* ── Key Metrics KPI Grid ── */}
       <div className={`grid gap-3 sm:gap-4 ${
+      <div className={`grid gap-2.5 sm:gap-4 ${
         SHOW_ENGAGEMENT_ANALYTICS
           ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
           : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-4'
@@ -229,6 +231,7 @@ export default function OverviewTab({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Performance Chart (2 cols) */}
           <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
+          <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col min-w-0 overflow-hidden">
             <div className="flex items-center justify-between gap-3 mb-4">
               <div>
                 <h3 className="font-heading font-bold text-[15px] text-text-1">Event Engagement</h3>
@@ -243,6 +246,7 @@ export default function OverviewTab({
             </div>
 
             <div className="flex-1 min-h-[240px]">
+            <div className="flex-1 min-h-[240px] min-w-0 overflow-hidden">
               {chartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

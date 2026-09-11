@@ -112,6 +112,7 @@ export default function AnalyticsTab({
     <div className="space-y-6">
       {/* ── KPI Strip ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
         {SHOW_ENGAGEMENT_ANALYTICS ? (
           <>
             <OrganizerStatCard
@@ -183,12 +184,14 @@ export default function AnalyticsTab({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Engagement per Event (2 cols) */}
             <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
+            <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col min-w-0 overflow-hidden">
               <div className="mb-4">
                 <h3 className="font-heading font-bold text-[15px] text-text-1">Engagement per Event</h3>
                 <p className="text-[12px] text-text-3">Comparing views and attendee registrations across submissions</p>
               </div>
 
               <div className="flex-1 min-h-[260px]">
+              <div className="flex-1 min-h-[260px] min-w-0 overflow-hidden">
                 {eventEngagementData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={260}>
                     <BarChart data={eventEngagementData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -221,6 +224,7 @@ export default function AnalyticsTab({
 
             {/* Category Breakdown (1 col) */}
             <div className="bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
+            <div className="bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col min-w-0 overflow-hidden">
               <div className="mb-3">
                 <h3 className="font-heading font-bold text-[15px] text-text-1">Category Distribution</h3>
                 <p className="text-[12px] text-text-3">Breakdown of events by type</p>
@@ -229,6 +233,8 @@ export default function AnalyticsTab({
               {categoryData.length > 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center">
                   <div className="w-full h-44">
+                <div className="flex-1 flex flex-col items-center justify-center min-w-0">
+                  <div className="w-full h-44 min-w-0 overflow-hidden">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -363,6 +369,7 @@ export default function AnalyticsTab({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Category Distribution (Col 1) */}
             <div className="bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
+            <div className="bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col min-w-0 overflow-hidden">
               <div className="mb-3">
                 <h3 className="font-heading font-bold text-[15px] text-text-1">Category Distribution</h3>
                 <p className="text-[12px] text-text-3">Breakdown of your campus events by category</p>
@@ -371,6 +378,8 @@ export default function AnalyticsTab({
               {categoryData.length > 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center">
                   <div className="w-full h-48">
+                <div className="flex-1 flex flex-col items-center justify-center min-w-0">
+                  <div className="w-full h-48 min-w-0 overflow-hidden">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -427,6 +436,7 @@ export default function AnalyticsTab({
 
             {/* Pricing & Free vs Paid Model (Col 2) */}
             <div className="bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div className="bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200">

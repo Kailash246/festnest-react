@@ -128,6 +128,7 @@ export default function UserDetailDrawer({
         >
           {/* Top header */}
           <div className="h-16 px-6 border-b border-border flex items-center justify-between flex-shrink-0">
+          <div className="h-16 px-4 sm:px-6 border-b border-border flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2">
               <User size={18} className="text-primary" />
               <h3 className="font-heading font-bold text-[16px] text-text-1">User Dossier</h3>
@@ -155,6 +156,7 @@ export default function UserDetailDrawer({
             <>
               {/* User Identity Header Card */}
               <div className="p-6 bg-surface-2 border-b border-border flex-shrink-0">
+              <div className="p-4 sm:p-6 bg-surface-2 border-b border-border flex-shrink-0">
                 <div className="flex items-start gap-4">
                   <div className="w-14 h-14 rounded-2xl bg-primary text-white font-black text-[20px] flex items-center justify-center shadow-md flex-shrink-0">
                     {user.avatar?.initials || user.name?.slice(0, 2).toUpperCase() || '??'}
@@ -220,6 +222,7 @@ export default function UserDetailDrawer({
 
               {/* Drawer Tabs */}
               <div className="flex border-b border-border px-6 overflow-x-auto no-scrollbar flex-shrink-0">
+              <div className="flex border-b border-border px-4 sm:px-6 overflow-x-auto no-scrollbar flex-shrink-0">
                 {[
                   { id: 'overview',      label: 'Actions' },
                   { id: 'registrations', label: `Registrations (${registrations.length})` },
@@ -243,6 +246,7 @@ export default function UserDetailDrawer({
 
               {/* Drawer Tab Content */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
                 {/* ── TAB 1: OVERVIEW & ADMIN CONTROLS ── */}
                 {activeTab === 'overview' && (
                   <div className="space-y-6">

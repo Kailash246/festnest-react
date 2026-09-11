@@ -269,6 +269,7 @@ export default function ParticipantsTab({
         <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[12px]">
+            <table className="w-full min-w-[700px] text-left text-[12px]">
               <thead className="bg-surface-1 border-b border-border text-[11px] font-bold uppercase tracking-wider text-text-4 select-none">
                 <tr>
                   <th className="py-3.5 px-4">Participant</th>

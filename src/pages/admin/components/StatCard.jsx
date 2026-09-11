@@ -69,14 +69,17 @@ export default function StatCard({
       whileHover={onClick ? { y: -2 } : undefined}
       onClick={onClick}
       className={`relative overflow-hidden bg-white border border-neutral-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all ${
+      className={`relative overflow-hidden bg-white border border-neutral-200/80 rounded-2xl p-3.5 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all ${
         onClick ? 'cursor-pointer hover:border-indigo-400 hover:shadow-md' : ''
       }`}
     >
       <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-[11px] font-bold text-neutral-400 tracking-wider uppercase">{label}</p>
           <div className="mt-1.5 flex items-baseline gap-2 flex-wrap">
             <span className="font-heading font-black text-[24px] sm:text-[28px] text-neutral-900 tabular-nums tracking-tight leading-none">
+            <span className="font-heading font-black text-[20px] sm:text-[28px] text-neutral-900 tabular-nums tracking-tight leading-none">
               {value ?? '—'}
             </span>
             {badge && (
@@ -90,6 +93,7 @@ export default function StatCard({
 
         {icon && (
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${scheme.iconBg}`}>
+          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${scheme.iconBg} [&>svg]:w-4 sm:[&>svg]:w-5 [&>svg]:h-4 sm:[&>svg]:h-5`}>
             {renderIcon()}
           </div>
         )}

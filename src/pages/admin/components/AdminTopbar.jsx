@@ -65,8 +65,10 @@ export default function AdminTopbar({
 
   return (
     <header className="h-16 px-4 sm:px-6 md:px-8 bg-white border-b border-border flex items-center justify-between gap-4 sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+    <header className="h-16 px-4 sm:px-6 md:px-8 bg-white border-b border-border flex items-center justify-between gap-2.5 sm:gap-4 sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
       {/* Left: Mobile hamburger + Breadcrumb */}
       <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
         <button
           type="button"
           onClick={onOpenMobileNav}
@@ -77,10 +79,12 @@ export default function AdminTopbar({
         </button>
 
         <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline text-[12px] font-semibold text-text-4">Admin</span>
             <span className="hidden sm:inline text-text-4">/</span>
             <h1 className="font-heading font-black text-[17px] sm:text-[19px] text-text-1 tracking-tight truncate leading-tight">
+            <h1 className="font-heading font-black text-[16px] sm:text-[19px] text-text-1 tracking-tight truncate leading-tight">
               {currentView.title}
             </h1>
           </div>
@@ -116,6 +120,17 @@ export default function AdminTopbar({
         </button>
 
         {/* Create Event CTA */}
+        {/* Create Event CTA (Mobile: compact icon button, Desktop: full label) */}
+        <button
+          type="button"
+          onClick={onCreateEvent}
+          className="sm:hidden w-9 h-9 bg-primary text-white hover:bg-primary-dark rounded-lg flex items-center justify-center shadow-sm transition-all flex-shrink-0"
+          aria-label="Create New Event"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 bg-primary text-white hover:bg-primary-dark rounded-lg text-[13px] font-bold shadow-sm transition-all flex-shrink-0"
+          title="New Event"
+        >
+          <Plus size={16} strokeWidth={2.4} />
+        </button>
         <button
           type="button"
           onClick={onCreateEvent}
@@ -123,6 +138,7 @@ export default function AdminTopbar({
         >
           <Plus size={15} strokeWidth={2.4} />
           <span>New Event</span>
+          <span className="hidden sm:inline">New Event</span>
         </button>
 
         {/* User Profile Pill & Dropdown */}
@@ -149,6 +165,7 @@ export default function AdminTopbar({
           {/* Profile Dropdown Menu */}
           {profileOpen && (
             <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-border shadow-xl p-1.5 z-50 text-[13px]">
+            <div className="absolute right-0 mt-2 w-56 max-w-[calc(100vw-32px)] bg-white rounded-xl border border-border shadow-xl p-1.5 z-50 text-[13px]">
               <div className="px-3 py-2 border-b border-border/80 mb-1">
                 <p className="font-bold text-text-1 truncate">{currentUser?.name}</p>
                 <p className="text-[11px] text-text-3 truncate">{currentUser?.email}</p>

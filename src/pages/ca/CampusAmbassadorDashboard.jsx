@@ -318,6 +318,7 @@ function LiveIDCard({ profile, tilt = false }) {
       }`}
     >
       <div className="relative overflow-hidden rounded-2xl bg-white p-5 sm:p-6">
+      <div className="relative overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
         <div className="pointer-events-none absolute -inset-10 opacity-30">
           <div className="fn-sheen h-40 w-16 bg-white blur-md" />
         </div>
@@ -330,6 +331,7 @@ function LiveIDCard({ profile, tilt = false }) {
         </div>
 
         <div className="mt-5 flex gap-4 items-center">
+        <div className="mt-4 sm:mt-5 flex gap-3 sm:gap-4 items-center">
           {profile.photoUrl ? (
             <img
               src={profile.photoUrl}
@@ -362,6 +364,7 @@ function LiveIDCard({ profile, tilt = false }) {
         </div>
 
         <div className="mt-6 flex items-end justify-between border-t border-slate-100 pt-4">
+        <div className="mt-5 sm:mt-6 flex items-end justify-between border-t border-slate-100 pt-3.5 sm:pt-4">
           <div>
             <div className="font-mono text-[9px] font-semibold tracking-wider text-slate-400">AMBASSADOR ID</div>
             <div className="font-mono text-sm sm:text-base font-bold text-slate-800 tracking-tight">
@@ -736,6 +739,7 @@ export default function CampusAmbassadorDashboard() {
             <ChevronRight size={13} className="text-slate-400" />
             <Link to="/campus-ambassador" className="text-slate-500 hover:text-indigo-600 transition font-medium">
               Campus Ambassador
+              <span className="hidden sm:inline">Campus </span>Ambassador
             </Link>
             <ChevronRight size={13} className="text-slate-400" />
             <span className="font-semibold text-slate-800">Portal</span>
@@ -755,6 +759,7 @@ export default function CampusAmbassadorDashboard() {
             <Link
               to="/explore"
               className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition"
+              className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition"
             >
               Explore
             </Link>
@@ -762,8 +767,11 @@ export default function CampusAmbassadorDashboard() {
             <Link
               to="/host"
               className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-2.5 sm:px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition shrink-0"
             >
               + Host Event
+              <span className="hidden min-[380px]:inline">+ Host Event</span>
+              <span className="min-[380px]:hidden">+ Host</span>
             </Link>
           </div>
         </div>
@@ -774,6 +782,7 @@ export default function CampusAmbassadorDashboard() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               {profile.photoUrl ? (
                 <img
                   src={profile.photoUrl}
@@ -807,6 +816,7 @@ export default function CampusAmbassadorDashboard() {
                 </p>
 
                 <div className="mt-3 flex items-center gap-3 flex-wrap">
+                <div className="mt-3 flex items-center gap-2 sm:gap-3 flex-wrap">
                   <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1 rounded-lg text-xs font-mono">
                     <span className="text-indigo-300 font-semibold">CA-ID:</span>
                     <span className="text-white font-bold">{profile.caId || 'FN-CA-PENDING'}</span>
@@ -887,48 +897,65 @@ export default function CampusAmbassadorDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
                 <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+              <div className="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-5 shadow-sm">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2 sm:mb-3 [&>svg]:w-4 sm:[&>svg]:w-5 [&>svg]:h-4 sm:[&>svg]:h-5">
                   <Trophy size={20} />
                 </div>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                <div className="font-mono text-xl sm:text-3xl font-bold text-slate-900">
                   {stats.organizersOnboarded}
                 </div>
                 <div className="font-sans text-xs font-medium text-slate-500 mt-1">
+                <div className="font-sans text-[11px] sm:text-xs font-medium text-slate-500 mt-0.5 sm:mt-1">
                   Organizers Onboarded
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
                 <div className="w-10 h-10 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center mb-3">
+              <div className="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-5 shadow-sm">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center mb-2 sm:mb-3 [&>svg]:w-4 sm:[&>svg]:w-5 [&>svg]:h-4 sm:[&>svg]:h-5">
                   <Rocket size={20} />
                 </div>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                <div className="font-mono text-xl sm:text-3xl font-bold text-slate-900">
                   {stats.eventsSourced}
                 </div>
                 <div className="font-sans text-xs font-medium text-slate-500 mt-1">
+                <div className="font-sans text-[11px] sm:text-xs font-medium text-slate-500 mt-0.5 sm:mt-1">
                   Events Sourced
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
                 <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3">
+              <div className="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-5 shadow-sm">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-2 sm:mb-3 [&>svg]:w-4 sm:[&>svg]:w-5 [&>svg]:h-4 sm:[&>svg]:h-5">
                   <Users size={20} />
                 </div>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                <div className="font-mono text-xl sm:text-3xl font-bold text-slate-900">
                   {stats.referralSignups}
                 </div>
                 <div className="font-sans text-xs font-medium text-slate-500 mt-1">
+                <div className="font-sans text-[11px] sm:text-xs font-medium text-slate-500 mt-0.5 sm:mt-1">
                   Student Signups
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
                 <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+              <div className="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-5 shadow-sm">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-2 sm:mb-3 [&>svg]:w-4 sm:[&>svg]:w-5 [&>svg]:h-4 sm:[&>svg]:h-5">
                   <Award size={20} />
                 </div>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                <div className="font-mono text-xl sm:text-3xl font-bold text-slate-900">
                   {profile.tier || 'Bronze'}
                 </div>
                 <div className="font-sans text-xs font-medium text-slate-500 mt-1">
+                <div className="font-sans text-[11px] sm:text-xs font-medium text-slate-500 mt-0.5 sm:mt-1">
                   Current Tier
                 </div>
               </div>
@@ -1099,6 +1126,7 @@ export default function CampusAmbassadorDashboard() {
         {/* TAB 2: ACTIVITY LEDGER */}
         {activeTab === 'ledger' && (
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-5 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="font-heading text-xl font-bold text-slate-900 flex items-center gap-2">
@@ -1112,9 +1140,11 @@ export default function CampusAmbassadorDashboard() {
 
               {/* Filters */}
               <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto">
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto overflow-x-auto max-w-full scrollbar-none">
                 <button
                   onClick={() => setLedgerFilter('all')}
                   className={`px-3 py-1.5 rounded-lg transition ${
+                  className={`px-3 py-1.5 rounded-lg transition whitespace-nowrap ${
                     ledgerFilter === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -1123,6 +1153,7 @@ export default function CampusAmbassadorDashboard() {
                 <button
                   onClick={() => setLedgerFilter('student')}
                   className={`px-3 py-1.5 rounded-lg transition ${
+                  className={`px-3 py-1.5 rounded-lg transition whitespace-nowrap ${
                     ledgerFilter === 'student' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -1131,6 +1162,7 @@ export default function CampusAmbassadorDashboard() {
                 <button
                   onClick={() => setLedgerFilter('organizer')}
                   className={`px-3 py-1.5 rounded-lg transition ${
+                  className={`px-3 py-1.5 rounded-lg transition whitespace-nowrap ${
                     ledgerFilter === 'organizer' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -1139,6 +1171,7 @@ export default function CampusAmbassadorDashboard() {
                 <button
                   onClick={() => setLedgerFilter('event')}
                   className={`px-3 py-1.5 rounded-lg transition ${
+                  className={`px-3 py-1.5 rounded-lg transition whitespace-nowrap ${
                     ledgerFilter === 'event' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -1171,6 +1204,7 @@ export default function CampusAmbassadorDashboard() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[500px] text-left text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
                       <th className="pb-3 font-semibold">Entity / Label</th>
