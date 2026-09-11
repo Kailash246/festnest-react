@@ -460,9 +460,9 @@ export default function HostEvent() {
       return;
     }
 
-    if (file.size > 30 * 1024 * 1024) {
+    if (file.size > 15 * 1024 * 1024) {
       setAiState('failure');
-      setAiErrorMessage('File size exceeds the 30 MB limit. Please upload a smaller PDF.');
+      setAiErrorMessage('File size exceeds the 15 MB limit. Please upload a smaller PDF.');
       return;
     }
 
@@ -710,7 +710,11 @@ export default function HostEvent() {
     } catch (err) {
       console.error('[AI Poster Parse Error]:', err);
       setAiState('failure');
-      setAiErrorMessage(err.message || "Couldn't read PDF");
+      if (err.status === 408 || err.isTimeout || err.name === 'AbortError') {
+        setAiErrorMessage('This PDF took too long to process. Try a smaller or lower-resolution file, or fill in manually.');
+      } else {
+        setAiErrorMessage(err.message || "Couldn't read PDF");
+      }
     }
   };
 

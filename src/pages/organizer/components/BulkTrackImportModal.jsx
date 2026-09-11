@@ -93,6 +93,11 @@ export default function BulkTrackImportModal({
       return;
     }
 
+    if (file.size > 15 * 1024 * 1024) {
+      setUploadError('File size exceeds the 15 MB limit. Please upload a smaller PDF.');
+      return;
+    }
+
     setFileName(file.name);
     setUploadError('');
     setStep('processing');
@@ -157,6 +162,11 @@ export default function BulkTrackImportModal({
       console.error('[AI Bulk Parse Error]:', err);
       setStep('upload');
       setUploadError(err.message || "Couldn't read PDF. Make sure it contains readable text or images.");
+      if (err.status === 408 || err.isTimeout || err.name === 'AbortError') {
+        setUploadError('This PDF took too long to process. Try a smaller or lower-resolution file, or fill in manually.');
+      } else {
+        setUploadError(err.message || "Couldn't read PDF. Make sure it contains readable text or images.");
+      }
     }
   };
 
@@ -416,7 +426,7 @@ export default function BulkTrackImportModal({
                   <span>·</span>
                   <span>PDF only</span>
                   <span>·</span>
-                  <span>Max 30 MB</span>
+                  <span>Max 15 MB</span>
                 </div>
               </div>
 
@@ -426,7 +436,9 @@ export default function BulkTrackImportModal({
                   <div className="min-w-0 flex-1">
                     <div className="text-[12px] font-bold text-rose-900">{uploadError}</div>
                     <div className="text-[11px] text-rose-700 mt-0.5">
-                      Ensure your PDF is readable and under 25 pages.
+                      {uploadError?.toLowerCase().includes('too long') || uploadError?.toLowerCase().includes('timed out')
+                        ? 'Try a smaller or lower-resolution file, or add tracks manually.'
+                        : 'Ensure your PDF is readable, under 25 pages, and under 15 MB.'}
                     </div>
                   </div>
                 </div>

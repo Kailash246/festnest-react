@@ -150,6 +150,8 @@ export default function AiPosterUploadCard({
                     <span>Up to 25 pages</span>
                     <span>·</span>
                     <span className="font-semibold text-text-2">PDF only</span>
+                    <span>·</span>
+                    <span>Max 15 MB</span>
                   </div>
                   <input
                     ref={fileInputRef}
@@ -280,6 +282,10 @@ export default function AiPosterUploadCard({
                       <p className="text-[12px] text-text-2 mt-1">
                         {errorMessage?.includes('25 page')
                           ? 'Your document exceeds the 25-page limit. Please upload a shorter brochure or poster.'
+                          : errorMessage?.toLowerCase().includes('too long') || errorMessage?.toLowerCase().includes('timed out')
+                          ? 'This PDF took too long to process. Try a smaller or lower-resolution file, or fill in manually.'
+                          : errorMessage?.includes('15 MB')
+                          ? 'Your document exceeds the 15 MB limit. Please upload a smaller PDF file.'
                           : "We couldn't extract event details from this document. It may be password-protected, corrupted, or contain unreadable text."}
                       </p>
                     </div>

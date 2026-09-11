@@ -39,7 +39,13 @@ async function request(path, options = {}) {
   let res;
   try {
     res = await fetch(`${BASE}${path}`, { ...options, headers });
-  } catch {
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      throw Object.assign(
+        new Error('This PDF took too long to process. Try a smaller or lower-resolution file, or fill in manually.'),
+        { status: 408, isTimeout: true, name: 'AbortError' }
+      );
+    }
     // fetch only rejects on network failure (offline, DNS, CORS, server down)
     throw Object.assign(new Error('Connection error. Check your internet.'), { status: 0, network: true });
   }
@@ -141,6 +147,7 @@ function statusFallback(status) {
     case 401: return 'Your session has expired. Please log in again.';
     case 403: return "You don't have permission to do that.";
     case 404: return "We couldn't find what you were looking for.";
+    case 408: return 'This PDF took too long to process. Try a smaller or lower-resolution file, or fill in manually.';
     case 409: return 'That conflicts with something that already exists.';
     case 413: return 'That file is too large. Please upload a smaller file.';
     case 422: return 'Some of the information you entered is invalid.';
@@ -321,7 +328,17 @@ export const admin = {
 
 /* ─── AI Poster Autofill ─────────────────────────────────── */
 export const ai = {
-  parseEventPoster: (formData) => post('/ai/parse-event-poster', formData),
+  parseEventPoster: (formData, { timeoutMs = 70000, signal } = {}) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    if (signal) {
+      signal.addEventListener('abort', () => controller.abort());
+    }
+
+    return post('/ai/parse-event-poster', formData, { signal: controller.signal })
+      .finally(() => clearTimeout(timeoutId));
+  },
 };
 
 export default { auth, events, users, notifications, leaderboard, college, support, feedback, admin, ca, tokens, ai };
