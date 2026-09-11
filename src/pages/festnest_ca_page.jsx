@@ -186,6 +186,16 @@ export default function CampusAmbassadorPage() {
     }
   }, [isLoggedIn]);
 
+  // Smooth scroll to hash anchor on load or navigation (e.g. #apply, #how)
+  useEffect(() => {
+    if (window.location.hash) {
+      const el = document.querySelector(window.location.hash);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
+      }
+    }
+  }, []);
+
   const update = (key) => (e) => {
     setForm((f) => ({ ...f, [key]: e.target.value }));
     if (submitError) setSubmitError('');
@@ -241,10 +251,10 @@ export default function CampusAmbassadorPage() {
 
             {existingCA?.status === 'approved' ? (
               <Link
-                to="/ca/dashboard"
+                to="/ca/portal"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-indigo-700 shadow-sm transition"
               >
-                <span>My CA Dashboard</span>
+                <span>Go to CA Portal</span>
                 <ArrowRight size={15} />
               </Link>
             ) : existingCA?.status === 'applied' || existingCA?.status === 'screening' ? (
@@ -283,10 +293,10 @@ export default function CampusAmbassadorPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             {existingCA?.status === 'approved' ? (
               <Link
-                to="/ca/dashboard"
+                to="/ca/portal"
                 className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 shadow-sm transition"
               >
-                <span>Go to Ambassador Dashboard</span>
+                <span>Go to Ambassador Portal</span>
                 <ArrowRight size={16} />
               </Link>
             ) : (

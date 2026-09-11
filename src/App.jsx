@@ -115,12 +115,14 @@ export default function App() {
     );
   }
 
-  // Campus Ambassador routes render full-bleed with custom navigation and live dashboard
+  // Campus Ambassador routes render full-bleed with custom navigation and live dashboard/portal
   const isCARoute =
     location.pathname === '/campus-ambassador' ||
     location.pathname === '/ca' ||
     location.pathname === '/campus-ambassador/dashboard' ||
-    location.pathname === '/ca/dashboard';
+    location.pathname === '/ca/dashboard' ||
+    location.pathname === '/campus-ambassador/portal' ||
+    location.pathname === '/ca/portal';
 
   if (isCARoute) {
     return (
@@ -132,6 +134,8 @@ export default function App() {
           <Route path="/ca"                          element={<CampusAmbassadorPage />} />
           <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
           <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
+          <Route path="/campus-ambassador/portal"    element={<CampusAmbassadorDashboard />} />
+          <Route path="/ca/portal"                   element={<CampusAmbassadorDashboard />} />
         </Routes>
         <ToastContainer />
       </>
@@ -198,6 +202,8 @@ export default function App() {
               <Route path="/ca"                          element={<CampusAmbassadorPage />} />
               <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
               <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
+              <Route path="/campus-ambassador/portal"    element={<CampusAmbassadorDashboard />} />
+              <Route path="/ca/portal"                   element={<CampusAmbassadorDashboard />} />
               <Route path="*"             element={<Navigate to="/home" replace />} />
             </Routes>
           </AnimatePresence>

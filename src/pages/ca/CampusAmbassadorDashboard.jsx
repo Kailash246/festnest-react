@@ -6,11 +6,12 @@ import {
   ChevronDown, CheckCircle2, MapPin, Star, Handshake, Sparkles,
   Copy, Check, Share2, ExternalLink, ArrowLeft, ArrowRight,
   Clock, AlertCircle, RefreshCw, ShieldCheck, Download, Award,
-  Building, Calendar
+  Building, Calendar, Send, MessageCircle, FileText, ChevronRight,
+  HelpCircle, BookOpen, UserCheck
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ca } from '../../services/api';
-import { PUBLIC_SITE_URL } from '../../config/site';
+import { PUBLIC_SITE_URL, getReferralUrl, sanitizeShareUrl } from '../../config/site';
 
 const QR_ROWS = [
   [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
@@ -382,12 +383,14 @@ export default function CampusAmbassadorDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
-  const [copied, setCopied] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [copiedKey, setCopiedKey] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'ledger' | 'toolkit' | 'guidelines'
   const [impactLogs, setImpactLogs] = useState([]);
   const [impactLoading, setImpactLoading] = useState(false);
   const [impactTotal, setImpactTotal] = useState(0);
+  const [ledgerFilter, setLedgerFilter] = useState('all'); // 'all' | 'student' | 'organizer' | 'event'
 
   const handleDownloadCard = async () => {
     if (!profile) return;
@@ -406,7 +409,7 @@ export default function CampusAmbassadorDashboard() {
   const fetchImpact = async () => {
     setImpactLoading(true);
     try {
-      const res = await ca.myImpact({ page: 1, limit: 50 });
+      const res = await ca.myImpact({ page: 1, limit: 100 });
       setImpactLogs(res.data?.logs || []);
       setImpactTotal(res.data?.total || 0);
     } catch (err) {
@@ -424,6 +427,7 @@ export default function CampusAmbassadorDashboard() {
       const res = await ca.me();
       setProfile(res.data?.profile || null);
       fetchImpact();
+      if (silent) showToast?.('Ambassador stats updated!', 'success');
     } catch (err) {
       console.error('Failed to load CA profile', err);
     } finally {
@@ -441,40 +445,57 @@ export default function CampusAmbassadorDashboard() {
     }
   }, [isLoggedIn]);
 
-  const handleCopyReferral = () => {
-    if (!profile?.referralCode) return;
-    const url = profile.referralUrl || `${PUBLIC_SITE_URL}?ref=${profile.referralCode}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    showToast?.('Referral link copied to clipboard!', 'success');
-    setTimeout(() => setCopied(false), 2200);
+  // Canonical share URLs (strictly uses clean site domain, never vercel.app or onrender.com)
+  const generalUrl = profile?.referralCode ? getReferralUrl(profile.referralCode) : '';
+  const hostUrl = profile?.referralCode ? getReferralUrl(profile.referralCode, 'host') : '';
+  const exploreUrl = profile?.referralCode ? getReferralUrl(profile.referralCode, 'explore') : '';
+
+  const copyToClipboard = (text, key, message = 'Copied to clipboard!') => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    showToast?.(message, 'success');
+    setTimeout(() => setCopiedKey(null), 2500);
   };
 
-  const handleShare = () => {
-    if (!profile?.referralCode) return;
+  const handleShareBadge = () => {
+    if (!profile) return;
     const shareData = {
       title: `${profile.name} - FestNest Campus Ambassador`,
-      text: `Join FestNest to discover verified college fests, hackathons, and competitions! Use code ${profile.referralCode}`,
-      url: profile.referralUrl || `${PUBLIC_SITE_URL}?ref=${profile.referralCode}`,
+      text: `Join FestNest to discover verified college fests, hackathons, and student competitions across India! Use ambassador code ${profile.referralCode}`,
+      url: generalUrl,
     };
     if (navigator.share) {
       navigator.share(shareData).catch(() => {});
     } else {
-      handleCopyReferral();
+      copyToClipboard(generalUrl, 'general', 'Ambassador link copied to clipboard!');
     }
   };
+
+  const handleWhatsAppShare = (type = 'student') => {
+    if (!profile?.referralCode) return;
+    const text = type === 'organizer'
+      ? `Hey! If you're hosting an inter-college fest, hackathon, or competition at ${profile.college || 'college'}, publish it on FestNest to reach verified students across India: ${hostUrl}`
+      : `Hey everyone! Join FestNest to discover verified hackathons, fests, and workshops happening across Indian colleges: ${generalUrl}`;
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const linkedInTemplate = profile
+    ? `Excited to announce that I have joined FestNest as an official Campus Ambassador for ${profile.college || 'my college'}! 🎓\n\nFestNest brings together verified college events — hackathons, tech fests, workshops, and competitions — onto one platform for Indian students.\n\nIf you lead a campus club or organize student events, reach out or host your event directly on FestNest: ${hostUrl}\n\n#FestNest #CampusAmbassador #CollegeFests #Hackathons #StudentLeadership`
+    : '';
 
   // State 1: Unauthenticated
   if (!isLoggedIn) {
     return (
-      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="font-sans min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-lg">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center mb-4">
-            <IdCard size={24} />
+          <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center mb-5 shadow-sm">
+            <IdCard size={28} />
           </div>
           <h2 className="font-heading text-2xl font-bold text-slate-900">Campus Ambassador Portal</h2>
-          <p className="font-sans mt-2 text-sm text-slate-600">
-            Please log in with your FestNest account to access your ambassador credentials, live referral link, and platform impact stats.
+          <p className="font-sans mt-2.5 text-sm text-slate-600 leading-relaxed">
+            Please log in with your FestNest account to access your ambassador credentials, live referral hub, and real-time impact tracking.
           </p>
           <div className="mt-6 flex flex-col gap-3">
             <button
@@ -484,10 +505,16 @@ export default function CampusAmbassadorDashboard() {
               Log In to Portal
             </button>
             <Link
-              to="/ca"
-              className="w-full py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl text-sm transition"
+              to="/campus-ambassador"
+              className="w-full py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl text-sm transition text-center"
             >
               Learn About CA Program
+            </Link>
+            <Link
+              to="/home"
+              className="text-xs font-semibold text-slate-400 hover:text-slate-600 transition pt-2"
+            >
+              ← Back to FestNest Home
             </Link>
           </div>
         </div>
@@ -498,12 +525,12 @@ export default function CampusAmbassadorDashboard() {
   // State 2: Loading
   if (loading) {
     return (
-      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="font-sans min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="text-center">
           <div className="inline-block animate-spin text-indigo-600 mb-3">
-            <RefreshCw size={28} />
+            <RefreshCw size={30} />
           </div>
-          <p className="font-sans text-sm text-slate-500 font-medium">Verifying ambassador credentials...</p>
+          <p className="font-sans text-sm text-slate-600 font-medium">Loading ambassador portal...</p>
         </div>
       </div>
     );
@@ -512,25 +539,25 @@ export default function CampusAmbassadorDashboard() {
   // State 3: Logged In, Not Applied
   if (!profile) {
     return (
-      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="font-sans min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-lg">
-          <div className="w-12 h-12 rounded-xl bg-fuchsia-50 text-fuchsia-600 mx-auto flex items-center justify-center mb-4">
-            <Sparkles size={24} />
+          <div className="w-14 h-14 rounded-2xl bg-fuchsia-50 text-fuchsia-600 mx-auto flex items-center justify-center mb-5 shadow-sm">
+            <Sparkles size={28} />
           </div>
           <h2 className="font-heading text-2xl font-bold text-slate-900">Become an Ambassador</h2>
-          <p className="font-sans mt-2 text-sm text-slate-600">
-            You haven't applied for the FestNest Campus Ambassador program yet. Represent your college, onboard clubs, and receive official digital credentials.
+          <p className="font-sans mt-2.5 text-sm text-slate-600 leading-relaxed">
+            You haven't applied for the FestNest Campus Ambassador program yet. Represent your college, onboard campus clubs, and receive verified digital credentials.
           </p>
           <div className="mt-6 flex flex-col gap-3">
             <Link
-              to="/ca#apply"
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition shadow-sm"
+              to="/campus-ambassador#apply"
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition shadow-sm text-center"
             >
               Apply to become a CA
             </Link>
             <Link
               to="/home"
-              className="w-full py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl text-sm transition"
+              className="w-full py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl text-sm transition text-center"
             >
               Back to Home
             </Link>
@@ -543,7 +570,7 @@ export default function CampusAmbassadorDashboard() {
   // State 4: Application Submitted / Screening
   if (profile.status === 'applied' || profile.status === 'screening') {
     return (
-      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="font-sans min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
           <div className="flex items-center justify-between pb-6 border-b border-slate-100">
             <div>
@@ -587,7 +614,7 @@ export default function CampusAmbassadorDashboard() {
               <div>
                 <h4 className="font-sans font-semibold text-slate-900 text-sm">Credential &amp; ID Card Issuance</h4>
                 <p className="font-sans text-xs text-slate-500 mt-0.5">
-                  Upon approval, your official CA ID (e.g. FN-CA-BLR-014) and referral link unlock here.
+                  Upon approval, your official CA ID and referral link unlock here.
                 </p>
               </div>
             </div>
@@ -617,30 +644,30 @@ export default function CampusAmbassadorDashboard() {
   // State 5: Rejected
   if (profile.status === 'rejected') {
     return (
-      <div className="font-sans min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="font-sans min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-lg">
-          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-500 mx-auto flex items-center justify-center mb-4">
-            <AlertCircle size={24} />
+          <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-500 mx-auto flex items-center justify-center mb-5 shadow-sm">
+            <AlertCircle size={28} />
           </div>
           <h2 className="font-heading text-2xl font-bold text-slate-900">Application Update</h2>
-          <p className="font-sans mt-2 text-sm text-slate-600">
+          <p className="font-sans mt-2.5 text-sm text-slate-600 leading-relaxed">
             Thank you for your interest in representing {profile.college}. We were unable to move forward with your application for the current cohort.
           </p>
           {profile.rejectionReason && (
-            <p className="mt-3 p-3 bg-slate-50 rounded-xl text-xs text-slate-500 italic">
+            <p className="mt-3 p-3.5 bg-slate-50 rounded-xl text-xs text-slate-600 italic border border-slate-200/60">
               "{profile.rejectionReason}"
             </p>
           )}
           <div className="mt-6 flex flex-col gap-3">
             <Link
-              to="/home"
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition shadow-sm"
+              to="/explore"
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition shadow-sm text-center"
             >
               Explore Events on FestNest
             </Link>
             <Link
               to="/support"
-              className="w-full py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl text-sm transition"
+              className="w-full py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl text-sm transition text-center"
             >
               Contact Support
             </Link>
@@ -650,7 +677,7 @@ export default function CampusAmbassadorDashboard() {
     );
   }
 
-  // State 6: APPROVED - Live Ambassador Portal
+  // State 6: APPROVED - Dedicated Campus Ambassador Portal
   const stats = profile.stats || {
     organizersOnboarded: 0,
     eventsSourced: 0,
@@ -687,213 +714,244 @@ export default function CampusAmbassadorDashboard() {
       ? 100
       : Math.min(100, Math.round(((currentOrganizers - currentBase) / (nextThreshold - currentBase)) * 100));
 
+  const filteredLogs = impactLogs.filter((log) => {
+    if (ledgerFilter === 'all') return true;
+    return log.type === ledgerFilter;
+  });
+
+  const studentCount = impactLogs.filter((l) => l.type === 'student').length;
+  const organizerCount = impactLogs.filter((l) => l.type === 'organizer').length;
+  const eventCount = impactLogs.filter((l) => l.type === 'event').length;
+
   return (
     <div className="font-sans min-h-screen bg-slate-50 text-slate-900 pb-16">
 
-      {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/home"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition"
-            >
-              <ArrowLeft size={15} />
-              <span>FestNest</span>
+      {/* Top Header & Breadcrumb Bar */}
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3.5">
+          <div className="flex items-center gap-2 text-xs">
+            <Link to="/home" className="text-slate-500 hover:text-indigo-600 transition font-medium">
+              Home
             </Link>
-            <span className="text-slate-300">|</span>
-            <span className="font-heading text-lg font-bold text-slate-900 tracking-tight">
-              Ambassador Portal
-            </span>
+            <ChevronRight size={13} className="text-slate-400" />
+            <Link to="/campus-ambassador" className="text-slate-500 hover:text-indigo-600 transition font-medium">
+              Campus Ambassador
+            </Link>
+            <ChevronRight size={13} className="text-slate-400" />
+            <span className="font-semibold text-slate-800">Portal</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => fetchProfile(true)}
               disabled={refreshing}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-xs font-semibold text-slate-600 transition"
+              title="Sync Ambassador Data"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"
             >
-              <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+              <RefreshCw size={13} className={refreshing ? 'animate-spin text-indigo-600' : ''} />
               <span className="hidden sm:inline">Sync Stats</span>
             </button>
+
             <Link
-              to="/ca"
-              className="hidden sm:inline-flex text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5"
+              to="/explore"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition"
             >
-              Program Overview
+              Explore
+            </Link>
+
+            <Link
+              to="/host"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition"
+            >
+              + Host Event
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Content Container */}
-      <main className="mx-auto max-w-6xl px-6 pt-8">
-        {/* Welcome Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
-                Welcome, {profile.name}
-              </h1>
-              <ShieldCheck size={22} className="text-indigo-600" />
+      {/* Hero Ambassador Profile Card */}
+      <div className="bg-gradient-to-b from-indigo-900 via-indigo-950 to-slate-900 text-white border-b border-indigo-950">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-start sm:items-center gap-4">
+              {profile.photoUrl ? (
+                <img
+                  src={profile.photoUrl}
+                  alt={profile.name}
+                  className="h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-2xl object-cover border-2 border-indigo-400/30 shadow-lg"
+                />
+              ) : (
+                <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl bg-indigo-600/50 border-2 border-indigo-400/30 text-white font-bold text-2xl font-heading shadow-lg">
+                  {profile.name
+                    ? profile.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+                    : 'CA'}
+                </div>
+              )}
+
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                    {profile.name}
+                  </h1>
+                  <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">
+                    Active CA
+                  </span>
+                </div>
+
+                <p className="font-sans text-xs sm:text-sm text-indigo-200 mt-1 flex items-center gap-1.5 flex-wrap">
+                  <GraduationCap size={15} className="text-indigo-400" />
+                  <span>{profile.college}</span>
+                  <span className="text-indigo-400">•</span>
+                  <MapPin size={13} className="text-indigo-400" />
+                  <span>{profile.city}</span>
+                </p>
+
+                <div className="mt-3 flex items-center gap-3 flex-wrap">
+                  <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1 rounded-lg text-xs font-mono">
+                    <span className="text-indigo-300 font-semibold">CA-ID:</span>
+                    <span className="text-white font-bold">{profile.caId || 'FN-CA-PENDING'}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1 rounded-lg text-xs font-mono">
+                    <span className="text-indigo-300 font-semibold">Code:</span>
+                    <span className="text-amber-300 font-bold">{profile.referralCode}</span>
+                    <button
+                      onClick={() => copyToClipboard(profile.referralCode, 'code', 'Ambassador code copied!')}
+                      className="ml-1 text-slate-300 hover:text-white transition"
+                      title="Copy code"
+                    >
+                      {copiedKey === 'code' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                    </button>
+                  </div>
+
+                  <div className="text-xs text-indigo-300 font-sans">
+                    Valid thru: <span className="text-white font-mono font-medium">{profile.validThru || '09 / 2028'}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="font-sans text-sm text-slate-500 mt-1">
-              Official Ambassador for <span className="font-semibold text-slate-700">{profile.college}</span> · ID:{' '}
-              <span className="font-mono font-bold text-indigo-600">{profile.caId}</span>
-            </p>
+
+            {/* Quick Share Actions */}
+            <div className="flex items-center gap-2.5 sm:self-center">
+              <button
+                onClick={() => copyToClipboard(generalUrl, 'general', 'Referral link copied to clipboard!')}
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition shadow-sm"
+              >
+                {copiedKey === 'general' ? <Check size={14} /> : <Copy size={14} />}
+                <span>{copiedKey === 'general' ? 'Link Copied!' : 'Copy Referral Link'}</span>
+              </button>
+
+              <button
+                onClick={handleShareBadge}
+                className="inline-flex items-center justify-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3.5 py-2.5 rounded-xl border border-white/15 transition"
+                title="Share Ambassador Badge"
+              >
+                <Share2 size={14} />
+                <span className="hidden sm:inline">Share</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1 text-xs font-bold text-indigo-700 font-mono">
-              <Award size={14} />
-              {profile.tier?.toUpperCase()} AMBASSADOR
-            </span>
-          </div>
+          {/* Tab Navigation */}
+          <nav className="mt-8 flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none">
+            {[
+              { id: 'overview', label: 'Overview & Impact', icon: <Trophy size={14} /> },
+              { id: 'ledger', label: `Activity Ledger (${impactTotal})`, icon: <Award size={14} /> },
+              { id: 'toolkit', label: 'Outreach Toolkit & Links', icon: <Megaphone size={14} /> },
+              { id: 'guidelines', label: 'Tier Perks & Handbook', icon: <BookOpen size={14} /> },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl transition whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'bg-white text-slate-900 shadow-sm font-bold'
+                    : 'text-indigo-200 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </nav>
         </div>
+      </div>
 
-        {/* 2-Column Responsive Layout */}
-        <div className="mt-8 grid gap-8 lg:grid-cols-12 items-start">
-          {/* Left Column: ID Card & Credentials (5 cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="font-heading text-base font-bold text-slate-900 mb-4 flex items-center justify-between">
-                <span>Official Digital Credential</span>
-                <span className="text-xs font-normal text-slate-400">Verified</span>
-              </h3>
+      {/* Main Content Area */}
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 mt-8">
 
-              <div className="flex justify-center py-2">
-                <LiveIDCard profile={profile} tilt={true} />
-              </div>
-
-              <div className="mt-6 flex flex-col gap-2.5">
-                <button
-                  onClick={handleDownloadCard}
-                  disabled={downloading}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm transition disabled:opacity-60"
-                >
-                  <Download size={15} className={downloading ? 'animate-bounce' : ''} />
-                  <span>{downloading ? 'Generating PNG Card...' : 'Download ID Card (PNG)'}</span>
-                </button>
-
-                <button
-                  onClick={handleCopyReferral}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
-                >
-                  {copied ? <Check size={15} /> : <Copy size={15} />}
-                  <span>{copied ? 'Referral Link Copied!' : 'Copy Referral Link'}</span>
-                </button>
-
-                <button
-                  onClick={handleShare}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
-                >
-                  <Share2 size={15} />
-                  <span>Share Ambassador Badge</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Community & Resources */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-              <h3 className="font-heading text-base font-bold text-slate-900">Ambassador Toolkit</h3>
-
-              <div className="space-y-2.5 text-xs">
-                <a
-                  href="#share"
-                  onClick={(e) => { e.preventDefault(); handleCopyReferral(); }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition text-slate-700"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Rocket size={16} className="text-indigo-600" />
-                    <span className="font-semibold">Campus Referral Link</span>
-                  </div>
-                  <ExternalLink size={14} className="text-slate-400" />
-                </a>
-
-                <Link
-                  to="/explore"
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition text-slate-700"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <GraduationCap size={16} className="text-fuchsia-600" />
-                    <span className="font-semibold">Explore Campus Events</span>
-                  </div>
-                  <ExternalLink size={14} className="text-slate-400" />
-                </Link>
-
-                <Link
-                  to="/support"
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition text-slate-700"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Handshake size={16} className="text-teal-600" />
-                    <span className="font-semibold">Contact CA Program Lead</span>
-                  </div>
-                  <ExternalLink size={14} className="text-slate-400" />
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Platform Impact & Referral Tracking (7 cols) */}
-          <div className="lg:col-span-7 space-y-6">
-            {/* Impact Metrics Grid */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
-                  <Trophy size={18} />
+        {/* TAB 1: OVERVIEW & IMPACT */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* 4 Stat Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
+                  <Trophy size={20} />
                 </div>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
                   {stats.organizersOnboarded}
                 </div>
-                <div className="font-sans text-xs font-medium text-slate-500 mt-1 leading-tight">
+                <div className="font-sans text-xs font-medium text-slate-500 mt-1">
                   Organizers Onboarded
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-                <div className="w-9 h-9 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center mb-3">
-                  <Rocket size={18} />
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center mb-3">
+                  <Rocket size={20} />
                 </div>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
                   {stats.eventsSourced}
                 </div>
-                <div className="font-sans text-xs font-medium text-slate-500 mt-1 leading-tight">
+                <div className="font-sans text-xs font-medium text-slate-500 mt-1">
                   Events Sourced
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-                <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3">
-                  <Users size={18} />
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3">
+                  <Users size={20} />
                 </div>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
                   {stats.referralSignups}
                 </div>
-                <div className="font-sans text-xs font-medium text-slate-500 mt-1 leading-tight">
+                <div className="font-sans text-xs font-medium text-slate-500 mt-1">
                   Student Signups
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                  <Award size={20} />
+                </div>
+                <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900">
+                  {profile.tier || 'Bronze'}
+                </div>
+                <div className="font-sans text-xs font-medium text-slate-500 mt-1">
+                  Current Tier
                 </div>
               </div>
             </div>
 
-            {/* Tier Progress Card */}
+            {/* Tier Milestone Progress */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="font-mono text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Current Tier
+                    Tier Progression
                   </span>
-                  <h3 className="font-heading text-xl font-bold text-slate-900 mt-0.5">
-                    {profile.tier} Ambassador
+                  <h3 className="font-heading text-lg font-bold text-slate-900 mt-0.5">
+                    {profile.tier} Ambassador Milestone
                   </h3>
                 </div>
-                <div className="text-right">
+                <div className="sm:text-right">
                   <span className="font-mono text-xs font-semibold text-indigo-600">
                     Next: {nextTierName}
                   </span>
                   <p className="text-xs text-slate-500 mt-0.5">
                     {currentOrganizers >= 16
-                      ? 'Top tier achieved!'
+                      ? 'Maximum tier achieved!'
                       : `${nextThreshold - currentOrganizers} more organizer${nextThreshold - currentOrganizers === 1 ? '' : 's'} needed`}
                   </p>
                 </div>
@@ -902,124 +960,553 @@ export default function CampusAmbassadorDashboard() {
               {/* Progress Bar */}
               <div className="mt-4 w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-fuchsia-600 rounded-full transition-all duration-500"
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
 
-              <div className="mt-4 flex items-center justify-between text-xs text-slate-500 font-mono">
-                <span>Bronze (0)</span>
-                <span>Silver (3)</span>
-                <span>Gold (8)</span>
-                <span>City Lead (16+)</span>
+              <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                <span className={profile.tier === 'Bronze' ? 'font-bold text-indigo-600' : ''}>Bronze (0)</span>
+                <span className={profile.tier === 'Silver' ? 'font-bold text-indigo-600' : ''}>Silver (3)</span>
+                <span className={profile.tier === 'Gold' ? 'font-bold text-indigo-600' : ''}>Gold (8)</span>
+                <span className={profile.tier === 'City Lead' ? 'font-bold text-indigo-600' : ''}>City Lead (16+)</span>
               </div>
             </div>
 
-            {/* Real Impact Activity Ledger */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div>
+            {/* Split Row: Digital ID Card & Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* ID Card Display */}
+              <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col items-center">
+                <div className="w-full flex items-center justify-between mb-4">
                   <h3 className="font-heading text-base font-bold text-slate-900 flex items-center gap-2">
-                    <Award size={18} className="text-indigo-600" />
-                    <span>Recent Activity &amp; Referrals</span>
+                    <IdCard size={18} className="text-indigo-600" />
+                    <span>Official Ambassador ID</span>
                   </h3>
-                  <p className="font-sans text-xs text-slate-500 mt-0.5">
-                    Real-time log of organizers, students, and events attributed to you.
-                  </p>
+                  <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md">
+                    VERIFIED
+                  </span>
                 </div>
-                <span className="font-mono text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-bold">
-                  {impactTotal} recorded
-                </span>
+
+                <LiveIDCard profile={profile} tilt={false} />
+
+                <div className="mt-6 w-full grid grid-cols-2 gap-3">
+                  <button
+                    onClick={handleDownloadCard}
+                    disabled={downloading}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-3 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 transition shadow-sm disabled:opacity-50"
+                  >
+                    <Download size={14} />
+                    <span>{downloading ? 'Downloading...' : 'Download (PNG)'}</span>
+                  </button>
+
+                  <button
+                    onClick={handleShareBadge}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  >
+                    <Share2 size={14} />
+                    <span>Share Badge</span>
+                  </button>
+                </div>
               </div>
 
-              {impactLoading ? (
-                <div className="py-8 text-center text-slate-400 text-xs">
-                  <RefreshCw size={16} className="animate-spin mx-auto mb-2 text-indigo-600" />
-                  Loading your referral activity...
-                </div>
-              ) : impactLogs.length === 0 ? (
-                <div className="py-8 text-center bg-slate-50 rounded-xl border border-slate-100 p-4">
-                  <p className="text-xs text-slate-600 font-medium">No referral activity logged yet.</p>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Share your referral link with students and event organizers to see them appear here!
+              {/* Quick Links & Toolkit preview */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                  <h3 className="font-heading text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
+                    <Rocket size={18} className="text-indigo-600" />
+                    <span>Quick Outreach Links</span>
+                  </h3>
+                  <p className="font-sans text-xs text-slate-500 mb-4">
+                    All links are pre-configured with your ambassador code.
                   </p>
-                </div>
-              ) : (
-                <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto pr-1">
-                  {impactLogs.map((log) => {
-                    const isOrg = log.type === 'organizer';
-                    const isEvent = log.type === 'event';
-                    return (
-                      <div key={log._id} className="py-3 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold border shrink-0 ${
-                              isOrg
-                                ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                : isEvent
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                : 'bg-blue-50 text-blue-700 border-blue-200'
-                            }`}
-                          >
-                            {isOrg ? <Building size={11} /> : isEvent ? <Calendar size={11} /> : <GraduationCap size={11} />}
-                            <span className="capitalize">{log.type}</span>
-                          </span>
-                          <span className="font-semibold text-slate-800 text-xs truncate">
-                            {log.label}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-slate-400 font-mono shrink-0 whitespace-nowrap">
-                          {new Date(log.createdAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
+
+                  <div className="space-y-3">
+                    {/* General Link */}
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-slate-900">General Discover Link</div>
+                        <div className="text-[11px] font-mono text-slate-500 truncate">{generalUrl}</div>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                      <button
+                        onClick={() => copyToClipboard(generalUrl, 'general-preview', 'Link copied!')}
+                        className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition shrink-0"
+                      >
+                        {copiedKey === 'general-preview' ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
 
-            {/* Referral Hub Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="font-heading text-base font-bold text-slate-900 flex items-center gap-2">
-                <Megaphone size={18} className="text-indigo-600" />
-                <span>Your Campus Referral Hub</span>
-              </h3>
-              <p className="font-sans text-xs text-slate-600 mt-1 leading-relaxed">
-                When student organizers sign up or host events using your code, FestNest automatically attributes verified impact to your ambassador profile.
-              </p>
+                    {/* Host Link */}
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-slate-900">Organizer Onboarding Link</div>
+                        <div className="text-[11px] font-mono text-slate-500 truncate">{hostUrl}</div>
+                      </div>
+                      <button
+                        onClick={() => copyToClipboard(hostUrl, 'host-preview', 'Organizer link copied!')}
+                        className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition shrink-0"
+                      >
+                        {copiedKey === 'host-preview' ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
 
-              <div className="mt-4 flex flex-col sm:flex-row gap-3">
-                <div className="flex-1 flex items-center rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-mono text-slate-800 select-all overflow-x-auto">
-                  {profile.referralUrl || `${PUBLIC_SITE_URL}?ref=${profile.referralCode}`}
-                </div>
-                <button
-                  onClick={handleCopyReferral}
-                  className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-indigo-700 transition shadow-sm"
-                >
-                  {copied ? <Check size={14} /> : <Copy size={14} />}
-                  <span>{copied ? 'Copied' : 'Copy'}</span>
-                </button>
-              </div>
+                    {/* Explore Link */}
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-slate-900">Student Event Discovery Link</div>
+                        <div className="text-[11px] font-mono text-slate-500 truncate">{exploreUrl}</div>
+                      </div>
+                      <button
+                        onClick={() => copyToClipboard(exploreUrl, 'explore-preview', 'Student link copied!')}
+                        className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition shrink-0"
+                      >
+                        {copiedKey === 'explore-preview' ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
+                  </div>
 
-              <div className="mt-4 p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-900 space-y-1">
-                <div className="font-semibold flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-indigo-600" />
-                  <span>How tier progression works</span>
+                  <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <button
+                      onClick={() => setActiveTab('toolkit')}
+                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
+                    >
+                      <span>Open full Outreach Toolkit</span>
+                      <ArrowRight size={13} />
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('ledger')}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-700 inline-flex items-center gap-1"
+                    >
+                      <span>View Activity Ledger</span>
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
                 </div>
-                <p className="text-indigo-700 leading-relaxed">
-                  Every unique student club or fest organizer who registers with your link counts towards your next tier. When their events go live on FestNest, your <span className="font-semibold">Events Sourced</span> metric increases automatically.
-                </p>
+
+                {/* Important Platform Guidelines note */}
+                <div className="bg-indigo-50/60 rounded-2xl border border-indigo-100 p-5 flex items-start gap-3">
+                  <Sparkles size={18} className="text-indigo-600 shrink-0 mt-0.5" />
+                  <div className="text-xs text-indigo-950 leading-relaxed">
+                    <span className="font-semibold block mb-0.5">Campus Ambassador Tip:</span>
+                    Share your organizer onboarding link with cultural, sports, and tech symposium heads. When their events are approved, your tier and sourced metrics update automatically.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* TAB 2: ACTIVITY LEDGER */}
+        {activeTab === 'ledger' && (
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-heading text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Award size={20} className="text-indigo-600" />
+                  <span>Ambassador Referral Ledger</span>
+                </h2>
+                <p className="font-sans text-xs text-slate-500 mt-1">
+                  Verified record of students, organizers, and campus events attributed to code <span className="font-mono font-bold text-slate-700">{profile.referralCode}</span>.
+                </p>
+              </div>
+
+              {/* Filters */}
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto">
+                <button
+                  onClick={() => setLedgerFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg transition ${
+                    ledgerFilter === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  All ({impactTotal})
+                </button>
+                <button
+                  onClick={() => setLedgerFilter('student')}
+                  className={`px-3 py-1.5 rounded-lg transition ${
+                    ledgerFilter === 'student' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Students ({studentCount})
+                </button>
+                <button
+                  onClick={() => setLedgerFilter('organizer')}
+                  className={`px-3 py-1.5 rounded-lg transition ${
+                    ledgerFilter === 'organizer' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Organizers ({organizerCount})
+                </button>
+                <button
+                  onClick={() => setLedgerFilter('event')}
+                  className={`px-3 py-1.5 rounded-lg transition ${
+                    ledgerFilter === 'event' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Events ({eventCount})
+                </button>
+              </div>
+            </div>
+
+            {/* List or Empty State */}
+            {impactLoading ? (
+              <div className="py-12 text-center text-slate-400 text-xs">
+                <RefreshCw size={20} className="animate-spin mx-auto mb-2 text-indigo-600" />
+                Updating activity ledger...
+              </div>
+            ) : filteredLogs.length === 0 ? (
+              <div className="py-14 text-center border-2 border-dashed border-slate-200 rounded-2xl p-6">
+                <Users size={32} className="mx-auto text-slate-300 mb-3" />
+                <h3 className="font-heading text-sm font-bold text-slate-700">No activity recorded yet</h3>
+                <p className="font-sans text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                  Share your ambassador referral link with campus clubs or students. As they sign up and host fests, your entries will appear here.
+                </p>
+                <button
+                  onClick={() => copyToClipboard(generalUrl, 'empty-share', 'Link copied!')}
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition"
+                >
+                  <Copy size={13} />
+                  <span>Copy Your Referral Link</span>
+                </button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
+                      <th className="pb-3 font-semibold">Entity / Label</th>
+                      <th className="pb-3 font-semibold">Type</th>
+                      <th className="pb-3 font-semibold">Date</th>
+                      <th className="pb-3 font-semibold text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredLogs.map((log, idx) => {
+                      const badgeColor =
+                        log.type === 'organizer'
+                          ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                          : log.type === 'event'
+                          ? 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200'
+                          : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+
+                      return (
+                        <tr key={log._id || idx} className="hover:bg-slate-50/80 transition">
+                          <td className="py-3 font-semibold text-slate-900 flex items-center gap-2">
+                            {log.type === 'organizer' && <Building size={14} className="text-indigo-600 shrink-0" />}
+                            {log.type === 'event' && <Calendar size={14} className="text-fuchsia-600 shrink-0" />}
+                            {log.type === 'student' && <Users size={14} className="text-emerald-600 shrink-0" />}
+                            <span className="truncate max-w-xs">{log.label || 'FestNest Member'}</span>
+                          </td>
+                          <td className="py-3">
+                            <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-mono uppercase font-bold border ${badgeColor}`}>
+                              {log.type}
+                            </span>
+                          </td>
+                          <td className="py-3 text-slate-500 font-mono text-[11px]">
+                            {log.createdAt ? new Date(log.createdAt).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            }) : '—'}
+                          </td>
+                          <td className="py-3 text-right">
+                            <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold font-mono text-[11px]">
+                              <CheckCircle2 size={12} />
+                              <span>Verified</span>
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 3: OUTREACH TOOLKIT & LINKS */}
+        {activeTab === 'toolkit' && (
+          <div className="space-y-6">
+            {/* Direct Links Section */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
+              <div>
+                <h2 className="font-heading text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Megaphone size={20} className="text-indigo-600" />
+                  <span>Ambassador Referral Links</span>
+                </h2>
+                <p className="font-sans text-xs text-slate-500 mt-1">
+                  Each link automatically carries your referral tracking code to ensure credit for your college.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                {/* General Link */}
+                <div className="rounded-2xl p-5 border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-slate-900">General Referral Link</span>
+                      <Sparkles size={14} className="text-indigo-600" />
+                    </div>
+                    <p className="text-xs text-slate-500 mb-3">
+                      Best for general sharing in batch groups, Instagram bios, and personal intros.
+                    </p>
+                    <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs font-mono text-slate-600 truncate select-all mb-4">
+                      {generalUrl}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(generalUrl, 'tk-general', 'General referral link copied!')}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-xl transition"
+                  >
+                    {copiedKey === 'tk-general' ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{copiedKey === 'tk-general' ? 'Copied to Clipboard!' : 'Copy Link'}</span>
+                  </button>
+                </div>
+
+                {/* Organizer Link */}
+                <div className="rounded-2xl p-5 border border-indigo-200 bg-indigo-50/30 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-indigo-950">Organizer Host Link</span>
+                      <Trophy size={14} className="text-indigo-600" />
+                    </div>
+                    <p className="text-xs text-slate-500 mb-3">
+                      Directs club leads &amp; fest convenors straight to the event publishing studio.
+                    </p>
+                    <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs font-mono text-slate-600 truncate select-all mb-4">
+                      {hostUrl}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(hostUrl, 'tk-host', 'Host referral link copied!')}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-xl transition"
+                  >
+                    {copiedKey === 'tk-host' ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{copiedKey === 'tk-host' ? 'Copied to Clipboard!' : 'Copy Link'}</span>
+                  </button>
+                </div>
+
+                {/* Student Explore Link */}
+                <div className="rounded-2xl p-5 border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-slate-900">Student Explore Link</span>
+                      <Users size={14} className="text-fuchsia-600" />
+                    </div>
+                    <p className="text-xs text-slate-500 mb-3">
+                      Takes students to explore verified inter-college hackathons and competitions.
+                    </p>
+                    <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs font-mono text-slate-600 truncate select-all mb-4">
+                      {exploreUrl}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(exploreUrl, 'tk-explore', 'Explore referral link copied!')}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-xl transition"
+                  >
+                    {copiedKey === 'tk-explore' ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{copiedKey === 'tk-explore' ? 'Copied to Clipboard!' : 'Copy Link'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Share & Templates */}
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* WhatsApp Launchers */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <div className="flex items-center gap-2">
+                  <MessageCircle size={18} className="text-emerald-600" />
+                  <h3 className="font-heading text-base font-bold text-slate-900">WhatsApp 1-Click Share</h3>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Launch pre-written WhatsApp messages directly to students or club organizers.
+                </p>
+
+                <div className="space-y-2.5">
+                  <button
+                    onClick={() => handleWhatsAppShare('student')}
+                    className="w-full p-3 rounded-xl border border-slate-200 bg-emerald-50/40 hover:bg-emerald-50 flex items-center justify-between text-xs font-semibold text-emerald-900 transition"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Send size={14} className="text-emerald-600" />
+                      <span>Share with Students &amp; Classmates</span>
+                    </span>
+                    <ExternalLink size={13} className="text-emerald-500" />
+                  </button>
+
+                  <button
+                    onClick={() => handleWhatsAppShare('organizer')}
+                    className="w-full p-3 rounded-xl border border-slate-200 bg-indigo-50/40 hover:bg-indigo-50 flex items-center justify-between text-xs font-semibold text-indigo-900 transition"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Trophy size={14} className="text-indigo-600" />
+                      <span>Share with Club Leads &amp; Organizers</span>
+                    </span>
+                    <ExternalLink size={13} className="text-indigo-500" />
+                  </button>
+                </div>
+              </div>
+
+              {/* LinkedIn Announcement Template */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText size={18} className="text-blue-600" />
+                    <h3 className="font-heading text-base font-bold text-slate-900">LinkedIn Post Template</h3>
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(linkedInTemplate, 'linkedin', 'LinkedIn template copied!')}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700"
+                  >
+                    {copiedKey === 'linkedin' ? <Check size={13} /> : <Copy size={13} />}
+                    <span>{copiedKey === 'linkedin' ? 'Copied' : 'Copy Post'}</span>
+                  </button>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 font-sans leading-relaxed max-h-36 overflow-y-auto whitespace-pre-wrap">
+                  {linkedInTemplate}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: TIER BENEFITS & HANDBOOK */}
+        {activeTab === 'guidelines' && (
+          <div className="space-y-6">
+            {/* Tier Perks Breakdown */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+              <div>
+                <h2 className="font-heading text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <GraduationCap size={20} className="text-indigo-600" />
+                  <span>Campus Ambassador Tier Progression</span>
+                </h2>
+                <p className="font-sans text-xs text-slate-500 mt-1">
+                  Your tier updates automatically as student organizers from your college submit events with your link.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-4">
+                {[
+                  {
+                    tier: 'Bronze',
+                    req: '0–2 Organizers',
+                    perks: ['Official FestNest ID Card', 'Verified Ambassador Number', 'Starter Outreach Kit', 'Community WhatsApp Access'],
+                    active: profile.tier === 'Bronze',
+                    color: 'text-amber-800 bg-amber-50 border-amber-200',
+                  },
+                  {
+                    tier: 'Silver',
+                    req: '3–7 Organizers',
+                    perks: ['Official FestNest Merch Drop', 'Priority Event Hosting Approval', 'Resume Recommendation Letter', 'Early Feature Beta Access'],
+                    active: profile.tier === 'Silver',
+                    color: 'text-slate-700 bg-slate-100 border-slate-300',
+                  },
+                  {
+                    tier: 'Gold',
+                    req: '8–15 Organizers',
+                    perks: ['Cash Reward Milestone', 'Founder Direct Shoutout', 'Featured Badge on FestNest Home', 'Quarterly Leadership Calls'],
+                    active: profile.tier === 'Gold',
+                    color: 'text-amber-700 bg-amber-50/80 border-amber-300',
+                  },
+                  {
+                    tier: 'City Lead',
+                    req: '16+ Organizers',
+                    perks: ['Lead CA Team in Your City', 'Startup Stipend & Perks', 'Direct Strategy with Founders', 'Official FestNest Recommendation'],
+                    active: profile.tier === 'City Lead',
+                    color: 'text-fuchsia-700 bg-fuchsia-50 border-fuchsia-300',
+                  },
+                ].map((t) => (
+                  <div
+                    key={t.tier}
+                    className={`rounded-2xl p-5 border flex flex-col justify-between ${
+                      t.active ? 'ring-2 ring-indigo-600 shadow-md bg-white' : 'bg-slate-50/50 border-slate-200'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full font-mono uppercase border ${t.color}`}>
+                          {t.tier}
+                        </span>
+                        {t.active && (
+                          <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                            Current
+                          </span>
+                        )}
+                      </div>
+                      <div className="font-mono text-xs text-slate-500 font-semibold mt-3">{t.req}</div>
+                      <ul className="mt-4 space-y-2 text-xs text-slate-600">
+                        {t.perks.map((p, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <CheckCircle2 size={13} className="text-indigo-600 mt-0.5 shrink-0" />
+                            <span>{p}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Outreach Handbook */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+              <div>
+                <h3 className="font-heading text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <BookOpen size={18} className="text-indigo-600" />
+                  <span>Campus Ambassador Best Practices</span>
+                </h3>
+                <p className="font-sans text-xs text-slate-500 mt-1">
+                  Practical guidelines to help you lead event discovery at {profile.college}.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 text-xs">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <h4 className="font-semibold text-slate-900 text-sm flex items-center gap-2">
+                    <UserCheck size={16} className="text-indigo-600" />
+                    <span>1. Connect with Campus Club Leads</span>
+                  </h4>
+                  <p className="text-slate-600 leading-relaxed">
+                    Reach out to cultural secretaries, coding club convenors, and E-Cell leads. Share your Organizer Onboarding link (<code>/host?ref={profile.referralCode}</code>) so their event reaches students across colleges nationwide.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <h4 className="font-semibold text-slate-900 text-sm flex items-center gap-2">
+                    <MessageCircle size={16} className="text-indigo-600" />
+                    <span>2. Share in Official WhatsApp Groups</span>
+                  </h4>
+                  <p className="text-slate-600 leading-relaxed">
+                    Drop curated event highlights in batch and department groups a few days before hackathons or fests. Include your general referral link so students can discover all verified upcoming events.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <h4 className="font-semibold text-slate-900 text-sm flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-indigo-600" />
+                    <span>3. Verify Dates &amp; Details First</span>
+                  </h4>
+                  <p className="text-slate-600 leading-relaxed">
+                    FestNest values authenticity above all. Make sure submission links, deadlines, team sizes, and registration links are accurate before encouraging organizers to submit.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <h4 className="font-semibold text-slate-900 text-sm flex items-center gap-2">
+                    <HelpCircle size={16} className="text-indigo-600" />
+                    <span>4. Need Help or Have Feedback?</span>
+                  </h4>
+                  <p className="text-slate-600 leading-relaxed">
+                    The FestNest core team is here to support your initiatives. Visit the <Link to="/support" className="text-indigo-600 hover:underline font-semibold">Support &amp; Feedback Desk</Link> anytime to request custom collaterals or ask questions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 }
-

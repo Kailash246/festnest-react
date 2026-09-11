@@ -148,7 +148,7 @@ export default function Sidebar() {
       <Divider />
       <Label>FestNest</Label>
 
-      <SidebarBtn href="/campus-ambassador" icon={<AmbassadorIcon />} label="Campus Ambassador" isActive={path === '/campus-ambassador' || path === '/ca'} />
+      <SidebarBtn href="/campus-ambassador" icon={<AmbassadorIcon />} label="Campus Ambassador" isActive={path.startsWith('/campus-ambassador') || path.startsWith('/ca')} />
       <SidebarBtn href="/about"   icon={<InfoIcon />} label="About FestNest" isActive={path === '/about'} />
       <SidebarBtn href="/support" icon={<HelpIcon />} label="Help & Support"  isActive={path === '/support'} />
 
