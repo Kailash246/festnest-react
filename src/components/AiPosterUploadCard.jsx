@@ -210,6 +210,7 @@ export default function AiPosterUploadCard({
                     <span>Up to 25 pages</span>
                     <span>·</span>
                     <span className="font-semibold text-text-2">PDF only</span>
+                    <span>PDF only</span>
                     <span>·</span>
                     <span>Max 15 MB</span>
                     <span>Max 25 MB</span>
