@@ -574,28 +574,28 @@ export default function ReferAndEarnTab({ showToast, onSelectUser }) {
       {/* ─── AUTHORITATIVE KPI OVERVIEW ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
-          icon={UserCheck}
+          icon={<UserCheck className="w-5 h-5" />}
           label="Total Referrals"
           value={stats?.overview?.totalReferrals?.toLocaleString() || '0'}
           sub={`${stats?.overview?.verifiedReferrals || 0} verified (${Math.round(stats?.overview?.conversionRate || 0)}%)`}
           color="indigo"
         />
         <StatCard
-          icon={Award}
+          icon={<Award className="w-5 h-5" />}
           label="Event Registrations"
           value={stats?.overview?.registeredReferredUsers?.toLocaleString() || '0'}
           sub={`${Math.round(stats?.overview?.registrationConversion || 0)}% of verified referred users`}
           color="emerald"
         />
         <StatCard
-          icon={Coins}
+          icon={<Coins className="w-5 h-5" />}
           label="FN Coins in Circulation"
           value={stats?.coins?.inCirculation?.toLocaleString() || '0'}
           sub={`+${stats?.coins?.issued?.toLocaleString() || 0} issued, -${stats?.coins?.spentOnSpins?.toLocaleString() || 0} spent`}
           color="amber"
         />
         <StatCard
-          icon={DollarSign}
+          icon={<DollarSign className="w-5 h-5" />}
           label="Cash Rewards Paid"
           value={`₹${(stats?.cash?.totalCashPaid || 0).toLocaleString()}`}
           sub={`${stats?.cash?.pending || 0} pending review, ${stats?.cash?.approved || 0} approved`}

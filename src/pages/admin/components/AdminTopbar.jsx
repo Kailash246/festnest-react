@@ -38,6 +38,7 @@ export default function AdminTopbar({
     featured:    { title: 'Featured Priority',  sub: 'Feed spotlight and placement hierarchy' },
     notify:      { title: 'Push Broadcast',     sub: 'Send platform notifications to student base' },
     colleges:    { title: 'College Directory',  sub: 'Manage college campuses and hubs' },
+    refer:       { title: 'Refer & Earn',       sub: 'Referrals, FN Coins economy, wheel spins, and rewards' },
   };
 
   const currentView = titles[activeTab] || { title: 'Admin Console', sub: 'FestNest Administration' };

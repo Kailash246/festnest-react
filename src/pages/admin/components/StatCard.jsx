@@ -57,11 +57,11 @@ export default function StatCard({
   const renderIcon = () => {
     if (!icon) return null;
     if (React.isValidElement(icon)) return icon;
-    if (typeof icon === 'function') {
+    if (typeof icon === 'function' || (typeof icon === 'object' && icon !== null && (icon.$$typeof || icon.render))) {
       const IconComp = icon;
-      return <IconComp size={20} strokeWidth={2} />;
+      return <IconComp size={20} strokeWidth={2} className="w-5 h-5" />;
     }
-    return icon;
+    return null;
   };
 
   return (
