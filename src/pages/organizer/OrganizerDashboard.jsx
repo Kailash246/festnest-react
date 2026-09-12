@@ -26,6 +26,8 @@ import ParticipantsTab from './tabs/ParticipantsTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import TipsTab from './tabs/TipsTab';
 import { SHOW_ENGAGEMENT_ANALYTICS } from './config';
+import useLongWait from '../../hooks/useLongWait';
+import LongWaitNotice from '../../components/loading/LongWaitNotice';
 
 // Re-export CompetitionManager for backward compatibility with EventDetails.jsx
 export { CompetitionManager };
@@ -156,11 +158,13 @@ function OrganizerDashboardContent() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Data state
-  const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [events, setEvents] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [user, setUser] = useState(currentUser);
+  const isEventsLongWait = useLongWait(eventsLoading);
 
   // Detail Drawer state
   const [inspectedEvent, setInspectedEvent] = useState(null);
@@ -180,26 +184,43 @@ function OrganizerDashboardContent() {
     }
   }, [isLoggedIn, canAccess, requireAuth, navigate, showToast]);
 
-  // Load dashboard data
+  // Load dashboard data with decoupled promises
   const loadData = useCallback(async (isSilent = false) => {
     if (!isLoggedIn || !canAccess) return;
-    if (!isSilent) setLoading(true);
+    if (!isSilent) {
+      setUserLoading(true);
+      setEventsLoading(true);
+    }
     setRefreshing(true);
 
-    try {
-      const [meRes, hostedRes] = await Promise.all([
-        usersApi.me(),
-        usersApi.hosted(),
-      ]);
+    const userPromise = usersApi.me()
+      .then(meRes => {
+        setUser(meRes.data?.user || currentUser);
+      })
+      .catch(err => {
+        console.error('Failed to fetch user', err);
+        if (currentUser) setUser(currentUser);
+      })
+      .finally(() => {
+        setUserLoading(false);
+      });
 
-      setUser(meRes.data?.user || currentUser);
-      setEvents(hostedRes.data?.hostedEvents || []);
-      setRegistrations(hostedRes.data?.registrations || []);
-    } catch (err) {
-      showToast?.(err.message || 'Failed to refresh dashboard data', 'error');
-      if (currentUser) setUser(currentUser);
+    const hostedPromise = usersApi.hosted()
+      .then(hostedRes => {
+        setEvents(hostedRes.data?.hostedEvents || []);
+        setRegistrations(hostedRes.data?.registrations || []);
+      })
+      .catch(err => {
+        console.error('Failed to fetch hosted events', err);
+        showToast?.(err.message || 'Failed to refresh dashboard data', 'error');
+      })
+      .finally(() => {
+        setEventsLoading(false);
+      });
+
+    try {
+      await Promise.allSettled([userPromise, hostedPromise]);
     } finally {
-      setLoading(false);
       setRefreshing(false);
     }
   }, [isLoggedIn, canAccess, currentUser, showToast]);
@@ -248,43 +269,52 @@ function OrganizerDashboardContent() {
 
         {/* Tab Content Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-20">
-          {loading ? (
-            <div className="space-y-6 animate-pulse">
-              <div className="h-44 rounded-2xl bg-surface-2" />
-              <div className={`grid gap-4 ${
-                SHOW_ENGAGEMENT_ANALYTICS
-                  ? 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-6'
-                  : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-4'
-              }`}>
-                {[...Array(SHOW_ENGAGEMENT_ANALYTICS ? 6 : 4)].map((_, i) => (
-                  <div key={i} className="h-28 rounded-xl bg-surface-2" />
-                ))}
-              </div>
-              <div className="h-72 rounded-2xl bg-surface-2" />
-            </div>
-          ) : (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                {activeTab === 'overview' && (
-                  <OverviewTab
-                    events={events}
-                    registrations={registrations}
-                    user={user}
-                    navigate={navigate}
-                    onSelectTab={handleSelectTab}
-                    onInspectEvent={ev => setInspectedEvent(ev)}
-                    onOpenCompetitions={ev => setCompetitionEvent(ev)}
-                    showToast={showToast}
-                  />
-                )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              {activeTab === 'overview' && (
+                <OverviewTab
+                  userLoading={userLoading}
+                  eventsLoading={eventsLoading}
+                  events={events}
+                  registrations={registrations}
+                  user={user}
+                  navigate={navigate}
+                  onSelectTab={handleSelectTab}
+                  onInspectEvent={ev => setInspectedEvent(ev)}
+                  onOpenCompetitions={ev => setCompetitionEvent(ev)}
+                  showToast={showToast}
+                />
+              )}
 
-                {activeTab === 'events' && (
+              {activeTab === 'events' && (
+                eventsLoading ? (
+                  <div className="space-y-5">
+                    <LongWaitNotice isLongWait={isEventsLongWait} />
+                    <div className="bg-white border border-border rounded-2xl p-4 shadow-xs flex items-center justify-between gap-3">
+                      <div className="skeleton h-10 w-full max-w-md rounded-xl" />
+                      <div className="skeleton h-10 w-32 rounded-xl" />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="bg-white border border-border rounded-2xl p-5 shadow-xs space-y-3">
+                          <div className="skeleton h-40 w-full rounded-xl" />
+                          <div className="skeleton h-5 w-3/4 rounded" />
+                          <div className="skeleton h-3.5 w-1/2 rounded" />
+                          <div className="flex justify-between items-center pt-2">
+                            <div className="skeleton h-6 w-16 rounded-full" />
+                            <div className="skeleton h-8 w-20 rounded-lg" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
                   <EventsTab
                     events={events}
                     navigate={navigate}
@@ -292,30 +322,61 @@ function OrganizerDashboardContent() {
                     onOpenCompetitions={ev => setCompetitionEvent(ev)}
                     showToast={showToast}
                   />
-                )}
+                )
+              )}
 
-                {activeTab === 'participants' && (
+              {activeTab === 'participants' && (
+                eventsLoading ? (
+                  <div className="space-y-5">
+                    <LongWaitNotice isLongWait={isEventsLongWait} />
+                    <div className="bg-white border border-border rounded-2xl p-6 shadow-xs space-y-4">
+                      <div className="skeleton h-6 w-48 rounded" />
+                      <div className="skeleton h-4 w-72 rounded" />
+                      <div className="space-y-2.5 pt-2">
+                        {[1, 2, 3, 4, 5].map(i => (
+                          <div key={i} className="skeleton h-12 w-full rounded-xl" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
                   <ParticipantsTab
                     events={events}
                     registrations={registrations}
                     showToast={showToast}
                   />
-                )}
+                )
+              )}
 
-                {activeTab === 'analytics' && (
+              {activeTab === 'analytics' && (
+                eventsLoading ? (
+                  <div className="space-y-5">
+                    <LongWaitNotice isLongWait={isEventsLongWait} />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                      <div className="bg-white border border-border rounded-2xl p-6 shadow-xs space-y-4">
+                        <div className="skeleton h-5 w-40 rounded" />
+                        <div className="skeleton h-64 w-full rounded-xl" />
+                      </div>
+                      <div className="bg-white border border-border rounded-2xl p-6 shadow-xs space-y-4">
+                        <div className="skeleton h-5 w-40 rounded" />
+                        <div className="skeleton h-64 w-full rounded-xl" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
                   <AnalyticsTab
                     events={events}
                     registrations={registrations}
                     navigate={navigate}
                   />
-                )}
+                )
+              )}
 
-                {activeTab === 'tips' && (
-                  <TipsTab navigate={navigate} />
-                )}
-              </motion.div>
-            </AnimatePresence>
-          )}
+              {activeTab === 'tips' && (
+                <TipsTab navigate={navigate} />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 

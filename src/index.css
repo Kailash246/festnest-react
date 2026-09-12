@@ -165,13 +165,22 @@ input:focus:required {
 .skeleton {
   background: linear-gradient(
     90deg,
-    #f0f0f0 25%,
-    #e0e0e0 37%,
-    #f0f0f0 63%
+    #F3F4F6 20%,
+    #EEF2FF 38%,
+    rgba(79, 70, 229, 0.08) 50%,
+    #EEF2FF 62%,
+    #F3F4F6 80%
   );
   background-size: 1200px 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
+  animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: #F3F4F6;
+  }
 }
 
 /* ── Scrollbars ── */

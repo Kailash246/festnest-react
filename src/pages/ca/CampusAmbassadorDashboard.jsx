@@ -1,5 +1,5 @@
 // src/pages/ca/CampusAmbassadorDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Users, Trophy, Rocket, Megaphone, GraduationCap, QrCode, IdCard,
@@ -12,6 +12,9 @@ import {
 import { useApp } from '../../context/AppContext';
 import { ca } from '../../services/api';
 import { PUBLIC_SITE_URL, getReferralUrl, sanitizeShareUrl } from '../../config/site';
+import useLongWait from '../../hooks/useLongWait';
+import LongWaitNotice from '../../components/loading/LongWaitNotice';
+import ProgressiveSection from '../../components/loading/ProgressiveSection';
 
 const QR_ROWS = [
   [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
@@ -377,20 +380,197 @@ function LiveIDCard({ profile, tilt = false }) {
   );
 }
 
+function CALiveIDCardSkeleton() {
+  return (
+    <div className="relative w-full max-w-sm rounded-2xl bg-slate-100 p-[1.5px] border border-slate-200 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
+        <div className="flex items-center justify-between">
+          <div className="skeleton h-5 w-20 rounded" />
+          <div className="skeleton h-5 w-32 rounded-full" />
+        </div>
+
+        <div className="mt-4 sm:mt-5 flex gap-3 sm:gap-4 items-center">
+          <div className="skeleton h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-xl" />
+          <div className="flex flex-col min-w-0 flex-1 space-y-2">
+            <div className="skeleton h-5 w-32 rounded" />
+            <div className="skeleton h-3.5 w-44 rounded" />
+            <div className="skeleton h-4 w-20 rounded-full" />
+          </div>
+        </div>
+
+        <div className="mt-5 sm:mt-6 flex items-end justify-between border-t border-slate-100 pt-3.5 sm:pt-4">
+          <div className="space-y-1.5">
+            <div className="skeleton h-2.5 w-16 rounded" />
+            <div className="skeleton h-5 w-24 rounded" />
+            <div className="skeleton h-2.5 w-14 rounded mt-2" />
+            <div className="skeleton h-3.5 w-16 rounded" />
+          </div>
+          <div className="skeleton w-16 h-16 rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CAHeroSkeleton() {
+  return (
+    <div className="bg-gradient-to-b from-indigo-900 via-indigo-950 to-slate-900 text-white border-b border-indigo-950">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-start sm:items-center gap-4">
+            <div className="skeleton h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-2xl" />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="skeleton h-7 sm:h-8 w-44 rounded-lg" />
+                <div className="skeleton h-5 w-20 rounded-full" />
+              </div>
+              <div className="skeleton h-4 w-52 rounded" />
+              <div className="flex items-center gap-3 pt-1">
+                <div className="skeleton h-6 w-24 rounded-lg" />
+                <div className="skeleton h-6 w-28 rounded-lg" />
+                <div className="skeleton h-4 w-24 rounded" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 sm:self-center">
+            <div className="skeleton h-10 w-36 rounded-xl" />
+            <div className="skeleton h-10 w-20 rounded-xl" />
+          </div>
+        </div>
+
+        {/* Tab Navigation Skeleton */}
+        <div className="mt-8 flex items-center gap-2 overflow-x-auto max-w-full pb-1">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton shrink-0 h-10 w-32 rounded-xl" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CAStatsSkeleton() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
+          <div className="skeleton w-10 h-10 rounded-xl mb-3" />
+          <div className="skeleton h-8 w-16 rounded-lg" />
+          <div className="skeleton h-3.5 w-28 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CAMilestoneSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="space-y-1.5">
+          <div className="skeleton h-3 w-28 rounded" />
+          <div className="skeleton h-5 w-48 rounded" />
+        </div>
+        <div className="space-y-1.5 sm:text-right">
+          <div className="skeleton h-3 w-24 rounded sm:ml-auto" />
+          <div className="skeleton h-3 w-36 rounded sm:ml-auto" />
+        </div>
+      </div>
+      <div className="skeleton w-full h-3 rounded-full" />
+      <div className="flex items-center justify-between pt-1">
+        <div className="skeleton h-3 w-16 rounded" />
+        <div className="skeleton h-3 w-16 rounded" />
+        <div className="skeleton h-3 w-16 rounded" />
+        <div className="skeleton h-3 w-20 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function CAIdCardRowSkeleton() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col items-center">
+        <div className="w-full flex items-center justify-between mb-4">
+          <div className="skeleton h-5 w-36 rounded" />
+          <div className="skeleton h-4 w-16 rounded" />
+        </div>
+        <CALiveIDCardSkeleton />
+        <div className="mt-6 w-full grid grid-cols-2 gap-3">
+          <div className="skeleton h-10 w-full rounded-xl" />
+          <div className="skeleton h-10 w-full rounded-xl" />
+        </div>
+      </div>
+
+      <div className="lg:col-span-7 space-y-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+          <div className="skeleton h-5 w-40 rounded" />
+          <div className="skeleton h-3.5 w-60 rounded" />
+          <div className="space-y-3 pt-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton h-16 w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
+        <div className="skeleton h-20 w-full rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
+function CALedgerTableSkeleton() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[500px] text-left text-xs">
+        <thead>
+          <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
+            <th className="pb-3 font-semibold">Entity / Label</th>
+            <th className="pb-3 font-semibold">Type</th>
+            <th className="pb-3 font-semibold">Date</th>
+            <th className="pb-3 font-semibold text-right">Status</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <tr key={i} className="py-3">
+              <td className="py-3.5 flex items-center gap-2">
+                <div className="skeleton w-4 h-4 rounded-full shrink-0" />
+                <div className="skeleton h-4 w-36 rounded" />
+              </td>
+              <td className="py-3.5">
+                <div className="skeleton h-4 w-16 rounded-md" />
+              </td>
+              <td className="py-3.5">
+                <div className="skeleton h-3.5 w-20 rounded" />
+              </td>
+              <td className="py-3.5 text-right">
+                <div className="skeleton h-4 w-16 rounded ml-auto" />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function CampusAmbassadorDashboard() {
   const navigate = useNavigate();
   const { isLoggedIn, requireAuth, showToast } = useApp();
 
-  const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [impactLoading, setImpactLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [copiedKey, setCopiedKey] = useState(null);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'ledger' | 'toolkit' | 'guidelines'
   const [impactLogs, setImpactLogs] = useState([]);
-  const [impactLoading, setImpactLoading] = useState(false);
   const [impactTotal, setImpactTotal] = useState(0);
   const [ledgerFilter, setLedgerFilter] = useState('all'); // 'all' | 'student' | 'organizer' | 'event'
+  const isProfileLongWait = useLongWait(profileLoading);
+  const isImpactLongWait = useLongWait(impactLoading);
 
   const handleDownloadCard = async () => {
     if (!profile) return;
@@ -406,7 +586,7 @@ export default function CampusAmbassadorDashboard() {
     }
   };
 
-  const fetchImpact = async () => {
+  const fetchImpact = useCallback(async () => {
     setImpactLoading(true);
     try {
       const res = await ca.myImpact({ page: 1, limit: 100 });
@@ -417,33 +597,33 @@ export default function CampusAmbassadorDashboard() {
     } finally {
       setImpactLoading(false);
     }
-  };
+  }, []);
 
-  const fetchProfile = async (silent = false) => {
-    if (!silent) setLoading(true);
+  const fetchProfile = useCallback(async (silent = false) => {
+    if (!silent) setProfileLoading(true);
     else setRefreshing(true);
 
     try {
       const res = await ca.me();
       setProfile(res.data?.profile || null);
-      fetchImpact();
       if (silent) showToast?.('Ambassador stats updated!', 'success');
     } catch (err) {
       console.error('Failed to load CA profile', err);
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     if (isLoggedIn) {
       fetchProfile();
       fetchImpact();
     } else {
-      setLoading(false);
+      setProfileLoading(false);
+      setImpactLoading(false);
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchProfile, fetchImpact]);
 
   // Canonical share URLs (strictly uses clean site domain, never vercel.app or onrender.com)
   const generalUrl = profile?.referralCode ? getReferralUrl(profile.referralCode) : '';
@@ -523,15 +703,38 @@ export default function CampusAmbassadorDashboard() {
   }
 
   // State 2: Loading
-  if (loading) {
+  if (profileLoading) {
     return (
-      <div className="font-sans min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <div className="text-center">
-          <div className="inline-block animate-spin text-indigo-600 mb-3">
-            <RefreshCw size={30} />
+      <div className="font-sans min-h-screen bg-slate-50 text-slate-900 pb-16">
+        {/* Top Header & Breadcrumb Bar */}
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3.5">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-slate-500 font-medium">Home</span>
+              <ChevronRight size={13} className="text-slate-400" />
+              <span className="text-slate-500 font-medium">Campus Ambassador</span>
+              <ChevronRight size={13} className="text-slate-400" />
+              <span className="font-semibold text-slate-800">Portal</span>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="skeleton h-7 w-20 rounded-lg" />
+              <div className="skeleton h-7 w-16 rounded-lg" />
+              <div className="skeleton h-7 w-24 rounded-lg" />
+            </div>
           </div>
-          <p className="font-sans text-sm text-slate-600 font-medium">Loading ambassador portal...</p>
-        </div>
+        </header>
+
+        {/* Hero skeleton */}
+        <CAHeroSkeleton />
+
+        {/* Main Content Area */}
+        <main className="mx-auto max-w-6xl px-4 sm:px-6 mt-8 space-y-6">
+          <LongWaitNotice isLongWait={isProfileLongWait} />
+          <CAStatsSkeleton />
+          <CAMilestoneSkeleton />
+          <CAIdCardRowSkeleton />
+        </main>
       </div>
     );
   }
@@ -1170,80 +1373,84 @@ export default function CampusAmbassadorDashboard() {
               </div>
             </div>
 
-            {/* List or Empty State */}
-            {impactLoading ? (
-              <div className="py-12 text-center text-slate-400 text-xs">
-                <RefreshCw size={20} className="animate-spin mx-auto mb-2 text-indigo-600" />
-                Updating activity ledger...
-              </div>
-            ) : filteredLogs.length === 0 ? (
-              <div className="py-14 text-center border-2 border-dashed border-slate-200 rounded-2xl p-6">
-                <Users size={32} className="mx-auto text-slate-300 mb-3" />
-                <h3 className="font-heading text-sm font-bold text-slate-700">No activity recorded yet</h3>
-                <p className="font-sans text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  Share your ambassador referral link with campus clubs or students. As they sign up and host fests, your entries will appear here.
-                </p>
-                <button
-                  onClick={() => copyToClipboard(generalUrl, 'empty-share', 'Link copied!')}
-                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition"
-                >
-                  <Copy size={13} />
-                  <span>Copy Your Referral Link</span>
-                </button>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[500px] text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
-                      <th className="pb-3 font-semibold">Entity / Label</th>
-                      <th className="pb-3 font-semibold">Type</th>
-                      <th className="pb-3 font-semibold">Date</th>
-                      <th className="pb-3 font-semibold text-right">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredLogs.map((log, idx) => {
-                      const badgeColor =
-                        log.type === 'organizer'
-                          ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                          : log.type === 'event'
-                          ? 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200'
-                          : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+            {/* Long Wait Notice for Ledger */}
+            <LongWaitNotice isLongWait={isImpactLongWait} />
 
-                      return (
-                        <tr key={log._id || idx} className="hover:bg-slate-50/80 transition">
-                          <td className="py-3 font-semibold text-slate-900 flex items-center gap-2">
-                            {log.type === 'organizer' && <Building size={14} className="text-indigo-600 shrink-0" />}
-                            {log.type === 'event' && <Calendar size={14} className="text-fuchsia-600 shrink-0" />}
-                            {log.type === 'student' && <Users size={14} className="text-emerald-600 shrink-0" />}
-                            <span className="truncate max-w-xs">{log.label || 'FestNest Member'}</span>
-                          </td>
-                          <td className="py-3">
-                            <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-mono uppercase font-bold border ${badgeColor}`}>
-                              {log.type}
-                            </span>
-                          </td>
-                          <td className="py-3 text-slate-500 font-mono text-[11px]">
-                            {log.createdAt ? new Date(log.createdAt).toLocaleDateString('en-IN', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            }) : '—'}
-                          </td>
-                          <td className="py-3 text-right">
-                            <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold font-mono text-[11px]">
-                              <CheckCircle2 size={12} />
-                              <span>Verified</span>
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            {/* List or Empty State */}
+            <ProgressiveSection
+              isLoading={impactLoading}
+              skeleton={<CALedgerTableSkeleton />}
+              wrapperKey="ca-ledger-table"
+            >
+              {filteredLogs.length === 0 ? (
+                <div className="py-14 text-center border-2 border-dashed border-slate-200 rounded-2xl p-6">
+                  <Users size={32} className="mx-auto text-slate-300 mb-3" />
+                  <h3 className="font-heading text-sm font-bold text-slate-700">No activity recorded yet</h3>
+                  <p className="font-sans text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                    Share your ambassador referral link with campus clubs or students. As they sign up and host fests, your entries will appear here.
+                  </p>
+                  <button
+                    onClick={() => copyToClipboard(generalUrl, 'empty-share', 'Link copied!')}
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition"
+                  >
+                    <Copy size={13} />
+                    <span>Copy Your Referral Link</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[500px] text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
+                        <th className="pb-3 font-semibold">Entity / Label</th>
+                        <th className="pb-3 font-semibold">Type</th>
+                        <th className="pb-3 font-semibold">Date</th>
+                        <th className="pb-3 font-semibold text-right">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredLogs.map((log, idx) => {
+                        const badgeColor =
+                          log.type === 'organizer'
+                            ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                            : log.type === 'event'
+                            ? 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+
+                        return (
+                          <tr key={log._id || idx} className="hover:bg-slate-50/80 transition">
+                            <td className="py-3 font-semibold text-slate-900 flex items-center gap-2">
+                              {log.type === 'organizer' && <Building size={14} className="text-indigo-600 shrink-0" />}
+                              {log.type === 'event' && <Calendar size={14} className="text-fuchsia-600 shrink-0" />}
+                              {log.type === 'student' && <Users size={14} className="text-emerald-600 shrink-0" />}
+                              <span className="truncate max-w-xs">{log.label || 'FestNest Member'}</span>
+                            </td>
+                            <td className="py-3">
+                              <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-mono uppercase font-bold border ${badgeColor}`}>
+                                {log.type}
+                              </span>
+                            </td>
+                            <td className="py-3 text-slate-500 font-mono text-[11px]">
+                              {log.createdAt ? new Date(log.createdAt).toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              }) : '—'}
+                            </td>
+                            <td className="py-3 text-right">
+                              <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold font-mono text-[11px]">
+                                <CheckCircle2 size={12} />
+                                <span>Verified</span>
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </ProgressiveSection>
           </div>
         )}
 

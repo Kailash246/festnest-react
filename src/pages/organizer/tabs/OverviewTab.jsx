@@ -32,12 +32,124 @@ import {
 } from 'recharts';
 import OrganizerStatCard from '../components/OrganizerStatCard';
 import { SHOW_ENGAGEMENT_ANALYTICS } from '../config';
+import useLongWait from '../../../hooks/useLongWait';
+import LongWaitNotice from '../../../components/loading/LongWaitNotice';
+import ProgressiveSection from '../../../components/loading/ProgressiveSection';
 
 const STATUS_MAP = {
   pending:  { label: 'Under Review', cls: 'bg-amber-50 text-amber-700 border-amber-200', Icon: Clock },
   approved: { label: 'Live',         cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', Icon: CheckCircle2 },
   rejected: { label: 'Rejected',     cls: 'bg-rose-50 text-rose-700 border-rose-200', Icon: Clock },
 };
+
+const OrganizerHeroSkeleton = () => (
+  <div className="relative overflow-hidden rounded-2xl bg-white border border-border p-6 sm:p-7 shadow-xs">
+    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="skeleton w-28 h-5 rounded-md" />
+          <div className="skeleton w-24 h-4 rounded" />
+        </div>
+        <div className="skeleton h-7 sm:h-8 w-64 rounded-lg" />
+        <div className="skeleton h-3.5 w-full max-w-lg rounded" />
+      </div>
+
+      <div className="flex items-center gap-3 self-start md:self-auto flex-shrink-0">
+        <div className="skeleton w-28 h-10 rounded-xl" />
+        <div className="skeleton w-32 h-10 rounded-xl" />
+      </div>
+    </div>
+
+    <div className={`relative z-10 mt-6 pt-5 border-t border-border grid gap-4 ${
+      SHOW_ENGAGEMENT_ANALYTICS ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'
+    }`}>
+      {[1, 2, 3, ...(SHOW_ENGAGEMENT_ANALYTICS ? [4] : [])].map(i => (
+        <div key={i} className="space-y-1.5">
+          <div className="skeleton h-6 w-14 rounded" />
+          <div className="skeleton h-3 w-20 rounded" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const OrganizerMetricsSkeleton = () => (
+  <div className={`grid gap-3 sm:gap-4 ${
+    SHOW_ENGAGEMENT_ANALYTICS
+      ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+      : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-4'
+  }`}>
+    {[...Array(SHOW_ENGAGEMENT_ANALYTICS ? 6 : 4)].map((_, i) => (
+      <div key={i} className="bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between min-h-[110px]">
+        <div className="flex items-center justify-between mb-2">
+          <div className="skeleton w-9 h-9 rounded-xl" />
+          {i === 1 && <div className="skeleton w-10 h-4 rounded-full" />}
+        </div>
+        <div className="space-y-1.5">
+          <div className="skeleton h-6 w-14 rounded-lg" />
+          <div className="skeleton h-3.5 w-20 rounded" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const OrganizerChartsSkeleton = () => (
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+      <div className="space-y-1.5 mb-4">
+        <div className="skeleton h-4 w-36 rounded" />
+        <div className="skeleton h-3 w-56 rounded" />
+      </div>
+      <div className="skeleton w-full h-60 rounded-xl" />
+    </div>
+
+    <div className="bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+      <div className="space-y-1.5 mb-4">
+        <div className="skeleton h-4 w-28 rounded" />
+        <div className="skeleton h-3 w-44 rounded" />
+      </div>
+      <div className="space-y-2.5">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="skeleton h-12 w-full rounded-xl" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const OrganizerRecentEventsSkeleton = () => (
+  <div className="bg-white border border-border rounded-2xl p-5 shadow-xs space-y-4">
+    <div className="flex items-center justify-between">
+      <div className="space-y-1.5">
+        <div className="skeleton h-4 w-44 rounded" />
+        <div className="skeleton h-3 w-64 rounded" />
+      </div>
+      <div className="skeleton h-4 w-16 rounded" />
+    </div>
+    <div className="divide-y divide-border overflow-hidden rounded-xl border border-border">
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="skeleton w-12 h-12 rounded-xl flex-shrink-0" />
+            <div className="space-y-2">
+              <div className="skeleton h-4 w-40 rounded" />
+              <div className="flex items-center gap-2">
+                <div className="skeleton h-3 w-20 rounded" />
+                <div className="skeleton h-3 w-16 rounded" />
+                <div className="skeleton h-3 w-14 rounded" />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <div className="skeleton h-7 w-16 rounded-lg" />
+            <div className="skeleton h-7 w-16 rounded-lg" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 export default function OverviewTab({
   events = [],
@@ -48,7 +160,10 @@ export default function OverviewTab({
   onInspectEvent,
   onOpenCompetitions,
   showToast,
+  userLoading = false,
+  eventsLoading = false,
 }) {
+  const isLongWait = useLongWait(userLoading || eventsLoading);
   const total = events.length;
   const approved = events.filter(e => e.status === 'approved').length;
   const pending = events.filter(e => e.status === 'pending').length;
@@ -103,12 +218,19 @@ export default function OverviewTab({
 
   return (
     <div className="space-y-6">
-      {/* ── Welcome Banner ── */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-700 p-6 sm:p-7 text-white shadow-md">
-        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 rounded-full bg-white/10 pointer-events-none blur-xl" />
-        <div className="absolute bottom-0 right-24 -mb-10 w-36 h-36 rounded-full bg-indigo-400/20 pointer-events-none blur-lg" />
+      <LongWaitNotice isLongWait={isLongWait} />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+      {/* ── Welcome Banner ── */}
+      <ProgressiveSection
+        isLoading={userLoading}
+        skeleton={<OrganizerHeroSkeleton />}
+        wrapperKey="organizer-hero"
+      >
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-700 p-6 sm:p-7 text-white shadow-md">
+          <div className="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 rounded-full bg-white/10 pointer-events-none blur-xl" />
+          <div className="absolute bottom-0 right-24 -mb-10 w-36 h-36 rounded-full bg-indigo-400/20 pointer-events-none blur-lg" />
+
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/15 backdrop-blur-md text-[11px] font-bold tracking-wider uppercase text-white">
@@ -168,64 +290,76 @@ export default function OverviewTab({
           )}
         </div>
       </div>
+      </ProgressiveSection>
 
       {/* ── Key Metrics KPI Grid ── */}
-      <div className={`grid gap-3 sm:gap-4 ${
-        SHOW_ENGAGEMENT_ANALYTICS
-          ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
-          : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-4'
-      }`}>
-        <OrganizerStatCard
-          icon={CalendarDays}
-          label="Total Events"
-          value={total}
-          color="indigo"
-          onClick={() => onSelectTab('events')}
-        />
-        <OrganizerStatCard
-          icon={CheckCircle2}
-          label="Live Events"
-          value={approved}
-          color="emerald"
-          badge={total > 0 ? `${Math.round((approved / total) * 100)}%` : null}
-          onClick={() => onSelectTab('events')}
-        />
-        <OrganizerStatCard
-          icon={Clock}
-          label="Under Review"
-          value={pending}
-          color="amber"
-          onClick={() => onSelectTab('events')}
-        />
-        {SHOW_ENGAGEMENT_ANALYTICS && (
-          <>
-            <OrganizerStatCard
-              icon={Users}
-              label="Registrations"
-              value={totalRegs}
-              color="purple"
-              onClick={() => onSelectTab('participants')}
-            />
-            <OrganizerStatCard
-              icon={Eye}
-              label="Event Views"
-              value={totalViews}
-              color="blue"
-              onClick={() => onSelectTab('analytics')}
-            />
-          </>
-        )}
-        <OrganizerStatCard
-          icon={Trophy}
-          label="Prize Pool"
-          value={totalPrizePool > 0 ? `₹${totalPrizePool.toLocaleString('en-IN')}` : '—'}
-          color="purple"
-          onClick={() => onSelectTab('analytics')}
-        />
-      </div>
+      <ProgressiveSection
+        isLoading={eventsLoading}
+        skeleton={<OrganizerMetricsSkeleton />}
+        wrapperKey="organizer-metrics"
+      >
+        <div className={`grid gap-3 sm:gap-4 ${
+          SHOW_ENGAGEMENT_ANALYTICS
+            ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+            : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-4'
+        }`}>
+          <OrganizerStatCard
+            icon={CalendarDays}
+            label="Total Events"
+            value={total}
+            color="indigo"
+            onClick={() => onSelectTab('events')}
+          />
+          <OrganizerStatCard
+            icon={CheckCircle2}
+            label="Live Events"
+            value={approved}
+            color="emerald"
+            badge={total > 0 ? `${Math.round((approved / total) * 100)}%` : null}
+            onClick={() => onSelectTab('events')}
+          />
+          <OrganizerStatCard
+            icon={Clock}
+            label="Under Review"
+            value={pending}
+            color="amber"
+            onClick={() => onSelectTab('events')}
+          />
+          {SHOW_ENGAGEMENT_ANALYTICS && (
+            <>
+              <OrganizerStatCard
+                icon={Users}
+                label="Registrations"
+                value={totalRegs}
+                color="purple"
+                onClick={() => onSelectTab('participants')}
+              />
+              <OrganizerStatCard
+                icon={Eye}
+                label="Event Views"
+                value={totalViews}
+                color="blue"
+                onClick={() => onSelectTab('analytics')}
+              />
+            </>
+          )}
+          <OrganizerStatCard
+            icon={Trophy}
+            label="Prize Pool"
+            value={totalPrizePool > 0 ? `₹${totalPrizePool.toLocaleString('en-IN')}` : '—'}
+            color="purple"
+            onClick={() => onSelectTab('analytics')}
+          />
+        </div>
+      </ProgressiveSection>
 
       {/* ── Visual Analytics & Quick Actions Section ── */}
-      {SHOW_ENGAGEMENT_ANALYTICS ? (
+      <ProgressiveSection
+        isLoading={eventsLoading}
+        skeleton={<OrganizerChartsSkeleton />}
+        wrapperKey="organizer-charts"
+      >
+        {SHOW_ENGAGEMENT_ANALYTICS ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Performance Chart (2 cols) */}
           <div className="lg:col-span-2 bg-white border border-border rounded-2xl p-5 shadow-xs flex flex-col">
@@ -397,10 +531,16 @@ export default function OverviewTab({
             </button>
           </div>
         </div>
-      )}
+        )}
+      </ProgressiveSection>
 
       {/* ── Recent Event Submissions ── */}
-      <div className="bg-white border border-border rounded-2xl p-5 shadow-xs">
+      <ProgressiveSection
+        isLoading={eventsLoading}
+        skeleton={<OrganizerRecentEventsSkeleton />}
+        wrapperKey="organizer-recent-events"
+      >
+        <div className="bg-white border border-border rounded-2xl p-5 shadow-xs">
         <div className="flex items-center justify-between gap-3 mb-4">
           <div>
             <h3 className="font-heading font-bold text-[15px] text-text-1">Recent Event Submissions</h3>
@@ -530,6 +670,7 @@ export default function OverviewTab({
           </div>
         )}
       </div>
+      </ProgressiveSection>
     </div>
   );
 }

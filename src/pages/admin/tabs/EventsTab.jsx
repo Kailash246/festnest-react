@@ -10,10 +10,54 @@ import {
 import { useApp } from '../../../context/AppContext';
 import { admin } from '../../../services/api';
 import ConfirmDialog from '../components/ConfirmDialog';
+import useLongWait from '../../../hooks/useLongWait';
+import LongWaitNotice from '../../../components/loading/LongWaitNotice';
+import ProgressiveSection from '../../../components/loading/ProgressiveSection';
 
 const CATEGORIES = [
   'All Categories', 'Tech', 'Cultural', 'Sports', 'Business', 'Workshop', 'Gaming', 'Arts', 'Academic', 'Music'
 ];
+
+const EventsTableSkeleton = () => (
+  <tbody className="divide-y divide-neutral-100 text-xs">
+    {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+      <tr key={i} className="hover:bg-neutral-50/70 transition-colors">
+        <td className="sticky left-0 z-10 bg-white shadow-[1px_0_0_0_#E5E7EB] py-3.5 px-4 min-w-[200px]">
+          <div className="flex items-center gap-3">
+            <div className="skeleton w-8 h-8 rounded-lg shrink-0" />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="skeleton h-3.5 w-36 rounded" />
+              <div className="skeleton h-2.5 w-24 rounded" />
+            </div>
+          </div>
+        </td>
+        <td className="py-3.5 px-4">
+          <div className="skeleton h-5 w-16 rounded-md" />
+        </td>
+        <td className="py-3.5 px-4">
+          <div className="skeleton h-3.5 w-28 rounded" />
+          <div className="skeleton h-2.5 w-16 rounded mt-1.5" />
+        </td>
+        <td className="py-3.5 px-4">
+          <div className="skeleton h-3.5 w-20 rounded" />
+        </td>
+        <td className="py-3.5 px-4 text-center">
+          <div className="skeleton h-4 w-12 mx-auto rounded" />
+        </td>
+        <td className="py-3.5 px-4 text-center">
+          <div className="skeleton h-5 w-14 mx-auto rounded-md" />
+        </td>
+        <td className="py-3.5 px-4 text-right w-[110px] min-w-[110px]">
+          <div className="flex items-center justify-end gap-1.5">
+            <div className="skeleton w-7 h-7 rounded-lg" />
+            <div className="skeleton w-7 h-7 rounded-lg" />
+            <div className="skeleton w-7 h-7 rounded-lg" />
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+);
 
 export default function EventsTab({ showToast, onOpenCreate }) {
   const navigate = useNavigate();
@@ -22,6 +66,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isLongWait = useLongWait(loading);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'active', 'inactive'
@@ -167,35 +212,36 @@ export default function EventsTab({ showToast, onOpenCreate }) {
         </button>
       </div>
 
+      <LongWaitNotice isLongWait={isLongWait} />
+
       {/* Events Table / Responsive Cards */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-neutral-200/80">
-          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mb-3" />
-          <p className="text-xs font-medium text-neutral-500">Loading events directory...</p>
-        </div>
-      ) : items.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-neutral-200/80 shadow-sm">
-          <CalendarDays className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
-          <h3 className="text-sm font-bold text-neutral-800">No events found</h3>
-          <p className="text-xs text-neutral-500 mt-1 max-w-sm mx-auto">
-            Try adjusting your search criteria or publish a new event.
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] text-left border-collapse">
-              <thead>
-                <tr className="border-b border-neutral-200/80 bg-neutral-50/60 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  <th className="sticky left-0 z-20 bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 min-w-[200px]">Event</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">College & Location</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4 text-center">Registrations</th>
-                  <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4 text-right w-[110px] min-w-[110px] whitespace-nowrap">Actions</th>
+      <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[820px] text-left border-collapse">
+            <thead>
+              <tr className="border-b border-neutral-200/80 bg-neutral-50/60 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                <th className="sticky left-0 z-20 bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 min-w-[200px]">Event</th>
+                <th className="py-3 px-4">Category</th>
+                <th className="py-3 px-4">College & Location</th>
+                <th className="py-3 px-4">Date</th>
+                <th className="py-3 px-4 text-center">Registrations</th>
+                <th className="py-3 px-4 text-center">Status</th>
+                <th className="py-3 px-4 text-right w-[110px] min-w-[110px] whitespace-nowrap">Actions</th>
+              </tr>
+            </thead>
+            {loading ? (
+              <EventsTableSkeleton />
+            ) : items.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td colSpan={7} className="p-12 text-center text-neutral-400 text-xs">
+                    <CalendarDays className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                    <p className="font-semibold text-neutral-700">No events found</p>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">Try adjusting your search criteria or publish a new event.</p>
+                  </td>
                 </tr>
-              </thead>
+              </tbody>
+            ) : (
               <tbody className="divide-y divide-neutral-100 text-xs">
                 {items.map(ev => {
                   const isActing = actionId.startsWith(ev._id);
@@ -283,7 +329,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                             aria-label="View public event page"
                             className="w-7 h-7 inline-flex items-center justify-center rounded-lg text-neutral-500 hover:text-indigo-600 hover:bg-neutral-100 transition"
                           >
-                            <ExternalLink size={15} />
+                            <ExternalLink className="w-3.5 h-3.5" />
                           </button>
 
                           {/* Feature toggle (Superadmin) */}
@@ -300,7 +346,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                                   : 'text-neutral-400 hover:text-amber-600 hover:bg-neutral-100'
                               }`}
                             >
-                              <Star size={15} className={ev.isFeatured ? 'fill-amber-500' : ''} />
+                              <Star className={`w-3.5 h-3.5 ${ev.isFeatured ? 'fill-amber-500' : ''}`} />
                             </button>
                           )}
 
@@ -317,7 +363,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                                 : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
                             }`}
                           >
-                            <Power size={15} />
+                            <Power className="w-3.5 h-3.5" />
                           </button>
 
                           {/* Permanent Delete (Superadmin) */}
@@ -330,7 +376,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                               aria-label="Permanently Delete Event"
                               className="w-7 h-7 inline-flex items-center justify-center rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition"
                             >
-                              <Trash2 size={15} />
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           )}
                         </div>
@@ -339,10 +385,10 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                   );
                 })}
               </tbody>
-            </table>
-          </div>
+            )}
+          </table>
         </div>
-      )}
+      </div>
     </div>
   );
 }

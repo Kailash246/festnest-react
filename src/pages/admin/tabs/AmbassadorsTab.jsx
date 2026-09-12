@@ -9,6 +9,50 @@ import {
 } from 'lucide-react';
 import { admin } from '../../../services/api';
 import ConfirmDialog from '../components/ConfirmDialog';
+import useLongWait from '../../../hooks/useLongWait';
+import LongWaitNotice from '../../../components/loading/LongWaitNotice';
+import ProgressiveSection from '../../../components/loading/ProgressiveSection';
+
+const AmbassadorTableSkeleton = () => (
+  <tbody className="divide-y divide-neutral-100 font-medium">
+    {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+      <tr key={i} className="hover:bg-neutral-50/60 transition">
+        <td className="sticky left-0 z-10 bg-white shadow-[1px_0_0_0_#E5E7EB] py-3.5 px-4 min-w-[180px]">
+          <div className="skeleton h-3.5 w-28 rounded" />
+          <div className="skeleton h-2.5 w-36 rounded mt-1.5" />
+        </td>
+        <td className="py-3.5 px-4">
+          <div className="skeleton h-3.5 w-32 rounded" />
+          <div className="skeleton h-2.5 w-20 rounded mt-1.5" />
+        </td>
+        <td className="py-3.5 px-4">
+          <div className="skeleton h-5 w-20 rounded-full" />
+        </td>
+        <td className="py-3.5 px-4">
+          <div className="skeleton h-4 w-16 rounded" />
+        </td>
+        <td className="py-3.5 px-3 text-center">
+          <div className="skeleton h-4 w-6 mx-auto rounded" />
+        </td>
+        <td className="py-3.5 px-3 text-center">
+          <div className="skeleton h-4 w-6 mx-auto rounded" />
+        </td>
+        <td className="py-3.5 px-3 text-center">
+          <div className="skeleton h-4 w-6 mx-auto rounded" />
+        </td>
+        <td className="py-3.5 px-4">
+          <div className="skeleton h-3 w-16 rounded" />
+        </td>
+        <td className="py-3.5 px-4 text-right min-w-[130px]">
+          <div className="flex items-center justify-end gap-1.5">
+            <div className="skeleton h-6 w-14 rounded-md" />
+            <div className="skeleton h-6 w-14 rounded-md" />
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+);
 
 const STATUS_CONFIG = {
   applied:   { label: 'Applied', color: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock },
@@ -33,6 +77,7 @@ const TYPE_CONFIG = {
 export default function AmbassadorsTab({ showToast }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isLongWait = useLongWait(loading);
   const [statusFilter, setStatusFilter] = useState('pending');
   const [tierFilter, setTierFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('');
@@ -323,97 +368,100 @@ export default function AmbassadorsTab({ showToast }) {
         </div>
       </div>
 
+      <LongWaitNotice isLongWait={isLongWait} />
+
       {/* Ambassadors Table */}
       <div className="bg-white rounded-xl border border-neutral-200/80 shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="p-12 text-center text-neutral-400 text-xs">
-            <RefreshCw size={20} className="animate-spin mx-auto mb-2 text-indigo-600" />
-            Loading ambassador records...
-          </div>
-        ) : items.length === 0 ? (
-          <div className="p-12 text-center text-neutral-400 text-xs">
-            No campus ambassador applications found matching your criteria.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[920px] text-left text-xs text-neutral-700">
-              <thead className="bg-neutral-50/80 text-neutral-500 font-semibold border-b border-neutral-200 select-none">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[920px] text-left text-xs text-neutral-700">
+            <thead className="bg-neutral-50/80 text-neutral-500 font-semibold border-b border-neutral-200 select-none">
+              <tr>
+                <th
+                  onClick={() => handleSort('name')}
+                  className="sticky left-0 z-20 bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group min-w-[180px]"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>Applicant</span>
+                    {renderSortIndicator('name')}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort('city')}
+                  className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>College &amp; City</span>
+                    {renderSortIndicator('city')}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort('status')}
+                  className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>Status</span>
+                    {renderSortIndicator('status')}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort('tier')}
+                  className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>Tier / ID</span>
+                    {renderSortIndicator('tier')}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort('organizersOnboarded')}
+                  className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
+                >
+                  <div className="flex items-center justify-center gap-1.5">
+                    <span>Organizers</span>
+                    {renderSortIndicator('organizersOnboarded')}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort('eventsSourced')}
+                  className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
+                >
+                  <div className="flex items-center justify-center gap-1.5">
+                    <span>Events</span>
+                    {renderSortIndicator('eventsSourced')}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort('referralSignups')}
+                  className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
+                >
+                  <div className="flex items-center justify-center gap-1.5">
+                    <span>Signups</span>
+                    {renderSortIndicator('referralSignups')}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort('createdAt')}
+                  className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>Applied</span>
+                    {renderSortIndicator('createdAt')}
+                  </div>
+                </th>
+                <th className="py-3 px-4 text-right min-w-[130px] whitespace-nowrap">Actions</th>
+              </tr>
+            </thead>
+            {loading ? (
+              <AmbassadorTableSkeleton />
+            ) : items.length === 0 ? (
+              <tbody>
                 <tr>
-                  <th
-                    onClick={() => handleSort('name')}
-                    className="sticky left-0 z-20 bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group min-w-[180px]"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>Applicant</span>
-                      {renderSortIndicator('name')}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort('city')}
-                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>College &amp; City</span>
-                      {renderSortIndicator('city')}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort('status')}
-                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>Status</span>
-                      {renderSortIndicator('status')}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort('tier')}
-                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>Tier / ID</span>
-                      {renderSortIndicator('tier')}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort('organizersOnboarded')}
-                    className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
-                  >
-                    <div className="flex items-center justify-center gap-1.5">
-                      <span>Organizers</span>
-                      {renderSortIndicator('organizersOnboarded')}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort('eventsSourced')}
-                    className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
-                  >
-                    <div className="flex items-center justify-center gap-1.5">
-                      <span>Events</span>
-                      {renderSortIndicator('eventsSourced')}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort('referralSignups')}
-                    className="py-3 px-3 text-center cursor-pointer hover:bg-neutral-100/60 transition group"
-                  >
-                    <div className="flex items-center justify-center gap-1.5">
-                      <span>Signups</span>
-                      {renderSortIndicator('referralSignups')}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort('createdAt')}
-                    className="py-3 px-4 cursor-pointer hover:bg-neutral-100/60 transition group"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span>Applied</span>
-                      {renderSortIndicator('createdAt')}
-                    </div>
-                  </th>
-                  <th className="py-3 px-4 text-right min-w-[130px] whitespace-nowrap">Actions</th>
+                  <td colSpan={9} className="p-12 text-center text-neutral-400 text-xs">
+                    No campus ambassador applications found matching your criteria.
+                  </td>
                 </tr>
-              </thead>
+              </tbody>
+            ) : (
               <tbody className="divide-y divide-neutral-100 font-medium">
                 {items.map((ca) => {
                   const statusConf = STATUS_CONFIG[ca.status] || STATUS_CONFIG.applied;
@@ -497,9 +545,9 @@ export default function AmbassadorsTab({ showToast }) {
                   );
                 })}
               </tbody>
-            </table>
-          </div>
-        )}
+            )}
+          </table>
+        </div>
       </div>
 
       {/* Review Drawer / Modal */}

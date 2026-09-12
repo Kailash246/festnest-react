@@ -281,6 +281,7 @@ function AdminDashboardContent() {
               {activeTab === 'overview' && (
                 <OverviewTab
                   showToast={showToast}
+                  parentStats={stats}
                   onSelectTab={handleSelectTab}
                   onSelectUser={(uid) => setSelectedUserId(uid)}
                   onOpenCreateEvent={() => setCreateEventOpen(true)}
