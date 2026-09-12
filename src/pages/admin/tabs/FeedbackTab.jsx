@@ -176,7 +176,7 @@ export default function FeedbackTab({ showToast }) {
       {/* ── Controls & Filter Bar ── */}
       <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-neutral-200/80 shadow-xs space-y-3">
         {/* Category Pills Strip */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex items-center gap-2 overflow-x-auto max-w-full scrollbar-none pb-1">
           {Object.entries(CATEGORY_META).map(([id, meta]) => {
             const Icon = meta.Icon;
             const count = counts[id] ?? (id === 'all' ? counts.all : 0);
@@ -185,16 +185,16 @@ export default function FeedbackTab({ showToast }) {
               <button
                 key={id}
                 onClick={() => setCategoryFilter(id)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-2 min-h-[38px] rounded-xl text-xs font-semibold transition-all ${
                   active
                     ? 'bg-neutral-900 text-white shadow-xs'
                     : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
-                {meta.label}
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{meta.label}</span>
                 {typeof count === 'number' && (
-                  <span className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  <span className={`shrink-0 inline-flex items-center justify-center min-w-[20px] ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
                     active ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-600'
                   }`}>
                     {count}

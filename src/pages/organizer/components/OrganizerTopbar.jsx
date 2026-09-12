@@ -32,18 +32,18 @@ export default function OrganizerTopbar({
 
   return (
     <header className="sticky top-0 z-20 h-16 bg-white/95 backdrop-blur-md border-b border-border flex items-center justify-between px-4 sm:px-6 shadow-2xs">
-      {/* Left: Mobile trigger & Breadcrumb */}
-      <div className="flex items-center gap-3 min-w-0">
+      {/* Left: Mobile trigger & Breadcrumb / Title */}
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
         <button
           onClick={onOpenMobileSidebar}
           aria-label="Open sidebar navigation"
-          className="lg:hidden p-2 rounded-xl border border-border bg-white text-text-2 hover:bg-surface-2 hover:text-text-1 transition-colors"
+          className="lg:hidden p-2 rounded-xl border border-border bg-white text-text-2 hover:bg-surface-2 hover:text-text-1 transition-colors shrink-0"
         >
           <Menu size={18} />
         </button>
 
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-text-4">
+        <div className="min-w-0 flex-1">
+          <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-text-4">
             <button
               onClick={() => navigate('/home')}
               className="hover:text-primary transition-colors flex items-center gap-1"
@@ -53,20 +53,20 @@ export default function OrganizerTopbar({
             <span>/</span>
             <span className="text-text-3">Organizer</span>
           </div>
-          <h1 className="font-heading font-bold text-[16px] sm:text-[18px] text-text-1 leading-tight truncate">
+          <h1 className="font-heading font-bold text-[15px] sm:text-[18px] text-text-1 leading-tight truncate">
             {TAB_TITLES[activeTab] || 'Organizer Hub'}
           </h1>
         </div>
       </div>
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Refresh button */}
         <button
           onClick={onRefresh}
           disabled={refreshing}
           aria-label="Refresh dashboard data"
-          className="p-2 sm:px-3 sm:py-2 rounded-xl border border-border bg-white text-text-2 hover:bg-surface-2 hover:text-text-1 transition-all flex items-center gap-1.5 text-[12px] font-semibold disabled:opacity-50"
+          className="p-2 sm:px-3 sm:py-2 rounded-xl border border-border bg-white text-text-2 hover:bg-surface-2 hover:text-text-1 transition-all flex items-center gap-1.5 text-[12px] font-semibold disabled:opacity-50 shrink-0"
           title="Refresh data"
         >
           <RotateCw size={15} className={refreshing ? 'animate-spin text-primary' : ''} />
@@ -76,16 +76,18 @@ export default function OrganizerTopbar({
         {/* Post Event CTA */}
         <button
           onClick={() => navigate('/host')}
-          className="flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl text-[12px] font-bold shadow-xs hover:bg-primary-dark transition-all"
+          aria-label="Post Event"
+          title="Post Event"
+          className="p-2 sm:px-3 sm:py-2 bg-primary text-white rounded-xl text-[12px] font-bold shadow-xs hover:bg-primary-dark transition-all shrink-0 flex items-center gap-1.5"
         >
-          <Plus size={15} strokeWidth={2.5} />
-          <span>Post Event</span>
+          <Plus size={16} strokeWidth={2.5} />
+          <span className="hidden sm:inline">Post Event</span>
         </button>
 
         {/* User avatar */}
         <div
           onClick={() => navigate('/profile')}
-          className="cursor-pointer flex-shrink-0"
+          className="cursor-pointer shrink-0 ml-0.5"
           title={`${user?.name || 'Organizer'} (Click to view profile)`}
         >
           {user?.avatar?.url ? (

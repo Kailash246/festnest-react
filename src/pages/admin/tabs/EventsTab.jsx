@@ -184,16 +184,16 @@ export default function EventsTab({ showToast, onOpenCreate }) {
       ) : (
         <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[820px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-neutral-200/80 bg-neutral-50/60 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                  <th className="py-3 px-4">Event</th>
+                  <th className="sticky left-0 z-20 bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 min-w-[200px]">Event</th>
                   <th className="py-3 px-4">Category</th>
                   <th className="py-3 px-4">College & Location</th>
                   <th className="py-3 px-4">Date</th>
                   <th className="py-3 px-4 text-center">Registrations</th>
                   <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4 text-right w-[110px] min-w-[110px] whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 text-xs">
@@ -202,10 +202,10 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                   return (
                     <tr
                       key={ev._id}
-                      className={`hover:bg-neutral-50/70 transition-colors ${!ev.isActive ? 'opacity-60 bg-neutral-50/40' : ''}`}
+                      className={`hover:bg-neutral-50/70 transition-colors group ${!ev.isActive ? 'opacity-60 bg-neutral-50/40' : ''}`}
                     >
                       {/* Name & Emoji */}
-                      <td className="py-3 px-4">
+                      <td className="sticky left-0 z-10 bg-white group-hover:bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 min-w-[200px]">
                         <div className="flex items-center gap-3">
                           <span className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-base flex-shrink-0">
                             {ev.emoji || '🎯'}
@@ -273,16 +273,17 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3 px-4 text-right whitespace-nowrap">
+                      <td className="py-3 px-4 text-right whitespace-nowrap w-[110px] min-w-[110px]">
                         <div className="flex items-center justify-end gap-1.5">
                           {/* View Live */}
                           <button
                             type="button"
                             onClick={() => navigate(`/event/${ev.slug}`)}
                             title="View public event page"
-                            className="p-1.5 rounded-lg text-neutral-500 hover:text-indigo-600 hover:bg-neutral-100 transition"
+                            aria-label="View public event page"
+                            className="w-7 h-7 inline-flex items-center justify-center rounded-lg text-neutral-500 hover:text-indigo-600 hover:bg-neutral-100 transition"
                           >
-                            <ExternalLink className="w-3.5 h-3.5" />
+                            <ExternalLink size={15} />
                           </button>
 
                           {/* Feature toggle (Superadmin) */}
@@ -292,13 +293,14 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                               onClick={() => handleToggleFeature(ev)}
                               disabled={isActing}
                               title={ev.isFeatured ? "Unfeature" : "Mark as Featured"}
-                              className={`p-1.5 rounded-lg transition ${
+                              aria-label={ev.isFeatured ? "Unfeature" : "Mark as Featured"}
+                              className={`w-7 h-7 inline-flex items-center justify-center rounded-lg transition ${
                                 ev.isFeatured
                                   ? 'text-amber-600 bg-amber-50 hover:bg-amber-100'
                                   : 'text-neutral-400 hover:text-amber-600 hover:bg-neutral-100'
                               }`}
                             >
-                              <Star className={`w-3.5 h-3.5 ${ev.isFeatured ? 'fill-amber-500' : ''}`} />
+                              <Star size={15} className={ev.isFeatured ? 'fill-amber-500' : ''} />
                             </button>
                           )}
 
@@ -308,13 +310,14 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                             onClick={() => toggleDeactivate(ev)}
                             disabled={isActing}
                             title={ev.isActive ? "Deactivate event" : "Restore event"}
-                            className={`p-1.5 rounded-lg transition ${
+                            aria-label={ev.isActive ? "Deactivate event" : "Restore event"}
+                            className={`w-7 h-7 inline-flex items-center justify-center rounded-lg transition ${
                               ev.isActive
                                 ? 'text-neutral-400 hover:text-amber-600 hover:bg-amber-50'
                                 : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'
                             }`}
                           >
-                            <Power className="w-3.5 h-3.5" />
+                            <Power size={15} />
                           </button>
 
                           {/* Permanent Delete (Superadmin) */}
@@ -324,9 +327,10 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                               onClick={() => setDeleteConfirmEvent(ev)}
                               disabled={isActing}
                               title="Permanently Delete Event"
-                              className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                              aria-label="Permanently Delete Event"
+                              className="w-7 h-7 inline-flex items-center justify-center rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 size={15} />
                             </button>
                           )}
                         </div>

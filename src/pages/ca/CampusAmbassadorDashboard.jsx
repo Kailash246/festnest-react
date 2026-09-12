@@ -317,7 +317,7 @@ function LiveIDCard({ profile, tilt = false }) {
         tilt ? '-rotate-1 hover:rotate-0 transition-transform duration-300' : ''
       }`}
     >
-      <div className="relative overflow-hidden rounded-2xl bg-white p-5 sm:p-6">
+      <div className="relative overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
         <div className="pointer-events-none absolute -inset-10 opacity-30">
           <div className="fn-sheen h-40 w-16 bg-white blur-md" />
         </div>
@@ -329,7 +329,7 @@ function LiveIDCard({ profile, tilt = false }) {
           </span>
         </div>
 
-        <div className="mt-5 flex gap-4 items-center">
+        <div className="mt-4 sm:mt-5 flex gap-3 sm:gap-4 items-center">
           {profile.photoUrl ? (
             <img
               src={profile.photoUrl}
@@ -361,7 +361,7 @@ function LiveIDCard({ profile, tilt = false }) {
           </div>
         </div>
 
-        <div className="mt-6 flex items-end justify-between border-t border-slate-100 pt-4">
+        <div className="mt-5 sm:mt-6 flex items-end justify-between border-t border-slate-100 pt-3.5 sm:pt-4">
           <div>
             <div className="font-mono text-[9px] font-semibold tracking-wider text-slate-400">AMBASSADOR ID</div>
             <div className="font-mono text-sm sm:text-base font-bold text-slate-800 tracking-tight">
@@ -853,17 +853,17 @@ export default function CampusAmbassadorDashboard() {
           </div>
 
           {/* Tab Navigation */}
-          <nav className="mt-8 flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none">
+          <nav className="mt-8 flex items-center gap-2 overflow-x-auto max-w-full pb-1 text-xs font-semibold scrollbar-none">
             {[
               { id: 'overview', label: 'Overview & Impact', icon: <Trophy size={14} /> },
-              { id: 'ledger', label: `Activity Ledger (${impactTotal})`, icon: <Award size={14} /> },
+              { id: 'ledger', label: 'Activity Ledger', count: impactTotal, icon: <Award size={14} /> },
               { id: 'toolkit', label: 'Outreach Toolkit & Links', icon: <Megaphone size={14} /> },
               { id: 'guidelines', label: 'Tier Perks & Handbook', icon: <BookOpen size={14} /> },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl transition whitespace-nowrap ${
+                className={`shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-4 py-2.5 min-h-[40px] rounded-xl transition ${
                   activeTab === tab.id
                     ? 'bg-white text-slate-900 shadow-sm font-bold'
                     : 'text-indigo-200 hover:text-white hover:bg-white/10'
@@ -871,6 +871,17 @@ export default function CampusAmbassadorDashboard() {
               >
                 {tab.icon}
                 <span>{tab.label}</span>
+                {typeof tab.count === 'number' && (
+                  <span
+                    className={`shrink-0 inline-flex items-center justify-center min-w-[20px] ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                      activeTab === tab.id
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : 'bg-white/15 text-white'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
@@ -1111,38 +1122,50 @@ export default function CampusAmbassadorDashboard() {
               </div>
 
               {/* Filters */}
-              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto">
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto overflow-x-auto max-w-full scrollbar-none">
                 <button
                   onClick={() => setLedgerFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg transition ${
-                    ledgerFilter === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  className={`shrink-0 whitespace-nowrap min-h-[36px] px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 ${
+                    ledgerFilter === 'all' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  All ({impactTotal})
+                  <span>All</span>
+                  <span className="shrink-0 inline-flex items-center justify-center min-w-[18px] px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80">
+                    {impactTotal}
+                  </span>
                 </button>
                 <button
                   onClick={() => setLedgerFilter('student')}
-                  className={`px-3 py-1.5 rounded-lg transition ${
-                    ledgerFilter === 'student' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  className={`shrink-0 whitespace-nowrap min-h-[36px] px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 ${
+                    ledgerFilter === 'student' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  Students ({studentCount})
+                  <span>Students</span>
+                  <span className="shrink-0 inline-flex items-center justify-center min-w-[18px] px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80">
+                    {studentCount}
+                  </span>
                 </button>
                 <button
                   onClick={() => setLedgerFilter('organizer')}
-                  className={`px-3 py-1.5 rounded-lg transition ${
-                    ledgerFilter === 'organizer' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  className={`shrink-0 whitespace-nowrap min-h-[36px] px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 ${
+                    ledgerFilter === 'organizer' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  Organizers ({organizerCount})
+                  <span>Organizers</span>
+                  <span className="shrink-0 inline-flex items-center justify-center min-w-[18px] px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80">
+                    {organizerCount}
+                  </span>
                 </button>
                 <button
                   onClick={() => setLedgerFilter('event')}
-                  className={`px-3 py-1.5 rounded-lg transition ${
-                    ledgerFilter === 'event' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  className={`shrink-0 whitespace-nowrap min-h-[36px] px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 ${
+                    ledgerFilter === 'event' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  Events ({eventCount})
+                  <span>Events</span>
+                  <span className="shrink-0 inline-flex items-center justify-center min-w-[18px] px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80">
+                    {eventCount}
+                  </span>
                 </button>
               </div>
             </div>
@@ -1170,7 +1193,7 @@ export default function CampusAmbassadorDashboard() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[500px] text-left text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
                       <th className="pb-3 font-semibold">Entity / Label</th>
