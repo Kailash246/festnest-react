@@ -1,11 +1,12 @@
 // src/pages/admin/tabs/EventsTab.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   CalendarDays, Search, Plus, Star, Eye, Trash2,
   RefreshCw, Power, ExternalLink, MapPin, Calendar,
-  BarChart2, Filter, AlertTriangle, ShieldAlert
+  BarChart2, Filter, AlertTriangle, ShieldAlert,
+  MoreVertical, X, Users, Globe, Building
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { admin } from '../../../services/api';
@@ -59,6 +60,29 @@ const EventsTableSkeleton = () => (
   </tbody>
 );
 
+const EventsMobileSkeleton = () => (
+  <div className="space-y-2.5">
+    {[1, 2, 3, 4, 5].map((i) => (
+      <div key={i} className="bg-white rounded-2xl border border-neutral-200/80 p-3.5 shadow-sm space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="skeleton w-8 h-8 rounded-lg shrink-0" />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="skeleton h-4 w-36 rounded" />
+              <div className="skeleton h-2.5 w-20 rounded" />
+            </div>
+          </div>
+          <div className="skeleton w-7 h-7 rounded-lg shrink-0" />
+        </div>
+        <div className="flex items-center justify-between pt-2.5 border-t border-neutral-100">
+          <div className="skeleton h-3.5 w-28 rounded" />
+          <div className="skeleton h-4 w-14 rounded-md" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 export default function EventsTab({ showToast, onOpenCreate }) {
   const navigate = useNavigate();
   const { currentUser } = useApp();
@@ -72,6 +96,10 @@ export default function EventsTab({ showToast, onOpenCreate }) {
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'active', 'inactive'
   const [actionId, setActionId] = useState('');
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState(null);
+
+  // Mobile-specific interactions
+  const [selectedMobileEvent, setSelectedMobileEvent] = useState(null);
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
   const loadEvents = useCallback(() => {
     setLoading(true);
@@ -92,6 +120,21 @@ export default function EventsTab({ showToast, onOpenCreate }) {
     return () => clearTimeout(t);
   }, [loadEvents]);
 
+  // Lock body scroll when mobile details sheet is open
+  useEffect(() => {
+    if (selectedMobileEvent) {
+      document.body.style.overflow = 'hidden';
+      const onKeyDown = (e) => {
+        if (e.key === 'Escape') setSelectedMobileEvent(null);
+      };
+      window.addEventListener('keydown', onKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', onKeyDown);
+      };
+    }
+  }, [selectedMobileEvent]);
+
   const toggleDeactivate = async (ev) => {
     const isDeactivating = ev.isActive;
     setActionId(ev._id + '-toggle');
@@ -103,6 +146,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
         await admin.restoreEvent(ev._id);
         showToast?.(`"${ev.name || ev.eventName || 'Event'}" restored and live`, 'success');
       }
+      setSelectedMobileEvent(prev => prev?._id === ev._id ? { ...prev, isActive: !isDeactivating } : prev);
       loadEvents();
     } catch (e) {
       showToast?.(e.message || 'Action failed', 'error');
@@ -114,13 +158,15 @@ export default function EventsTab({ showToast, onOpenCreate }) {
   const handleToggleFeature = async (ev) => {
     setActionId(ev._id + '-feat');
     try {
-      await admin.featureEvent(ev._id, !ev.isFeatured);
+      const nextFeatured = !ev.isFeatured;
+      await admin.featureEvent(ev._id, nextFeatured);
       showToast?.(
-        !ev.isFeatured
+        nextFeatured
           ? `"${ev.name || ev.eventName || 'Event'}" marked as Featured`
           : `"${ev.name || ev.eventName || 'Event'}" removed from Featured`,
         'success'
       );
+      setSelectedMobileEvent(prev => prev?._id === ev._id ? { ...prev, isFeatured: nextFeatured } : prev);
       loadEvents();
     } catch (e) {
       showToast?.(e.message || 'Failed to toggle featured status', 'error');
@@ -135,6 +181,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
     try {
       await admin.hardDeleteEvent(deleteConfirmEvent._id);
       showToast?.(`"${deleteConfirmEvent.name || deleteConfirmEvent.eventName || 'Event'}" permanently deleted`, 'info');
+      setSelectedMobileEvent(prev => prev?._id === deleteConfirmEvent._id ? null : prev);
       setDeleteConfirmEvent(null);
       loadEvents();
     } catch (e) {
@@ -216,10 +263,10 @@ export default function EventsTab({ showToast, onOpenCreate }) {
 
       <LongWaitNotice isLongWait={isLongWait} />
 
-      {/* Events Table / Responsive Cards */}
-      <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+      {/* ── DESKTOP TABLE VIEW (>= md) ── UNCHANGED DESKTOP PRESENTATION */}
+      <div className="hidden md:block bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px] text-left border-collapse">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-neutral-200/80 bg-neutral-50/60 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
                 <th className="py-3 px-4 min-w-[200px]">Event</th>
@@ -247,6 +294,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
               <tbody className="divide-y divide-neutral-100 text-xs">
                 {items.map(ev => {
                   const isActing = actionId.startsWith(ev._id);
+                  const eventTitle = ev.name || ev.eventName || ev.title || 'Untitled Event';
                   return (
                     <tr
                       key={ev._id}
@@ -259,8 +307,8 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                             {ev.emoji || '🎯'}
                           </span>
                           <div className="min-w-0 max-w-[220px]">
-                            <span className="font-bold text-neutral-900 block truncate" title={ev.name || ev.eventName || ev.title || 'Untitled Event'}>
-                              {ev.name || ev.eventName || ev.title || 'Untitled Event'}
+                            <span className="font-bold text-neutral-900 block truncate" title={eventTitle}>
+                              {eventTitle}
                             </span>
                             <span className="text-[11px] text-neutral-400 font-mono block truncate">
                               /{ev.slug || ev._id}
@@ -391,7 +439,430 @@ export default function EventsTab({ showToast, onOpenCreate }) {
           </table>
         </div>
       </div>
+
+      {/* ── MOBILE LIST VIEW (< md) ── 375px / 390px / 414px */}
+      <div className="block md:hidden">
+        {loading ? (
+          <EventsMobileSkeleton />
+        ) : items.length === 0 ? (
+          <div className="p-8 text-center bg-white rounded-2xl border border-neutral-200/80 shadow-sm">
+            <CalendarDays className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+            <p className="font-semibold text-neutral-700 text-sm">No events found</p>
+            <p className="text-xs text-neutral-400 mt-0.5">Try adjusting your search criteria or publish a new event.</p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {items.map(ev => {
+              const isActing = actionId.startsWith(ev._id);
+              const eventTitle = ev.name || ev.eventName || ev.title || 'Untitled Event';
+              const regsCount = ev.stats?.registrationCount ?? 0;
+
+              return (
+                <div
+                  key={ev._id}
+                  className={`bg-white rounded-2xl border border-neutral-200/80 p-3.5 shadow-sm transition hover:border-indigo-200 active:bg-neutral-50/50 ${
+                    !ev.isActive ? 'opacity-70 bg-neutral-50/60' : ''
+                  }`}
+                >
+                  {/* Top Row: Event Name & 3-dot Actions button */}
+                  <div className="flex items-center justify-between gap-2.5">
+                    <div
+                      onClick={() => setSelectedMobileEvent(ev)}
+                      className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
+                    >
+                      <span className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-base flex-shrink-0">
+                        {ev.emoji || '🎯'}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="font-bold text-neutral-900 text-sm block truncate" title={eventTitle}>
+                          {eventTitle}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* 3-Dot Actions button */}
+                    <div className="relative flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenActionMenuId(openActionMenuId === ev._id ? null : ev._id);
+                        }}
+                        aria-label={`Actions for ${eventTitle}`}
+                        className="w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 flex items-center justify-center transition active:bg-neutral-200"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+
+                      {/* Dropdown Menu */}
+                      <AnimatePresence>
+                        {openActionMenuId === ev._id && (
+                          <>
+                            <div
+                              className="fixed inset-0 z-30"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOpenActionMenuId(null);
+                              }}
+                            />
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              transition={{ duration: 0.12 }}
+                              className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-xl border border-neutral-200 py-1.5 z-40"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {/* Event Details */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOpenActionMenuId(null);
+                                  setSelectedMobileEvent(ev);
+                                }}
+                                className="w-full px-3.5 py-2 text-left text-xs font-semibold text-neutral-700 hover:bg-neutral-50 flex items-center gap-2.5 transition"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-neutral-400" />
+                                <span>Event Details</span>
+                              </button>
+
+                              {/* View Live */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOpenActionMenuId(null);
+                                  navigate(`/event/${ev.slug}`);
+                                }}
+                                className="w-full px-3.5 py-2 text-left text-xs font-semibold text-neutral-700 hover:bg-neutral-50 flex items-center gap-2.5 transition"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+                                <span>View Live Page</span>
+                              </button>
+
+                              {/* Feature toggle (Superadmin) */}
+                              {isSuperAdmin && (
+                                <button
+                                  type="button"
+                                  disabled={isActing}
+                                  onClick={() => {
+                                    setOpenActionMenuId(null);
+                                    handleToggleFeature(ev);
+                                  }}
+                                  className="w-full px-3.5 py-2 text-left text-xs font-semibold text-neutral-700 hover:bg-neutral-50 flex items-center gap-2.5 transition"
+                                >
+                                  <Star className={`w-3.5 h-3.5 ${ev.isFeatured ? 'fill-amber-500 text-amber-500' : 'text-neutral-400'}`} />
+                                  <span>{ev.isFeatured ? 'Remove Featured' : 'Mark as Featured'}</span>
+                                </button>
+                              )}
+
+                              {/* Deactivate / Restore */}
+                              <button
+                                type="button"
+                                disabled={isActing}
+                                onClick={() => {
+                                  setOpenActionMenuId(null);
+                                  toggleDeactivate(ev);
+                                }}
+                                className="w-full px-3.5 py-2 text-left text-xs font-semibold text-neutral-700 hover:bg-neutral-50 flex items-center gap-2.5 transition"
+                              >
+                                <Power className={`w-3.5 h-3.5 ${ev.isActive ? 'text-neutral-400' : 'text-emerald-600'}`} />
+                                <span>{ev.isActive ? 'Deactivate Event' : 'Restore Event'}</span>
+                              </button>
+
+                              {/* Permanent Delete (Superadmin) */}
+                              {isSuperAdmin && (
+                                <div className="border-t border-neutral-100 mt-1 pt-1">
+                                  <button
+                                    type="button"
+                                    disabled={isActing}
+                                    onClick={() => {
+                                      setOpenActionMenuId(null);
+                                      setDeleteConfirmEvent(ev);
+                                    }}
+                                    className="w-full px-3.5 py-2 text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 transition"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                                    <span>Delete Permanently</span>
+                                  </button>
+                                </div>
+                              )}
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                  {/* Bottom Row: Registrations & Status */}
+                  <div
+                    onClick={() => setSelectedMobileEvent(ev)}
+                    className="flex items-center justify-between pt-2.5 mt-2.5 border-t border-neutral-100 text-xs cursor-pointer"
+                  >
+                    <div className="flex items-center gap-1.5 text-neutral-600">
+                      <span className="text-neutral-400 text-[11px] font-medium">Registrations:</span>
+                      <span className="font-bold text-neutral-800 tabular-nums">{regsCount}</span>
+                      {ev.stats?.viewCount !== undefined && (
+                        <span className="text-[10px] text-neutral-400 font-normal">
+                          ({ev.stats.viewCount} views)
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {ev.isActive ? (
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-neutral-100 text-neutral-600">
+                          Inactive
+                        </span>
+                      )}
+                      {ev.isFeatured && (
+                        <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-0.5">
+                          <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
+                          <span>{ev.featuredOrder ? `#${ev.featuredOrder}` : 'Featured'}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── MOBILE EVENT DETAILS BOTTOM SHEET / MODAL ── */}
+      <AnimatePresence>
+        {selectedMobileEvent && (
+          <div className="fixed inset-0 z-50 overflow-hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedMobileEvent(null)}
+              className="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs transition-opacity"
+            />
+
+            {/* Content Drawer / Card */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl border border-neutral-200 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col z-10"
+            >
+              {/* Drawer Handle (mobile only) */}
+              <div className="pt-3 pb-1 flex justify-center sm:hidden">
+                <div className="w-10 h-1 rounded-full bg-neutral-200" />
+              </div>
+
+              {/* Drawer Header */}
+              <div className="p-4 sm:p-5 border-b border-neutral-100 flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <span className="w-11 h-11 rounded-2xl bg-neutral-100 flex items-center justify-center text-2xl flex-shrink-0">
+                    {selectedMobileEvent.emoji || '🎯'}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-neutral-900 text-base leading-snug break-words">
+                      {selectedMobileEvent.name || selectedMobileEvent.eventName || selectedMobileEvent.title || 'Untitled Event'}
+                    </h3>
+                    <p className="text-xs text-neutral-400 font-mono mt-0.5 truncate">
+                      /{selectedMobileEvent.slug || selectedMobileEvent._id}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedMobileEvent(null)}
+                  className="w-8 h-8 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-500 flex items-center justify-center transition flex-shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Drawer Body — scrollable */}
+              <div className="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs">
+                {/* Badges / Pill row */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 py-1 rounded-lg font-bold text-[11px] bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    {selectedMobileEvent.category || 'General'}
+                  </span>
+                  {selectedMobileEvent.isActive ? (
+                    <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Active
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-neutral-100 text-neutral-600 border border-neutral-200">
+                      Inactive
+                    </span>
+                  )}
+                  {selectedMobileEvent.isFeatured && (
+                    <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                      <span>{selectedMobileEvent.featuredOrder ? `Featured #${selectedMobileEvent.featuredOrder}` : 'Featured'}</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Key Metrics Grid */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100">
+                    <span className="text-[11px] text-neutral-400 block font-medium">Registrations</span>
+                    <span className="text-lg font-bold text-neutral-900 block mt-0.5 tabular-nums">
+                      {selectedMobileEvent.stats?.registrationCount ?? 0}
+                    </span>
+                  </div>
+                  <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100">
+                    <span className="text-[11px] text-neutral-400 block font-medium">Page Views</span>
+                    <span className="text-lg font-bold text-neutral-900 block mt-0.5 tabular-nums">
+                      {selectedMobileEvent.stats?.viewCount ?? 0}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Metadata details */}
+                <div className="bg-neutral-50 rounded-2xl border border-neutral-100 p-3.5 space-y-3">
+                  {/* College & Location */}
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-wider block">College & Location</span>
+                      <p className="font-semibold text-neutral-800 mt-0.5">
+                        {selectedMobileEvent.college || '—'}
+                      </p>
+                      {(selectedMobileEvent.city || selectedMobileEvent.venue) && (
+                        <p className="text-neutral-500 text-[11px] mt-0.5">
+                          {[selectedMobileEvent.city, selectedMobileEvent.venue].filter(Boolean).join(' • ')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Date & Time */}
+                  <div className="flex items-start gap-2.5 pt-2.5 border-t border-neutral-200/60">
+                    <Calendar className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-wider block">Date & Timing</span>
+                      <p className="font-semibold text-neutral-800 mt-0.5">
+                        {selectedMobileEvent.date?.start || selectedMobileEvent.startDate || 'TBA'}
+                        {selectedMobileEvent.date?.end ? ` – ${selectedMobileEvent.date.end}` : ''}
+                      </p>
+                      {selectedMobileEvent.date?.time && (
+                        <p className="text-neutral-500 text-[11px] mt-0.5">{selectedMobileEvent.date.time}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Hosted By / Organiser */}
+                  <div className="flex items-start gap-2.5 pt-2.5 border-t border-neutral-200/60">
+                    <Users className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-wider block">Hosted By</span>
+                      <p className="font-semibold text-neutral-800 mt-0.5">
+                        {selectedMobileEvent.organiser?.name || selectedMobileEvent.hostedBy?.name || 'FestNest Community'}
+                      </p>
+                      {(selectedMobileEvent.pocEmail || selectedMobileEvent.pocPhone) && (
+                        <p className="text-neutral-500 text-[11px] mt-0.5">
+                          {[selectedMobileEvent.pocEmail, selectedMobileEvent.pocPhone].filter(Boolean).join(' • ')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Entry Type */}
+                  <div className="flex items-start gap-2.5 pt-2.5 border-t border-neutral-200/60">
+                    <Globe className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-wider block">Entry & Mode</span>
+                      <p className="font-semibold text-neutral-800 mt-0.5 capitalize">
+                        {selectedMobileEvent.entryType || selectedMobileEvent.price?.display || 'Free'}
+                        {selectedMobileEvent.mode ? ` • ${selectedMobileEvent.mode}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* About / Description snippet if available */}
+                {selectedMobileEvent.about && (
+                  <div className="space-y-1">
+                    <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-wider block">About Event</span>
+                    <p className="text-neutral-600 leading-relaxed bg-neutral-50 p-3 rounded-xl border border-neutral-100 text-[11px]">
+                      {selectedMobileEvent.about}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Drawer Footer Actions */}
+              <div className="p-4 border-t border-neutral-100 bg-neutral-50/50 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedMobileEvent(null);
+                      navigate(`/event/${selectedMobileEvent.slug}`);
+                    }}
+                    className="flex-1 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>View Live Event</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={actionId.startsWith(selectedMobileEvent._id)}
+                    onClick={() => toggleDeactivate(selectedMobileEvent)}
+                    className={`py-2.5 px-3 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-1.5 border ${
+                      selectedMobileEvent.isActive
+                        ? 'bg-white hover:bg-amber-50 text-neutral-700 border-neutral-200 hover:border-amber-200 hover:text-amber-700'
+                        : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                    }`}
+                  >
+                    <Power className="w-3.5 h-3.5" />
+                    <span>{selectedMobileEvent.isActive ? 'Deactivate' : 'Restore'}</span>
+                  </button>
+                </div>
+
+                {isSuperAdmin && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={actionId.startsWith(selectedMobileEvent._id)}
+                      onClick={() => handleToggleFeature(selectedMobileEvent)}
+                      className={`flex-1 py-2 px-3 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-1.5 border ${
+                        selectedMobileEvent.isFeatured
+                          ? 'bg-amber-50 text-amber-800 border-amber-200'
+                          : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-100'
+                      }`}
+                    >
+                      <Star className={`w-3.5 h-3.5 ${selectedMobileEvent.isFeatured ? 'fill-amber-500' : ''}`} />
+                      <span>{selectedMobileEvent.isFeatured ? 'Unfeature' : 'Feature'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={actionId.startsWith(selectedMobileEvent._id)}
+                      onClick={() => {
+                        const ev = selectedMobileEvent;
+                        setSelectedMobileEvent(null);
+                        setDeleteConfirmEvent(ev);
+                      }}
+                      className="py-2 px-3 bg-white hover:bg-rose-50 text-rose-600 rounded-xl font-semibold text-xs border border-rose-200 transition flex items-center justify-center gap-1.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-
