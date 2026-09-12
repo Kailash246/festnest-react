@@ -6,7 +6,7 @@ import {
   CalendarDays, Search, Plus, Star, Eye, Trash2,
   RefreshCw, Power, ExternalLink, MapPin, Calendar,
   BarChart2, Filter, AlertTriangle, ShieldAlert,
-  MoreVertical, X, Users, Globe, Building
+  MoreVertical, X, Users, Globe, Building, ChevronDown
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { admin } from '../../../services/api';
@@ -211,58 +211,74 @@ export default function EventsTab({ showToast, onOpenCreate }) {
         onCancel={() => setDeleteConfirmEvent(null)}
       />
 
-      {/* Control bar */}
-      <div className="bg-white p-4 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+      {/* Control bar: Clean, highly organized on mobile & full featured on desktop */}
+      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-neutral-200/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
-          {/* Search */}
+          {/* Search Bar with clear button */}
           <div className="relative flex-1 sm:max-w-xs">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search live events..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-neutral-50 border border-neutral-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+              className="w-full pl-9 pr-8 py-2 text-xs bg-neutral-50/80 border border-neutral-200/90 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100/60 outline-none transition placeholder:text-neutral-400"
             />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 p-0.5 rounded-full transition"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
-          {/* Category dropdown */}
-          <select
-            value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs font-semibold bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-700 outline-none focus:border-indigo-500"
-          >
-            {CATEGORIES.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-
-          {/* Active status filter */}
-          <div className="flex items-center gap-1 bg-neutral-100 p-1 rounded-xl">
-            {[
-              { id: 'all', label: 'All' },
-              { id: 'active', label: 'Active' },
-              { id: 'inactive', label: 'Inactive' },
-            ].map(f => (
-              <button
-                key={f.id}
-                onClick={() => setActiveFilter(f.id)}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition ${
-                  activeFilter === f.id
-                    ? 'bg-white text-neutral-900 shadow-sm'
-                    : 'text-neutral-500 hover:text-neutral-900'
-                }`}
+          {/* Filters Row: Category (left) and Status tabs (right) aligned in one line on mobile */}
+          <div className="flex items-center gap-2">
+            {/* Category dropdown with subtle icon */}
+            <div className="relative flex-1 sm:w-44">
+              <select
+                value={categoryFilter}
+                onChange={e => setCategoryFilter(e.target.value)}
+                className="w-full appearance-none pl-3 pr-8 py-2 text-xs font-medium bg-neutral-50/80 border border-neutral-200/90 rounded-xl text-neutral-700 outline-none focus:border-indigo-500 focus:bg-white transition cursor-pointer"
               >
-                {f.label}
-              </button>
-            ))}
+                {CATEGORIES.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+            </div>
+
+            {/* Active status segmented pills */}
+            <div className="flex items-center gap-0.5 bg-neutral-100 p-1 rounded-xl shrink-0">
+              {[
+                { id: 'all', label: 'All' },
+                { id: 'active', label: 'Active' },
+                { id: 'inactive', label: 'Inactive' },
+              ].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setActiveFilter(f.id)}
+                  className={`px-2.5 py-1 text-[11.5px] font-semibold rounded-lg transition ${
+                    activeFilter === f.id
+                      ? 'bg-white text-neutral-900 shadow-xs'
+                      : 'text-neutral-500 hover:text-neutral-900'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Create Live Event CTA */}
+        {/* Create Live Event CTA: Hidden on mobile per user request, visible on desktop */}
         <button
           onClick={onOpenCreate}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1.5"
+          className="hidden md:inline-flex px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-semibold shadow-sm transition items-center justify-center gap-1.5 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>New Live Event</span>
