@@ -98,10 +98,10 @@ export default function EventsTab({ showToast, onOpenCreate }) {
     try {
       if (isDeactivating) {
         await admin.deleteEvent(ev._id);
-        showToast?.(`"${ev.name}" deactivated`, 'info');
+        showToast?.(`"${ev.name || ev.eventName || 'Event'}" deactivated`, 'info');
       } else {
         await admin.restoreEvent(ev._id);
-        showToast?.(`"${ev.name}" restored and live`, 'success');
+        showToast?.(`"${ev.name || ev.eventName || 'Event'}" restored and live`, 'success');
       }
       loadEvents();
     } catch (e) {
@@ -116,7 +116,9 @@ export default function EventsTab({ showToast, onOpenCreate }) {
     try {
       await admin.featureEvent(ev._id, !ev.isFeatured);
       showToast?.(
-        !ev.isFeatured ? `"${ev.name}" marked as Featured` : `"${ev.name}" removed from Featured`,
+        !ev.isFeatured
+          ? `"${ev.name || ev.eventName || 'Event'}" marked as Featured`
+          : `"${ev.name || ev.eventName || 'Event'}" removed from Featured`,
         'success'
       );
       loadEvents();
@@ -132,7 +134,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
     setActionId(deleteConfirmEvent._id + '-delete');
     try {
       await admin.hardDeleteEvent(deleteConfirmEvent._id);
-      showToast?.(`"${deleteConfirmEvent.name}" permanently deleted`, 'info');
+      showToast?.(`"${deleteConfirmEvent.name || deleteConfirmEvent.eventName || 'Event'}" permanently deleted`, 'info');
       setDeleteConfirmEvent(null);
       loadEvents();
     } catch (e) {
@@ -147,7 +149,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
       <ConfirmDialog
         isOpen={!!deleteConfirmEvent}
         title="Permanently Delete Event?"
-        message={`Are you sure you want to completely erase "${deleteConfirmEvent?.name}"? All registrations, analytics, and associated records will be permanently destroyed. This cannot be undone.`}
+        message={`Are you sure you want to completely erase "${deleteConfirmEvent?.name || deleteConfirmEvent?.eventName || 'this event'}"? All registrations, analytics, and associated records will be permanently destroyed. This cannot be undone.`}
         confirmText="Delete Permanently"
         confirmVariant="danger"
         onConfirm={handleHardDelete}
@@ -257,11 +259,11 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                             {ev.emoji || '🎯'}
                           </span>
                           <div className="min-w-0 max-w-[220px]">
-                            <span className="font-bold text-neutral-900 block truncate" title={ev.name}>
-                              {ev.name}
+                            <span className="font-bold text-neutral-900 block truncate" title={ev.name || ev.eventName || ev.title || 'Untitled Event'}>
+                              {ev.name || ev.eventName || ev.title || 'Untitled Event'}
                             </span>
                             <span className="text-[11px] text-neutral-400 font-mono block truncate">
-                              /{ev.slug}
+                              /{ev.slug || ev._id}
                             </span>
                           </div>
                         </div>
