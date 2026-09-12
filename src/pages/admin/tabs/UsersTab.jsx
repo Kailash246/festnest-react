@@ -131,7 +131,6 @@ export default function UsersTab({ showToast, onSelectUser }) {
         <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-            <table className="w-full min-w-[720px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-neutral-200/80 bg-neutral-50/60 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
                   <th className="py-3 px-4">User</th>

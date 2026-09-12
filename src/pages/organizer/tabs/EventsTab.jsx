@@ -347,7 +347,6 @@ export default function EventsTab({
                   )}
 
                   <div className="flex items-center gap-1.5">
-                  <div className="flex items-center flex-wrap gap-1.5">
                     {ev.status === 'approved' && linkedId && (
                       <>
                         <button
@@ -411,7 +410,6 @@ export default function EventsTab({
         <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[12px]">
-            <table className="w-full min-w-[650px] text-left text-[12px]">
               <thead className="bg-surface-1 border-b border-border text-[11px] font-bold uppercase tracking-wider text-text-4 select-none">
                 <tr>
                   <th className="py-3.5 px-4">Event</th>

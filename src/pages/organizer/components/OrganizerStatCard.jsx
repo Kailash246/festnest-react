@@ -59,14 +59,11 @@ export default function OrganizerStatCard({
       transition={{ duration: 0.15 }}
       onClick={onClick}
       className={`bg-white border border-border rounded-xl p-4 sm:p-5 shadow-xs transition-all ${
-      className={`bg-white border border-border rounded-xl p-3.5 sm:p-5 shadow-xs transition-all ${
         onClick ? 'cursor-pointer hover:border-primary/40' : ''
       }`}
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${theme.bg} ${theme.text} border ${theme.border}`}>
-      <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2.5 sm:mb-3">
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${theme.bg} ${theme.text} border ${theme.border} [&>svg]:w-4 sm:[&>svg]:w-[19px] [&>svg]:h-4 sm:[&>svg]:h-[19px]`}>
           <Icon size={19} strokeWidth={2} />
         </div>
         {badge && (
@@ -77,14 +74,11 @@ export default function OrganizerStatCard({
       </div>
 
       <div className="font-heading text-[24px] sm:text-[28px] font-bold text-text-1 tracking-tight leading-none mb-1">
-      <div className="font-heading text-[20px] sm:text-[28px] font-bold text-text-1 tracking-tight leading-none mb-1">
         {typeof value === 'number' ? value.toLocaleString('en-IN') : (value ?? '—')}
       </div>
 
       <div className="text-[12px] font-medium text-text-3">{label}</div>
       {sub && <div className="text-[11px] text-text-4 mt-1 leading-snug">{sub}</div>}
-      <div className="text-[11px] sm:text-[12px] font-medium text-text-3">{label}</div>
-      {sub && <div className="text-[10px] sm:text-[11px] text-text-4 mt-1 leading-snug">{sub}</div>}
     </motion.div>
   );
 }

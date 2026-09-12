@@ -72,10 +72,6 @@ export default function AdminSidebar({
         <div className="h-16 px-4 flex items-center justify-between border-b border-border flex-shrink-0">
           <div
             onClick={() => onSelectTab('overview')}
-            onClick={() => {
-              onSelectTab('overview');
-              if (isMobile) onCloseMobile();
-            }}
             className="flex items-center gap-2.5 cursor-pointer min-w-0"
           >
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow-sm flex-shrink-0">

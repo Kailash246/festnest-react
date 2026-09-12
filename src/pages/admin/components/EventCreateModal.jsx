@@ -104,7 +104,6 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, showToast
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-neutral-50/50">
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-neutral-100 bg-neutral-50/50">
             <div>
               <h2 className="text-lg font-bold text-neutral-900 flex items-center gap-2">
                 <span className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
@@ -124,7 +123,6 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, showToast
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[calc(85vh-120px)] overflow-y-auto">
-          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 max-h-[calc(90dvh-120px)] overflow-y-auto">
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2.5 text-xs text-red-700 font-medium">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />

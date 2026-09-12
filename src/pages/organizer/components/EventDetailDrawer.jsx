@@ -105,7 +105,6 @@ export default function EventDetailDrawer({
 
           {/* Slide-over panel */}
           <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-          <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
@@ -115,7 +114,6 @@ export default function EventDetailDrawer({
             >
               {/* Drawer Topbar */}
               <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-surface-1">
-              <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border flex items-center justify-between bg-surface-1">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span
                     className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border ${status.badgeCls}`}
@@ -138,7 +136,6 @@ export default function EventDetailDrawer({
 
               {/* Drawer Content */}
               <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-5 sm:space-y-6">
                 {/* Banner & Header */}
                 <div>
                   {ev.bannerImage?.url ? (

@@ -139,7 +139,6 @@ export default function OverviewTab({
 
       {/* Primary KPI Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
         <StatCard
           icon={<Users className="w-5 h-5" />}
           label="Total Users"
@@ -179,24 +178,12 @@ export default function OverviewTab({
           badgeColor="rose"
           sub="Awaiting help"
         />
-        <div className="col-span-2 sm:col-span-1">
-          <StatCard
-            icon={<Ticket className="w-5 h-5" />}
-            label="Open Tickets"
-            value={totals.openTickets}
-            color={openTicketCount > 0 ? "rose" : "neutral"}
-            badge={openTicketCount > 0 ? `${openTicketCount} Open` : null}
-            badgeColor="rose"
-            sub="Awaiting help"
-          />
-        </div>
       </div>
 
       {/* Analytics Visualizations Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Registration Trend Chart (2 Cols) */}
         <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col justify-between">
-        <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col justify-between min-w-0 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="flex items-center gap-2">
@@ -218,7 +205,6 @@ export default function OverviewTab({
           </div>
 
           <div className="w-full h-64 mt-2 min-w-0">
-          <div className="w-full h-64 mt-2 min-w-0 overflow-hidden">
             {trendChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={240}>
                 <AreaChart data={trendChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -279,7 +265,6 @@ export default function OverviewTab({
 
         {/* Category Breakdown (1 Col) */}
         <div className="bg-white p-5 sm:p-6 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col justify-between">
-        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col justify-between min-w-0 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="flex items-center gap-2">

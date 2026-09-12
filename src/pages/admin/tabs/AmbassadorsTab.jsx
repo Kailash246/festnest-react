@@ -337,7 +337,6 @@ export default function AmbassadorsTab({ showToast }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-neutral-700">
-            <table className="w-full min-w-[820px] text-left text-xs text-neutral-700">
               <thead className="bg-neutral-50/80 text-neutral-500 font-semibold border-b border-neutral-200 select-none">
                 <tr>
                   <th
@@ -548,10 +547,8 @@ export default function AmbassadorsTab({ showToast }) {
 
               {/* Drawer Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-neutral-700">
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6 text-xs text-neutral-700">
                 {/* Contact & College Grid */}
                 <div className="grid grid-cols-2 gap-3 p-4 bg-neutral-50 rounded-xl border border-neutral-200/60">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-neutral-50 rounded-xl border border-neutral-200/60">
                   <div>
                     <span className="text-[10px] font-semibold text-neutral-400 uppercase">Email</span>
                     <div className="font-mono text-neutral-900 mt-0.5">{selectedCA.email}</div>
@@ -588,7 +585,6 @@ export default function AmbassadorsTab({ showToast }) {
                     </h4>
 
                     <div className="grid grid-cols-3 gap-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200 text-center">
                         <span className="text-[10px] text-neutral-400 font-semibold block">CA ID</span>
                         <span className="font-mono font-bold text-indigo-600 text-sm">
@@ -794,7 +790,6 @@ export default function AmbassadorsTab({ showToast }) {
 
               {/* Drawer Footer Actions */}
               <div className="p-4 border-t border-neutral-200 bg-neutral-50 flex items-center justify-between gap-2">
-              <div className="p-4 border-t border-neutral-200 bg-neutral-50 flex flex-wrap items-center justify-between gap-2">
                 {selectedCA.status === 'applied' && (
                   <button
                     onClick={() => handleStatusChange('screening')}

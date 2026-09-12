@@ -72,7 +72,6 @@ export default function SubmissionPreviewModal({
           exit={{ opacity: 0, scale: 0.96, y: 12 }}
           transition={{ duration: 0.2 }}
           className="relative w-full max-w-2xl bg-white rounded-2xl border border-border shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
-          className="relative w-full max-w-2xl bg-white rounded-2xl border border-border shadow-2xl overflow-hidden z-10 max-h-[92dvh] flex flex-col"
         >
           {/* Header Banner */}
           <div className="relative h-48 sm:h-56 bg-surface-3 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -315,12 +314,10 @@ export default function SubmissionPreviewModal({
                   )}
 
                   <div className="flex items-center gap-2 ml-auto w-full sm:w-auto justify-end">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 ml-auto w-full sm:w-auto justify-end">
                     <button
                       type="button"
                       onClick={() => setRejectMode(true)}
                       className="px-4 py-2 text-[13px] font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors flex items-center gap-1.5"
-                      className="px-4 py-2 text-[13px] font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors flex items-center justify-center gap-1.5"
                     >
                       <XCircle size={15} />
                       <span>Reject</span>
@@ -331,7 +328,6 @@ export default function SubmissionPreviewModal({
                       disabled={actionLoading === sub._id + '-approve'}
                       onClick={handleApprove}
                       className="px-5 py-2 text-[13px] font-bold bg-[#16A34A] hover:bg-green-700 text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                      className="px-5 py-2 text-[13px] font-bold bg-[#16A34A] hover:bg-green-700 text-white rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
                     >
                       {actionLoading === sub._id + '-approve' ? (
                         <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
