@@ -63,17 +63,14 @@ const EventsTableSkeleton = () => (
 const EventsMobileSkeleton = () => (
   <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden divide-y divide-neutral-100">
     {[1, 2, 3, 4, 5, 6].map((i) => (
-      <div key={i} className="p-3.5 space-y-2">
+      <div key={i} className="px-4 py-3.5 space-y-2">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="skeleton w-8 h-8 rounded-lg shrink-0" />
-            <div className="skeleton h-4 w-40 rounded" />
-          </div>
+          <div className="skeleton h-4 w-44 rounded" />
           <div className="skeleton w-7 h-7 rounded-lg shrink-0" />
         </div>
-        <div className="flex items-center justify-between pl-11 pr-1">
-          <div className="skeleton h-3 w-28 rounded" />
-          <div className="skeleton h-4 w-14 rounded-md" />
+        <div className="flex items-center justify-between gap-2">
+          <div className="skeleton h-3.5 w-28 rounded" />
+          <div className="skeleton h-5 w-16 rounded-full" />
         </div>
       </div>
     ))}
@@ -457,28 +454,23 @@ export default function EventsTab({ showToast, onOpenCreate }) {
               return (
                 <div
                   key={ev._id}
-                  className={`p-3.5 transition-colors group relative ${
-                    !ev.isActive ? 'opacity-70 bg-neutral-50/40' : 'hover:bg-neutral-50/80 active:bg-neutral-100/70'
+                  className={`px-4 py-3.5 transition-colors group relative ${
+                    !ev.isActive ? 'opacity-70 bg-neutral-50/40' : 'hover:bg-neutral-50/80 active:bg-neutral-100/60'
                   }`}
                 >
-                  {/* Top Row: Event Name & 3-dot Actions button */}
-                  <div className="flex items-center justify-between gap-2.5">
+                  {/* Top Row: Event Name (left) & 3-dot Actions button (right) */}
+                  <div className="flex items-center justify-between gap-3">
                     <div
                       onClick={() => setSelectedMobileEvent(ev)}
-                      className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
+                      className="min-w-0 flex-1 cursor-pointer"
                     >
-                      <span className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-base flex-shrink-0">
-                        {ev.emoji || '🎯'}
+                      <span className="font-semibold text-neutral-900 text-[14px] leading-snug block truncate" title={eventTitle}>
+                        {eventTitle}
                       </span>
-                      <div className="min-w-0 flex-1">
-                        <span className="font-bold text-neutral-900 text-[13.5px] block truncate" title={eventTitle}>
-                          {eventTitle}
-                        </span>
-                      </div>
                     </div>
 
                     {/* 3-Dot Actions button */}
-                    <div className="relative flex-shrink-0">
+                    <div className="relative shrink-0">
                       <button
                         type="button"
                         onClick={(e) => {
@@ -590,35 +582,32 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                     </div>
                   </div>
 
-                  {/* Bottom Row: Registrations count (left) & Status pill (right) */}
+                  {/* Bottom Row: Registrations (left) & Status pill (right) */}
                   <div
                     onClick={() => setSelectedMobileEvent(ev)}
-                    className="flex items-center justify-between pl-11 pr-1 pt-1.5 text-xs cursor-pointer"
+                    className="flex items-center justify-between gap-2 mt-1.5 cursor-pointer text-xs"
                   >
                     <div className="flex items-center gap-1.5 text-neutral-600">
-                      <span className="text-neutral-400 text-[11px] font-medium">Registrations:</span>
-                      <span className="font-bold text-neutral-800 tabular-nums">{regsCount}</span>
-                      {ev.stats?.viewCount !== undefined && (
-                        <span className="text-[10px] text-neutral-400 font-normal">
-                          ({ev.stats.viewCount} views)
-                        </span>
-                      )}
+                      <span className="text-neutral-400 text-[11.5px] font-normal">Registrations:</span>
+                      <span className="font-semibold text-neutral-800 text-[12px] tabular-nums">{regsCount}</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {ev.isFeatured && (
+                        <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                          <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
+                          <span>Featured</span>
+                        </span>
+                      )}
                       {ev.isActive ? (
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                           Active
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-neutral-100 text-neutral-600">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-neutral-100 text-neutral-600 border border-neutral-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-neutral-400" />
                           Inactive
-                        </span>
-                      )}
-                      {ev.isFeatured && (
-                        <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-0.5">
-                          <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
-                          <span>{ev.featuredOrder ? `#${ev.featuredOrder}` : 'Featured'}</span>
                         </span>
                       )}
                     </div>
@@ -659,9 +648,9 @@ export default function EventsTab({ showToast, onOpenCreate }) {
               {/* Drawer Header */}
               <div className="p-4 sm:p-5 border-b border-neutral-100 flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  <span className="w-11 h-11 rounded-2xl bg-neutral-100 flex items-center justify-center text-2xl flex-shrink-0">
-                    {selectedMobileEvent.emoji || '🎯'}
-                  </span>
+                  <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                    <CalendarDays className="w-5 h-5" />
+                  </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-bold text-neutral-900 text-base leading-snug break-words">
                       {selectedMobileEvent.name || selectedMobileEvent.eventName || selectedMobileEvent.title || 'Untitled Event'}
