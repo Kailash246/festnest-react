@@ -102,6 +102,9 @@ import {
   HelpCircle, ArrowUpRight,
 } from 'lucide-react';
 
+import { useApp } from '../../context/AppContext';
+import ErrorBoundary from '../../components/ErrorBoundary';
+
 // INTEGRATION POINT 1 — point this at the project's existing request wrapper.
 import api from '../../services/api';
 
@@ -131,7 +134,7 @@ const SPIN_STATUS_META = {
   cancelled: { label: 'Cancelled', text: 'text-[#DC2626]', bg: 'bg-[#FEF2F2]', border: 'border-[#FECACA]' },
 };
 
-const REWARD_TYPE_ICON = { cash: IndianRupee, fn_coins: Coins, merch: Gift, bonus_spin: RefreshCw, none: Star };
+const REWARD_TYPE_ICON = { cash: IndianRupee, fn_coins: Coins, points: Coins, merch: Gift, bonus_spin: RefreshCw, none: Star };
 
 const WHEEL_COLORS = ['#4F46E5', '#F59E0B', '#3730A3', '#FBBF24', '#818CF8', '#B45309'];
 
@@ -307,10 +310,12 @@ function HowItWorksPanel() {
 // ============================================================================
 
 function SpinStatusCard({ summary, onOpenSpin }) {
-  const spinsAvailable = summary.availableSpins > 0;
-  const referralsNeeded = Math.max(0, summary.milestone.referrals.required - summary.milestone.referrals.count);
-  const registrationsNeeded = Math.max(0, summary.milestone.eventRegistrations.required - summary.milestone.eventRegistrations.count);
-  const coinsNeeded = Math.max(0, summary.fnCoins.required - summary.fnCoins.available);
+  const spinsAvailable = (summary?.availableSpins ?? 0) > 0;
+  const referralsNeeded = Math.max(0, (summary?.milestone?.referrals?.required ?? 10) - (summary?.milestone?.referrals?.count ?? 0));
+  const registrationsNeeded = Math.max(0, (summary?.milestone?.eventRegistrations?.required ?? 5) - (summary?.milestone?.eventRegistrations?.count ?? 0));
+  const coinsAvailable = summary?.fnCoins?.available ?? summary?.points?.available ?? 0;
+  const coinsRequired = summary?.fnCoins?.required ?? summary?.points?.required ?? 200;
+  const coinsNeeded = Math.max(0, coinsRequired - coinsAvailable);
 
   if (spinsAvailable) {
     return (
@@ -323,7 +328,7 @@ function SpinStatusCard({ summary, onOpenSpin }) {
             <PartyPopper size={20} className="text-[#B45309]" strokeWidth={2} />
           </span>
           <span className="text-[11px] font-bold uppercase tracking-wide text-[#B45309] bg-white/70 border border-[#FDE68A] rounded-md px-2 py-1">
-            {summary.availableSpins} spin{summary.availableSpins > 1 ? 's' : ''} ready
+            {(summary?.availableSpins ?? 0)} spin{(summary?.availableSpins ?? 0) > 1 ? 's' : ''} ready
           </span>
         </div>
         <h3 className="font-heading font-bold text-[18px] text-text-1 mb-1">Your spin is ready</h3>
@@ -496,14 +501,14 @@ function ReferralHistoryCard({ state, onLoadMore }) {
         <div className="space-y-2">
           {state.items.map((r) => {
             const meta = REFERRAL_STATUS_META[r.status] || REFERRAL_STATUS_META.pending;
-            const eventMeta = r.eventStatus ? EVENT_STATUS_META[r.eventStatus] : null;
+            const eventMeta = r.eventStatus && EVENT_STATUS_META[r.eventStatus] ? EVENT_STATUS_META[r.eventStatus] : null;
             return (
               <div key={r.id} className="flex items-center justify-between gap-3 py-2.5 border-b border-border last:border-0">
                 <div className="min-w-0">
                   <p className="text-[14px] font-medium text-text-1 truncate">{r.name}</p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-[12px] text-text-3 font-mono">{formatDate(r.date)}</span>
-                    {eventMeta && (
+                    {eventMeta && eventMeta.Icon && (
                       <span className={cx('text-[12px] flex items-center gap-1', eventMeta.text)}>
                         <eventMeta.Icon size={11} strokeWidth={2.5} />
                         {eventMeta.label}
@@ -805,6 +810,8 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
 const PAGE_SIZE = 8;
 
 export default function ReferAndEarn() {
+  const { isLoggedIn, requireAuth } = useApp();
+
   const [summary, setSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [summaryError, setSummaryError] = useState(null);
@@ -824,6 +831,10 @@ export default function ReferAndEarn() {
   const pendingKeyRef = useRef(null);
 
   const loadSummary = useCallback(async () => {
+    if (!isLoggedIn) {
+      setSummaryLoading(false);
+      return;
+    }
     setSummaryLoading(true);
     setSummaryError(null);
     try {
@@ -834,16 +845,21 @@ export default function ReferAndEarn() {
     } finally {
       setSummaryLoading(false);
     }
-  }, []);
+  }, [isLoggedIn]);
 
   const loadHistory = useCallback(async (type, page) => {
+    if (!isLoggedIn) {
+      const setter = type === 'referrals' ? setReferralHistory : setSpinHistory;
+      setter((prev) => ({ ...prev, loading: false }));
+      return;
+    }
     const setter = type === 'referrals' ? setReferralHistory : setSpinHistory;
     setter((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const { data } = await api.get(`/refer/history?type=${type}&page=${page}&limit=${PAGE_SIZE}`);
       setter((prev) => ({
-        items: page === 1 ? data.items : [...prev.items, ...data.items],
-        hasMore: !!data.hasMore,
+        items: page === 1 ? (data?.items || []) : [...prev.items, ...(data?.items || [])],
+        hasMore: !!data?.hasMore,
         loading: false,
         error: null,
         page,
@@ -851,13 +867,13 @@ export default function ReferAndEarn() {
     } catch (err) {
       setter((prev) => ({ ...prev, loading: false, error: err?.response?.data?.message || 'Failed to load.' }));
     }
-  }, []);
+  }, [isLoggedIn]);
 
   const loadWheelConfig = useCallback(async () => {
     setWheelLoading(true);
     try {
       const { data } = await api.get('/refer/wheel-config');
-      setWheelSegments(data.segments || []);
+      setWheelSegments(data?.segments || []);
     } catch {
       setWheelSegments([]);
     } finally {
@@ -866,11 +882,18 @@ export default function ReferAndEarn() {
   }, []);
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      setSummaryLoading(false);
+      setReferralHistory((prev) => ({ ...prev, loading: false }));
+      setSpinHistory((prev) => ({ ...prev, loading: false }));
+      loadWheelConfig();
+      return;
+    }
     loadSummary();
     loadHistory('referrals', 1);
     loadHistory('spins', 1);
     loadWheelConfig();
-  }, [loadSummary, loadHistory, loadWheelConfig]);
+  }, [isLoggedIn, loadSummary, loadHistory, loadWheelConfig]);
 
   const handleOpenSpin = () => {
     setSpinResult(null);
@@ -908,97 +931,138 @@ export default function ReferAndEarn() {
       // Reveal the result once the wheel visually finishes spinning.
       setTimeout(() => {
         setSpinning(false);
-        setSpinResult(data.reward);
+        setSpinResult(data?.reward);
         loadSummary();
         loadHistory('spins', 1);
         loadHistory('referrals', 1);
       }, 4050);
     } catch (err) {
-      const code = err?.response?.data?.code;
+      const code = err?.response?.data?.code || err?.code;
       if (code === 'NOT_ELIGIBLE' || code === 'NO_SPINS_LEFT') pendingKeyRef.current = null;
-      setSpinError(err?.response?.data?.message || 'Something went wrong. Please try again.');
+      setSpinError(err?.response?.data?.message || err?.message || 'Something went wrong. Please try again.');
       setSpinning(false);
     }
   }, [spinning, wheelSegments, rotation, loadSummary, loadHistory]);
 
   return (
-    <div className="max-w-[1080px] mx-auto px-4 md:px-6 py-6 md:py-10 pb-16">
-      <Helmet>
-        <title>Refer &amp; Earn — FestNest</title>
-        <meta name="description" content="Refer friends to FestNest, earn FN Coins, and spin the wheel for rewards." />
-      </Helmet>
+    <ErrorBoundary>
+      <div className="max-w-[1080px] mx-auto px-4 md:px-6 py-6 md:py-10 pb-16">
+        <Helmet>
+          <title>Refer &amp; Earn — FestNest</title>
+          <meta name="description" content="Refer friends to FestNest, earn FN Coins, and spin the wheel for rewards." />
+        </Helmet>
 
-      {/* Hero */}
-      <div className="mb-6 md:mb-8">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-primary bg-primary-light px-2.5 py-1 rounded-md mb-3">
-          <Gift size={12} strokeWidth={2.5} />
-          Refer &amp; Earn
-        </span>
-        <h1 className="font-heading font-bold text-[26px] md:text-[32px] text-text-1 tracking-tight leading-tight mb-2">
-          Bring your friends to FestNest, earn your way to a spin
-        </h1>
-        <p className="text-[14px] md:text-[15px] text-text-2 max-w-[560px]">
-          Ten FN Coins a referral, a spin of the wheel once you and your friends hit the milestone. Every reward is decided the moment you spin — nothing is guaranteed in advance.
-        </p>
-      </div>
+        {/* Hero */}
+        <div className="mb-6 md:mb-8">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-primary bg-primary-light px-2.5 py-1 rounded-md mb-3">
+            <Gift size={12} strokeWidth={2.5} />
+            Refer &amp; Earn
+          </span>
+          <h1 className="font-heading font-bold text-[26px] md:text-[32px] text-text-1 tracking-tight leading-tight mb-2">
+            Bring your friends to FestNest, earn your way to a spin
+          </h1>
+          <p className="text-[14px] md:text-[15px] text-text-2 max-w-[560px]">
+            Ten FN Coins a referral, a spin of the wheel once you and your friends hit the milestone. Every reward is decided the moment you spin — nothing is guaranteed in advance.
+          </p>
+        </div>
 
-      {summaryError && !summaryLoading && (
-        <SectionCard className="mb-6 text-center py-10">
-          <AlertCircle size={28} className="text-[#DC2626] mx-auto mb-3" />
-          <p className="text-[14px] font-semibold text-text-1 mb-1">{summaryError}</p>
-          <button
-            type="button"
-            onClick={loadSummary}
-            className="mt-3 px-4 py-2 bg-primary text-white text-[13px] font-semibold rounded-md hover:bg-primary-dark transition-all duration-150"
-          >
-            Try again
-          </button>
-        </SectionCard>
-      )}
+        {!isLoggedIn && (
+          <SectionCard className="mb-6 text-center py-12">
+            <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary mx-auto mb-3">
+              <Gift size={24} strokeWidth={2} />
+            </div>
+            <h2 className="font-heading font-bold text-lg text-text-1 mb-1">Sign in to start referring</h2>
+            <p className="text-sm text-text-3 max-w-sm mx-auto mb-5">
+              Log in or create a FestNest account to get your personal referral link, invite friends, and unlock spins for real rewards.
+            </p>
+            <button
+              type="button"
+              onClick={requireAuth}
+              className="px-6 py-2.5 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark transition-all duration-150 active:scale-95 shadow-sm"
+            >
+              Sign In / Sign Up
+            </button>
+          </SectionCard>
+        )}
 
-      {(summaryLoading || summary) && (
-        <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8 items-start">
-          {/* Sidebar content — appears first on mobile, right column on desktop */}
-          <div className="lg:order-2 space-y-4 mb-6 lg:mb-0">
-            {summaryLoading ? (
-              <>
-                <InlineSkeleton className="h-28 w-full" />
-                <InlineSkeleton className="h-28 w-full" />
-                <InlineSkeleton className="h-40 w-full" />
-              </>
-            ) : (
-              <>
-                <StatCard icon={Coins} label="FN Coins" current={summary.fnCoins.available} target={summary.fnCoins.required} suffix="" tone="primary" />
-                <StatCard
-                  icon={Users}
-                  label="Referrals (this milestone)"
-                  current={summary.milestone.referrals.count}
-                  target={summary.milestone.referrals.required}
-                  suffix=""
-                  tone="primary"
-                />
-                <StatCard
-                  icon={Ticket}
-                  label="Event registrations"
-                  current={summary.milestone.eventRegistrations.count}
-                  target={summary.milestone.eventRegistrations.required}
-                  suffix=""
-                  tone="amber"
-                />
-                <div className="lg:sticky lg:top-24">
-                  <SpinStatusCard summary={summary} onOpenSpin={handleOpenSpin} />
-                </div>
-              </>
-            )}
+        {summaryError && !summaryLoading && (
+          <SectionCard className="mb-6 text-center py-10">
+            <AlertCircle size={28} className="text-[#DC2626] mx-auto mb-3" />
+            <p className="text-[14px] font-semibold text-text-1 mb-1">{summaryError}</p>
+            <button
+              type="button"
+              onClick={loadSummary}
+              className="mt-3 px-4 py-2 bg-primary text-white text-[13px] font-semibold rounded-md hover:bg-primary-dark transition-all duration-150"
+            >
+              Try again
+            </button>
+          </SectionCard>
+        )}
+
+        {isLoggedIn && (summaryLoading || summary) && (
+          <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8 items-start">
+            {/* Sidebar content — appears first on mobile, right column on desktop */}
+            <div className="lg:order-2 space-y-4 mb-6 lg:mb-0">
+              {summaryLoading ? (
+                <>
+                  <InlineSkeleton className="h-28 w-full" />
+                  <InlineSkeleton className="h-28 w-full" />
+                  <InlineSkeleton className="h-40 w-full" />
+                </>
+              ) : (
+                <>
+                  <StatCard
+                    icon={Coins}
+                    label="FN Coins"
+                    current={summary?.fnCoins?.available ?? summary?.points?.available ?? 0}
+                    target={summary?.fnCoins?.required ?? summary?.points?.required ?? 200}
+                    suffix=""
+                    tone="primary"
+                  />
+                  <StatCard
+                    icon={Users}
+                    label="Referrals (this milestone)"
+                    current={summary?.milestone?.referrals?.count ?? 0}
+                    target={summary?.milestone?.referrals?.required ?? 10}
+                    suffix=""
+                    tone="primary"
+                  />
+                  <StatCard
+                    icon={Ticket}
+                    label="Event registrations"
+                    current={summary?.milestone?.eventRegistrations?.count ?? 0}
+                    target={summary?.milestone?.eventRegistrations?.required ?? 5}
+                    suffix=""
+                    tone="amber"
+                  />
+                  <div className="lg:sticky lg:top-24">
+                    <SpinStatusCard summary={summary} onOpenSpin={handleOpenSpin} />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Main column */}
+            <div className="lg:order-1 space-y-4">
+              <HowItWorksPanel />
+              {summary && <ReferralShareCard referralCode={summary?.referralCode || ''} referralLink={summary?.referralLink || ''} />}
+              <ReferralHistoryCard state={referralHistory} onLoadMore={() => loadHistory('referrals', referralHistory.page + 1)} />
+              <SpinHistoryCard state={spinHistory} onLoadMore={() => loadHistory('spins', spinHistory.page + 1)} />
+
+              <p className="text-[12px] text-text-3 flex items-start gap-1.5 pt-2">
+                <HelpCircle size={13} className="shrink-0 mt-0.5" />
+                Rewards are subject to FestNest's Refer &amp; Earn program terms. Cash rewards are reviewed before payout and aren't guaranteed instantly.
+                <a href="/terms" className="text-primary hover:underline inline-flex items-center gap-0.5 shrink-0">
+                  Read the terms <ArrowUpRight size={11} />
+                </a>
+              </p>
+            </div>
           </div>
+        )}
 
-          {/* Main column */}
-          <div className="lg:order-1 space-y-4">
+        {!isLoggedIn && (
+          <div className="space-y-4">
             <HowItWorksPanel />
-            {summary && <ReferralShareCard referralCode={summary.referralCode} referralLink={summary.referralLink} />}
-            <ReferralHistoryCard state={referralHistory} onLoadMore={() => loadHistory('referrals', referralHistory.page + 1)} />
-            <SpinHistoryCard state={spinHistory} onLoadMore={() => loadHistory('spins', spinHistory.page + 1)} />
-
             <p className="text-[12px] text-text-3 flex items-start gap-1.5 pt-2">
               <HelpCircle size={13} className="shrink-0 mt-0.5" />
               Rewards are subject to FestNest's Refer &amp; Earn program terms. Cash rewards are reviewed before payout and aren't guaranteed instantly.
@@ -1007,21 +1071,21 @@ export default function ReferAndEarn() {
               </a>
             </p>
           </div>
-        </div>
-      )}
+        )}
 
-      <SpinModal
-        open={spinModalOpen}
-        onClose={handleCloseSpin}
-        segments={wheelSegments}
-        wheelLoading={wheelLoading}
-        rotation={rotation}
-        spinning={spinning}
-        spinResult={spinResult}
-        spinError={spinError}
-        onSpin={handleSpin}
-        canSpin={!!summary && summary.availableSpins > 0}
-      />
-    </div>
+        <SpinModal
+          open={spinModalOpen}
+          onClose={handleCloseSpin}
+          segments={wheelSegments}
+          wheelLoading={wheelLoading}
+          rotation={rotation}
+          spinning={spinning}
+          spinResult={spinResult}
+          spinError={spinError}
+          onSpin={handleSpin}
+          canSpin={!!summary && (summary?.availableSpins ?? 0) > 0}
+        />
+      </div>
+    </ErrorBoundary>
   );
 }

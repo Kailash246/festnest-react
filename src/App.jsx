@@ -42,6 +42,7 @@ import CampusAmbassadorDashboard from './pages/ca/CampusAmbassadorDashboard';
 import Feedback          from './pages/Feedback';
 import ReferAndEarn      from './pages/refer/ReferAndEarn';
 import ProtectedRoute   from './components/ProtectedRoute';
+import ErrorBoundary    from './components/ErrorBoundary';
 import { MessageSquarePlus } from 'lucide-react';
 
 const isMobile = () => window.innerWidth < 768;
@@ -172,44 +173,46 @@ export default function App() {
           min-h-[calc(100dvh-56px)] md:min-h-0
           bg-white overflow-visible md:overflow-x-hidden md:overflow-y-auto
         ">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/"     element={<Navigate to="/home" replace />} />
-              <Route path="/home"          element={<Home />} />
-              <Route path="/explore"       element={<Explore />} />
-              <Route path="/saved"         element={<Saved />} />
-              <Route path="/profile"       element={<Profile />} />
-              <Route path="/profile/edit" element={<EditProfile />} />
-              <Route path="/refer"         element={<ProtectedRoute><ReferAndEarn /></ProtectedRoute>} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/college"       element={<MyCollege />} />
-              <Route path="/leaderboard"   element={<Leaderboard />} />
-              <Route path="/host"          element={<HostEvent />} />
-              <Route path="/event/:id/edit" element={<HostEvent />} />
-              <Route path="/about"         element={<AboutFounder />} />
-              <Route path="/support"       element={<Support />} />
-              <Route path="/feedback"      element={<Feedback />} />
-              <Route path="/discover"      element={<HubPage />} />
-              <Route path="/events/:city"  element={<CityPage />} />
-              <Route path="/category/:category" element={<CategoryPage />} />
-              <Route path="/blog"                                                    element={<BlogHub />} />
-              <Route path="/blog/how-to-win-a-hackathon"                             element={<HowToWinHackathon />} />
-              <Route path="/blog/hackathon-strategy-guide"                           element={<HackathonStrategy />} />
-              <Route path="/blog/how-to-win-startup-pitch-competition"               element={<WinningPitch />} />
-              <Route path="/blog/best-colleges-for-inter-college-competitions-india" element={<TopColleges />} />
-              <Route path="/blog/best-college-events-india-2025"                     element={<BestCollegeEvents />} />
-              <Route path="/event/:id"      element={<EventDetails />} />
-              <Route path="/admin"         element={<AdminDashboard />} />
-              <Route path="/organizer"    element={<OrganizerDashboard />} />
-              <Route path="/campus-ambassador"           element={<CampusAmbassadorPage />} />
-              <Route path="/ca"                          element={<CampusAmbassadorPage />} />
-              <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
-              <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
-              <Route path="/campus-ambassador/portal"    element={<CampusAmbassadorDashboard />} />
-              <Route path="/ca/portal"                   element={<CampusAmbassadorDashboard />} />
-              <Route path="*"             element={<Navigate to="/home" replace />} />
-            </Routes>
-          </AnimatePresence>
+          <ErrorBoundary>
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/"     element={<Navigate to="/home" replace />} />
+                <Route path="/home"          element={<Home />} />
+                <Route path="/explore"       element={<Explore />} />
+                <Route path="/saved"         element={<Saved />} />
+                <Route path="/profile"       element={<Profile />} />
+                <Route path="/profile/edit" element={<EditProfile />} />
+                <Route path="/refer"         element={<ReferAndEarn />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/college"       element={<MyCollege />} />
+                <Route path="/leaderboard"   element={<Leaderboard />} />
+                <Route path="/host"          element={<HostEvent />} />
+                <Route path="/event/:id/edit" element={<HostEvent />} />
+                <Route path="/about"         element={<AboutFounder />} />
+                <Route path="/support"       element={<Support />} />
+                <Route path="/feedback"      element={<Feedback />} />
+                <Route path="/discover"      element={<HubPage />} />
+                <Route path="/events/:city"  element={<CityPage />} />
+                <Route path="/category/:category" element={<CategoryPage />} />
+                <Route path="/blog"                                                    element={<BlogHub />} />
+                <Route path="/blog/how-to-win-a-hackathon"                             element={<HowToWinHackathon />} />
+                <Route path="/blog/hackathon-strategy-guide"                           element={<HackathonStrategy />} />
+                <Route path="/blog/how-to-win-startup-pitch-competition"               element={<WinningPitch />} />
+                <Route path="/blog/best-colleges-for-inter-college-competitions-india" element={<TopColleges />} />
+                <Route path="/blog/best-college-events-india-2025"                     element={<BestCollegeEvents />} />
+                <Route path="/event/:id"      element={<EventDetails />} />
+                <Route path="/admin"         element={<AdminDashboard />} />
+                <Route path="/organizer"    element={<OrganizerDashboard />} />
+                <Route path="/campus-ambassador"           element={<CampusAmbassadorPage />} />
+                <Route path="/ca"                          element={<CampusAmbassadorPage />} />
+                <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
+                <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
+                <Route path="/campus-ambassador/portal"    element={<CampusAmbassadorDashboard />} />
+                <Route path="/ca/portal"                   element={<CampusAmbassadorDashboard />} />
+                <Route path="*"             element={<Navigate to="/home" replace />} />
+              </Routes>
+            </AnimatePresence>
+          </ErrorBoundary>
         </main>
       </div>
 
