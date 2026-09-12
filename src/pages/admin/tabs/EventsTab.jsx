@@ -75,17 +75,17 @@ const EventsTableSkeleton = () => (
 );
 
 const EventsMobileSkeleton = () => (
-  <div className="space-y-2.5">
+  <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-xs divide-y divide-neutral-100 overflow-hidden">
     {[1, 2, 3, 4, 5, 6].map((i) => (
-      <div key={i} className="bg-white rounded-2xl border border-neutral-100/90 p-3 shadow-xs flex items-center justify-between gap-2.5">
-        <div className="skeleton w-11 h-11 rounded-2xl shrink-0" />
+      <div key={i} className="px-3.5 py-3 flex items-center justify-between gap-2.5">
+        <div className="skeleton w-10 h-10 rounded-xl shrink-0" />
         <div className="min-w-0 flex-1 space-y-1.5">
-          <div className="skeleton h-4 w-32 rounded" />
-          <div className="skeleton h-3 w-24 rounded" />
+          <div className="skeleton h-3.5 w-32 rounded" />
+          <div className="skeleton h-2.5 w-24 rounded" />
         </div>
-        <div className="skeleton h-6 w-16 rounded-full shrink-0" />
-        <div className="skeleton h-4 w-7 rounded shrink-0" />
-        <div className="skeleton w-9 h-9 rounded-xl shrink-0" />
+        <div className="skeleton h-5 w-14 rounded-full shrink-0" />
+        <div className="skeleton h-3.5 w-7 rounded shrink-0" />
+        <div className="skeleton w-8 h-8 rounded-lg shrink-0" />
       </div>
     ))}
   </div>
@@ -448,7 +448,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
         </div>
       </div>
 
-      {/* ── MOBILE UNIFIED CARD LIST VIEW (< md) ── MATCHING USER REFERENCE DESIGN */}
+      {/* ── MOBILE UNIFIED CONTINUOUS LIST VIEW (< md) ── PREMIUM SINGLE LIST CONTAINER */}
       <div className="block md:hidden">
         {loading ? (
           <EventsMobileSkeleton />
@@ -459,8 +459,10 @@ export default function EventsTab({ showToast, onOpenCreate }) {
             <p className="text-xs text-neutral-400 mt-0.5">Try adjusting your search criteria or publish a new event.</p>
           </div>
         ) : (
-          <div className="space-y-2.5">
-            {items.map(ev => {
+          <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-xs divide-y divide-neutral-100">
+            {items.map((ev, index) => {
+              const isFirst = index === 0;
+              const isLast = index === items.length - 1;
               const isActing = actionId.startsWith(ev._id);
               const eventTitle = ev.name || ev.eventName || ev.title || 'Untitled Event';
               const eventSubtitle = ev.tagline || ev.theme || ev.college || ev.category || 'Live Event';
@@ -470,16 +472,20 @@ export default function EventsTab({ showToast, onOpenCreate }) {
               return (
                 <div
                   key={ev._id}
-                  className={`bg-white rounded-2xl border border-neutral-100/90 p-3 shadow-xs hover:shadow-sm transition-all flex items-center justify-between gap-2.5 relative ${
-                    !ev.isActive ? 'opacity-75 bg-neutral-50/60' : ''
+                  className={`px-3.5 py-3 transition-colors flex items-center justify-between gap-2.5 relative group ${
+                    isFirst ? 'rounded-t-2xl' : ''
+                  } ${isLast ? 'rounded-b-2xl' : ''} ${
+                    !ev.isActive
+                      ? 'opacity-70 bg-neutral-50/40'
+                      : 'hover:bg-neutral-50/80 active:bg-neutral-100/60'
                   }`}
                 >
                   {/* Left: Branded Squircle Icon Avatar */}
                   <div
                     onClick={() => setSelectedMobileEvent(ev)}
-                    className="w-11 h-11 rounded-2xl bg-[#f4f6fb] border border-slate-200/70 flex items-center justify-center shrink-0 shadow-2xs cursor-pointer select-none"
+                    className="w-10 h-10 rounded-xl bg-[#f4f6fb] border border-slate-200/60 flex items-center justify-center shrink-0 shadow-2xs cursor-pointer select-none"
                   >
-                    <span className={`font-black text-xl bg-gradient-to-br ${getEventGradient(eventTitle)} bg-clip-text text-transparent`}>
+                    <span className={`font-black text-lg bg-gradient-to-br ${getEventGradient(eventTitle)} bg-clip-text text-transparent`}>
                       {eventTitle.trim().charAt(0).toUpperCase() || 'E'}
                     </span>
                   </div>
@@ -490,14 +496,14 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                     className="min-w-0 flex-1 cursor-pointer"
                   >
                     <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-neutral-900 text-[14px] leading-tight truncate" title={eventTitle}>
+                      <span className="font-bold text-neutral-900 text-[13.5px] leading-tight truncate" title={eventTitle}>
                         {eventTitle}
                       </span>
                       {ev.isFeatured && (
                         <Star className="w-3 h-3 fill-amber-500 text-amber-500 shrink-0" />
                       )}
                     </div>
-                    <div className="text-xs text-neutral-400 font-normal mt-0.5 truncate">
+                    <div className="text-[11.5px] text-neutral-400 font-normal mt-0.5 truncate">
                       {eventSubtitle}
                     </div>
                   </div>
@@ -505,12 +511,12 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                   {/* Middle Right: Active / Inactive Pill Badge */}
                   <div className="shrink-0">
                     {ev.isActive ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eafaf1] text-[#1e834b] border border-emerald-200/50">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#eafaf1] text-[#1e834b] border border-emerald-200/50">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
                         Active
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-600 border border-neutral-200/70">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-neutral-100 text-neutral-600 border border-neutral-200/70">
                         <span className="w-1.5 h-1.5 rounded-full bg-neutral-400" />
                         Inactive
                       </span>
@@ -535,7 +541,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                         setOpenActionMenuId(openActionMenuId === ev._id ? null : ev._id);
                       }}
                       aria-label={`Actions for ${eventTitle}`}
-                      className="w-9 h-9 rounded-xl border border-neutral-200/90 bg-white hover:bg-neutral-50 text-neutral-500 flex items-center justify-center transition active:bg-neutral-100 shadow-2xs"
+                      className="w-8 h-8 rounded-lg border border-neutral-200/80 bg-white hover:bg-neutral-50 text-neutral-500 flex items-center justify-center transition active:bg-neutral-100 shadow-2xs"
                     >
                       <MoreVertical className="w-4 h-4" />
                     </button>
