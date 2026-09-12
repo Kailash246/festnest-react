@@ -24,6 +24,7 @@ import BroadcastTab from './tabs/BroadcastTab';
 import CollegesTab from './tabs/CollegesTab';
 import AmbassadorsTab from './tabs/AmbassadorsTab';
 import FeedbackTab from './tabs/FeedbackTab';
+import ReferAndEarnTab from './tabs/ReferAndEarnTab';
 
 class AdminErrorBoundary extends Component {
   constructor(props) {
@@ -305,6 +306,13 @@ function AdminDashboardContent() {
 
               {activeTab === 'users' && (
                 <UsersTab
+                  showToast={showToast}
+                  onSelectUser={(uid) => setSelectedUserId(uid)}
+                />
+              )}
+
+              {activeTab === 'refer' && (
+                <ReferAndEarnTab
                   showToast={showToast}
                   onSelectUser={(uid) => setSelectedUserId(uid)}
                 />

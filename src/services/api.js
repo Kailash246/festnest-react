@@ -329,6 +329,38 @@ export const admin = {
   feedback:              (params={}) => get('/admin/feedback' + buildQs(params)),
   getFeedback:           (id)        => get(`/admin/feedback/${id}`),
   deleteFeedback:        (id)        => del(`/admin/feedback/${id}`),
+  // Refer & Earn Supreme Admin Controls
+  refer: {
+    stats:                ()          => get('/admin/refer/stats'),
+    referrals:            (params={}) => get('/admin/refer/referrals' + buildQs(params)),
+    getReferral:          (id)        => get(`/admin/refer/referrals/${id}`),
+    invalidateReferral:   (id, reason)=> post(`/admin/refer/referrals/${id}/invalidate`, { reason }),
+    restoreReferral:      (id, reason)=> post(`/admin/refer/referrals/${id}/restore`, { reason }),
+    verifyRegistration:   (id, body={})=> post(`/admin/refer/referrals/${id}/verify-registration`, body),
+    unverifyRegistration: (id)        => post(`/admin/refer/referrals/${id}/unverify-registration`),
+    overrideReferral:     (id, body)  => patch(`/admin/refer/referrals/${id}/override`, body),
+
+    getUserProfile:       (id)        => get(`/admin/refer/users/${id}`),
+    adjustCoins:          (id, amount, reason) => post(`/admin/refer/users/${id}/adjust-coins`, { amount, reason }),
+    adjustBonusSpins:     (id, amount, reason) => post(`/admin/refer/users/${id}/bonus-spins`, { amount, reason }),
+
+    ledger:               (params={}) => get('/admin/refer/ledger' + buildQs(params)),
+
+    grantTestCoins:       (amount, reason) => post('/admin/refer/test/grant-coins', { amount, reason }),
+    resetTestCoins:       ()          => post('/admin/refer/test/reset-coins'),
+    testSpin:             (body={})   => post('/admin/refer/test/spin', body),
+
+    rewards:              ()          => get('/admin/refer/rewards'),
+    createReward:         (body)      => post('/admin/refer/rewards', body),
+    updateReward:         (id, body)  => patch(`/admin/refer/rewards/${id}`, body),
+    deleteReward:         (id)        => del(`/admin/refer/rewards/${id}`),
+
+    spins:                (params={}) => get('/admin/refer/spins' + buildQs(params)),
+    updateSpinStatus:     (id, body)  => patch(`/admin/refer/spins/${id}/status`, body),
+
+    settings:             ()          => get('/admin/refer/settings'),
+    updateSettings:       (body)      => patch('/admin/refer/settings', body),
+  },
 };
 
 /* ─── AI Poster Autofill ─────────────────────────────────── */
