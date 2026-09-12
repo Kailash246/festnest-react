@@ -22,7 +22,7 @@ const EventsTableSkeleton = () => (
   <tbody className="divide-y divide-neutral-100 text-xs">
     {[1, 2, 3, 4, 5, 6, 7].map((i) => (
       <tr key={i} className="hover:bg-neutral-50/70 transition-colors">
-        <td className="sticky left-0 z-10 bg-white shadow-[1px_0_0_0_#E5E7EB] py-3.5 px-4 min-w-[200px]">
+        <td className="py-3.5 px-4 min-w-[200px]">
           <div className="flex items-center gap-3">
             <div className="skeleton w-8 h-8 rounded-lg shrink-0" />
             <div className="min-w-0 flex-1 space-y-1.5">
@@ -222,7 +222,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
           <table className="w-full min-w-[820px] text-left border-collapse">
             <thead>
               <tr className="border-b border-neutral-200/80 bg-neutral-50/60 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                <th className="sticky left-0 z-20 bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 min-w-[200px]">Event</th>
+                <th className="py-3 px-4 min-w-[200px]">Event</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">College & Location</th>
                 <th className="py-3 px-4">Date</th>
@@ -253,7 +253,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                       className={`hover:bg-neutral-50/70 transition-colors group ${!ev.isActive ? 'opacity-60 bg-neutral-50/40' : ''}`}
                     >
                       {/* Name & Emoji */}
-                      <td className="sticky left-0 z-10 bg-white group-hover:bg-neutral-50 shadow-[1px_0_0_0_#E5E7EB] py-3 px-4 min-w-[200px]">
+                      <td className="py-3 px-4 min-w-[200px]">
                         <div className="flex items-center gap-3">
                           <span className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-base flex-shrink-0">
                             {ev.emoji || '🎯'}
