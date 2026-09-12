@@ -40,6 +40,8 @@ import BestCollegeEvents  from './pages/blog/BestCollegeEvents';
 import CampusAmbassadorPage      from './pages/festnest_ca_page';
 import CampusAmbassadorDashboard from './pages/ca/CampusAmbassadorDashboard';
 import Feedback          from './pages/Feedback';
+import ReferAndEarn      from './pages/refer/ReferAndEarn';
+import ProtectedRoute   from './components/ProtectedRoute';
 import { MessageSquarePlus } from 'lucide-react';
 
 const isMobile = () => window.innerWidth < 768;
@@ -178,6 +180,7 @@ export default function App() {
               <Route path="/saved"         element={<Saved />} />
               <Route path="/profile"       element={<Profile />} />
               <Route path="/profile/edit" element={<EditProfile />} />
+              <Route path="/refer"         element={<ProtectedRoute><ReferAndEarn /></ProtectedRoute>} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/college"       element={<MyCollege />} />
               <Route path="/leaderboard"   element={<Leaderboard />} />

@@ -12,7 +12,7 @@ const ROLE_LABEL = { user: 'Student', organizer: 'Organizer', admin: 'Admin', su
 import {
   House, Compass, Bell, Bookmark, User, PlusCircle,
   Code2, Music4, Wrench, Trophy, LogOut,
-  Info, HelpCircle, ClipboardList, ShieldCheck, MessageCircle, Award,
+  Info, HelpCircle, ClipboardList, ShieldCheck, MessageCircle, Award, Gift,
 } from 'lucide-react';
 import { PRIORITY_CATEGORIES } from '../data/categories';
 
@@ -158,6 +158,7 @@ export default function MobileDrawer() {
               <Btn onClick={() => goProtected('/saved')}   Icon={Bookmark}   label="Saved Events"
                 badge={savedCount > 0 ? savedCount : undefined} />
               <Btn onClick={() => goProtected('/profile')} Icon={User}       label="My Profile" />
+              <Btn onClick={() => goProtected('/refer')}   Icon={Gift}       label="Refer & Earn" />
 
               {/* Organizer-only — placed right after Profile */}
               {(isOrganizer || isSuperAdmin) && (

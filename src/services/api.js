@@ -135,7 +135,12 @@ async function request(path, options = {}) {
 
   if (!json.success) {
     const message = json.message || statusFallback(res.status);
-    throw Object.assign(new Error(message), { status: res.status, errors: json.errors });
+    throw Object.assign(new Error(message), {
+      status: res.status,
+      errors: json.errors,
+      code: json.code,
+      response: { data: json, status: res.status },
+    });
   }
   return json;
 }
@@ -158,12 +163,12 @@ function statusFallback(status) {
   }
 }
 
-const get   = (path, opts)       => request(path, { method: 'GET', ...opts });
-const post  = (path, body, opts) => request(path, { method: 'POST',   body: body instanceof FormData ? body : JSON.stringify(body), ...opts });
+export const get   = (path, opts)       => request(path, { method: 'GET', ...opts });
+export const post  = (path, body, opts) => request(path, { method: 'POST',   body: body instanceof FormData ? body : JSON.stringify(body), ...opts });
 // Preserve multipart bodies for endpoints such as live-event edits. JSON
 // stringifying FormData produces `{}`, which silently drops every field.
-const patch = (path, body, opts) => request(path, { method: 'PATCH',  body: body instanceof FormData ? body : JSON.stringify(body), ...opts });
-const del   = (path, body, opts) => request(path, { method: 'DELETE', body: body ? JSON.stringify(body) : undefined, ...opts });
+export const patch = (path, body, opts) => request(path, { method: 'PATCH',  body: body instanceof FormData ? body : JSON.stringify(body), ...opts });
+export const del   = (path, body, opts) => request(path, { method: 'DELETE', body: body ? JSON.stringify(body) : undefined, ...opts });
 
 /* ─── Auth ───────────────────────────────────────────────── */
 export const auth = {
@@ -345,4 +350,31 @@ export const ai = {
   },
 };
 
-export default { auth, events, users, notifications, leaderboard, college, support, feedback, admin, ca, tokens, ai };
+/* ─── Refer & Earn + Spin Wheel ──────────────────────────── */
+export const refer = {
+  summary:     ()                            => get('/refer/summary'),
+  history:     (type, page = 1, limit = 8)   => get(`/refer/history?type=${type}&page=${page}&limit=${limit}`),
+  wheelConfig: ()                            => get('/refer/wheel-config'),
+  spin:        (idempotencyKey)              => post('/refer/spin', { idempotencyKey }),
+};
+
+export default {
+  get,
+  post,
+  patch,
+  del,
+  auth,
+  events,
+  users,
+  notifications,
+  leaderboard,
+  college,
+  support,
+  feedback,
+  admin,
+  ca,
+  tokens,
+  ai,
+  refer,
+};
+
