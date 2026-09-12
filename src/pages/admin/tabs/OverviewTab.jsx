@@ -161,7 +161,7 @@ export default function OverviewTab({
     registrationsTrend = [],
     recentUsers = [],
     recentSubmissions = [],
-  } = stats;
+  } = stats || {};
 
   // Format trend data for Recharts
   const trendChartData = registrationsTrend.map(item => ({
