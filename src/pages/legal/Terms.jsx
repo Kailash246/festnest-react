@@ -119,7 +119,6 @@ export default function Terms() {
       <Section num="6" id="organizer" title="Organizer Obligations">
         <p>If you list an event on FestNest, you are the "Organizer" of that event and you alone are responsible for it. By submitting an event, you represent and agree that:</p>
         <List items={[
-          'You have the authority to represent the institution, club, or body organizing the event.',
           'You have the authority to represent the institution, college, club, society, department, or body organizing the event.',
           'All information you provide — dates, venue, fees, prizes, eligibility, rules, and contact details — is accurate, current, and not misleading.',
           'The event is genuine, lawful, and a real academic or extracurricular activity.',
@@ -200,8 +199,6 @@ export default function Terms() {
           'If you believe a listing is unlawful, fraudulent, infringing, or otherwise violates these Terms, report it to support@festnest.in with details, and we will review and act expeditiously.',
           'We do not actively monitor every listing and are not liable for third-party content, but we will act once we have actual knowledge of a genuine violation.',
         ]} />
-        <Callout type="legal" icon={Copyright} title="Reporting IP or unlawful content">
-          For intellectual-property complaints or unlawful content, email legal@festnest.in with the listing details, your contact information, and the basis of your complaint. We respond promptly.
         <Callout type="legal" icon={Copyright} title="Reporting IP, branding removal, or unlawful content">
           For intellectual-property complaints, authorized institution branding removal requests, or unlawful content, email legal@festnest.in with the listing details, your official institution credentials, and the basis of your request. When an authorized branding removal request is received and verified, FestNest will promptly cease promotional use and remove the institution logo from marketing/trust sections, while preserving platform event records and contractual audit history.
         </Callout>
@@ -209,7 +206,6 @@ export default function Terms() {
 
       <Section num="10" id="ip" title="Intellectual Property">
         <p><strong className="text-text-1">Our IP.</strong> The FestNest name, logo, design, software, and database are our exclusive property, protected under the Copyright Act, 1957 and other Indian laws. You may not copy, modify, or commercially exploit them without our written permission.</p>
-        <p><strong className="text-text-1">Your content.</strong> You keep ownership of everything you submit. By submitting, you grant FestNest a non-exclusive, royalty-free, worldwide licence to host, display, and distribute that content <em>within the Platform</em> solely to operate the service. This licence ends when you delete the content or your account, subject to legal retention requirements.</p>
         <p><strong className="text-text-1">Your content and institution branding.</strong> You retain ownership of all intellectual property, logos, and materials you submit. By submitting or publishing an event on FestNest, you grant FestNest a non-exclusive, royalty-free, worldwide licence for two distinct purposes:</p>
         <List items={[
           'Platform Operation Licence: To host, display, reproduce, distribute, and operate the event listing and associated materials across the Platform to provide our discovery service.',
