@@ -997,7 +997,6 @@ export default function EventDetails() {
     ? computedSum.toLocaleString('en-IN')
     : '';
 
-  const hasPrizes = Boolean(displayTotalPrize || prizes.first || prizes.second || prizes.third) || ev?.badgeClass === 'badge-prize';
   const hasPrizes = Boolean(displayTotalPrize);
   const eligibility   = sanitizeText(ev?.eligibility || '');
   const rules         = sanitizeText(ev?.rules || '');
@@ -1015,7 +1014,6 @@ export default function EventDetails() {
   const visibleRules = showFullRules
     ? rulesList
     : rulesList.slice(0, remainingRulesBudget);
-  const perks         = ev?.perks       || '';
   const perksList     = parsePerksList(ev?.perks ?? ev?.additionalPerks ?? ev?.otherPerks);
   const hasPerks      = perksList.length > 0;
   const pocName       = ev?.pocName     || '';
@@ -1059,7 +1057,6 @@ export default function EventDetails() {
     'Overview',
     safeAbout && 'About',
     individualCompetitions.length && 'Competitions',
-    (hasPrizes || perks || ev?.highlights?.length) && 'Prizes',
     (hasPrizes || hasPerks) && (hasPrizes ? 'Prizes' : { id: 'prizes', label: 'Perks' }),
     (eligibility || rules) && 'Rules',
     (ev?.orgName || ev?.college) && 'Organizer',
@@ -1691,17 +1688,14 @@ export default function EventDetails() {
           )}
 
           {/* ── PRIZES & PERKS ── */}
-          {(hasPrizes || perks || ev.highlights?.length > 0) && (
           {(hasPrizes || hasPerks) && (
             <section id="prizes" className="scroll-mt-[72px]">
-              <SectionHeading>Prizes & Perks</SectionHeading>
               <SectionHeading>
                 {hasPrizes && hasPerks ? 'Prizes & Perks' : hasPrizes ? 'Prizes' : 'Additional Perks'}
               </SectionHeading>
 
               {/* Redesigned Dynamic Blue-Violet Prize Pool Banner Card */}
               {displayTotalPrize && (
-                <div className="relative overflow-hidden rounded-xl border border-indigo-100/90 bg-gradient-to-r from-[#EEF2FF] via-[#F5F3FF] to-[#EDE9FE] p-4 sm:p-5 shadow-[0_2px_12px_rgba(79,70,229,0.06)] mb-4">
                 <div className={`relative overflow-hidden rounded-xl border border-indigo-100/90 bg-gradient-to-r from-[#EEF2FF] via-[#F5F3FF] to-[#EDE9FE] p-4 sm:p-5 shadow-[0_2px_12px_rgba(79,70,229,0.06)] ${hasPerks ? 'mb-4' : ''}`}>
                   {/* Subtle background glow accents */}
                   <div
@@ -1755,21 +1749,6 @@ export default function EventDetails() {
                 </div>
               )}
 
-              {/* Additional Perks 4-Card Grid */}
-              <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">Additional Perks</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {[
-                    { icon: Briefcase, label: 'Internship Opportunities' },
-                    { icon: Gift,      label: 'Goodies & Swag' },
-                    { icon: Award,     label: 'Certificates' },
-                    { icon: Globe,     label: 'Exposure & Networking' },
-                  ].map(({ icon: Icon, label }) => (
-                    <div key={label} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-surface-2">
-                      <Icon size={18} className="text-primary flex-shrink-0" />
-                      <span className="text-[13px] font-medium text-text-1 leading-snug">{label}</span>
-                    </div>
-                  ))}
               {/* Additional Perks Grid (Rendered only when valid organizer-provided perks exist) */}
               {hasPerks && (
                 <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
@@ -1788,7 +1767,6 @@ export default function EventDetails() {
                     })}
                   </div>
                 </div>
-              </div>
               )}
             </section>
           )}

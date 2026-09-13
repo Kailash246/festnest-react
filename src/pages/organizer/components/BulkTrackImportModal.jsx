@@ -474,9 +474,9 @@ export default function BulkTrackImportModal({
                   <span className="text-primary font-semibold underline">browse files</span>
                 </p>
                 <div className="mt-4 inline-flex items-center gap-2 text-[11px] font-medium text-text-3 bg-white px-3 py-1 rounded-full border border-border shadow-2xs">
-                  <span>Up to 25 pages</span>
-                  <span>·</span>
                   <span>PDF only</span>
+                  <span>·</span>
+                  <span>Up to 25 pages</span>
                   <span>·</span>
                   <span>Max 25 MB</span>
                 </div>
