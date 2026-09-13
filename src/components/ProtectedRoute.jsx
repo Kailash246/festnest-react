@@ -32,7 +32,7 @@ export default function ProtectedRoute({ children }) {
           Authentication Required
         </h2>
         <p className="text-sm text-text-3 max-w-sm mb-4">
-          Please sign in to access your Refer &amp; Earn dashboard and spin the wheel.
+          Please sign in to access this page.
         </p>
         <button
           type="button"

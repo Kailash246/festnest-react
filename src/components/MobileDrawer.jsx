@@ -158,7 +158,9 @@ export default function MobileDrawer() {
               <Btn onClick={() => goProtected('/saved')}   Icon={Bookmark}   label="Saved Events"
                 badge={savedCount > 0 ? savedCount : undefined} />
               <Btn onClick={() => goProtected('/profile')} Icon={User}       label="My Profile" />
-              <Btn onClick={() => goProtected('/refer')}   Icon={Gift}       label="Refer & Earn" />
+              {isAdmin && (
+                <Btn onClick={() => goProtected('/refer')}   Icon={Gift}       label="Refer & Earn" />
+              )}
 
               {/* Organizer-only — placed right after Profile */}
               {(isOrganizer || isSuperAdmin) && (

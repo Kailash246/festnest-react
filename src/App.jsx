@@ -50,6 +50,14 @@ const isMobile = () => window.innerWidth < 768;
 // Routes that render full-bleed with no sidebar / topnav / bottom-nav chrome
 const STANDALONE_ROUTES = ['/terms', '/privacy'];
 
+function AdminOnlyRoute({ children }) {
+  const { isLoggedIn, isAdmin } = useApp();
+  if (!isLoggedIn || !isAdmin) {
+    return <Navigate to="/home" replace />;
+  }
+  return children;
+}
+
 export default function App() {
   const location = useLocation();
 
@@ -182,7 +190,7 @@ export default function App() {
                 <Route path="/saved"         element={<Saved />} />
                 <Route path="/profile"       element={<Profile />} />
                 <Route path="/profile/edit" element={<EditProfile />} />
-                <Route path="/refer"         element={<ReferAndEarn />} />
+                <Route path="/refer"         element={<AdminOnlyRoute><ReferAndEarn /></AdminOnlyRoute>} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/college"       element={<MyCollege />} />
                 <Route path="/leaderboard"   element={<Leaderboard />} />

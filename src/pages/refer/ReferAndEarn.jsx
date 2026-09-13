@@ -93,7 +93,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -927,6 +927,11 @@ const PAGE_SIZE = 8;
 export default function ReferAndEarn() {
   const { isLoggedIn, requireAuth, isAdmin } = useApp();
   const [searchParams] = useSearchParams();
+
+  // Strictly Admin-only: non-admins or unauthenticated users are redirected
+  if (!isLoggedIn || !isAdmin) {
+    return <Navigate to="/home" replace />;
+  }
 
   const [summary, setSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);

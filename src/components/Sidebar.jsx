@@ -92,11 +92,14 @@ export default function Sidebar() {
         icon={<ProfileIcon />} label="Profile"
         isActive={path === '/profile'}
       />
-      <SidebarBtn
-        onClick={() => goProtected('/refer')}
-        icon={<GiftIcon />} label="Refer & Earn"
-        isActive={path === '/refer'}
-      />
+      {/* Admin-only: Refer & Earn */}
+      {isAdmin && (
+        <SidebarBtn
+          onClick={() => goProtected('/refer')}
+          icon={<GiftIcon />} label="Refer & Earn"
+          isActive={path === '/refer'}
+        />
+      )}
 
       {/* Admin-only — shown immediately after Profile */}
       {isAdmin && (
