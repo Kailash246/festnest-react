@@ -26,6 +26,34 @@ export const tokens = {
   isLoggedIn: () => !!localStorage.getItem('fn_access'),
 };
 
+/* ─── Activity Session Tracking ──────────────────────────── */
+const safeGetSessionId = () => {
+  try {
+    return typeof window !== 'undefined' ? sessionStorage.getItem('fn_session_id') : null;
+  } catch {
+    return null;
+  }
+};
+
+let _sessionId = safeGetSessionId();
+
+export const setSessionId = (id) => {
+  _sessionId = id;
+  try {
+    if (typeof window !== 'undefined') {
+      if (id) sessionStorage.setItem('fn_session_id', id);
+      else sessionStorage.removeItem('fn_session_id');
+    }
+  } catch {
+    // ignore storage restrictions
+  }
+};
+
+export const getSessionId = () => {
+  return _sessionId || safeGetSessionId();
+};
+
+
 /* ─── Core fetch with auto refresh ──────────────────────── */
 let _refreshing = false;
 let _queue = [];
@@ -35,6 +63,9 @@ async function request(path, options = {}) {
   if (!(options.body instanceof FormData)) headers['Content-Type'] = 'application/json';
   const access = tokens.getAccess();
   if (access) headers['Authorization'] = `Bearer ${access}`;
+  const sid = getSessionId();
+  if (sid) headers['X-Session-Id'] = sid;
+
 
   let res;
   try {
@@ -369,6 +400,53 @@ export const admin = {
     settings:             ()          => get('/admin/refer/settings'),
     updateSettings:       (body)      => patch('/admin/refer/settings', body),
   },
+  // User Activity & Analytics
+  activity: {
+    getUsers:       (params = {}) => get('/admin/activity/users' + buildQs(params)),
+    getUserDetail:  (userId)      => get(`/admin/activity/users/${userId}`),
+  },
+};
+
+/* ─── Beacon / Unload Flush Helper ───────────────────────── */
+export const flushBeacon = (path, data = {}) => {
+  try {
+    const access = tokens.getAccess();
+    const sid = getSessionId();
+    const url = `${BASE}${path}`;
+    const payload = JSON.stringify({ ...data, sessionId: sid });
+
+    // Use fetch with keepalive if supported (supports custom headers)
+    if (typeof window !== 'undefined' && window.fetch) {
+      window.fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(access ? { 'Authorization': `Bearer ${access}` } : {}),
+          ...(sid ? { 'X-Session-Id': sid } : {}),
+        },
+        body: payload,
+        keepalive: true,
+      }).catch(() => {});
+      return;
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      const blob = new Blob([payload], { type: 'application/json' });
+      navigator.sendBeacon(url, blob);
+    }
+  } catch {
+    // Non-critical background telemetry flush
+  }
+};
+
+/* ─── Activity Tracking ──────────────────────────────────── */
+export const activity = {
+  startSession: (data = {}) => post('/activity/session/start', data),
+  heartbeat:    (data = {}) => post('/activity/heartbeat', data),
+  pageView:     (data = {}) => post('/activity/page-view', data),
+  track:        (data = {}) => post('/activity/track', data),
+  endSession:   (data = {}) => post('/activity/session/end', data),
+  flushBeacon,
 };
 
 /* ─── AI Poster Autofill ─────────────────────────────────── */
@@ -416,5 +494,10 @@ export default {
   tokens,
   ai,
   refer,
+  activity,
+  setSessionId,
+  getSessionId,
+  flushBeacon,
 };
+
 

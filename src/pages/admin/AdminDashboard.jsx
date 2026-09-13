@@ -1,6 +1,6 @@
 // src/pages/admin/AdminDashboard.jsx
 import React, { useState, useEffect, useCallback, Component } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -18,6 +18,7 @@ import OverviewTab from './tabs/OverviewTab';
 import SubmissionsTab from './tabs/SubmissionsTab';
 import EventsTab from './tabs/EventsTab';
 import UsersTab from './tabs/UsersTab';
+import ActivityTab from './tabs/ActivityTab';
 import TicketsTab from './tabs/TicketsTab';
 import FeaturedTab from './tabs/FeaturedTab';
 import BroadcastTab from './tabs/BroadcastTab';
@@ -87,12 +88,14 @@ class AdminErrorBoundary extends Component {
 
 function AdminDashboardContent() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAdmin, isLoggedIn, currentUser, showToast, refreshUser } = useApp();
 
-  // Tab state synced with URL ?tab=...
+  // Tab state synced with URL pathname or ?tab=...
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam || 'overview');
+  const isActivityRoute = location.pathname.startsWith('/admin/activity');
+  const [activeTab, setActiveTab] = useState(() => (isActivityRoute ? 'activity' : (tabParam || 'overview')));
 
   // Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -128,21 +131,29 @@ function AdminDashboardContent() {
     }
   }, [sidebarCollapsed]);
 
-  // Sync tab change to URL search params
+  // Sync tab change to URL search params or route path
   const handleSelectTab = useCallback((tabId) => {
     setActiveTab(tabId);
-    setSearchParams(tabId === 'overview' ? {} : { tab: tabId }, { replace: true });
+    if (tabId === 'activity') {
+      navigate('/admin/activity');
+    } else {
+      navigate(tabId === 'overview' ? '/admin' : `/admin?tab=${tabId}`);
+    }
     setMobileNavOpen(false);
-  }, [setSearchParams]);
+  }, [navigate]);
 
   // Sync from URL if changed externally
   useEffect(() => {
-    if (tabParam && tabParam !== activeTab) {
+    if (location.pathname.startsWith('/admin/activity')) {
+      if (activeTab !== 'activity') setActiveTab('activity');
+    } else if (tabParam && tabParam !== activeTab) {
       setActiveTab(tabParam);
-    } else if (!tabParam && activeTab !== 'overview') {
+    } else if (!tabParam && !location.pathname.startsWith('/admin/activity') && activeTab !== 'overview') {
       setActiveTab('overview');
     }
-  }, [tabParam]);
+  }, [location.pathname, tabParam, activeTab]);
+
+
 
   // Fetch dashboard stats for badges and indicators
   const fetchDashboardStats = useCallback(async () => {
@@ -311,7 +322,14 @@ function AdminDashboardContent() {
                 />
               )}
 
+              {activeTab === 'activity' && (
+                <ActivityTab
+                  showToast={showToast}
+                />
+              )}
+
               {activeTab === 'refer' && (
+
                 <ReferAndEarnTab
                   showToast={showToast}
                   onSelectUser={(uid) => setSelectedUserId(uid)}

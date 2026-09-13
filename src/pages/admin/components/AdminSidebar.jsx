@@ -34,10 +34,12 @@ export const ADMIN_NAV_SECTIONS = [
       { id: 'submissions', label: 'Submissions', icon: ClipboardList, badgeKey: 'pendingSubmissions', badgeColor: 'amber' },
       { id: 'events',      label: 'Events',      icon: CalendarDays },
       { id: 'users',       label: 'Users',       icon: Users },
+      { id: 'activity',    label: 'User Activity', icon: Activity },
       { id: 'refer',       label: 'Refer & Earn', icon: Gift },
       { id: 'tickets',     label: 'Tickets',     icon: Ticket, badgeKey: 'openTickets', badgeColor: 'red' },
       { id: 'feedback',    label: 'Feedback',    icon: MessageSquare, badgeKey: 'totalFeedback', badgeColor: 'blue' },
       { id: 'ambassadors', label: 'Ambassadors', icon: Award,  badgeKey: 'pendingAmbassadors', badgeColor: 'purple' },
+
     ],
   },
   {

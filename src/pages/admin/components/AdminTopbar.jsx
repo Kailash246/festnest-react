@@ -34,7 +34,9 @@ export default function AdminTopbar({
     submissions: { title: 'Event Submissions',  sub: 'Review and approve organizer events' },
     events:      { title: 'Live Events',        sub: 'Manage active, inactive, and featured listings' },
     users:       { title: 'User Management',    sub: 'Students, organizers, permissions and roles' },
+    activity:    { title: 'User Activity & Analytics', sub: 'Real-time user presence, active sessions, and interaction audit trail' },
     tickets:     { title: 'Support Tickets',    sub: 'Inquiries and user support threads' },
+
     featured:    { title: 'Featured Priority',  sub: 'Feed spotlight and placement hierarchy' },
     notify:      { title: 'Push Broadcast',     sub: 'Send platform notifications to student base' },
     colleges:    { title: 'College Directory',  sub: 'Manage college campuses and hubs' },

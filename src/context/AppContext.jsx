@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { tokens, auth as authApi, events as eventsApi, notifications as notifApi } from '../services/api';
+import { ActivityTrackerProvider } from './ActivityTrackerContext';
 
 const AppContext = createContext(null);
+
 
 export function AppProvider({ children }) {
   /* ── Saved events (client-side Set of slugs, synced to backend) ── */
@@ -180,9 +182,13 @@ export function AppProvider({ children }) {
       homeFeedCache, setHomeFeedCache, homeFeedCacheTime, setHomeFeedCacheTime,
       exploreFeedCache, setExploreFeedCache, exploreFeedCacheTime, setExploreFeedCacheTime,
     }}>
-      {children}
+      <ActivityTrackerProvider>
+        {children}
+      </ActivityTrackerProvider>
     </AppContext.Provider>
+
   );
+
 }
 
 export const useApp = () => {
