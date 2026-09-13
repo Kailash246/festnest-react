@@ -339,6 +339,53 @@ const SectionHeading = ({ children, action }) => (
     {action && <div>{action}</div>}
   </div>
 );
+export function parsePerksList(raw) {
+  if (!raw) return [];
+
+  let items = [];
+  if (Array.isArray(raw)) {
+    items = raw.map(item => {
+      if (!item) return '';
+      if (typeof item === 'string') return item;
+      if (typeof item === 'object') return item.label || item.name || item.text || item.title || '';
+      return String(item);
+    });
+  } else if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!trimmed) return [];
+
+    if (trimmed.includes('\n')) {
+      items = trimmed.split('\n');
+    } else if (trimmed.includes('•')) {
+      items = trimmed.split('•');
+    } else if (trimmed.includes(';')) {
+      items = trimmed.split(';');
+    } else if (trimmed.includes(',') && trimmed.split(',').every(chunk => chunk.trim().length <= 60)) {
+      items = trimmed.split(',');
+    } else {
+      items = [trimmed];
+    }
+  }
+
+  return items
+    .map(item => {
+      const sanitized = sanitizeText(String(item || ''));
+      return sanitized
+        .replace(/^(\d+[\.\)]\s*|[-*•]\s*)/, '')
+        .trim();
+    })
+    .filter(Boolean);
+}
+
+function getPerkIcon(text) {
+  const lower = String(text || '').toLowerCase();
+  if (/intern|job|hire|career|placement|freelance|work/i.test(lower)) return Briefcase;
+  if (/certif|badge|recogni|license/i.test(lower)) return Award;
+  if (/goodie|swag|kit|t-shirt|tshirt|shirt|merch|hoodie|bag|voucher|coupon|bottle|sticker|gift/i.test(lower)) return Gift;
+  if (/network|expos|connect|community|industry|global|world|access|meet/i.test(lower)) return Globe;
+  if (/trophy|prize|medal|win|cash|reward|bounty/i.test(lower)) return Trophy;
+  return Sparkles;
+}
 
 const competitionValue = value => String(value || '').trim();
 
@@ -951,6 +998,7 @@ export default function EventDetails() {
     : '';
 
   const hasPrizes = Boolean(displayTotalPrize || prizes.first || prizes.second || prizes.third) || ev?.badgeClass === 'badge-prize';
+  const hasPrizes = Boolean(displayTotalPrize);
   const eligibility   = sanitizeText(ev?.eligibility || '');
   const rules         = sanitizeText(ev?.rules || '');
   const eligibilityList = eligibility ? eligibility.split('\n').map(s => s.trim()).filter(Boolean) : [];
@@ -968,6 +1016,8 @@ export default function EventDetails() {
     ? rulesList
     : rulesList.slice(0, remainingRulesBudget);
   const perks         = ev?.perks       || '';
+  const perksList     = parsePerksList(ev?.perks ?? ev?.additionalPerks ?? ev?.otherPerks);
+  const hasPerks      = perksList.length > 0;
   const pocName       = ev?.pocName     || '';
   const pocPhone      = ev?.pocPhone    || ev?.phone   || '';
   const pocEmail      = ev?.pocEmail    || ev?.email   || '';
@@ -1010,6 +1060,7 @@ export default function EventDetails() {
     safeAbout && 'About',
     individualCompetitions.length && 'Competitions',
     (hasPrizes || perks || ev?.highlights?.length) && 'Prizes',
+    (hasPrizes || hasPerks) && (hasPrizes ? 'Prizes' : { id: 'prizes', label: 'Perks' }),
     (eligibility || rules) && 'Rules',
     (ev?.orgName || ev?.college) && 'Organizer',
     (pocPhone || pocEmail || website || pocName) && 'Contact',
@@ -1641,12 +1692,17 @@ export default function EventDetails() {
 
           {/* ── PRIZES & PERKS ── */}
           {(hasPrizes || perks || ev.highlights?.length > 0) && (
+          {(hasPrizes || hasPerks) && (
             <section id="prizes" className="scroll-mt-[72px]">
               <SectionHeading>Prizes & Perks</SectionHeading>
+              <SectionHeading>
+                {hasPrizes && hasPerks ? 'Prizes & Perks' : hasPrizes ? 'Prizes' : 'Additional Perks'}
+              </SectionHeading>
 
               {/* Redesigned Dynamic Blue-Violet Prize Pool Banner Card */}
               {displayTotalPrize && (
                 <div className="relative overflow-hidden rounded-xl border border-indigo-100/90 bg-gradient-to-r from-[#EEF2FF] via-[#F5F3FF] to-[#EDE9FE] p-4 sm:p-5 shadow-[0_2px_12px_rgba(79,70,229,0.06)] mb-4">
+                <div className={`relative overflow-hidden rounded-xl border border-indigo-100/90 bg-gradient-to-r from-[#EEF2FF] via-[#F5F3FF] to-[#EDE9FE] p-4 sm:p-5 shadow-[0_2px_12px_rgba(79,70,229,0.06)] ${hasPerks ? 'mb-4' : ''}`}>
                   {/* Subtle background glow accents */}
                   <div
                     aria-hidden="true"
@@ -1714,8 +1770,26 @@ export default function EventDetails() {
                       <span className="text-[13px] font-medium text-text-1 leading-snug">{label}</span>
                     </div>
                   ))}
+              {/* Additional Perks Grid (Rendered only when valid organizer-provided perks exist) */}
+              {hasPerks && (
+                <div className="rounded-xl border border-border bg-white p-5 sm:p-6 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+                  {hasPrizes && (
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">Additional Perks</div>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {perksList.map((perk, idx) => {
+                      const Icon = getPerkIcon(perk);
+                      return (
+                        <div key={idx} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-surface-2">
+                          <Icon size={18} className="text-primary flex-shrink-0" />
+                          <span className="text-[13px] font-medium text-text-1 leading-snug break-words [overflow-wrap:anywhere]">{perk}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
+              )}
             </section>
           )}
 
