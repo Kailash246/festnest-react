@@ -249,6 +249,10 @@ export const college = {
   list:  (q)    => get(`/college/list${q ? '?q=' + encodeURIComponent(q) : ''}`),
   my:    (name) => get(`/college/my${name ? '?college=' + encodeURIComponent(name) : ''}`),
   setMy: (name) => patch('/college/my', { college: name }),
+  list:                (q)    => get(`/college/list${q ? '?q=' + encodeURIComponent(q) : ''}`),
+  hostingInstitutions: ()     => get('/college/hosting-institutions'),
+  my:                  (name) => get(`/college/my${name ? '?college=' + encodeURIComponent(name) : ''}`),
+  setMy:               (name) => patch('/college/my', { college: name }),
 };
 
 /* ─── Support ────────────────────────────────────────────── */
@@ -312,9 +316,13 @@ export const admin = {
   tickets:             (params={})=> get('/admin/tickets' + buildQs(params)),
   updateTicket:        (id, body) => patch(`/admin/tickets/${id}`, body),
   // Colleges
+  // Colleges & Institutions
   addCollege:          (body)     => post('/admin/colleges', body),
   updateCollege:       (id, body) => patch(`/admin/colleges/${id}`, body),
   deleteCollege:       (id)       => del(`/admin/colleges/${id}`),
+  institutions:        (params={})=> get('/admin/institutions' + buildQs(params)),
+  toggleInstitutionMarketingDisplay: (id, body) => patch(`/admin/institutions/${id}/marketing-display`, body),
+  requestInstitutionBrandingRemoval: (id, body) => post(`/admin/institutions/${id}/removal-request`, body),
   // Broadcast
   notify:              (body)     => post('/admin/notify', body),
   // Campus Ambassadors

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import BrandMark from '../../components/BrandMark';
 import { events as eventsApi } from '../../services/api';
+import { events as eventsApi, college as collegeApi } from '../../services/api';
 import { Code2, Music, Trophy, PartyPopper, BriefcaseBusiness, Rocket } from 'lucide-react';
 
 // Priority categories, in order.
@@ -28,12 +29,17 @@ export default function MobileLanding() {
   const { requireAuth, isLoggedIn } = useApp();
   const [apiStats,     setApiStats]     = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [institutions, setInstitutions] = useState([]);
 
   useEffect(() => {
     eventsApi.stats()
       .then(r => setApiStats(r.data))
       .catch(() => setApiStats(null))
       .finally(() => setStatsLoading(false));
+
+    collegeApi.hostingInstitutions()
+      .then(r => setInstitutions(r.data?.institutions || []))
+      .catch(() => setInstitutions([]));
   }, []);
 
   const handleSignIn = () => {
@@ -124,6 +130,39 @@ export default function MobileLanding() {
                 <div className="text-[11px] text-text-3 font-semibold mt-1">{label}</div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Colleges & Institutions Hosting Events */}
+        {institutions.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase text-primary mb-1">
+              <span>Real events · Real organizers</span>
+            </div>
+            <div className="font-heading font-bold text-[18px] text-text-1 mb-3">
+              Colleges &amp; Institutions Hosting Events
+            </div>
+            <div className="flex gap-2.5 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-none">
+              {institutions.map(inst => (
+                <div
+                  key={inst.id || inst.name}
+                  onClick={() => navigate(`/explore?college=${encodeURIComponent(inst.name)}`)}
+                  className="flex items-center gap-2.5 bg-surface-2 border border-border rounded-xl px-3.5 py-2.5 flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white border border-border flex items-center justify-center text-sm flex-shrink-0 overflow-hidden">
+                    {inst.logoUrl ? (
+                      <img src={inst.logoUrl} alt="" className="w-full h-full object-contain p-0.5" />
+                    ) : (
+                      <span>{inst.logoEmoji || '🏛️'}</span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-bold text-[13px] text-text-1 whitespace-nowrap">{inst.name}</div>
+                    <div className="text-[10px] text-text-3 font-medium">{inst.city} · {inst.eventCount} {inst.eventCount === 1 ? 'event' : 'events'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

@@ -827,6 +827,7 @@ export default function HostEvent() {
         else if (brochureFile.size > 10 * 1024 * 1024) errs.brochure = 'Brochure size cannot exceed 10 MB';
       }
       if (!isEditMode && !termsAccepted) errs.termsAgreement = 'Please agree to the Terms of Hosting and Privacy Policy to continue.';
+      if (!isEditMode && !termsAccepted) errs.termsAgreement = 'Please confirm organizer authority and agree to the Terms of Service to continue.';
     }
     return errs;
   };
@@ -920,6 +921,9 @@ export default function HostEvent() {
         showToast('Event updated successfully.', 'success');
         navigate(`/event/${response.data?.event?.slug || editEventId}`, { replace: true });
       } else {
+        fd.append('termsVersion', '2026-09');
+        fd.append('institutionAuthorityConfirmed', 'true');
+
         const storedRef = localStorage.getItem('fn_referral_code');
         if (storedRef && storedRef.trim()) {
           fd.append('referredByCode', storedRef.trim().toUpperCase());
@@ -1504,6 +1508,11 @@ export default function HostEvent() {
                       Terms of Hosting
                     </Link>{' '}and{' '}
                     <Link to="/privacy" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
+                    I confirm that I am authorized to represent this institution/organization and agree to FestNest's{' '}
+                    <Link to="/terms#organizer" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
+                      Terms of Service
+                    </Link>{' '}(including institution brand &amp; logo usage for platform discovery and marketing) and{' '}
+                    <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
                       Privacy Policy
                     </Link>.
                   </label>

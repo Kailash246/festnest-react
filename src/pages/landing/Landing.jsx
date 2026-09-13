@@ -5,6 +5,7 @@ import { useReveal, useMouseParallax, Reveal } from './_hooks';
 import BrandMark from '../../components/BrandMark';
 import { useApp } from '../../context/AppContext';
 import { events as eventsApi } from '../../services/api';
+import { events as eventsApi, college as collegeApi } from '../../services/api';
 import {
   Flame, CheckCircle2,
   // Star, UserCircle, Brain — kept for legacy sections below
@@ -279,6 +280,32 @@ function Hero({ onEnter }) {
 const COLLEGES = ['IIT Bombay','IIT Delhi','NIT Warangal','BITS Pilani','VIT Vellore','IISc Bangalore','Christ University','PES University','RV University','NIT Trichy'];
 function LogoWall() {
   const row = [...COLLEGES, ...COLLEGES];
+   COLLEGES & INSTITUTIONS HOSTING EVENTS (Real Platform Trust)
+════════════════════════════════════════════════════════════ */
+function HostingInstitutionsSection() {
+  const navigate = useNavigate();
+  const [institutions, setInstitutions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    collegeApi.hostingInstitutions()
+      .then(res => {
+        setInstitutions(res.data?.institutions || []);
+      })
+      .catch(err => {
+        console.error('Failed to load hosting institutions', err);
+        setInstitutions([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (!loading && institutions.length === 0) {
+    return null;
+  }
+
+  // Double list for continuous marquee if enough items
+  const displayList = institutions.length >= 4 ? [...institutions, ...institutions] : institutions;
+
   return (
     <section className="py-14 border-y border-border bg-surface-2/50 overflow-hidden">
       <Reveal>
@@ -294,9 +321,71 @@ function LogoWall() {
             <div key={i} className="flex items-center gap-2.5 bg-white border border-border rounded-md px-5 py-3 whitespace-nowrap grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-primary-mid transition-all duration-300">
               <span className="font-heading font-bold text-[15px] text-text-2">{c}</span>
             </div>
+    <section className="py-14 border-y border-border bg-surface-2/40 overflow-hidden">
+      <div className="max-w-[1240px] mx-auto px-8 mb-8 text-center">
+        <Reveal>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light border border-[#C7D2FE] text-primary text-[12px] font-bold tracking-wide uppercase mb-3">
+            <span>Real events · Real organizers</span>
+          </div>
+          <h2 className="font-heading font-bold text-[28px] sm:text-[32px] text-text-1 tracking-tight mb-2">
+            Colleges &amp; Institutions Hosting Events on FestNest
+          </h2>
+          <p className="text-[14px] text-text-3 max-w-2xl mx-auto leading-relaxed">
+            Events hosted by student clubs, societies, and departments from colleges and universities across India.
+          </p>
+        </Reveal>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center gap-4 px-8 overflow-hidden">
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="h-16 w-48 bg-surface-3 rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
+      ) : (
+        <div className="relative">
+          <div className="absolute left-0 top-0 bottom-0 w-24 sm:w-36 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 sm:w-36 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
+
+          <div className="flex gap-4 lp-marquee w-max py-2">
+            {displayList.map((inst, i) => (
+              <div
+                key={`${inst.id || inst.name}-${i}`}
+                onClick={() => navigate(`/explore?college=${encodeURIComponent(inst.name)}`)}
+                className="group flex items-center gap-3.5 bg-white border border-border rounded-xl px-5 py-3.5 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition-all duration-200"
+              >
+                <div className="w-10 h-10 rounded-lg bg-surface-2 border border-border/80 flex items-center justify-center flex-shrink-0 text-lg group-hover:scale-105 transition-transform overflow-hidden">
+                  {inst.logoUrl ? (
+                    <img
+                      src={inst.logoUrl}
+                      alt={`${inst.name} logo`}
+                      className="w-full h-full object-contain p-1"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <span className={inst.logoUrl ? 'hidden' : 'flex'}>
+                    {inst.logoEmoji || '🏛️'}
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <div className="font-heading font-bold text-[14px] text-text-1 group-hover:text-primary transition-colors truncate max-w-[220px]">
+                    {inst.name}
+                  </div>
+                  <div className="text-[11px] text-text-3 font-medium flex items-center gap-1.5">
+                    <span>{inst.city}</span>
+                    <span>•</span>
+                    <span className="text-primary font-semibold">{inst.eventCount} {inst.eventCount === 1 ? 'event' : 'events'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -1212,6 +1301,7 @@ export default function Landing() {
       <Nav onLogin={handleLogin} onGetStarted={handleGetStarted} />
       <main>
         <Hero onEnter={handleGetStarted} />
+        <HostingInstitutionsSection />
         <CategoryStrip />
         <StatsRow loading={statsLoading} stats={apiStats} />
         <Categories />

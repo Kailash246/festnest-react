@@ -43,6 +43,8 @@ export default function Terms() {
       subtitle="The agreement between you and FestNest. We've kept it plain-spoken and highlighted the parts that matter most. Please read it before you use FestNest."
       effectiveDate="6 Apr 2026"
       lastUpdated="Jun 2026"
+      effectiveDate="13 Sep 2026"
+      lastUpdated="Sep 2026"
       sections={SECTIONS}>
 
       <Callout type="info" icon={ClipboardList} title="The short version">
@@ -118,6 +120,7 @@ export default function Terms() {
         <p>If you list an event on FestNest, you are the "Organizer" of that event and you alone are responsible for it. By submitting an event, you represent and agree that:</p>
         <List items={[
           'You have the authority to represent the institution, club, or body organizing the event.',
+          'You have the authority to represent the institution, college, club, society, department, or body organizing the event.',
           'All information you provide — dates, venue, fees, prizes, eligibility, rules, and contact details — is accurate, current, and not misleading.',
           'The event is genuine, lawful, and a real academic or extracurricular activity.',
           'You own or have a valid license to use every poster, image, logo, and document you upload.',
@@ -125,6 +128,26 @@ export default function Terms() {
           'You will promptly update or remove the listing if the event is cancelled, postponed, or materially changed.',
           'You will comply with all applicable laws, including venue safety, permissions, and tax obligations.',
         ]} />
+
+        <div className="my-4 p-4 rounded-lg bg-surface-2 border border-border">
+          <h4 className="font-heading font-bold text-[14px] text-text-1 mb-2">Institution Name, Logo &amp; Brand Permission</h4>
+          <p className="text-[13px] text-text-2 leading-relaxed mb-2">
+            By submitting or publishing an event on FestNest, the Organizer represents and warrants that they are authorized to represent the institution, college, club, society, department, or organization associated with the event.
+          </p>
+          <p className="text-[13px] text-text-2 leading-relaxed mb-2">
+            The Organizer grants FestNest a non-exclusive, royalty-free, worldwide licence to use the associated institution’s name, logo, emblem, event branding, and other submitted brand-identifying materials for the purposes of operating, displaying, promoting, and marketing FestNest.
+          </p>
+          <p className="text-[13px] text-text-2 leading-relaxed mb-2">
+            This includes displaying the institution’s name and logo on FestNest event pages, landing pages, “Colleges &amp; Institutions Hosting Events on FestNest”, marketing materials, social media, presentations, promotional communications, and similar FestNest channels.
+          </p>
+          <p className="text-[13px] text-text-2 leading-relaxed mb-2">
+            This licence does not transfer ownership of the institution’s intellectual property to FestNest.
+          </p>
+          <p className="text-[13px] text-text-2 leading-relaxed">
+            FestNest will not state or imply that the institution is an official partner, sponsor, investor, or endorser of FestNest unless such relationship has been separately agreed.
+          </p>
+        </div>
+
         <Callout type="danger" icon={Scale} title="Organizers are fully responsible for their events">
           You agree that <strong>you, the Organizer, are solely and fully responsible</strong> for your event and everything connected to it — including its conduct, safety, legality, registrations, collection and refund of any fees, delivery of prizes, and any dispute, loss, injury, or damage suffered by any attendee or third party. FestNest bears no responsibility whatsoever for your event. You agree to indemnify FestNest for any claim arising from it (see Section 13).
         </Callout>
@@ -179,12 +202,20 @@ export default function Terms() {
         ]} />
         <Callout type="legal" icon={Copyright} title="Reporting IP or unlawful content">
           For intellectual-property complaints or unlawful content, email legal@festnest.in with the listing details, your contact information, and the basis of your complaint. We respond promptly.
+        <Callout type="legal" icon={Copyright} title="Reporting IP, branding removal, or unlawful content">
+          For intellectual-property complaints, authorized institution branding removal requests, or unlawful content, email legal@festnest.in with the listing details, your official institution credentials, and the basis of your request. When an authorized branding removal request is received and verified, FestNest will promptly cease promotional use and remove the institution logo from marketing/trust sections, while preserving platform event records and contractual audit history.
         </Callout>
       </Section>
 
       <Section num="10" id="ip" title="Intellectual Property">
         <p><strong className="text-text-1">Our IP.</strong> The FestNest name, logo, design, software, and database are our exclusive property, protected under the Copyright Act, 1957 and other Indian laws. You may not copy, modify, or commercially exploit them without our written permission.</p>
         <p><strong className="text-text-1">Your content.</strong> You keep ownership of everything you submit. By submitting, you grant FestNest a non-exclusive, royalty-free, worldwide licence to host, display, and distribute that content <em>within the Platform</em> solely to operate the service. This licence ends when you delete the content or your account, subject to legal retention requirements.</p>
+        <p><strong className="text-text-1">Your content and institution branding.</strong> You retain ownership of all intellectual property, logos, and materials you submit. By submitting or publishing an event on FestNest, you grant FestNest a non-exclusive, royalty-free, worldwide licence for two distinct purposes:</p>
+        <List items={[
+          'Platform Operation Licence: To host, display, reproduce, distribute, and operate the event listing and associated materials across the Platform to provide our discovery service.',
+          'FestNest Brand & Promotion Licence: To use the associated institution’s name, logo, emblem, and event branding for operating, displaying, promoting, and marketing FestNest across website pages, landing pages (including "Colleges & Institutions Hosting Events on FestNest"), social media, marketing collateral, presentations, and promotional communications.',
+        ]} />
+        <p className="mt-2 text-[13px] text-text-2">This licence does not transfer ownership of any organizer or institution intellectual property to FestNest. Authorized institution representatives may request removal of institution branding from promotional displays as described in Section 9.</p>
       </Section>
 
       <Section num="11" id="disclaimer" title="Disclaimers">

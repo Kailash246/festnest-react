@@ -53,6 +53,8 @@ export default function Privacy() {
       subtitle="What we collect, why, how we protect it, and the rights you hold under India's Digital Personal Data Protection Act, 2023 and the DPDP Rules, 2025."
       effectiveDate="6 Apr 2026"
       lastUpdated="Jun 2026"
+      effectiveDate="13 Sep 2026"
+      lastUpdated="Sep 2026"
       sections={SECTIONS}>
 
       <Callout type="info" icon={ShieldCheck} title="Our promise in one line">
@@ -76,6 +78,9 @@ export default function Privacy() {
           'Posters and brochures uploaded via Cloudinary.',
           'Events you save, and registration-interest actions you take.',
         ]} />
+        <p className="text-[12px] text-text-3 mt-1.5 leading-relaxed">
+          <em>Note on institution branding:</em> Associated institution and college names, logos, and event branding submitted by organizers for public event listings are processed contractually to facilitate event discovery and promotional display under FestNest's Terms of Service, distinct from personal data under DPDP.
+        </p>
         <p><strong className="text-text-1">2.3 Technical & usage (collected automatically).</strong></p>
         <List items={[
           'IP address and approximate city/region-level location.',
@@ -107,6 +112,7 @@ export default function Privacy() {
         <List items={[
           'Consent (§ 6) — the explicit, informed consent you give at registration. You can withdraw it anytime.',
           'Legitimate use / contractual necessity — processing needed to deliver the service you signed up for, such as account creation and event publishing.',
+          'Legitimate use / contractual necessity — processing needed to deliver the service you signed up for, such as account creation, event publishing, and platform discovery operations.',
           'Legal obligation — where we must retain or disclose data under Indian law, a court order, or a competent authority.',
         ]} />
       </Section>
