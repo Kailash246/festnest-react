@@ -93,6 +93,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -106,7 +107,7 @@ import { useApp } from '../../context/AppContext';
 import ErrorBoundary from '../../components/ErrorBoundary';
 
 // INTEGRATION POINT 1 — point this at the project's existing request wrapper.
-import api from '../../services/api';
+import api, { admin } from '../../services/api';
 
 // ============================================================================
 // Constants & lookup tables
@@ -309,7 +310,7 @@ function HowItWorksPanel() {
 // Spin status / CTA card
 // ============================================================================
 
-function SpinStatusCard({ summary, onOpenSpin }) {
+function SpinStatusCard({ summary, onOpenSpin, isAdmin = false, onOpenAdminTest }) {
   const spinsAvailable = (summary?.availableSpins ?? 0) > 0;
   const referralsNeeded = Math.max(0, (summary?.milestone?.referrals?.required ?? 10) - (summary?.milestone?.referrals?.count ?? 0));
   const registrationsNeeded = Math.max(0, (summary?.milestone?.eventRegistrations?.required ?? 5) - (summary?.milestone?.eventRegistrations?.count ?? 0));
@@ -341,6 +342,16 @@ function SpinStatusCard({ summary, onOpenSpin }) {
           <Sparkles size={16} strokeWidth={2} />
           Spin now
         </button>
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={onOpenAdminTest}
+            className="w-full mt-2.5 px-3 py-2 border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 text-[12px] font-bold rounded-md transition flex items-center justify-center gap-1.5"
+          >
+            <Sparkles size={13} className="text-amber-600" />
+            Test Wheel (Admin Mode)
+          </button>
+        )}
       </div>
     );
   }
@@ -364,6 +375,16 @@ function SpinStatusCard({ summary, onOpenSpin }) {
         <Lock size={14} strokeWidth={2} />
         Spin unavailable
       </button>
+      {isAdmin && (
+        <button
+          type="button"
+          onClick={onOpenAdminTest}
+          className="w-full mt-2.5 px-3 py-2 border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 text-[12px] font-bold rounded-md transition flex items-center justify-center gap-1.5"
+        >
+          <Sparkles size={13} className="text-amber-600" />
+          Test Wheel (Admin Mode)
+        </button>
+      )}
     </SectionCard>
   );
 }
@@ -615,8 +636,8 @@ const WHEEL_SIZE = 300;
 const WHEEL_RADIUS = 140;
 const WHEEL_CENTER = WHEEL_SIZE / 2;
 
-function SpinWheel({ segments, rotation, spinning, loading }) {
-  const displaySegments = loading || segments.length === 0
+export function SpinWheel({ segments, rotation, spinning, loading }) {
+  const displaySegments = loading || !segments || segments.length === 0
     ? Array.from({ length: 8 }, (_, i) => ({ id: `placeholder-${i}`, label: '', type: 'none' }))
     : segments;
   const step = 360 / displaySegments.length;
@@ -647,18 +668,20 @@ function SpinWheel({ segments, rotation, spinning, loading }) {
           {displaySegments.map((seg, i) => {
             const start = i * step;
             const end = (i + 1) * step;
-            const fill = loading || segments.length === 0 ? (i % 2 === 0 ? '#F1F0ED' : '#E9E9E5') : WHEEL_COLORS[i % WHEEL_COLORS.length];
-            return <path key={seg.id} d={describeWedge(WHEEL_CENTER, WHEEL_CENTER, WHEEL_RADIUS, start, end)} fill={fill} stroke="#fff" strokeWidth="2" />;
+            const fill = loading || !segments || segments.length === 0 ? (i % 2 === 0 ? '#F1F0ED' : '#E9E9E5') : WHEEL_COLORS[i % WHEEL_COLORS.length];
+            const segKey = seg.id || seg.segmentId || `seg-${i}`;
+            return <path key={segKey} d={describeWedge(WHEEL_CENTER, WHEEL_CENTER, WHEEL_RADIUS, start, end)} fill={fill} stroke="#fff" strokeWidth="2" />;
           })}
         </svg>
 
-        {!loading && segments.length > 0 && displaySegments.map((seg, i) => {
+        {!loading && segments && segments.length > 0 && displaySegments.map((seg, i) => {
           const mid = i * step + step / 2;
           const pos = polarToCartesian(WHEEL_CENTER, WHEEL_CENTER, WHEEL_RADIUS * 0.62, mid);
           const RewardIcon = REWARD_TYPE_ICON[seg.type] || Star;
+          const segKey = seg.id || seg.segmentId || `seg-label-${i}`;
           return (
             <div
-              key={seg.id}
+              key={segKey}
               className="absolute flex flex-col items-center text-white pointer-events-none"
               style={{ left: `${(pos.x / WHEEL_SIZE) * 100}%`, top: `${(pos.y / WHEEL_SIZE) * 100}%`, transform: 'translate(-50%, -50%)', width: 64 }}
             >
@@ -684,7 +707,23 @@ function SpinWheel({ segments, rotation, spinning, loading }) {
   );
 }
 
-function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, spinResult, spinError, onSpin, canSpin }) {
+export function SpinModal({
+  open,
+  onClose,
+  segments,
+  wheelLoading,
+  rotation,
+  spinning,
+  spinResult,
+  spinError,
+  onSpin,
+  canSpin,
+  isAdminTest = false,
+  forcedSegmentId = '',
+  onForcedSegmentChange,
+  deductCoins = false,
+  onDeductCoinsChange,
+}) {
   useEffect(() => {
     if (!open) return undefined;
     const handler = (e) => {
@@ -707,7 +746,7 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
         onClick={() => !spinning && onClose()}
       >
         <motion.div
-          className="w-full max-w-[420px] bg-white border border-border rounded-xl p-6 relative"
+          className="w-full max-w-[440px] max-h-[90vh] overflow-y-auto bg-white border border-border rounded-xl p-6 relative"
           style={{ boxShadow: '0 12px 40px rgba(0,0,0,0.18)' }}
           initial={{ scale: 0.94, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -720,7 +759,7 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-text-2 hover:bg-surface-3 transition-colors duration-150"
+              className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-text-2 hover:bg-surface-3 transition-colors duration-150 z-10"
             >
               <X size={18} />
             </button>
@@ -729,8 +768,62 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
           <AnimatePresence mode="wait">
             {!spinResult ? (
               <motion.div key="wheel" exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-                <h2 className="font-heading font-bold text-[18px] text-text-1 mb-1 text-center">Spin the wheel</h2>
-                <p className="text-[13px] text-text-3 text-center mb-6">Your reward is decided the moment you spin.</p>
+                {isAdminTest && (
+                  <div className="flex items-center justify-center gap-1.5 mb-2">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-full">
+                      <Sparkles size={11} className="text-purple-600" /> Admin Test Mode
+                    </span>
+                  </div>
+                )}
+
+                <h2 className="font-heading font-bold text-[18px] text-text-1 mb-1 text-center">
+                  {isAdminTest ? 'Isolated Admin Test Spin' : 'Spin the wheel'}
+                </h2>
+                <p className="text-[13px] text-text-3 text-center mb-5">
+                  {isAdminTest
+                    ? 'Verify wheel randomness, visual alignment, and payouts without consuming milestone slots.'
+                    : 'Your reward is decided the moment you spin.'}
+                </p>
+
+                {isAdminTest && (
+                  <div className="mb-4 space-y-2.5 p-3 rounded-lg bg-surface-2 border border-border text-left">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-text-2 mb-1">
+                        Force Specific Segment (Optional)
+                      </label>
+                      <select
+                        value={forcedSegmentId}
+                        onChange={(e) => onForcedSegmentChange?.(e.target.value)}
+                        disabled={spinning}
+                        className="w-full px-2.5 py-1.5 text-[12px] rounded-md border border-border bg-white text-text-1 focus:border-primary focus:outline-none"
+                      >
+                        <option value="">Random (Live Weighted Probability)</option>
+                        {segments && segments.map((s) => {
+                          const segId = s.id || s.segmentId;
+                          const prob = s.probability !== undefined ? ` (${s.probability}%)` : '';
+                          return (
+                            <option key={segId} value={segId}>
+                              {s.label} [{s.type}]{prob}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={deductCoins}
+                        onChange={(e) => onDeductCoinsChange?.(e.target.checked)}
+                        disabled={spinning}
+                        className="w-3.5 h-3.5 text-primary rounded border-border focus:ring-primary"
+                      />
+                      <span className="text-[12px] text-text-2 font-medium">
+                        Simulate real cost (deduct 200 FN Coins)
+                      </span>
+                    </label>
+                  </div>
+                )}
 
                 <SpinWheel segments={segments} rotation={rotation} spinning={spinning} loading={wheelLoading} />
 
@@ -743,7 +836,7 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
                 <button
                   type="button"
                   onClick={onSpin}
-                  disabled={spinning || wheelLoading || !canSpin}
+                  disabled={spinning || wheelLoading || (!isAdminTest && !canSpin)}
                   className="w-full mt-6 px-4 py-3 bg-primary text-white text-[15px] font-semibold rounded-md hover:bg-primary-dark hover:shadow-indigo transition-all duration-150 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {spinning ? (
@@ -752,7 +845,7 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
                     </>
                   ) : (
                     <>
-                      <Sparkles size={16} /> Spin now
+                      <Sparkles size={16} /> {isAdminTest ? 'Spin Test Wheel' : 'Spin now'}
                     </>
                   )}
                 </button>
@@ -765,6 +858,14 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
                 transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
                 className="text-center py-4 relative"
               >
+                {isAdminTest && (
+                  <div className="flex items-center justify-center gap-1.5 mb-3">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-full">
+                      <Sparkles size={11} className="text-purple-600" /> Isolated Test Spin Result
+                    </span>
+                  </div>
+                )}
+
                 {[...Array(6)].map((_, i) => (
                   <motion.span
                     key={i}
@@ -783,17 +884,31 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
                 </div>
                 <h2 className="font-heading font-bold text-[20px] text-text-1 mb-1">{spinResult.label}</h2>
                 <p className="text-[13px] text-text-3 mb-6 max-w-[280px] mx-auto">
-                  {spinResult.type === 'cash'
-                    ? "Cash rewards are reviewed before payout — track its status in your spin history."
-                    : 'This has been added to your account.'}
+                  {isAdminTest
+                    ? (deductCoins ? 'Simulated cost of 200 FN Coins was deducted from your balance.' : 'Test spin recorded with milestone consumption bypassed.')
+                    : (spinResult.type === 'cash'
+                      ? "Cash rewards are reviewed before payout — track its status in your spin history."
+                      : 'This has been added to your account.')}
                 </p>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-2.5 bg-primary text-white text-[14px] font-semibold rounded-md hover:bg-primary-dark transition-all duration-150 active:scale-95"
-                >
-                  Done
-                </button>
+
+                <div className="flex gap-2 justify-center">
+                  {isAdminTest && (
+                    <button
+                      type="button"
+                      onClick={() => onSpin?.()}
+                      className="px-4 py-2.5 bg-surface-2 border border-border text-text-1 text-[13px] font-semibold rounded-md hover:bg-surface-3 transition-all duration-150 active:scale-95 flex items-center gap-1.5"
+                    >
+                      <RefreshCw size={14} /> Spin again
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-6 py-2.5 bg-primary text-white text-[14px] font-semibold rounded-md hover:bg-primary-dark transition-all duration-150 active:scale-95"
+                  >
+                    Done
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -810,7 +925,8 @@ function SpinModal({ open, onClose, segments, wheelLoading, rotation, spinning, 
 const PAGE_SIZE = 8;
 
 export default function ReferAndEarn() {
-  const { isLoggedIn, requireAuth } = useApp();
+  const { isLoggedIn, requireAuth, isAdmin } = useApp();
+  const [searchParams] = useSearchParams();
 
   const [summary, setSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
@@ -828,7 +944,19 @@ export default function ReferAndEarn() {
   const [spinResult, setSpinResult] = useState(null);
   const [spinError, setSpinError] = useState(null);
 
+  // Admin test mode states
+  const [isAdminTestMode, setIsAdminTestMode] = useState(false);
+  const [forcedSegmentId, setForcedSegmentId] = useState('');
+  const [deductCoins, setDeductCoins] = useState(false);
+
   const pendingKeyRef = useRef(null);
+
+  useEffect(() => {
+    if (isAdmin && (searchParams.get('adminTest') === 'true' || searchParams.get('adminTest') === '1')) {
+      setIsAdminTestMode(true);
+      setSpinModalOpen(true);
+    }
+  }, [isAdmin, searchParams]);
 
   const loadSummary = useCallback(async () => {
     if (!isLoggedIn) {
@@ -896,6 +1024,14 @@ export default function ReferAndEarn() {
   }, [isLoggedIn, loadSummary, loadHistory, loadWheelConfig]);
 
   const handleOpenSpin = () => {
+    setIsAdminTestMode(false);
+    setSpinResult(null);
+    setSpinError(null);
+    setSpinModalOpen(true);
+  };
+
+  const handleOpenAdminTest = () => {
+    setIsAdminTestMode(true);
     setSpinResult(null);
     setSpinError(null);
     setSpinModalOpen(true);
@@ -910,17 +1046,35 @@ export default function ReferAndEarn() {
 
   const handleSpin = useCallback(async () => {
     if (spinning || wheelSegments.length === 0) return;
-    if (!pendingKeyRef.current) pendingKeyRef.current = makeIdempotencyKey();
 
     setSpinning(true);
     setSpinError(null);
+    setSpinResult(null);
 
     try {
-      const { data } = await api.post('/refer/spin', { idempotencyKey: pendingKeyRef.current });
-      pendingKeyRef.current = null;
+      let winningSegmentId;
+      let reward;
+
+      if (isAdminTestMode) {
+        const res = await admin.refer.testSpin({
+          forcedSegmentId: forcedSegmentId || undefined,
+          deductCoins,
+        });
+        winningSegmentId = res.data?.winningSegmentId;
+        reward = res.data?.reward;
+      } else {
+        if (!pendingKeyRef.current) pendingKeyRef.current = makeIdempotencyKey();
+        const { data } = await api.post('/refer/spin', { idempotencyKey: pendingKeyRef.current });
+        pendingKeyRef.current = null;
+        winningSegmentId = data?.winningSegmentId;
+        reward = data?.reward;
+      }
 
       const step = 360 / wheelSegments.length;
-      const winningIndex = Math.max(0, wheelSegments.findIndex((s) => s.id === data.winningSegmentId));
+      const winningIndex = Math.max(
+        0,
+        wheelSegments.findIndex((s) => (s.id || s.segmentId) === winningSegmentId)
+      );
       const wedgeCenter = winningIndex * step + step / 2;
       const extraSpins = 5 * 360;
       const alignment = (360 - wedgeCenter) % 360;
@@ -931,7 +1085,7 @@ export default function ReferAndEarn() {
       // Reveal the result once the wheel visually finishes spinning.
       setTimeout(() => {
         setSpinning(false);
-        setSpinResult(data?.reward);
+        setSpinResult(reward);
         loadSummary();
         loadHistory('spins', 1);
         loadHistory('referrals', 1);
@@ -942,7 +1096,7 @@ export default function ReferAndEarn() {
       setSpinError(err?.response?.data?.message || err?.message || 'Something went wrong. Please try again.');
       setSpinning(false);
     }
-  }, [spinning, wheelSegments, rotation, loadSummary, loadHistory]);
+  }, [spinning, wheelSegments, rotation, isAdminTestMode, forcedSegmentId, deductCoins, loadSummary, loadHistory]);
 
   return (
     <ErrorBoundary>
@@ -1036,7 +1190,12 @@ export default function ReferAndEarn() {
                     tone="amber"
                   />
                   <div className="lg:sticky lg:top-24">
-                    <SpinStatusCard summary={summary} onOpenSpin={handleOpenSpin} />
+                    <SpinStatusCard
+                      summary={summary}
+                      onOpenSpin={handleOpenSpin}
+                      isAdmin={isAdmin}
+                      onOpenAdminTest={handleOpenAdminTest}
+                    />
                   </div>
                 </>
               )}
@@ -1084,6 +1243,11 @@ export default function ReferAndEarn() {
           spinError={spinError}
           onSpin={handleSpin}
           canSpin={!!summary && (summary?.availableSpins ?? 0) > 0}
+          isAdminTest={isAdminTestMode}
+          forcedSegmentId={forcedSegmentId}
+          onForcedSegmentChange={setForcedSegmentId}
+          deductCoins={deductCoins}
+          onDeductCoinsChange={setDeductCoins}
         />
       </div>
     </ErrorBoundary>

@@ -12,6 +12,7 @@ import { admin } from '../../../services/api';
 import { useApp } from '../../../context/AppContext';
 import StatCard from '../components/StatCard';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { SpinModal } from '../../refer/ReferAndEarn';
 
 const SUB_TABS = [
   { id: 'referrals', label: 'Referrals List', icon: UserCheck },
@@ -48,6 +49,9 @@ export default function ReferAndEarnTab({ showToast, onSelectUser }) {
   const [testWheelModal, setTestWheelModal] = useState(false);
   const [testWheelSegment, setTestWheelSegment] = useState('');
   const [testWheelDeduct, setTestWheelDeduct] = useState(false);
+  const [testRotation, setTestRotation] = useState(0);
+  const [testSpinning, setTestSpinning] = useState(false);
+  const [testSpinError, setTestSpinError] = useState(null);
 
   // Data states
   const [referrals, setReferrals] = useState([]);
@@ -186,24 +190,61 @@ export default function ReferAndEarnTab({ showToast, onSelectUser }) {
 
   // Admin test spin
   const handleAdminTestSpin = async () => {
-    setTestSpinLoading(true);
+    const activeRewards = rewards.filter((r) => r.isActive !== false);
+    const wheelRewardSegments = activeRewards.length > 0 ? activeRewards : rewards;
+    if (testSpinning || wheelRewardSegments.length === 0) return;
+
+    setTestSpinning(true);
+    setTestSpinError(null);
+    setTestSpinResult(null);
+
     try {
       const res = await admin.refer.testSpin({
         forcedSegmentId: testWheelSegment || undefined,
         deductCoins: testWheelDeduct,
       });
-      setTestSpinResult(res.data);
-      if (testWheelDeduct && res.data?.fnCoinsRemaining !== undefined) {
-        setSelfCoins(res.data.fnCoinsRemaining);
-        refreshUser?.();
-      }
-      showToast?.(`Test spin result: Won "${res.data?.reward?.label}"`, 'success');
-      loadStats();
+
+      const winningSegmentId = res.data?.winningSegmentId;
+      const step = 360 / wheelRewardSegments.length;
+      const winningIndex = Math.max(
+        0,
+        wheelRewardSegments.findIndex((r) => (r.segmentId || r.id || r._id) === winningSegmentId)
+      );
+      const wedgeCenter = winningIndex * step + step / 2;
+      const extraSpins = 5 * 360;
+      const alignment = (360 - wedgeCenter) % 360;
+      const currentMod = ((testRotation % 360) + 360) % 360;
+      const delta = extraSpins + ((alignment - currentMod + 360) % 360);
+      setTestRotation((r) => r + delta);
+
+      setTimeout(() => {
+        setTestSpinning(false);
+        setTestSpinResult(res.data?.reward);
+        if (testWheelDeduct && res.data?.fnCoinsRemaining !== undefined) {
+          setSelfCoins(res.data.fnCoinsRemaining);
+          refreshUser?.();
+        }
+        showToast?.(`Test spin result: Won "${res.data?.reward?.label}"`, 'success');
+        loadStats();
+      }, 4050);
     } catch (err) {
+      setTestSpinError(err.message || 'Test spin failed');
       showToast?.(err.message || 'Test spin failed', 'error');
-    } finally {
-      setTestSpinLoading(false);
+      setTestSpinning(false);
     }
+  };
+
+  const handleOpenTestWheelModal = () => {
+    setTestSpinResult(null);
+    setTestSpinError(null);
+    setTestWheelModal(true);
+  };
+
+  const handleCloseTestWheelModal = () => {
+    if (testSpinning) return;
+    setTestWheelModal(false);
+    setTestSpinResult(null);
+    setTestSpinError(null);
   };
 
   // 3. Load Referrals List
@@ -561,7 +602,7 @@ export default function ReferAndEarnTab({ showToast, onSelectUser }) {
             </button>
 
             <button
-              onClick={() => setTestWheelModal(true)}
+              onClick={handleOpenTestWheelModal}
               className="px-3 py-1.5 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-2xs flex items-center gap-1 transition ml-1"
             >
               <RotateCw className="w-3.5 h-3.5" />
@@ -1594,90 +1635,33 @@ export default function ReferAndEarnTab({ showToast, onSelectUser }) {
         onCancel={() => setConfirmResetCoins(false)}
       />
 
-      {/* 3. Test Spin Wheel Modal */}
-      <AnimatePresence>
-        {testWheelModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-neutral-900 rounded-2xl max-w-md w-full p-5 border border-neutral-200 dark:border-neutral-800 shadow-xl space-y-4"
-            >
-              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <RotateCw className="w-5 h-5 text-purple-600" />
-                Isolated Admin Test Spin
-              </h3>
-              <p className="text-xs text-neutral-500">
-                Execute a test spin to verify reward payouts and wheel randomness without consuming milestone slots.
-              </p>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">
-                    Force Specific Segment (Optional)
-                  </label>
-                  <select
-                    value={testWheelSegment}
-                    onChange={(e) => setTestWheelSegment(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 font-medium"
-                  >
-                    <option value="">Random (Weighted Probability)</option>
-                    {rewards.map((r) => (
-                      <option key={r.segmentId} value={r.segmentId}>
-                        {r.label} ({r.type} - weight {r.probability}%)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
-                  <input
-                    type="checkbox"
-                    id="deductCoinsCheck"
-                    checked={testWheelDeduct}
-                    onChange={(e) => setTestWheelDeduct(e.target.checked)}
-                    className="w-4 h-4 text-purple-600 rounded"
-                  />
-                  <label htmlFor="deductCoinsCheck" className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">
-                    Simulate real spin cost (deduct 200 FN Coins from your balance)
-                  </label>
-                </div>
-
-                {testSpinResult && (
-                  <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-xs space-y-1">
-                    <div className="font-bold text-purple-800 dark:text-purple-200">
-                      Result: Won "{testSpinResult.reward?.label}"
-                    </div>
-                    <div className="text-neutral-500">
-                      Segment: {testSpinResult.winningSegmentId} | Remaining coins: {testSpinResult.fnCoinsRemaining}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => { setTestWheelModal(false); setTestSpinResult(null); }}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  disabled={testSpinLoading}
-                  onClick={handleAdminTestSpin}
-                  className="px-4 py-1.5 text-xs font-bold rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-xs flex items-center gap-1.5"
-                >
-                  {testSpinLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-                  Spin Test Wheel
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* 3. Test Spin Wheel Modal — uses the SAME animated SpinModal from ReferAndEarn */}
+      <SpinModal
+        open={testWheelModal}
+        onClose={handleCloseTestWheelModal}
+        segments={rewards
+          .filter((r) => r.isActive !== false)
+          .map((r) => ({
+            id: r.segmentId || r.id || r._id,
+            segmentId: r.segmentId,
+            label: r.label,
+            type: r.type,
+            probability: r.probability,
+            value: r.value,
+          }))}
+        wheelLoading={rewardsLoading}
+        rotation={testRotation}
+        spinning={testSpinning}
+        spinResult={testSpinResult}
+        spinError={testSpinError}
+        onSpin={handleAdminTestSpin}
+        canSpin={true}
+        isAdminTest={true}
+        forcedSegmentId={testWheelSegment}
+        onForcedSegmentChange={setTestWheelSegment}
+        deductCoins={testWheelDeduct}
+        onDeductCoinsChange={setTestWheelDeduct}
+      />
 
       {/* 4. Invalidate Referral Modal */}
       <AnimatePresence>
