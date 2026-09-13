@@ -41,8 +41,6 @@ export default function Terms() {
       kind="Legal · Terms"
       title="Terms of Service"
       subtitle="The agreement between you and FestNest. We've kept it plain-spoken and highlighted the parts that matter most. Please read it before you use FestNest."
-      effectiveDate="6 Apr 2026"
-      lastUpdated="Jun 2026"
       effectiveDate="13 Sep 2026"
       lastUpdated="Sep 2026"
       sections={SECTIONS}>
