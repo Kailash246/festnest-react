@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useReveal, useMouseParallax, Reveal } from './_hooks';
 import BrandMark from '../../components/BrandMark';
 import { useApp } from '../../context/AppContext';
-import { events as eventsApi } from '../../services/api';
 import { events as eventsApi, college as collegeApi } from '../../services/api';
 import {
   Flame, CheckCircle2,
@@ -273,13 +272,6 @@ function Hero({ onEnter }) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   LOGO MARQUEE — hidden until real partner data available
-   To restore: uncomment below, remove <CategoryStrip /> in render,
-   add <LogoWall /> instead.
-════════════════════════════════════════════════════════════
-const COLLEGES = ['IIT Bombay','IIT Delhi','NIT Warangal','BITS Pilani','VIT Vellore','IISc Bangalore','Christ University','PES University','RV University','NIT Trichy'];
-function LogoWall() {
-  const row = [...COLLEGES, ...COLLEGES];
    COLLEGES & INSTITUTIONS HOSTING EVENTS (Real Platform Trust)
 ════════════════════════════════════════════════════════════ */
 function HostingInstitutionsSection() {
@@ -307,20 +299,6 @@ function HostingInstitutionsSection() {
   const displayList = institutions.length >= 4 ? [...institutions, ...institutions] : institutions;
 
   return (
-    <section className="py-14 border-y border-border bg-surface-2/50 overflow-hidden">
-      <Reveal>
-        <p className="text-center text-[13px] font-bold tracking-wider uppercase text-text-3 mb-8">
-          Trusted by students from India's top colleges
-        </p>
-      </Reveal>
-      <div className="relative">
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
-        <div className="flex gap-4 lp-marquee w-max">
-          {row.map((c, i) => (
-            <div key={i} className="flex items-center gap-2.5 bg-white border border-border rounded-md px-5 py-3 whitespace-nowrap grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-primary-mid transition-all duration-300">
-              <span className="font-heading font-bold text-[15px] text-text-2">{c}</span>
-            </div>
     <section className="py-14 border-y border-border bg-surface-2/40 overflow-hidden">
       <div className="max-w-[1240px] mx-auto px-8 mb-8 text-center">
         <Reveal>
@@ -342,7 +320,6 @@ function HostingInstitutionsSection() {
             <div key={i} className="h-16 w-48 bg-surface-3 rounded-xl animate-pulse" />
           ))}
         </div>
-      </div>
       ) : (
         <div className="relative">
           <div className="absolute left-0 top-0 bottom-0 w-24 sm:w-36 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
@@ -389,7 +366,6 @@ function HostingInstitutionsSection() {
     </section>
   );
 }
-END LEGACY LOGO WALL */
 
 /* ════════════════════════════════════════════════════════════
    CATEGORY STRIP (replaces fake college logo marquee)

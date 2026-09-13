@@ -51,8 +51,6 @@ export default function Privacy() {
       kind="Legal · Privacy"
       title="Privacy Policy"
       subtitle="What we collect, why, how we protect it, and the rights you hold under India's Digital Personal Data Protection Act, 2023 and the DPDP Rules, 2025."
-      effectiveDate="6 Apr 2026"
-      lastUpdated="Jun 2026"
       effectiveDate="13 Sep 2026"
       lastUpdated="Sep 2026"
       sections={SECTIONS}>

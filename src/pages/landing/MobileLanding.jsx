@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import BrandMark from '../../components/BrandMark';
-import { events as eventsApi } from '../../services/api';
 import { events as eventsApi, college as collegeApi } from '../../services/api';
 import { Code2, Music, Trophy, PartyPopper, BriefcaseBusiness, Rocket } from 'lucide-react';
 

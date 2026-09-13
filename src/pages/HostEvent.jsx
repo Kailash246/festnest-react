@@ -1503,11 +1503,6 @@ export default function HostEvent() {
                     className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-[#CBCBC6] text-primary accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                   />
                   <label htmlFor="host-termsAgreement" className="cursor-pointer text-[13px] leading-relaxed text-text-2">
-                    I agree to FestNest's{' '}
-                    <Link to="/terms" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
-                      Terms of Hosting
-                    </Link>{' '}and{' '}
-                    <Link to="/privacy" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
                     I confirm that I am authorized to represent this institution/organization and agree to FestNest's{' '}
                     <Link to="/terms#organizer" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
                       Terms of Service
