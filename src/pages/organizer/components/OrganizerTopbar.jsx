@@ -1,10 +1,10 @@
 // src/pages/organizer/components/OrganizerTopbar.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, RotateCw, Plus, ArrowLeft, Bell, ChevronDown } from 'lucide-react';
+import { Menu, RotateCw, Plus, ArrowLeft } from 'lucide-react';
 
 const TAB_TITLES = {
-  overview:     'Dashboard',
+  overview:     'Dashboard Overview',
   events:       'Manage Events',
   participants: 'Event Participants',
   analytics:    'Performance Analytics',
@@ -20,7 +20,7 @@ export default function OrganizerTopbar({
 }) {
   const navigate = useNavigate();
 
-  const title = TAB_TITLES[activeTab] || 'Dashboard';
+  const title = TAB_TITLES[activeTab] || 'Organizer Hub';
 
   const initials =
     user?.avatar?.initials ||
@@ -30,74 +30,58 @@ export default function OrganizerTopbar({
       .join('')
       .toUpperCase()
       .slice(0, 2) ||
-    'FE';
+    'OG';
 
   return (
-    <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+    <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-border shadow-2xs">
       {/* ── Dedicated Mobile Header (< sm) ── */}
-      <div className="flex sm:hidden h-16 items-center justify-between px-4 w-full">
-        {/* Left: Hamburger menu & Dashboard title */}
-        <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+      <div className="flex sm:hidden h-14 items-center justify-between px-3.5 w-full">
+        {/* Left: Menu trigger & Page title */}
+        <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
           <button
             onClick={onOpenMobileSidebar}
-            aria-label="Open navigation menu"
-            className="w-9 h-9 -ml-1 rounded-xl text-slate-800 hover:bg-slate-100 active:bg-slate-200 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
+            aria-label="Open sidebar navigation"
+            className="w-9 h-9 rounded-lg border border-border bg-white text-text-2 hover:bg-surface-2 hover:text-text-1 active:bg-surface-3 transition-colors flex items-center justify-center shrink-0 cursor-pointer shadow-2xs"
           >
-            <Menu size={23} strokeWidth={2.2} />
+            <Menu size={18} />
           </button>
 
           <div className="min-w-0 flex-1">
-            <h1 className="font-heading font-extrabold text-[22px] text-slate-900 leading-tight tracking-tight truncate">
+            <h1 className="font-heading font-bold text-[16px] text-text-1 leading-tight truncate">
               {title}
             </h1>
-            <p className="text-[12px] font-medium text-slate-500 leading-none mt-0.5 truncate">
-              Organizer Portal
-            </p>
           </div>
         </div>
 
-        {/* Right: Refresh, Notification, and Profile avatar */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Right: Essential mobile controls (Refresh & Profile only) */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={onRefresh}
             disabled={refreshing}
             aria-label="Refresh dashboard data"
             title="Refresh dashboard data"
-            className="w-9 h-9 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 active:bg-slate-200 transition-colors flex items-center justify-center shrink-0 disabled:opacity-50 cursor-pointer"
+            className="w-9 h-9 rounded-lg border border-border bg-white text-text-2 hover:bg-surface-2 hover:text-text-1 active:bg-surface-3 transition-colors flex items-center justify-center shrink-0 disabled:opacity-50 cursor-pointer shadow-2xs"
           >
             <RotateCw size={15} className={refreshing ? 'animate-spin text-primary' : ''} />
           </button>
 
-          <button
-            onClick={() => navigate('/notifications')}
-            aria-label="Notifications"
-            title="View notifications"
-            className="relative w-9 h-9 rounded-full text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
-          >
-            <Bell size={20} strokeWidth={2} />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
-          </button>
-
-          <button
-            type="button"
+          <div
             onClick={() => navigate('/profile')}
-            aria-label="Organizer Profile"
-            className="flex items-center gap-1.5 p-1 pr-2 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-all cursor-pointer group shrink-0"
+            className="cursor-pointer shrink-0"
             title={`${user?.name || 'Organizer'} (View profile)`}
           >
             {user?.avatar?.url ? (
               <img
                 src={user.avatar.url}
                 alt={user.name}
-                className="w-7 h-7 rounded-full object-cover"
+                className="w-8 h-8 rounded-full object-cover border border-primary/30 ring-1 ring-primary/20 hover:scale-105 active:scale-95 transition-transform"
               />
             ) : (
-              <div className="w-7 h-7 rounded-full bg-[#ECEBFF] text-[#4F46E5] flex items-center justify-center font-heading font-extrabold text-[11px]">
+              <div className="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center font-mono text-[11px] font-bold border border-primary/30 hover:scale-105 active:scale-95 transition-transform">
                 {initials}
               </div>
             )}
-            <ChevronDown size={13} className="text-slate-400 group-hover:text-slate-700 transition-colors" />
-          </button>
+          </div>
         </div>
       </div>
 
