@@ -239,7 +239,7 @@ function OrganizerDashboardContent() {
       : events.reduce((sum, e) => sum + (e.linkedEvent?.stats?.registrationCount || e.registrationCount || 0), 0);
 
   return (
-    <div className="min-h-dvh flex bg-[#F8F8F6] text-text-1 antialiased font-sans">
+    <div className="min-h-dvh flex bg-[#FAFAFB] text-text-1 antialiased font-sans">
       {/* ── Sidebar ── */}
       <OrganizerSidebar
         activeTab={activeTab}
@@ -268,7 +268,7 @@ function OrganizerDashboardContent() {
         />
 
         {/* Tab Content Body */}
-        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-20">
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto pb-20">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
