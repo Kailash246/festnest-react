@@ -1,5 +1,5 @@
 // src/pages/organizer/components/OrganizerSidebar.jsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -36,18 +36,6 @@ export default function OrganizerSidebar({
   counts = {},
 }) {
   const navigate = useNavigate();
-
-  // Dismiss mobile drawer on Escape
-  useEffect(() => {
-    if (!mobileOpen) return;
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onCloseMobile();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mobileOpen, onCloseMobile]);
 
   const renderContent = (isMobile = false) => {
     const isCollapsed = !isMobile && collapsed;
@@ -98,7 +86,7 @@ export default function OrganizerSidebar({
             <button
               onClick={onCloseMobile}
               aria-label="Close sidebar"
-              className="p-1.5 rounded-lg text-text-4 hover:text-text-2 hover:bg-surface-2 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-text-4 hover:text-text-2 hover:bg-surface-2 transition-colors"
             >
               <X size={18} />
             </button>
@@ -106,7 +94,7 @@ export default function OrganizerSidebar({
             <button
               onClick={onToggleCollapse}
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className="hidden md:flex p-1.5 rounded-lg text-text-4 hover:text-text-2 hover:bg-surface-2 transition-colors cursor-pointer"
+              className="hidden lg:flex p-1.5 rounded-lg text-text-4 hover:text-text-2 hover:bg-surface-2 transition-colors"
             >
               {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
@@ -250,7 +238,7 @@ export default function OrganizerSidebar({
     <>
       {/* Desktop Persistent Sidebar */}
       <aside
-        className={`hidden md:flex flex-col border-r border-border h-dvh sticky top-0 transition-all duration-300 z-30 ${
+        className={`hidden lg:flex flex-col border-r border-border h-dvh sticky top-0 transition-all duration-300 z-30 ${
           collapsed ? 'w-[72px]' : 'w-[250px]'
         }`}
       >
@@ -260,7 +248,7 @@ export default function OrganizerSidebar({
       {/* Mobile Slide-Over Drawer */}
       <AnimatePresence>
         {mobileOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 lg:hidden">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

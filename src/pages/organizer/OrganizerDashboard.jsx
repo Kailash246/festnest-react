@@ -9,9 +9,6 @@ import {
   ShieldAlert,
   CalendarDays,
   Plus,
-  LayoutDashboard,
-  BarChart3,
-  User,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { users as usersApi, events as eventsApi } from '../../services/api';
@@ -52,7 +49,7 @@ class OrganizerErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-surface-2 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-[#F8F8F6] flex items-center justify-center p-6">
           <div className="bg-white p-8 rounded-2xl border border-rose-200 shadow-xl max-w-lg w-full space-y-4">
             <div className="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
               <AlertCircle className="w-6 h-6" />
@@ -242,7 +239,7 @@ function OrganizerDashboardContent() {
       : events.reduce((sum, e) => sum + (e.linkedEvent?.stats?.registrationCount || e.registrationCount || 0), 0);
 
   return (
-    <div className="min-h-dvh flex bg-surface-2 text-text-1 antialiased font-sans">
+    <div className="min-h-dvh flex bg-[#F8F8F6] text-text-1 antialiased font-sans">
       {/* ── Sidebar ── */}
       <OrganizerSidebar
         activeTab={activeTab}
@@ -271,7 +268,7 @@ function OrganizerDashboardContent() {
         />
 
         {/* Tab Content Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-12">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-20">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -381,66 +378,6 @@ function OrganizerDashboardContent() {
             </motion.div>
           </AnimatePresence>
         </main>
-
-        {/* ── Mobile Bottom Navigation Bar (md:hidden) ── */}
-        <nav
-          className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-border shadow-[0_-2px_12px_rgba(0,0,0,0.06)] px-2 pt-1.5 pb-[calc(6px+env(safe-area-inset-bottom,0px))]"
-          aria-label="Organizer bottom navigation"
-        >
-          <div className="flex items-center justify-around max-w-lg mx-auto">
-            <button
-              type="button"
-              onClick={() => handleSelectTab('overview')}
-              aria-label="Dashboard Overview"
-              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-lg transition-colors cursor-pointer min-w-0 ${
-                activeTab === 'overview'
-                  ? 'text-primary font-bold'
-                  : 'text-text-3 font-medium hover:text-text-1'
-              }`}
-            >
-              <LayoutDashboard size={20} strokeWidth={activeTab === 'overview' ? 2.3 : 1.8} />
-              <span className="text-[10px] truncate leading-none">Dashboard</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSelectTab('events')}
-              aria-label="Manage Events"
-              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-lg transition-colors cursor-pointer min-w-0 ${
-                activeTab === 'events'
-                  ? 'text-primary font-bold'
-                  : 'text-text-3 font-medium hover:text-text-1'
-              }`}
-            >
-              <CalendarDays size={20} strokeWidth={activeTab === 'events' ? 2.3 : 1.8} />
-              <span className="text-[10px] truncate leading-none">Events</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSelectTab('analytics')}
-              aria-label="Performance Analytics"
-              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-lg transition-colors cursor-pointer min-w-0 ${
-                activeTab === 'analytics'
-                  ? 'text-primary font-bold'
-                  : 'text-text-3 font-medium hover:text-text-1'
-              }`}
-            >
-              <BarChart3 size={20} strokeWidth={activeTab === 'analytics' ? 2.3 : 1.8} />
-              <span className="text-[10px] truncate leading-none">Analytics</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('/profile')}
-              aria-label="Organizer Profile"
-              className="flex flex-col items-center gap-1 py-1 px-3 rounded-lg transition-colors cursor-pointer min-w-0 text-text-3 font-medium hover:text-text-1"
-            >
-              <User size={20} strokeWidth={1.8} />
-              <span className="text-[10px] truncate leading-none">Profile</span>
-            </button>
-          </div>
-        </nav>
       </div>
 
       {/* ── Slide-over Event Detail Drawer ── */}
