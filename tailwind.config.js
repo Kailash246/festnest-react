@@ -19,9 +19,9 @@ export default {
       fontFamily: {
         sans:    ['Geist Sans', 'Geist', 'sans-serif'],
         body:    ['Geist Sans', 'Geist', 'sans-serif'],
-        display: ['DM Sans', 'sans-serif'],
-        heading: ['DM Sans', 'sans-serif'],
-        syne:    ['DM Sans', 'sans-serif'],
+        display: ['Space Grotesk', 'DM Sans', 'sans-serif'],
+        heading: ['Space Grotesk', 'DM Sans', 'sans-serif'],
+        syne:    ['Space Grotesk', 'DM Sans', 'sans-serif'],
         mono:    ['Geist Mono', 'monospace'],
       },
       fontSize: {
