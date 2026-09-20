@@ -107,7 +107,7 @@ export default function BottomNav() {
       className="md:hidden fixed bottom-3 inset-x-0 z-40 flex justify-center px-4 pointer-events-none pb-[env(safe-area-inset-bottom,0px)]"
       aria-label="Bottom navigation"
     >
-      <div className="w-full max-w-[390px] h-[60px] bg-white/95 backdrop-blur-xl border border-neutral-200/90 rounded-[22px] shadow-[0_8px_30px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.03)] px-2 flex items-center justify-between pointer-events-auto">
+      <div className="w-full max-w-[390px] h-[60px] bg-white/95 backdrop-blur-xl border border-neutral-200/90 rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.03)] px-2 flex items-center justify-between pointer-events-auto">
         
         {/* 1. Home Tab */}
         <button

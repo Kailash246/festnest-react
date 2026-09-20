@@ -2136,17 +2136,11 @@ export default function EventDetails() {
             </div>
             <div className="text-[11px] text-text-3 mt-0.5">{ev.priceNote || 'per team'}</div>
           </div>
-          {isExpired ? (
+          {isExpired && (
             <div className="flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold bg-zinc-100 text-zinc-600 border border-zinc-300">
               Closed
             </div>
-          ) : countdown && !countdown.isExpired ? (
-            <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-[11px] font-bold ${
-              countdown.d <= 3 ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-primary-light text-primary border border-primary/20'
-            }`}>
-              {countdown.d > 0 ? `${countdown.d}d ${countdown.h}h left` : `${countdown.h}h ${countdown.m}m left`}
-            </div>
-          ) : null}
+          )}
           <motion.button
             whileTap={!isExpired && !registering && !registered ? { scale: 0.97 } : {}}
             onClick={handleRegister}
