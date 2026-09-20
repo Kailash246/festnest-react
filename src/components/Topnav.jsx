@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Search, Bell, Menu, Plus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import BrandMark from './BrandMark';
 
 const getInitials = (name) =>
   name?.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
 
-const LogoMark = () => <BrandMark className="w-7 h-7" />;
-
 export default function Topnav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setDrawerOpen, requireAuth, isLoggedIn, currentUser } = useApp();
+  const { setDrawerOpen, requireAuth, isLoggedIn, currentUser, unreadNotifCount } = useApp();
   const [avatarImgError, setAvatarImgError] = useState(false);
   const initials = currentUser?.avatar?.initials || getInitials(currentUser?.name);
   const avatarUrl = !avatarImgError && currentUser?.avatar?.url;
@@ -26,129 +25,121 @@ export default function Topnav() {
 
   return (
     <nav
-      className="sticky top-0 z-[50] w-full bg-white border-b border-[#E4E4E0]
-                 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+      className="sticky top-0 z-[50] w-full bg-white/95 backdrop-blur-md border-b border-border/50"
       aria-label="Main navigation"
     >
-      <div className="flex items-center gap-2 px-3 h-14 md:h-16 md:px-6 md:gap-3">
+      <div className="flex items-center justify-between gap-3 px-4 h-14 md:h-16 md:px-6">
 
-        {/* ── Logo ── */}
+        {/* ── Brand Logo ── */}
         <button
-          onClick={() => navigate('/landing')}
-          className="flex items-center gap-1.5 flex-shrink-0
-                     font-heading font-bold text-[18px] md:text-[20px]
-                     text-primary tracking-[-0.025em]"
-          aria-label="FestNest landing page"
+          onClick={() => navigate('/home')}
+          className="flex items-center gap-2 flex-shrink-0 cursor-pointer group"
+          aria-label="FestNest home"
         >
-          <LogoMark />
-          <span>FestNest</span>
+          <BrandMark className="w-7 h-7 group-hover:scale-105 transition-transform duration-150" />
+          <span className="font-heading font-bold text-[19px] md:text-[20px] text-primary tracking-tight">
+            FestNest
+          </span>
         </button>
 
-        {/* ── Search pill — grows to fill space ── */}
+        {/* ── Search pill (Desktop) ── */}
         <button
           onClick={() => navigate('/explore')}
-          className="hidden md:flex items-center gap-2 flex-1 min-w-0
-                     px-3 py-2 rounded-md
-                     bg-[#F1F0ED] border border-[#E4E4E0]
-                     text-[#8A8A85] text-[13px]
-                     hover:border-[#CBCBC6] hover:bg-[#E9E9E5]
-                     transition-colors duration-150"
-          role="search" aria-label="Search events"
+          className="hidden md:flex items-center gap-2 flex-1 max-w-[340px] lg:max-w-[420px] h-9 px-3.5 rounded-full bg-surface-2 border border-border text-text-3 text-[13px] hover:border-primary/40 hover:bg-white hover:shadow-2xs transition-all duration-150 cursor-pointer"
+          role="search"
+          aria-label="Search events"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            strokeLinecap="round" strokeLinejoin="round"
-            className="w-3.5 h-3.5 flex-shrink-0">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
-          <span className="truncate">Search events…</span>
+          <Search size={14} className="text-text-3" />
+          <span className="truncate">Search events, colleges, fests…</span>
+          <kbd className="ml-auto hidden lg:inline-block px-1.5 py-0.5 text-[10px] font-mono font-semibold bg-white border border-border rounded text-text-4">
+            ⌘K
+          </kbd>
         </button>
 
         {/* ── Desktop nav links ── */}
-        <div className="hidden md:flex items-center gap-1 flex-shrink-0">
-          {[{ label: 'Home', href: '/home' }, { label: 'Explore', href: '/explore' }, { label: 'Blog', href: '/blog' }]
-            .map(({ label, href }) => (
-              <button key={href} onClick={() => navigate(href)}
-                className={`px-4 py-2 rounded-md text-[14px] font-medium transition-colors duration-150
-                            ${isActive(href)
-                              ? 'bg-primary-light text-primary'
-                              : 'text-[#4B4B47] hover:bg-[#F1F0ED] hover:text-[#111110]'}`}>
+        <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
+          {[
+            { label: 'Home', href: '/home' },
+            { label: 'Explore', href: '/explore' },
+            { label: 'Blog', href: '/blog' },
+          ].map(({ label, href }) => {
+            const active = isActive(href);
+            return (
+              <button
+                key={href}
+                onClick={() => navigate(href)}
+                className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all duration-150 cursor-pointer ${
+                  active
+                    ? 'bg-primary-light text-primary font-semibold'
+                    : 'text-text-2 hover:bg-surface-2 hover:text-text-1'
+                }`}
+              >
                 {label}
               </button>
-            ))}
-          <button onClick={() => navigate('/host')}
-            className="ml-1 px-4 py-2 bg-primary text-white rounded-md text-[14px]
-                       font-semibold hover:bg-primary-dark transition-colors duration-150 whitespace-nowrap">
-            + Host Event
+            );
+          })}
+
+          <button
+            onClick={() => navigate('/host')}
+            className="ml-1 px-4 py-1.5 bg-primary hover:bg-primary-dark text-white rounded-full text-[13px] font-semibold shadow-xs hover:shadow-indigo active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <Plus size={15} strokeWidth={2.5} />
+            <span>Host Event</span>
           </button>
         </div>
 
-        {/* ── Right icons ── */}
-        <div className="flex items-center gap-1 flex-shrink-0 ml-auto">
+        {/* ── Right actions ── */}
+        <div className="flex items-center gap-1.5 flex-shrink-0 ml-auto md:ml-0">
           {/* Notification bell */}
           <button
             onClick={() => navigate('/notifications')}
             aria-label="Notifications"
-            className="relative w-9 h-9 rounded-lg flex items-center justify-center
-                       text-[#4B4B47] hover:bg-[#F1F0ED] transition-colors duration-150"
+            className="relative w-9 h-9 rounded-full flex items-center justify-center text-text-2 hover:bg-surface-2 hover:text-text-1 active:scale-95 transition-all cursor-pointer"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            <span className="absolute top-1.5 right-1.5 w-2 h-2
-                             bg-red rounded-full border-[1.5px] border-white" />
+            <Bell size={18} strokeWidth={1.9} />
+            {unreadNotifCount > 0 && (
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red rounded-full ring-2 ring-white" />
+            )}
           </button>
 
-          {/* Avatar / Login */}
+          {/* Avatar / Login (Desktop) */}
           {isLoggedIn ? (
             <button
               onClick={() => handleProtected('/profile')}
               aria-label="Profile"
-              className="hidden md:flex w-9 h-9 rounded-full bg-primary-light border-2 border-primary
-                         items-center justify-center overflow-hidden flex-shrink-0
-                         font-sans font-bold text-[12px] text-primary
-                         hover:shadow-indigo transition-all duration-150"
+              className="hidden md:flex w-9 h-9 rounded-full bg-primary-light border border-primary/30 items-center justify-center overflow-hidden flex-shrink-0 font-sans font-bold text-[12px] text-primary hover:scale-105 transition-all cursor-pointer"
             >
-              {avatarUrl
-                ? <img src={avatarUrl} alt={initials}
-                       className="w-full h-full object-cover"
-                       onError={() => setAvatarImgError(true)} />
-                : initials
-              }
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={initials}
+                  className="w-full h-full object-cover"
+                  onError={() => setAvatarImgError(true)}
+                />
+              ) : (
+                initials
+              )}
             </button>
           ) : (
             <button
               onClick={() => requireAuth()}
               aria-label="Log in"
-              className="hidden md:flex items-center px-4 py-2
-                         border-[1.5px] border-[#CBCBC6] rounded-md
-                         text-[14px] font-medium text-[#4B4B47]
-                         hover:border-primary hover:text-primary transition-all duration-150"
+              className="hidden md:flex items-center px-4 py-1.5 border border-border rounded-full text-[13px] font-medium text-text-1 hover:border-primary hover:text-primary transition-all cursor-pointer"
             >
               Log in
             </button>
           )}
 
-          {/* ── Hamburger — mobile only, far right ── */}
+          {/* ── Hamburger menu button (Mobile) ── */}
           <button
             onClick={() => setDrawerOpen(true)}
             aria-label="Open menu"
-            className="md:hidden flex-shrink-0 w-10 h-10 rounded-xl
-                       flex items-center justify-center
-                       text-[#4B4B47] bg-[#F1F0ED] hover:bg-[#E4E4E0]
-                       active:scale-95 transition-all duration-150"
+            className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-text-2 hover:bg-surface-2 hover:text-text-1 active:scale-95 transition-all cursor-pointer"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              className="w-5 h-5">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
+            <Menu size={20} strokeWidth={2} />
           </button>
         </div>
+
       </div>
     </nav>
   );

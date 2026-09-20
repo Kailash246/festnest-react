@@ -175,8 +175,7 @@ export default function App() {
         </aside>
 
         <main className="
-          w-full min-w-0 pb-[72px] md:pb-0
-          w-full min-w-0 pb-[100px] md:pb-0
+          w-full min-w-0 pb-[96px] md:pb-0
           md:col-start-2 md:row-start-2
           md:border-l md:border-[#E4E4E0]
           min-h-[calc(100dvh-56px)] md:min-h-0
