@@ -28,6 +28,11 @@ export default function BottomNav() {
 
   const path = location.pathname;
 
+  // Do not render bottom nav on event details pages
+  if (path.startsWith('/event/')) {
+    return null;
+  }
+
   const handleNav = (href, isProtected) => {
     if (isProtected && !requireAuth()) return;
     navigate(href);
