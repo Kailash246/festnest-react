@@ -39,6 +39,7 @@ import TopColleges        from './pages/blog/TopColleges';
 import BestCollegeEvents  from './pages/blog/BestCollegeEvents';
 import CampusAmbassadorPage      from './pages/festnest_ca_page';
 import CampusAmbassadorDashboard from './pages/ca/CampusAmbassadorDashboard';
+import CampusAmbassadorLeaderboardPage from './pages/ca/CampusAmbassadorLeaderboardPage';
 import Feedback          from './pages/Feedback';
 import ReferAndEarn      from './pages/refer/ReferAndEarn';
 import ProtectedRoute   from './components/ProtectedRoute';
@@ -133,7 +134,9 @@ export default function App() {
     location.pathname === '/campus-ambassador/dashboard' ||
     location.pathname === '/ca/dashboard' ||
     location.pathname === '/campus-ambassador/portal' ||
-    location.pathname === '/ca/portal';
+    location.pathname === '/ca/portal' ||
+    location.pathname === '/campus-ambassador/leaderboard' ||
+    location.pathname === '/ca/leaderboard';
 
   if (isCARoute) {
     return (
@@ -141,12 +144,14 @@ export default function App() {
         <ScrollToTop />
         <AuthOverlay />
         <Routes>
-          <Route path="/campus-ambassador"           element={<CampusAmbassadorPage />} />
-          <Route path="/ca"                          element={<CampusAmbassadorPage />} />
-          <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
-          <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
-          <Route path="/campus-ambassador/portal"    element={<CampusAmbassadorDashboard />} />
-          <Route path="/ca/portal"                   element={<CampusAmbassadorDashboard />} />
+          <Route path="/campus-ambassador"             element={<CampusAmbassadorPage />} />
+          <Route path="/ca"                            element={<CampusAmbassadorPage />} />
+          <Route path="/campus-ambassador/dashboard"   element={<CampusAmbassadorDashboard />} />
+          <Route path="/ca/dashboard"                  element={<CampusAmbassadorDashboard />} />
+          <Route path="/campus-ambassador/portal"      element={<CampusAmbassadorDashboard />} />
+          <Route path="/ca/portal"                     element={<CampusAmbassadorDashboard />} />
+          <Route path="/campus-ambassador/leaderboard" element={<CampusAmbassadorLeaderboardPage />} />
+          <Route path="/ca/leaderboard"                element={<CampusAmbassadorLeaderboardPage />} />
         </Routes>
         <ToastContainer />
       </>
@@ -211,12 +216,14 @@ export default function App() {
                 <Route path="/event/:id"      element={<EventDetails />} />
                 <Route path="/admin"         element={<AdminDashboard />} />
                 <Route path="/organizer"    element={<OrganizerDashboard />} />
-                <Route path="/campus-ambassador"           element={<CampusAmbassadorPage />} />
-                <Route path="/ca"                          element={<CampusAmbassadorPage />} />
-                <Route path="/campus-ambassador/dashboard" element={<CampusAmbassadorDashboard />} />
-                <Route path="/ca/dashboard"                element={<CampusAmbassadorDashboard />} />
-                <Route path="/campus-ambassador/portal"    element={<CampusAmbassadorDashboard />} />
-                <Route path="/ca/portal"                   element={<CampusAmbassadorDashboard />} />
+                <Route path="/campus-ambassador"             element={<CampusAmbassadorPage />} />
+                <Route path="/ca"                            element={<CampusAmbassadorPage />} />
+                <Route path="/campus-ambassador/dashboard"   element={<CampusAmbassadorDashboard />} />
+                <Route path="/ca/dashboard"                  element={<CampusAmbassadorDashboard />} />
+                <Route path="/campus-ambassador/portal"      element={<CampusAmbassadorDashboard />} />
+                <Route path="/ca/portal"                     element={<CampusAmbassadorDashboard />} />
+                <Route path="/campus-ambassador/leaderboard" element={<CampusAmbassadorLeaderboardPage />} />
+                <Route path="/ca/leaderboard"                element={<CampusAmbassadorLeaderboardPage />} />
                 <Route path="*"             element={<Navigate to="/home" replace />} />
               </Routes>
             </AnimatePresence>
