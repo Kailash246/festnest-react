@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import BrandMark from './BrandMark';
 import LogoutConfirmModal from './LogoutConfirmModal';
 
@@ -57,6 +58,9 @@ export default function MobileDrawer() {
   const subText    = currentUser?.college ? `${currentUser.college} · ${roleLabel}` : roleLabel;
   const navigate = useNavigate();
 
+  const scrollBodyRef = useRef(null);
+  useBodyScrollLock(drawerOpen, scrollBodyRef);
+
   const go = (path) => {
     setDrawerOpen(false);
     setTimeout(() => navigate(path), 60);
@@ -80,7 +84,8 @@ export default function MobileDrawer() {
             key="bd"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
-            className="fixed inset-0 bg-black/45 z-[60]"
+            className="fixed inset-0 bg-black/45 z-[60] touch-none overscroll-none"
+            style={{ touchAction: 'none', overscrollBehavior: 'none' }}
             onClick={() => setDrawerOpen(false)}
           />
 
@@ -91,11 +96,14 @@ export default function MobileDrawer() {
             transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
             className="fixed top-0 right-0 bottom-0 z-[61]
                        w-[min(300px,82vw)] bg-white flex flex-col
-                       shadow-[-4px_0_32px_rgba(0,0,0,0.15)]"
+                       shadow-[-4px_0_32px_rgba(0,0,0,0.15)]
+                       overscroll-contain touch-pan-y"
+            style={{ overscrollBehavior: 'contain' }}
             role="dialog" aria-label="Menu" aria-modal="true"
           >
             {/* Header */}
-            <div className="flex-shrink-0 border-b border-[#E4E4E0]">
+            <div className="flex-shrink-0 border-b border-[#E4E4E0] touch-none select-none"
+                 style={{ touchAction: 'none' }}>
               {/* Logo row */}
               <div className="flex items-center gap-2.5 px-4 pt-5 pb-3">
                 <BrandMark className="w-8 h-8" />
@@ -149,8 +157,15 @@ export default function MobileDrawer() {
             </div>
 
             {/* Scrollable body */}
-            <div className="flex-1 overflow-y-auto py-2 px-2"
-                 style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div
+              ref={scrollBodyRef}
+              className="flex-1 overflow-y-auto overscroll-contain py-2 px-2"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                overscrollBehavior: 'contain',
+                touchAction: 'pan-y',
+              }}
+            >
               <Lbl c="Navigate" />
               <Btn onClick={() => go('/home')}           Icon={House}         label="Home" />
               <Btn onClick={() => go('/explore')}       Icon={Compass}       label="Explore Events" />
@@ -218,7 +233,8 @@ export default function MobileDrawer() {
 
             {/* Footer */}
             <div className="flex-shrink-0 border-t border-[#E4E4E0] px-3 py-3
-                            pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
+                            pb-[calc(12px+env(safe-area-inset-bottom,0px))] touch-none select-none"
+                 style={{ touchAction: 'none' }}>
               <div className="hidden">
                 <p className="text-[11px] font-medium text-[#6B6B67] leading-snug">
                   Built by Students, for Students <span aria-label="love" role="img">❤️</span>
