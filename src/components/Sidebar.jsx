@@ -14,17 +14,22 @@ const SidebarBtn = ({ href, icon, label, badge, badgeStyle, onClick, isActive })
       aria-current={isActive ? 'page' : undefined}
       className={`flex items-center gap-3 w-full text-left px-[14px] py-[10px] rounded-md
                   text-[14px] font-medium transition-all duration-fast group
+      className={`flex items-center gap-3 w-full text-left px-3 py-2 rounded-lg
+                  text-[13.5px] font-medium transition-all duration-fast group
                   ${isActive
                     ? 'bg-primary-light text-primary sidebar-active-accent'
                     : 'text-text-2 hover:bg-surface-2 hover:text-text-1 hover:translate-x-[2px]'}`}
     >
       <span className={`flex-shrink-0 transition-colors duration-fast
+      <span className={`flex-shrink-0 w-[17px] h-[17px] flex items-center justify-center transition-colors duration-fast
                         ${isActive ? 'text-primary' : 'text-text-3 group-hover:text-text-2'}`}>
         {icon}
       </span>
       {label}
+      <span className="truncate">{label}</span>
       {badge !== undefined && (
         <span className={`ml-auto text-[11px] font-bold px-[7px] py-[2px] rounded-full
+        <span className={`ml-auto text-[10.5px] font-bold px-[6px] py-[1px] rounded-full
                           ${badgeStyle || 'bg-primary-light text-primary'}`}>
           {badge}
         </span>
@@ -36,10 +41,13 @@ const SidebarBtn = ({ href, icon, label, badge, badgeStyle, onClick, isActive })
 const Label = ({ children }) => (
   <div className="text-[10px] font-bold tracking-wider text-text-4 uppercase
                   px-[14px] pt-4 pb-[6px] mt-2">
+  <div className="text-[10px] font-bold tracking-wider text-text-4 uppercase px-3 pt-2 pb-1 select-none">
     {children}
   </div>
 );
 const Divider = () => <div className="h-px bg-border mx-2 my-3" />;
+
+const Divider = () => <div className="h-px bg-border/70 mx-2 my-1.5" />;
 
 // SVG icons
 const HomeIcon    = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
@@ -55,6 +63,15 @@ const CodeIcon    = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 const MusicIcon   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>;
 const WrenchIcon  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>;
 const TrophyIcon  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
+const HomeIcon       = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+const ExploreIcon    = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>;
+const DiscoverIcon   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>;
+const SavedIcon      = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>;
+const BellIcon       = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>;
+const ProfileIcon    = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+const HostIcon       = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>;
+const InfoIcon       = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>;
+const HelpIcon       = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>;
 const AmbassadorIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>;
 const GiftIcon       = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px]"><polyline points="20 12 20 22 4 22 4 12"/><rect width="20" height="5" x="2" y="7"/><line x1="12" x2="12" y1="22" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>;
 
@@ -105,34 +122,58 @@ export default function Sidebar() {
     <div className="flex flex-col w-full h-full overflow-y-auto
                     no-scrollbar bg-surface border-r border-border
                     px-3 py-5 gap-[2px]">
+                    px-2.5 py-3 gap-[2px]">
 
       {/* Main nav */}
+      {/* ── Main Section ── */}
       <SidebarBtn href="/home"     icon={<HomeIcon />}    label="Home"    isActive={path === '/home'} />
       <SidebarBtn href="/explore" icon={<ExploreIcon />} label="Explore" isActive={path === '/explore'} />
+      <SidebarBtn href="/explore"  icon={<ExploreIcon />} label="Explore" isActive={path === '/explore'} />
       <SidebarBtn href="/discover" icon={<DiscoverIcon />} label="Discover" isActive={path === '/discover'} />
 
       {/* Protected: Saved & Profile */}
+      {/* Protected: Saved */}
       <SidebarBtn
         onClick={() => goProtected('/saved')}
         icon={<SavedIcon />} label="Saved"
+        icon={<SavedIcon />}
+        label="Saved"
         badge={savedCount > 0 ? savedCount : undefined}
         isActive={path === '/saved'}
       />
+
+      {/* Notifications — moved into Main */}
+      <SidebarBtn
+        href="/notifications"
+        icon={<BellIcon />}
+        label="Notifications"
+        badge={unreadNotifCount > 0 ? unreadNotifCount : undefined}
+        badgeStyle="bg-red-bg text-red"
+        isActive={path === '/notifications'}
+      />
+
+      {/* Protected: Profile */}
       <SidebarBtn
         onClick={() => goProtected('/profile')}
         icon={<ProfileIcon />} label="Profile"
+        icon={<ProfileIcon />}
+        label="Profile"
         isActive={path === '/profile'}
       />
+
       {/* Admin-only: Refer & Earn */}
       {isAdmin && (
         <SidebarBtn
           onClick={() => goProtected('/refer')}
           icon={<GiftIcon />} label="Refer & Earn"
+          icon={<GiftIcon />}
+          label="Refer & Earn"
           isActive={path === '/refer'}
         />
       )}
 
       {/* Admin-only — shown immediately after Profile */}
+      {/* Admin-only — Admin Dashboard */}
       {isAdmin && (
         <SidebarBtn
           href="/admin"
@@ -144,6 +185,7 @@ export default function Sidebar() {
       )}
 
       {/* Organizer-only section — shown immediately after Profile */}
+      {/* Organizer-only section */}
       {(isOrganizer || isSuperAdmin) && (
         <>
           <Divider />
@@ -158,6 +200,7 @@ export default function Sidebar() {
         </>
       )}
 
+      {/* ── Browse by Category (Compact Collapsible) ── */}
       <Divider />
       <button
         type="button"
@@ -165,12 +208,14 @@ export default function Sidebar() {
         aria-expanded={categoriesOpen}
         aria-controls="sidebar-category-list"
         className="flex items-center justify-between w-full text-left px-[14px] pt-3 pb-2 group cursor-pointer select-none rounded-md hover:bg-surface-2/60 transition-colors"
+        className="flex items-center justify-between w-full text-left px-3 py-1.5 group cursor-pointer select-none rounded-md hover:bg-surface-2/60 transition-colors"
       >
         <span className="text-[10px] font-bold tracking-wider text-text-4 uppercase group-hover:text-text-2 transition-colors">
           Browse by Category
         </span>
         <ChevronDown
           size={14}
+          size={13}
           strokeWidth={2.2}
           className={`text-text-4 group-hover:text-text-2 transition-transform duration-200 shrink-0 ${
             categoriesOpen ? 'rotate-180' : ''
@@ -180,6 +225,7 @@ export default function Sidebar() {
 
       {categoriesOpen && (
         <div id="sidebar-category-list" className="flex flex-col gap-[2px]">
+        <div id="sidebar-category-list" className="flex flex-col gap-[2px] mt-0.5">
           {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => {
             const isCatActive = path === '/explore' && currentCat === value;
             return (
@@ -195,6 +241,7 @@ export default function Sidebar() {
         </div>
       )}
 
+      {/* ── FestNest Section ── */}
       <Divider />
       <Label>More</Label>
 
@@ -210,14 +257,24 @@ export default function Sidebar() {
       <Label>FestNest</Label>
 
       <SidebarBtn href="/campus-ambassador" icon={<AmbassadorIcon />} label="Campus Ambassador" isActive={path.startsWith('/campus-ambassador') || path.startsWith('/ca')} />
+      <SidebarBtn
+        href="/campus-ambassador"
+        icon={<AmbassadorIcon />}
+        label="Campus Ambassador"
+        isActive={path.startsWith('/campus-ambassador') || path.startsWith('/ca')}
+      />
       <SidebarBtn href="/about"   icon={<InfoIcon />} label="About FestNest" isActive={path === '/about'} />
       <SidebarBtn href="/support" icon={<HelpIcon />} label="Help & Support"  isActive={path === '/support'} />
 
       <div className="mt-auto mx-1 pt-4 pb-1 border-t border-border text-center">
         <p className="text-[11px] font-medium text-text-3 leading-snug">
+      {/* ── Compact Footer / Tagline ── */}
+      <div className="mt-auto mx-1 pt-2.5 pb-1 border-t border-border/70 text-center">
+        <p className="text-[10.5px] font-medium text-text-3 leading-tight">
           Built by Students, for Students <span aria-label="love" role="img">❤️</span>
         </p>
         <p className="mt-1 text-[10px] text-text-4 tracking-wide">
+        <p className="mt-0.5 text-[9.5px] text-text-4 tracking-wide">
           Discover. Connect. Grow.
         </p>
       </div>
