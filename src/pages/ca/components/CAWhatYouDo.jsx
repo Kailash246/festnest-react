@@ -79,6 +79,17 @@ export default function CAWhatYouDo() {
           ))}
         </div>
 
+        {/* Link to how it works */}
+        <div className="mt-8 flex justify-center">
+          <a
+            href="/campus-ambassador/how-it-works"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-primary hover:text-primary-dark transition font-sans"
+          >
+            <span>Learn how point conversion works &amp; calculate your potential score</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+
       </div>
     </section>
   );

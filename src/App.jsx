@@ -40,6 +40,12 @@ import BestCollegeEvents  from './pages/blog/BestCollegeEvents';
 import CampusAmbassadorPage      from './pages/festnest_ca_page';
 import CampusAmbassadorDashboard from './pages/ca/CampusAmbassadorDashboard';
 import CampusAmbassadorLeaderboardPage from './pages/ca/CampusAmbassadorLeaderboardPage';
+import CampusAmbassadorRewardsPage from './pages/ca/CampusAmbassadorRewardsPage';
+import CampusAmbassadorBenefitsPage from './pages/ca/CampusAmbassadorBenefitsPage';
+import CampusAmbassadorHowItWorksPage from './pages/ca/CampusAmbassadorHowItWorksPage';
+import CampusAmbassadorEligibilityPage from './pages/ca/CampusAmbassadorEligibilityPage';
+import CampusAmbassadorFAQPage from './pages/ca/CampusAmbassadorFAQPage';
+import CampusAmbassadorApplyPage from './pages/ca/CampusAmbassadorApplyPage';
 import Feedback          from './pages/Feedback';
 import ReferAndEarn      from './pages/refer/ReferAndEarn';
 import ProtectedRoute   from './components/ProtectedRoute';
@@ -129,14 +135,9 @@ export default function App() {
 
   // Campus Ambassador routes render full-bleed with custom navigation and live dashboard/portal
   const isCARoute =
-    location.pathname === '/campus-ambassador' ||
+    location.pathname.startsWith('/campus-ambassador') ||
     location.pathname === '/ca' ||
-    location.pathname === '/campus-ambassador/dashboard' ||
-    location.pathname === '/ca/dashboard' ||
-    location.pathname === '/campus-ambassador/portal' ||
-    location.pathname === '/ca/portal' ||
-    location.pathname === '/campus-ambassador/leaderboard' ||
-    location.pathname === '/ca/leaderboard';
+    location.pathname.startsWith('/ca/');
 
   if (isCARoute) {
     return (
@@ -146,6 +147,18 @@ export default function App() {
         <Routes>
           <Route path="/campus-ambassador"             element={<CampusAmbassadorPage />} />
           <Route path="/ca"                            element={<CampusAmbassadorPage />} />
+          <Route path="/campus-ambassador/rewards"     element={<CampusAmbassadorRewardsPage />} />
+          <Route path="/ca/rewards"                    element={<CampusAmbassadorRewardsPage />} />
+          <Route path="/campus-ambassador/benefits"    element={<CampusAmbassadorBenefitsPage />} />
+          <Route path="/ca/benefits"                   element={<CampusAmbassadorBenefitsPage />} />
+          <Route path="/campus-ambassador/how-it-works" element={<CampusAmbassadorHowItWorksPage />} />
+          <Route path="/ca/how-it-works"               element={<CampusAmbassadorHowItWorksPage />} />
+          <Route path="/campus-ambassador/eligibility" element={<CampusAmbassadorEligibilityPage />} />
+          <Route path="/ca/eligibility"                element={<CampusAmbassadorEligibilityPage />} />
+          <Route path="/campus-ambassador/faq"         element={<CampusAmbassadorFAQPage />} />
+          <Route path="/ca/faq"                        element={<CampusAmbassadorFAQPage />} />
+          <Route path="/campus-ambassador/apply"       element={<CampusAmbassadorApplyPage />} />
+          <Route path="/ca/apply"                      element={<CampusAmbassadorApplyPage />} />
           <Route path="/campus-ambassador/dashboard"   element={<CampusAmbassadorDashboard />} />
           <Route path="/ca/dashboard"                  element={<CampusAmbassadorDashboard />} />
           <Route path="/campus-ambassador/portal"      element={<CampusAmbassadorDashboard />} />

@@ -33,13 +33,13 @@ export default function CAFinalCTA({ existingCA }) {
               <ArrowRight size={15} />
             </Link>
           ) : (
-            <a
-              href="#apply"
+            <Link
+              to="/campus-ambassador/apply"
               className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-xs sm:text-sm font-semibold text-primary hover:bg-surface-2 transition shadow-lg active:scale-[0.98]"
             >
               <span>Become a Campus Ambassador</span>
               <ArrowRight size={15} />
-            </a>
+            </Link>
           )}
 
           <Link

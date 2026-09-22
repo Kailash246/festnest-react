@@ -6,6 +6,7 @@ import { useApp } from '../../context/AppContext';
 import { fetchLeaderboard } from '../../services/caService';
 import { ca } from '../../services/api';
 import CANavHeader from './components/CANavHeader';
+import CAFooter from './components/CAFooter';
 
 const CITIES = ['All', 'Bangalore', 'Pune', 'Chennai', 'Delhi NCR', 'Mumbai', 'Goa'];
 
@@ -94,7 +95,7 @@ export default function CampusAmbassadorLeaderboardPage() {
             {/* Quick CTA to join */}
             <div className="flex items-center gap-3">
               <Link
-                to="/campus-ambassador#apply"
+                to="/campus-ambassador/apply"
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-primary-dark shadow-sm transition active:scale-[0.98]"
               >
                 <span>Join As Ambassador</span>
@@ -349,6 +350,11 @@ export default function CampusAmbassadorLeaderboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <div className="mt-16">
+        <CAFooter />
+      </div>
     </div>
   );
 }

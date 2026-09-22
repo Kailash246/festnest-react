@@ -5,20 +5,12 @@ import { ca } from '../services/api';
 
 import CANavHeader from './ca/components/CANavHeader';
 import CAHero from './ca/components/CAHero';
-import CAProgressionLadder from './ca/components/CAProgressionLadder';
 import CABaseBenefits from './ca/components/CABaseBenefits';
-import CAPerformanceBenefits from './ca/components/CAPerformanceBenefits';
-import CARewards from './ca/components/CARewards';
-import CAEligibility from './ca/components/CAEligibility';
-import CAPointSystem from './ca/components/CAPointSystem';
-import CAHowItWorks from './ca/components/CAHowItWorks';
-import CALeaderboardPreview from './ca/components/CALeaderboardPreview';
 import CAWhatYouDo from './ca/components/CAWhatYouDo';
-import CAToolkitPreview from './ca/components/CAToolkitPreview';
-import CAOfficialIdentity from './ca/components/CAOfficialIdentity';
-import CAFAQ from './ca/components/CAFAQ';
-import CAApplicationForm from './ca/components/CAApplicationForm';
+import CALeaderboardPreview from './ca/components/CALeaderboardPreview';
+import CAHowItWorks from './ca/components/CAHowItWorks';
 import CAFinalCTA from './ca/components/CAFinalCTA';
+import CAFooter from './ca/components/CAFooter';
 
 export default function CampusAmbassadorPage() {
   const { isLoggedIn } = useApp();
@@ -42,65 +34,33 @@ export default function CampusAmbassadorPage() {
     }
   }, [isLoggedIn]);
 
-  // Smooth scroll to hash anchor on load or navigation (e.g. #apply, #how, #rewards, #eligibility)
-  useEffect(() => {
-    if (window.location.hash) {
-      const el = document.querySelector(window.location.hash);
-      if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
-      }
-    }
-  }, []);
-
   return (
-    <div className="font-sans min-h-screen bg-surface text-slate-900 selection:bg-primary/15 selection:text-slate-900">
-      {/* 1. Header Navigation */}
-      <CANavHeader existingCA={existingCA} />
+    <div className="font-sans min-h-screen bg-surface text-slate-900 selection:bg-primary/15 selection:text-slate-900 flex flex-col justify-between">
+      <div>
+        {/* 1. Sticky Navigation Header */}
+        <CANavHeader existingCA={existingCA} />
 
-      {/* 2. Hero Section */}
-      <CAHero existingCA={existingCA} />
+        {/* 2. High-Impact Hero (Reward-First, ₹45k Pool, 60 Seats, Scorecard Visual) */}
+        <CAHero existingCA={existingCA} />
 
-      {/* 3. 4-Stage Progression Ladder */}
-      <CAProgressionLadder />
+        {/* 3. Base Benefits Strip (What every approved CA gets + 40 pts certificate milestone) */}
+        <CABaseBenefits />
 
-      {/* 4. Category A: Base Benefits (What every approved CA gets) */}
-      <CABaseBenefits />
+        {/* 4. What a CA Actually Does (4 Growth Pillars) */}
+        <CAWhatYouDo />
 
-      {/* 5. Category B: Performance-Based Rewards */}
-      <CAPerformanceBenefits />
+        {/* 5. Live Transparent Leaderboard Preview (Top 5 active CAs with verified points) */}
+        <CALeaderboardPreview />
 
-      {/* 6. Rewards Distribution Section */}
-      <CARewards />
+        {/* 6. Fast 6-Step Journey Preview */}
+        <CAHowItWorks />
 
-      {/* 7. Minimum Reward Eligibility Criteria */}
-      <CAEligibility />
+        {/* 7. High-Conversion Final Call to Action */}
+        <CAFinalCTA existingCA={existingCA} />
+      </div>
 
-      {/* 8. Point System Explanation */}
-      <CAPointSystem />
-
-      {/* 9. How It Works (6-step progression) */}
-      <CAHowItWorks />
-
-      {/* 10. Public Leaderboard Preview */}
-      <CALeaderboardPreview />
-
-      {/* 11. What a CA Actually Does */}
-      <CAWhatYouDo />
-
-      {/* 12. CA Toolkit Preview */}
-      <CAToolkitPreview existingCA={existingCA} />
-
-      {/* 13. Official CA Identity Credential */}
-      <CAOfficialIdentity />
-
-      {/* 14. Clear FAQs & Rules */}
-      <CAFAQ />
-
-      {/* 15. Application Form */}
-      <CAApplicationForm existingCA={existingCA} />
-
-      {/* 16. Final Closing Call to Action */}
-      <CAFinalCTA existingCA={existingCA} />
+      {/* 8. Comprehensive CA Footer */}
+      <CAFooter />
     </div>
   );
 }
