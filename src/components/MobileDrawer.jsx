@@ -191,23 +191,6 @@ export default function MobileDrawer() {
                   }`}
                 />
               </button>
-              <AnimatePresence initial={false}>
-                {categoriesOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    className="overflow-hidden"
-                  >
-                    {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
-                      <Btn key={value}
-                        onClick={() => go(`/explore?cat=${encodeURIComponent(value)}`)}
-                        Icon={CatIcon} label={label} />
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
               {categoriesOpen && (
                 <div className="flex flex-col gap-0.5">
                   {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
