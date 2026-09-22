@@ -206,6 +206,22 @@ export default function Sidebar() {
           </motion.div>
         )}
       </AnimatePresence>
+      {categoriesOpen && (
+        <div id="sidebar-category-list" className="flex flex-col gap-[2px]">
+          {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => {
+            const isCatActive = path === '/explore' && currentCat === value;
+            return (
+              <SidebarBtn
+                key={value}
+                onClick={() => navigate(`/explore?cat=${encodeURIComponent(value)}`)}
+                icon={<CatIcon className="w-[17px] h-[17px]" strokeWidth={2} />}
+                label={label}
+                isActive={isCatActive}
+              />
+            );
+          })}
+        </div>
+      )}
 
       <Divider />
       <Label>My Activity</Label>

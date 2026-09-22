@@ -208,6 +208,15 @@ export default function MobileDrawer() {
                   </motion.div>
                 )}
               </AnimatePresence>
+              {categoriesOpen && (
+                <div className="flex flex-col gap-0.5">
+                  {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
+                    <Btn key={value}
+                      onClick={() => go(`/explore?cat=${encodeURIComponent(value)}`)}
+                      Icon={CatIcon} label={label} />
+                  ))}
+                </div>
+              )}
 
               <Div />
               <Lbl c="FestNest" />
