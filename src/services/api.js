@@ -308,9 +308,13 @@ export const ca = {
   approve:      (id, body) => post(`/ca/${id}/approve`, body || {}),
   reject:       (id, reason) => post(`/ca/${id}/reject`, typeof reason === 'string' ? { reason } : (reason || {})),
   me:           () => get('/ca/me'),
+  myPerformance:() => get('/ca/me/performance'),
+  myRewards:    () => get('/ca/me/rewards'),
   impact:       (id, params = {}) => get(`/ca/${id}/impact` + buildQs(params)),
   myImpact:     (params = {}) => get('/ca/me/impact' + buildQs(params)),
   card:         (caId) => get(`/ca/card/${caId}`),
+  leaderboard:  (params = {}) => get('/ca/leaderboard' + buildQs(params)),
+  programConfig:() => get('/ca/program-config'),
 };
 
 /* ─── Query-string builder — strips undefined/null/empty values ── */

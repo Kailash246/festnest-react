@@ -1,25 +1,72 @@
 // src/pages/ca/CampusAmbassadorLeaderboardPage.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, ArrowLeft, Search, Filter, ShieldCheck, ArrowRight, Sparkles, Building, Calendar, Users, Award } from 'lucide-react';
+import { Trophy, ArrowLeft, Search, Filter, ShieldCheck, ArrowRight, Sparkles, Building, Calendar, Users, Award, RefreshCw, AlertCircle } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { getLeaderboardData } from '../../services/caService';
+import { fetchLeaderboard } from '../../services/caService';
+import { ca } from '../../services/api';
 import CANavHeader from './components/CANavHeader';
 
 const CITIES = ['All', 'Bangalore', 'Pune', 'Chennai', 'Delhi NCR', 'Mumbai', 'Goa'];
 
 export default function CampusAmbassadorLeaderboardPage() {
-  const { currentUser } = useApp();
+  const { currentUser, isLoggedIn } = useApp();
   const [period, setPeriod] = useState('current'); // 'current' | 'previous' | 'overall'
   const [selectedCity, setSelectedCity] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [leaderboardRows, setLeaderboardRows] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [myCA, setMyCA] = useState(null);
+  // Fetch logged in CA's profile to identify their rank in the table
+  useEffect(() => {
+    if (isLoggedIn) {
+      ca.me()
+        .then((res) => setMyCA(res.data?.profile || null))
+        .catch(() => setMyCA(null));
+    } else {
+      setMyCA(null);
+    }
+  }, [isLoggedIn]);
 
-  const leaderboardRows = useMemo(() => {
-    return getLeaderboardData({
-      period,
-      city: selectedCity === 'All' ? 'all' : selectedCity,
-      search: searchQuery,
-    });
+  // Fetch real leaderboard data from backend with debouncing
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
+
+    const timer = setTimeout(() => {
+      fetchLeaderboard({
+        period,
+        city: selectedCity === 'All' ? '' : selectedCity,
+        search: searchQuery,
+        limit: 100,
+      })
+        .then((res) => {
+          if (!isMounted) return;
+          if (res.error) {
+            setError(res.error);
+            setLeaderboardRows([]);
+            setTotalCount(0);
+          } else {
+            setLeaderboardRows(res.leaderboard || []);
+            setTotalCount(res.total ?? (res.leaderboard?.length || 0));
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          if (!isMounted) return;
+          setError(err.message || 'Failed to load leaderboard');
+          setLeaderboardRows([]);
+          setLoading(false);
+        });
+    }, 200);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, [period, selectedCity, searchQuery]);
 
   return (
@@ -150,35 +197,84 @@ export default function CampusAmbassadorLeaderboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-sans">
-                {leaderboardRows.length === 0 ? (
+                {loading ? (
+                  [...Array(6)].map((_, idx) => (
+                    <tr key={`skel-${idx}`} className="animate-pulse">
+                      <td className="py-4 px-4 sm:px-6">
+                        <div className="h-7 w-8 bg-slate-100 rounded-lg" />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="h-4 w-32 bg-slate-100 rounded mb-1" />
+                        <div className="h-3 w-20 bg-slate-100/60 rounded" />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="h-4 w-40 bg-slate-100 rounded mb-1" />
+                        <div className="h-3 w-24 bg-slate-100/60 rounded" />
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="h-4 w-8 bg-slate-100 rounded mx-auto" />
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="h-4 w-8 bg-slate-100 rounded mx-auto" />
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="h-4 w-8 bg-slate-100 rounded mx-auto" />
+                      </td>
+                      <td className="py-4 px-4 sm:px-6 text-right">
+                        <div className="h-5 w-14 bg-slate-100 rounded ml-auto" />
+                      </td>
+                    </tr>
+                  ))
+                ) : error ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-text-3">
-                      <Trophy size={32} className="mx-auto text-slate-300 mb-2" />
-                      <p className="font-semibold text-slate-700">No ambassadors found</p>
-                      <p className="text-xs text-text-4 mt-0.5">Try searching for a different college or clearing filters.</p>
+                    <td colSpan={7} className="py-12 text-center text-rose-600">
+                      <AlertCircle size={32} className="mx-auto text-rose-400 mb-2" />
+                      <p className="font-semibold text-sm">{error}</p>
+                      <button
+                        type="button"
+                        onClick={() => window.location.reload()}
+                        className="mt-2.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-50 text-rose-700 text-xs font-semibold rounded-lg hover:bg-rose-100 transition"
+                      >
+                        <RefreshCw size={12} />
+                        <span>Retry</span>
+                      </button>
+                    </td>
+                  </tr>
+                ) : leaderboardRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-14 text-center text-text-3">
+                      <Trophy size={36} className="mx-auto text-slate-300 mb-2" />
+                      <p className="font-semibold text-slate-800 text-sm">
+                        {searchQuery || selectedCity !== 'All' ? 'No ambassadors found' : 'No approved ambassadors on the leaderboard yet'}
+                      </p>
+                      <p className="text-xs text-text-4 mt-1 max-w-sm mx-auto">
+                        {searchQuery || selectedCity !== 'All'
+                          ? 'Try clearing your search query or choosing "All" cities.'
+                          : 'As student ambassadors onboard clubs and refer students, verified points and live rankings will appear here.'}
+                      </p>
                     </td>
                   </tr>
                 ) : (
                   leaderboardRows.map((row) => {
-                    const isTop1 = row.displayRank === 1;
-                    const isTop3 = row.displayRank <= 3;
-                    const isCurrentUser = row.isCurrentUserPlaceholder;
+                    const isTop1 = row.rank === 1;
+                    const isTop3 = row.rank <= 3;
+                    const isCurrentUser = Boolean(myCA && (myCA.caId === row.caId || (row._id && myCA._id === row._id)));
 
                     const rankBadge =
-                      row.displayRank === 1
+                      row.rank === 1
                         ? 'bg-amber-100 text-amber-800 border-amber-300'
-                        : row.displayRank === 2
+                        : row.rank === 2
                         ? 'bg-slate-100 text-slate-700 border-slate-300'
-                        : row.displayRank === 3
+                        : row.rank === 3
                         ? 'bg-amber-50 text-amber-700 border-amber-200'
                         : 'text-text-3 font-mono';
 
                     return (
                       <tr
-                        key={row.rank}
+                        key={row.caId || row._id || row.rank}
                         className={`hover:bg-surface-2/50 transition ${
                           isTop1 ? 'bg-amber-50/20' : ''
-                        } ${isCurrentUser ? 'bg-indigo-50/30' : ''}`}
+                        } ${isCurrentUser ? 'bg-indigo-50/30 font-medium' : ''}`}
                       >
                         {/* Rank */}
                         <td className="py-4 px-4 sm:px-6">
@@ -187,7 +283,7 @@ export default function CampusAmbassadorLeaderboardPage() {
                               isTop3 ? `border ${rankBadge}` : rankBadge
                             }`}
                           >
-                            #{row.displayRank}
+                            #{row.rank}
                           </span>
                         </td>
 
@@ -205,6 +301,9 @@ export default function CampusAmbassadorLeaderboardPage() {
                                 You
                               </span>
                             )}
+                          </div>
+                          <div className="text-[10px] font-mono text-text-4 font-normal mt-0.5">
+                            ID: {row.caId}
                           </div>
                         </td>
 

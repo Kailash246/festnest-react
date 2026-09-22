@@ -80,50 +80,76 @@ export function calculateCAPerformance(stats = {}) {
   };
 }
 
-/**
- * Public leaderboard cohort data.
- * Ready for drop-in backend API swap when live endpoint is wired.
- */
-export const MOCK_LEADERBOARD = [
-  { rank: 1, name: 'Rahul Sharma', college: 'RV College of Engineering', city: 'Bangalore', users: 112, events: 4, organizers: 3, points: 137, badge: '🥇 1st' },
-  { rank: 2, name: 'Priya Iyer', college: 'COEP Technological University', city: 'Pune', users: 96, events: 3, organizers: 2, points: 121, badge: '🥈 2nd' },
-  { rank: 3, name: 'Arjun Nair', college: 'IIT Madras', city: 'Chennai', users: 85, events: 3, organizers: 2, points: 110, badge: '🥉 3rd' },
-  { rank: 4, name: 'Neha Deshmukh', college: 'DTU', city: 'Delhi NCR', users: 73, events: 2, organizers: 2, points: 98, badge: 'Top 5' },
-  { rank: 5, name: 'Karan Mehra', college: 'BITS Pilani (Goa)', city: 'Goa', users: 66, events: 2, organizers: 2, points: 91, badge: 'Top 5' },
-  { rank: 6, name: 'Sneha Patel', college: 'VJTI', city: 'Mumbai', users: 64, events: 2, organizers: 1, points: 84, badge: 'Top 10' },
-  { rank: 7, name: 'Rohan Verma', college: 'Christ University', city: 'Bangalore', users: 57, events: 2, organizers: 1, points: 82, badge: 'Top 10', isCurrentUserPlaceholder: true },
-  { rank: 8, name: 'Ananya Gupta', college: 'SRM University', city: 'Chennai', users: 54, events: 2, organizers: 1, points: 79, badge: 'Top 10' },
-  { rank: 9, name: 'Aditya Joshi', college: 'MIT-WPU', city: 'Pune', users: 49, events: 1, organizers: 2, points: 74, badge: 'Top 10' },
-  { rank: 10, name: 'Meera Sengupta', college: 'NSUT', city: 'Delhi NCR', users: 46, events: 2, organizers: 1, points: 71, badge: 'Top 10' },
-  { rank: 11, name: 'Vikas Rao', college: 'BMS College of Engineering', city: 'Bangalore', users: 42, events: 1, organizers: 1, points: 57 },
-  { rank: 12, name: 'Tanvi Shah', college: 'NMIMS', city: 'Mumbai', users: 38, events: 1, organizers: 1, points: 53 },
-];
+import { ca } from './api';
 
 /**
- * Filters public leaderboard by period, city, and college search query.
+ * Normalizes backend CA leaderboard entry into consistent display format.
  */
-export function getLeaderboardData({ period = 'current', city = 'all', search = '' } = {}) {
-  let list = [...MOCK_LEADERBOARD];
+export function normalizeLeaderboardEntry(entry, index = 0) {
+  const rank = entry.rank || index + 1;
+  return {
+    ...entry,
+    rank,
+    displayRank: rank,
+    caId: entry.caId || `FN-CA-${rank}`,
+    name: entry.name || 'Campus Ambassador',
+    college: entry.college || 'College Campus',
+    city: entry.city || 'India',
+    users: entry.stats?.referralSignups ?? entry.users ?? 0,
+    events: entry.stats?.eventsSourced ?? entry.events ?? 0,
+    organizers: entry.stats?.organizersOnboarded ?? entry.organizers ?? 0,
+    points: entry.points ?? entry.totalPoints ?? 0,
+    totalPoints: entry.totalPoints ?? entry.points ?? 0,
+    performanceStatus: entry.performanceStatus || (entry.points >= 100 ? 'Reward Eligible' : entry.points >= 40 ? 'Certificate Milestone Achieved' : 'Getting Started'),
+  };
+}
 
-  if (city && city !== 'all') {
-    list = list.filter((item) => item.city.toLowerCase() === city.toLowerCase());
+/**
+ * Fetches real, deterministic leaderboard data from the backend.
+ */
+export async function fetchLeaderboard({ period = 'all-time', city = '', search = '', page = 1, limit = 50 } = {}) {
+  try {
+    const params = {
+      period,
+      page,
+      limit,
+    };
+    if (city && city.toLowerCase() !== 'all') {
+      params.city = city;
+    }
+    if (search && search.trim()) {
+      params.search = search.trim();
+    }
+    const res = await ca.leaderboard(params);
+    const data = res?.data || {};
+    const rawList = Array.isArray(data.leaderboard) ? data.leaderboard : [];
+    const normalized = rawList.map(normalizeLeaderboardEntry);
+    return {
+      leaderboard: normalized,
+      total: data.total ?? normalized.length,
+      page: data.page ?? 1,
+      pages: data.pages ?? 1,
+    };
+  } catch (err) {
+    console.error('[fetchLeaderboard Error]', err);
+    return {
+      leaderboard: [],
+      total: 0,
+      page: 1,
+      pages: 1,
+      error: err.message || 'Failed to fetch leaderboard',
+    };
   }
+}
 
-  if (search && search.trim()) {
-    const q = search.trim().toLowerCase();
-    list = list.filter(
-      (item) =>
-        item.name.toLowerCase().includes(q) ||
-        item.college.toLowerCase().includes(q) ||
-        item.city.toLowerCase().includes(q)
-    );
-  }
+/**
+ * Deprecated: Empty array placeholder kept only for backward compatibility.
+ * All views now query the live backend leaderboard via fetchLeaderboard().
+ */
+export const MOCK_LEADERBOARD = [];
 
-  // Recalculate rank after filtering if city or search is active
-  return list.map((item, index) => ({
-    ...item,
-    displayRank: index + 1,
-  }));
+export function getLeaderboardData() {
+  return [];
 }
 
 /**

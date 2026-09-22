@@ -1,11 +1,32 @@
 // src/pages/ca/components/CALeaderboardPreview.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, ArrowRight, ShieldCheck, Award } from 'lucide-react';
-import { MOCK_LEADERBOARD } from '../../../services/caService';
+import { Trophy, ArrowRight, Sparkles } from 'lucide-react';
+import { fetchLeaderboard } from '../../../services/caService';
 
 export default function CALeaderboardPreview() {
-  const topPerformers = MOCK_LEADERBOARD.slice(0, 5);
+  const [topPerformers, setTopPerformers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchLeaderboard({ limit: 5 })
+      .then((res) => {
+        if (isMounted) {
+          setTopPerformers(res.leaderboard || []);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setTopPerformers([]);
+          setLoading(false);
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section className="py-16 bg-surface-2/30 border-b border-border">
@@ -21,7 +42,7 @@ export default function CALeaderboardPreview() {
               Who's leading this month?
             </h2>
             <p className="font-sans text-sm text-text-2 mt-1">
-              Top 5 campus ambassadors ranked strictly on verified student and organizer impact.
+              Top campus ambassadors ranked strictly on verified student and organizer impact.
             </p>
           </div>
 
@@ -49,72 +70,110 @@ export default function CALeaderboardPreview() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {topPerformers.map((ca) => {
-                  const isTop3 = ca.rank <= 3;
-                  const rankBadge =
-                    ca.rank === 1
-                      ? 'bg-amber-100 text-amber-800 border-amber-300'
-                      : ca.rank === 2
-                      ? 'bg-slate-100 text-slate-700 border-slate-300'
-                      : ca.rank === 3
-                      ? 'bg-amber-50 text-amber-700 border-amber-200'
-                      : 'text-text-3 font-mono';
-
-                  return (
-                    <tr
-                      key={ca.rank}
-                      className={`hover:bg-surface-2/50 transition ${
-                        ca.rank === 1 ? 'bg-amber-50/20' : ''
-                      }`}
-                    >
-                      {/* Rank */}
+                {loading ? (
+                  [...Array(4)].map((_, idx) => (
+                    <tr key={`skel-prev-${idx}`} className="animate-pulse">
                       <td className="py-3.5 px-4 sm:px-6">
-                        <span
-                          className={`inline-flex items-center justify-center h-7 w-7 rounded-xl font-mono text-xs font-bold ${
-                            isTop3 ? `border ${rankBadge}` : rankBadge
-                          }`}
-                        >
-                          #{ca.rank}
-                        </span>
+                        <div className="h-6 w-6 bg-slate-100 rounded-lg" />
                       </td>
-
-                      {/* Name */}
-                      <td className="py-3.5 px-4 font-heading font-semibold text-slate-900">
-                        <div className="flex items-center gap-2">
-                          <span>{ca.name}</span>
-                          {ca.rank === 1 && (
-                            <span className="text-[10px] font-mono font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
-                              Leader
-                            </span>
-                          )}
-                        </div>
+                      <td className="py-3.5 px-4">
+                        <div className="h-4 w-28 bg-slate-100 rounded mb-1" />
+                        <div className="h-3 w-16 bg-slate-100/60 rounded" />
                       </td>
-
-                      {/* College & City */}
-                      <td className="py-3.5 px-4 text-text-2">
-                        <span>{ca.college}</span>
-                        <span className="text-text-4 ml-1.5">• {ca.city}</span>
+                      <td className="py-3.5 px-4">
+                        <div className="h-4 w-36 bg-slate-100 rounded mb-1" />
+                        <div className="h-3 w-20 bg-slate-100/60 rounded" />
                       </td>
-
-                      {/* Users */}
-                      <td className="py-3.5 px-4 text-center font-mono text-text-2">
-                        {ca.users}
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="h-4 w-6 bg-slate-100 rounded mx-auto" />
                       </td>
-
-                      {/* Events */}
-                      <td className="py-3.5 px-4 text-center font-mono text-text-2">
-                        {ca.events}
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="h-4 w-6 bg-slate-100 rounded mx-auto" />
                       </td>
-
-                      {/* Points */}
                       <td className="py-3.5 px-4 sm:px-6 text-right">
-                        <span className="font-mono text-sm sm:text-base font-bold text-primary">
-                          {ca.points} pts
-                        </span>
+                        <div className="h-4 w-12 bg-slate-100 rounded ml-auto" />
                       </td>
                     </tr>
-                  );
-                })}
+                  ))
+                ) : topPerformers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-10 text-center text-text-3">
+                      <Trophy size={28} className="mx-auto text-amber-400 mb-1.5" />
+                      <p className="font-semibold text-slate-800 text-xs">Live leaderboard rankings</p>
+                      <p className="text-[11px] text-text-4 mt-0.5">Approved campus ambassadors with verified points will appear here.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  topPerformers.map((ca) => {
+                    const isTop3 = ca.rank <= 3;
+                    const rankBadge =
+                      ca.rank === 1
+                        ? 'bg-amber-100 text-amber-800 border-amber-300'
+                        : ca.rank === 2
+                        ? 'bg-slate-100 text-slate-700 border-slate-300'
+                        : ca.rank === 3
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : 'text-text-3 font-mono';
+
+                    return (
+                      <tr
+                        key={ca.caId || ca._id || ca.rank}
+                        className={`hover:bg-surface-2/50 transition ${
+                          ca.rank === 1 ? 'bg-amber-50/20' : ''
+                        }`}
+                      >
+                        {/* Rank */}
+                        <td className="py-3.5 px-4 sm:px-6">
+                          <span
+                            className={`inline-flex items-center justify-center h-7 w-7 rounded-xl font-mono text-xs font-bold ${
+                              isTop3 ? `border ${rankBadge}` : rankBadge
+                            }`}
+                          >
+                            #{ca.rank}
+                          </span>
+                        </td>
+
+                        {/* Name */}
+                        <td className="py-3.5 px-4 font-heading font-semibold text-slate-900">
+                          <div className="flex items-center gap-2">
+                            <span>{ca.name}</span>
+                            {ca.rank === 1 && (
+                              <span className="text-[10px] font-mono font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
+                                Leader
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[10px] font-mono text-text-4 font-normal mt-0.5">
+                            ID: {ca.caId}
+                          </div>
+                        </td>
+
+                        {/* College & City */}
+                        <td className="py-3.5 px-4 text-text-2">
+                          <span>{ca.college}</span>
+                          <span className="text-text-4 ml-1.5">• {ca.city}</span>
+                        </td>
+
+                        {/* Users */}
+                        <td className="py-3.5 px-4 text-center font-mono text-text-2">
+                          {ca.users}
+                        </td>
+
+                        {/* Events */}
+                        <td className="py-3.5 px-4 text-center font-mono text-text-2">
+                          {ca.events}
+                        </td>
+
+                        {/* Points */}
+                        <td className="py-3.5 px-4 sm:px-6 text-right">
+                          <span className="font-mono text-sm sm:text-base font-bold text-primary">
+                            {ca.points} pts
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -136,4 +195,3 @@ export default function CALeaderboardPreview() {
     </section>
   );
 }
-

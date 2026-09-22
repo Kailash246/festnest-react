@@ -88,6 +88,7 @@ export default function CampusAmbassadorDashboard() {
   const [profileLoading, setProfileLoading] = useState(true);
   const [impactLoading, setImpactLoading] = useState(true);
   const [profile, setProfile] = useState(null);
+  const [serverPerformance, setServerPerformance] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [copiedKey, setCopiedKey] = useState(null);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'ledger' | 'toolkit' | 'guidelines' | 'leaderboard'
@@ -104,6 +105,7 @@ export default function CampusAmbassadorDashboard() {
     try {
       const res = await ca.me();
       setProfile(res.data?.profile || null);
+      setServerPerformance(res.data?.performance || null);
       if (silent) showToast?.('Ambassador stats updated!', 'success');
     } catch (err) {
       console.error('Failed to load CA profile', err);
@@ -353,7 +355,13 @@ export default function CampusAmbassadorDashboard() {
   }
 
   // State 6: APPROVED — Full Performance Dashboard
-  const performance = calculateCAPerformance(profile.stats || {});
+  const clientPerformance = calculateCAPerformance(profile.stats || {});
+  const performance = {
+    ...clientPerformance,
+    ...(serverPerformance || {}),
+    totalPoints: serverPerformance?.points ?? serverPerformance?.totalPoints ?? clientPerformance.totalPoints,
+    rank: serverPerformance?.rank ?? null,
+  };
 
   return (
     <div className="font-sans min-h-screen bg-surface-2 text-slate-900 pb-16">

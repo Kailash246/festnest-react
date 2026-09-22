@@ -13,6 +13,7 @@ import {
   House, Compass, Bell, Bookmark, User, PlusCircle,
   Code2, Music4, Wrench, Trophy, LogOut,
   Info, HelpCircle, ClipboardList, ShieldCheck, MessageCircle, Award, Gift,
+  ChevronDown,
 } from 'lucide-react';
 import { PRIORITY_CATEGORIES } from '../data/categories';
 
@@ -49,6 +50,7 @@ export default function MobileDrawer() {
   const { drawerOpen, setDrawerOpen, savedCount, requireAuth, isLoggedIn, isAdmin, isOrganizer, isSuperAdmin, logout, currentUser, unreadNotifCount } = useApp();
   const [avatarImgError,   setAvatarImgError]   = useState(false);
   const [showLogoutModal,  setShowLogoutModal]  = useState(false);
+  const [categoriesOpen,   setCategoriesOpen]   = useState(false);
   const initials   = currentUser?.avatar?.initials || getInitials(currentUser?.name);
   const avatarUrl  = !avatarImgError && currentUser?.avatar?.url;
   const roleLabel  = ROLE_LABEL[currentUser?.role] || 'Member';
@@ -173,12 +175,39 @@ export default function MobileDrawer() {
               )}
 
               <Div />
-              <Lbl c="Browse by Type" />
-              {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
-                <Btn key={value}
-                  onClick={() => go(`/explore?cat=${encodeURIComponent(value)}`)}
-                  Icon={CatIcon} label={label} />
-              ))}
+              <button
+                type="button"
+                onClick={() => setCategoriesOpen(prev => !prev)}
+                className="flex items-center justify-between w-full text-left px-3 pt-4 pb-1.5 group cursor-pointer select-none"
+              >
+                <span className="text-[10px] font-bold tracking-wider text-[#AEAEAD] uppercase group-hover:text-[#111110] transition-colors">
+                  Browse by Category
+                </span>
+                <ChevronDown
+                  size={14}
+                  strokeWidth={2}
+                  className={`text-[#AEAEAD] group-hover:text-[#111110] transition-transform duration-200 ${
+                    categoriesOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <AnimatePresence initial={false}>
+                {categoriesOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
+                      <Btn key={value}
+                        onClick={() => go(`/explore?cat=${encodeURIComponent(value)}`)}
+                        Icon={CatIcon} label={label} />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <Div />
               <Lbl c="FestNest" />

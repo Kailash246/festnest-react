@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PRIORITY_CATEGORIES } from '../data/categories';
 
@@ -64,6 +67,37 @@ export default function Sidebar() {
   const { savedCount, requireAuth, showToast, isAdmin, isOrganizer, isSuperAdmin, unreadNotifCount } = useApp();
   const path = location.pathname;
 
+  const currentCat = new URLSearchParams(location.search).get('cat');
+  const hasActiveCat = path === '/explore' && Boolean(currentCat);
+
+  const [categoriesOpen, setCategoriesOpen] = useState(() => {
+    if (hasActiveCat) return true;
+    try {
+      const saved = localStorage.getItem('festnest_sidebar_categories_open');
+      return saved !== null ? saved === 'true' : false;
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (hasActiveCat) {
+      setCategoriesOpen(true);
+    }
+  }, [hasActiveCat, currentCat]);
+
+  const toggleCategories = () => {
+    setCategoriesOpen(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('festnest_sidebar_categories_open', String(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
+
   // Auth-gated navigation
   const goProtected = (href) => {
     if (!requireAuth()) return;
@@ -128,14 +162,50 @@ export default function Sidebar() {
       )}
 
       <Divider />
-      <Label>Browse by Type</Label>
+      <button
+        type="button"
+        onClick={toggleCategories}
+        aria-expanded={categoriesOpen}
+        aria-controls="sidebar-category-list"
+        className="flex items-center justify-between w-full text-left px-[14px] pt-3 pb-2 group cursor-pointer select-none rounded-md hover:bg-surface-2/60 transition-colors"
+      >
+        <span className="text-[10px] font-bold tracking-wider text-text-4 uppercase group-hover:text-text-2 transition-colors">
+          Browse by Category
+        </span>
+        <ChevronDown
+          size={14}
+          strokeWidth={2.2}
+          className={`text-text-4 group-hover:text-text-2 transition-transform duration-200 shrink-0 ${
+            categoriesOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
 
-      {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => (
-        <SidebarBtn key={value}
-          onClick={() => navigate(`/explore?cat=${encodeURIComponent(value)}`)}
-          icon={<CatIcon className="w-[17px] h-[17px]" strokeWidth={2} />}
-          label={label} />
-      ))}
+      <AnimatePresence initial={false}>
+        {categoriesOpen && (
+          <motion.div
+            id="sidebar-category-list"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            className="overflow-hidden flex flex-col gap-[2px]"
+          >
+            {PRIORITY_CATEGORIES.map(({ value, label, Icon: CatIcon }) => {
+              const isCatActive = path === '/explore' && currentCat === value;
+              return (
+                <SidebarBtn
+                  key={value}
+                  onClick={() => navigate(`/explore?cat=${encodeURIComponent(value)}`)}
+                  icon={<CatIcon className="w-[17px] h-[17px]" strokeWidth={2} />}
+                  label={label}
+                  isActive={isCatActive}
+                />
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Divider />
       <Label>My Activity</Label>

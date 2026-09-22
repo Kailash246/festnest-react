@@ -59,7 +59,7 @@ export default function CAPerformanceOverview({ performance }) {
                 Leaderboard Position
               </span>
               <span className="font-mono text-xl sm:text-2xl font-bold text-amber-700 mt-0.5 block">
-                #7 THIS MONTH
+                {performance.rank ? `#${performance.rank} THIS MONTH` : 'RANK #1'}
               </span>
             </div>
 
