@@ -1,7 +1,8 @@
 // src/pages/organizer/components/OrganizerSidebar.jsx
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import useBodyScrollLock from '../../../hooks/useBodyScrollLock';
 import {
   LayoutDashboard,
   CalendarDays,
@@ -36,6 +37,8 @@ export default function OrganizerSidebar({
   counts = {},
 }) {
   const navigate = useNavigate();
+  const mobileScrollRef = useRef(null);
+  useBodyScrollLock(mobileOpen, mobileScrollRef);
 
   const renderContent = (isMobile = false) => {
     const isCollapsed = !isMobile && collapsed;
@@ -116,7 +119,11 @@ export default function OrganizerSidebar({
         </div>
 
         {/* Nav Items */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
+        <div
+          ref={isMobile ? mobileScrollRef : undefined}
+          className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+        >
           <div className={`px-2 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-text-4 ${isCollapsed ? 'hidden' : 'block'}`}>
             Event Management
           </div>
@@ -254,14 +261,16 @@ export default function OrganizerSidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onCloseMobile}
-              className="absolute inset-0 bg-black/45 backdrop-blur-xs"
+              className="absolute inset-0 bg-black/45 backdrop-blur-xs touch-none overscroll-none"
+              style={{ touchAction: 'none', overscrollBehavior: 'none' }}
             />
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 320 }}
-              className="absolute inset-y-0 left-0 w-[280px] bg-white shadow-2xl z-10"
+              className="absolute inset-y-0 left-0 w-[280px] bg-white shadow-2xl z-10 overscroll-contain touch-pan-y"
+              style={{ overscrollBehavior: 'contain' }}
             >
               {renderContent(true)}
             </motion.div>

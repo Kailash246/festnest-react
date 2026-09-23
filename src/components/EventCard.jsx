@@ -232,7 +232,7 @@ const PrizeBadge = ({ amount, featured }) => (
 /* ── Main EventCard ── */
 export default function EventCard({ event, onDelete, featured }) {
   const navigate   = useNavigate();
-  const { savedEvents, toggleSave, showToast, isSuperAdmin } = useApp();
+  const { savedEvents, toggleSave, showToast, isSuperAdmin, isAdmin } = useApp();
   const isSaved    = savedEvents.has(event.id);
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleting,    setDeleting]    = useState(false);
@@ -448,46 +448,47 @@ export default function EventCard({ event, onDelete, featured }) {
               </>
             )}
           </div>
-          <motion.span
-            whileHover={{ x: 1 }}
-            transition={{ duration: 0.12 }}
-            onClick={goDetail}
-            onMouseEnter={() => isFeaturedCard && setDetailHover(true)}
-            onMouseLeave={() => setDetailHover(false)}
-            style={{
-              fontSize: 11, fontWeight: 600,
-              color: isFeaturedCard ? (detailHover ? '#78350f' : '#b45309') : '#4F46E5',
-              display: 'flex', alignItems: 'center', gap: 2,
-              cursor: 'pointer', flexShrink: 0,
-            }}
-          >
-            View Details
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-              strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}>
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </motion.span>
-        </div>
-
-        {/* Superadmin delete — only visible to superadmin */}
-        {isSuperAdmin && onDelete && (
-          <div style={{ display: 'flex', marginTop: 8 }}>
-            <motion.button
-              whileTap={{ scale: 0.88 }}
-              onClick={handleDeleteClick}
-              aria-label="Delete event permanently"
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <motion.span
+              whileHover={{ x: 1 }}
+              transition={{ duration: 0.12 }}
+              onClick={goDetail}
+              onMouseEnter={() => isFeaturedCard && setDetailHover(true)}
+              onMouseLeave={() => setDetailHover(false)}
               style={{
-                width: 26, height: 26, borderRadius: 7,
-                border: '1.5px solid #FECACA',
-                background: '#FEF2F2',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#DC2626', cursor: 'pointer',
+                fontSize: 11, fontWeight: 600,
+                color: isFeaturedCard ? (detailHover ? '#78350f' : '#b45309') : '#4F46E5',
+                display: 'flex', alignItems: 'center', gap: 2,
+                cursor: 'pointer', flexShrink: 0,
               }}
             >
-              <TrashIcon />
-            </motion.button>
+              View Details
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}>
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </motion.span>
+
+            {/* Admin delete — placed next to View Details */}
+            {(isSuperAdmin || isAdmin) && onDelete && (
+              <motion.button
+                whileTap={{ scale: 0.88 }}
+                onClick={handleDeleteClick}
+                aria-label="Delete event permanently"
+                style={{
+                  width: 26, height: 26, borderRadius: 7,
+                  border: '1.5px solid #FECACA',
+                  background: '#FEF2F2',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#DC2626', cursor: 'pointer',
+                  flexShrink: 0,
+                }}
+              >
+                <TrashIcon />
+              </motion.button>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* ── Delete confirmation modal (portal) ── */}
