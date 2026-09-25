@@ -464,6 +464,14 @@ const PrizePodium = ({ prizes }) => {
     { rankLabel: '3rd', label: '3rd Prize', value: third,  bg: 'bg-[#FFF7ED] border-[#FED7AA]', text: 'text-[#9A3412]' },
   ].filter(p => p.value);
 
+  const formatPrize = (val) => {
+    if (!val) return '';
+    const cleanNum = Number(String(val).replace(/[^0-9.]/g, ''));
+    return !isNaN(cleanNum) && cleanNum > 0
+      ? `₹${cleanNum.toLocaleString('en-IN')}`
+      : String(val).startsWith('₹') ? String(val) : `₹${val}`;
+  };
+
   return (
     <div className="mt-4 pt-4 border-t border-border">
       <div className="text-[11px] font-bold uppercase tracking-wider text-text-4 mb-3">Prize Breakdown</div>
@@ -471,7 +479,7 @@ const PrizePodium = ({ prizes }) => {
         {podium.map(({ rankLabel, label, value, bg, text }) => (
           <div key={label} className={`border rounded-lg p-3 sm:p-4 text-center ${bg}`}>
             <div className={`text-[13px] sm:text-[14px] font-bold mb-0.5 ${text}`}>{rankLabel}</div>
-            <div className={`font-bold text-[16px] sm:text-[18px] tabular-nums ${text}`}>₹{Number(String(value).replace(/,/g,'')).toLocaleString('en-IN')}</div>
+            <div className={`font-bold text-[16px] sm:text-[18px] tabular-nums ${text}`}>{formatPrize(value)}</div>
             <div className="text-[11px] text-text-3 mt-0.5">{label}</div>
           </div>
         ))}
@@ -892,7 +900,10 @@ export default function EventDetails() {
         setRelated(normaliseEvents(r.data.related || []));
         if (typeof r.data.isSaved === 'boolean') setServerSaved(r.data.isSaved);
       })
-      .catch(e => setError(e.message))
+      .catch(e => {
+        console.error('[EventDetails] Failed to load event:', e);
+        setError(e.message || 'Could not load event');
+      })
       .finally(() => setLoading(false));
   }, [id]);
 

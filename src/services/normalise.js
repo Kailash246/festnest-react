@@ -11,80 +11,59 @@ function fmtDate(raw) {
 export function normaliseEvent(ev) {
   if (!ev) return null;
 
-  const rawEventDate = ev.eventDate || ev.date?.eventDate || ev.date?.start || ev.startDate || '';
-  const rawRegistrationDeadline = ev.registrationDeadline || ev.date?.registrationDeadline || ev.date?.end || ev.endDate || rawEventDate;
+  const rawEventDate = ev.rawEventDate || ev.eventDate || ev.date?.eventDate || ev.date?.start || ev.startDate || '';
+  const rawRegistrationDeadline = ev.rawRegistrationDeadline || ev.registrationDeadline || ev.date?.registrationDeadline || ev.date?.end || ev.endDate || rawEventDate;
 
   const eventDate = fmtDate(rawEventDate);
   const registrationDeadline = fmtDate(rawRegistrationDeadline);
 
-  // Already normalised (has flat fields) — but re-apply to pick up new fields
-  const base = ev.startDate !== undefined || ev.eventDate !== undefined ? ev : null;
+  // Safely extract price as a display string
+  const rawPriceDisplay = typeof ev.price === 'object' && ev.price !== null
+    ? ev.price.display
+    : (typeof ev.price === 'string' || typeof ev.price === 'number' ? String(ev.price) : '');
+  const price = rawPriceDisplay || (ev.entryFee ? (String(ev.entryFee).toLowerCase() === 'free' ? 'Free' : `₹${ev.entryFee}`) : 'Free');
 
-  if (base) {
-    // Was previously normalised — just bolt on any missing extended fields.
-    // id/slug MUST be set explicitly — the raw API object has _id and slug but
-    // no plain `id` field, so spreading ...base alone leaves event.id undefined
-    // and EventCard navigates to /event/undefined.
-    return {
-      ...base,
-      // ── Identity (must be explicit, not inherited from spread) ─────────
-      id:    base.id   || base.slug || ev.slug || String(ev._id || ''),
-      slug:  base.slug || base.id   || ev.slug || String(ev._id || ''),
-      _id:   ev._id || base._id,
-      // ── Dates ─────────────────────────────────────────────────────────
-      eventDate:   base.eventDate || eventDate,
-      registrationDeadline: base.registrationDeadline || registrationDeadline,
-      rawEventDate: base.rawEventDate || rawEventDate,
-      rawRegistrationDeadline: base.rawRegistrationDeadline || rawRegistrationDeadline,
-      startDate:   base.eventDate || base.startDate || eventDate,
-      endDate:     base.registrationDeadline || base.endDate || registrationDeadline,
-      // ── Extended fields ───────────────────────────────────────────────
-      brochureUrl: base.brochureUrl  ?? ev.brochure?.url ?? ev.brochureUrl ?? '',
-      prize1:      base.prize1      ?? ev.prize1      ?? '',
-      prize2:      base.prize2      ?? ev.prize2      ?? '',
-      prize3:      base.prize3      ?? ev.prize3      ?? '',
-      totalPrize:  base.totalPrize  ?? ev.totalPrize  ?? '',
-      pocName:     base.pocName     ?? ev.pocName     ?? '',
-      pocPhone:    base.pocPhone    ?? ev.pocPhone     ?? ev.phone ?? '',
-      pocEmail:    base.pocEmail    ?? ev.pocEmail     ?? '',
-      website:     base.website     ?? ev.website      ?? '',
-      eligibility: base.eligibility ?? ev.eligibility  ?? '',
-      rules:       base.rules       ?? ev.rules        ?? '',
-      perks:       base.perks       ?? ev.perks        ?? ev.additionalPerks ?? ev.otherPerks ?? '',
-      mode:        base.mode        ?? ev.mode         ?? '',
-      competitions: base.competitions ?? ev.competitions ?? [],
-      hostedBy:    base.hostedBy    ?? ev.hostedBy    ?? '',
-      isActive:    base.isActive    ?? ev.isActive    ?? true,
-      isApproved:  base.isApproved  ?? ev.isApproved  ?? true,
-      registrationUrl: base.registrationUrl ?? ev.registrationUrl ?? '#',
-    };
-  }
+  const priceNote = typeof ev.price === 'object' && ev.price !== null
+    ? (ev.price.note || '')
+    : (ev.priceNote || '');
+
+  // Safely extract image URL
+  const imageUrl = (typeof ev.image === 'object' && ev.image !== null ? ev.image.url : '') || ev.imageUrl || ev.bannerImage?.url || '';
+
+  // Safely extract brochure URL
+  const brochureUrl = (typeof ev.brochure === 'object' && ev.brochure !== null ? ev.brochure.url : '') || ev.brochureUrl || '';
+
+  // Safely extract organizer
+  const orgName = ev.orgName || (typeof ev.organiser === 'object' && ev.organiser !== null ? ev.organiser.name : '') || ev.college || '';
+  const orgLogo = ev.orgLogo || (typeof ev.organiser === 'object' && ev.organiser !== null ? ev.organiser.logo : '') || '🏛️';
+  const orgLocation = ev.orgLocation || (typeof ev.organiser === 'object' && ev.organiser !== null ? ev.organiser.location : '') || ev.city || '';
+  const orgSub = ev.orgSub || (typeof ev.organiser === 'object' && ev.organiser !== null ? ev.organiser.sub : '') || '';
 
   return {
     // ── Identity ──────────────────────────────────────────────────────
-    id:    ev.slug || ev._id,
-    slug:  ev.slug || ev._id,
-    _id:   ev._id,
+    id:    ev.id   || ev.slug || (ev._id ? String(ev._id) : ''),
+    slug:  ev.slug || ev.id   || (ev._id ? String(ev._id) : ''),
+    _id:   ev._id || ev.id,
 
     // ── Presentation ──────────────────────────────────────────────────
-    name:  ev.name,
+    name:  ev.name || ev.title || '',
     emoji: ev.emoji   || '🎉',
     bg:    ev.bgClass || ev.bg || 'bg1',
 
     // ── Classification ────────────────────────────────────────────────
-    category:  ev.category,
-    entryType: ev.entryType,
+    category:  ev.category || ev.eventType || '',
+    entryType: ev.entryType || (ev.isPaid ? 'paid' : ev.hasPrize ? 'prize' : 'free'),
 
     // ── Organiser (nested → flat) ──────────────────────────────────────
-    orgName:     ev.organiser?.name     || ev.orgName     || '',
-    orgLogo:     ev.organiser?.logo     || ev.orgLogo     || '🏛️',
-    orgLocation: ev.organiser?.location || ev.orgLocation || '',
-    orgSub:      ev.organiser?.sub      || ev.orgSub      || '',
+    orgName,
+    orgLogo,
+    orgLocation,
+    orgSub,
 
     // ── Venue ──────────────────────────────────────────────────────────
-    college:  ev.college,
-    city:     ev.city,
-    venue:    ev.venue    || '',
+    college:  ev.college || '',
+    city:     ev.city || '',
+    venue:    ev.venue || '',
     teamSize: ev.teamSize || '',
 
     // ── Date (nested → flat) ───────────────────────────────────────────
@@ -94,36 +73,36 @@ export function normaliseEvent(ev) {
     rawRegistrationDeadline: rawRegistrationDeadline,
     startDate:            eventDate,
     endDate:              registrationDeadline,
-    time:                 ev.date?.time        || ev.time       || '',
-    deadlineDays:         ev.date?.deadlineDays ?? ev.deadlineDays ?? 0,
+    time:                 ev.date?.time || ev.time || '',
+    deadlineDays:         typeof ev.date?.deadlineDays === 'number' ? ev.date.deadlineDays : (typeof ev.deadlineDays === 'number' ? ev.deadlineDays : 0),
     endingSoonDays:       ev.endingSoonDays,
 
     // ── Badge (nested → flat) ──────────────────────────────────────────
-    badgeText:  ev.badge?.text  || ev.badgeText  || '',
-    badgeClass: ev.badge?.class || ev.badgeClass || 'badge-free',
+    badgeText:  (typeof ev.badge === 'object' && ev.badge !== null ? ev.badge.text : '') || ev.badgeText || '',
+    badgeClass: (typeof ev.badge === 'object' && ev.badge !== null ? ev.badge.class : '') || ev.badgeClass || 'badge-free',
 
     // ── Price (nested → flat) ──────────────────────────────────────────
-    price:     ev.price?.display || ev.price    || 'Free',
-    priceNote: ev.price?.note    || ev.priceNote || '',
+    price,
+    priceNote,
 
     // ── Image ──────────────────────────────────────────────────────────
-    imageUrl:   ev.image?.url    || ev.imageUrl    || '',
-    brochureUrl: ev.brochure?.url || ev.brochureUrl || '',
+    imageUrl,
+    brochureUrl,
 
     // ── Stats (nested → flat) ─────────────────────────────────────────
     registrationCount: ev.stats?.registrationCount ?? ev.registrationCount ?? 0,
     viewCount:         ev.stats?.viewCount         ?? ev.viewCount         ?? 0,
 
     // ── Content ───────────────────────────────────────────────────────
-    tags:            ev.tags            || [],
-    highlights:      ev.highlights      || [],
-    about:           ev.about           || '',
+    tags:            Array.isArray(ev.tags) ? ev.tags : [],
+    highlights:      Array.isArray(ev.highlights) ? ev.highlights : [],
+    about:           ev.about || ev.description || '',
     registrationUrl: ev.registrationUrl || '#',
 
     // ── Trending ──────────────────────────────────────────────────────
-    trendRank:  ev.trending?.rank  || ev.trendRank  || null,
-    trendViews: ev.trending?.views || ev.trendViews || '',
-    trendExtra: ev.trending?.extra || ev.trendExtra || '',
+    trendRank:  ev.trending?.rank  ?? ev.trendRank  ?? null,
+    trendViews: ev.trending?.views ?? ev.trendViews ?? '',
+    trendExtra: ev.trending?.extra ?? ev.trendExtra ?? '',
 
     // ── Featured ──────────────────────────────────────────────────────
     isFeatured:    ev.isFeatured    || false,
@@ -134,22 +113,22 @@ export function normaliseEvent(ev) {
     prize2:      ev.prize2      || '',
     prize3:      ev.prize3      || '',
     totalPrize:  ev.totalPrize  || '',
+    prizeDetails: ev.prizeDetails || '',
     pocName:     ev.pocName     || '',
     pocPhone:    ev.pocPhone    || ev.phone        || '',
-    pocEmail:    ev.pocEmail    || ev.contactEmail || '',
+    pocEmail:    ev.pocEmail    || ev.contactEmail || ev.email || '',
     website:     ev.website     || '',
     eligibility: ev.eligibility || '',
     rules:       ev.rules       || '',
-    perks:       ev.perks       || '',
     perks:       ev.perks       ?? ev.additionalPerks ?? ev.otherPerks ?? '',
-    mode:        ev.mode        || '',
+    mode:        ev.mode        || 'Offline',
     competitions: Array.isArray(ev.competitions) ? ev.competitions : [],
-    hostedBy:     ev.hostedBy || '',
+    hostedBy:     ev.hostedBy   || '',
     isActive:     ev.isActive !== false,
     isApproved:   ev.isApproved !== false,
   };
 }
 
 export function normaliseEvents(arr = []) {
-  return arr.map(normaliseEvent);
+  return Array.isArray(arr) ? arr.map(normaliseEvent).filter(Boolean) : [];
 }
