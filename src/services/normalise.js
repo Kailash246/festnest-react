@@ -21,15 +21,24 @@ export function normaliseEvent(ev) {
   const base = ev.startDate !== undefined || ev.eventDate !== undefined ? ev : null;
 
   if (base) {
-    // Was previously normalised — just bolt on any missing extended fields
+    // Was previously normalised — just bolt on any missing extended fields.
+    // id/slug MUST be set explicitly — the raw API object has _id and slug but
+    // no plain `id` field, so spreading ...base alone leaves event.id undefined
+    // and EventCard navigates to /event/undefined.
     return {
       ...base,
+      // ── Identity (must be explicit, not inherited from spread) ─────────
+      id:    base.id   || base.slug || ev.slug || String(ev._id || ''),
+      slug:  base.slug || base.id   || ev.slug || String(ev._id || ''),
+      _id:   ev._id || base._id,
+      // ── Dates ─────────────────────────────────────────────────────────
       eventDate:   base.eventDate || eventDate,
       registrationDeadline: base.registrationDeadline || registrationDeadline,
       rawEventDate: base.rawEventDate || rawEventDate,
       rawRegistrationDeadline: base.rawRegistrationDeadline || rawRegistrationDeadline,
       startDate:   base.eventDate || base.startDate || eventDate,
       endDate:     base.registrationDeadline || base.endDate || registrationDeadline,
+      // ── Extended fields ───────────────────────────────────────────────
       brochureUrl: base.brochureUrl  ?? ev.brochure?.url ?? ev.brochureUrl ?? '',
       prize1:      base.prize1      ?? ev.prize1      ?? '',
       prize2:      base.prize2      ?? ev.prize2      ?? '',
