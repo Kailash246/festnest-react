@@ -597,24 +597,15 @@ export function parseDateIST(str, timeStr) {
 
 export function getEventDeadline(ev) {
   if (!ev) return null;
-  const now = Date.now();
 
-  // 1. Explicit registration deadline / deadline field
-  const explicit = ev.registrationDeadline || ev.deadline || ev.date?.deadline || ev.deadlineDate;
-  if (explicit) {
-    const p = parseDateIST(explicit, ev.time);
+  // 1. Explicit registration deadline (Primary source of truth)
+  const deadlineRaw = ev.rawRegistrationDeadline || ev.registrationDeadline || ev.date?.registrationDeadline || ev.deadline || ev.date?.deadline || ev.deadlineDate;
+  if (deadlineRaw) {
+    const p = parseDateIST(deadlineRaw, ev.time);
     if (p) return p;
   }
 
-  // 2. Start date if in the future
-  const startRaw = ev.date?.start || ev.rawStartDate || ev.startDate || '';
-  const parsedStart = parseDateIST(startRaw, ev.time);
-
-  if (parsedStart && parsedStart.getTime() > now) {
-    return parsedStart;
-  }
-
-  // 3. deadlineDays (positive number of days until closing)
+  // 2. deadlineDays (positive number of days until closing)
   const deadlineDays = typeof ev.deadlineDays === 'number'
     ? ev.deadlineDays
     : typeof ev.date?.deadlineDays === 'number'
@@ -622,6 +613,7 @@ export function getEventDeadline(ev) {
     : null;
 
   if (deadlineDays !== null && deadlineDays > 0) {
+    const now = Date.now();
     const nowIST = new Date(now + INDIA_OFFSET);
     const targetYear = nowIST.getUTCFullYear();
     const targetMonth = nowIST.getUTCMonth();
@@ -645,13 +637,19 @@ export function getEventDeadline(ev) {
     return new Date(utcMillis);
   }
 
-  // 4. If parsedStart exists but is in the past and deadlineDays <= 0
-  if (parsedStart) return parsedStart;
+  // 3. Fallback for legacy events that only had date.end or endDate
+  const endRaw = ev.rawEndDate || ev.date?.end || ev.endDate || '';
+  if (endRaw) {
+    const parsedEnd = parseDateIST(endRaw, ev.time);
+    if (parsedEnd) return parsedEnd;
+  }
 
-  // 5. Fallback to end date if available
-  const endRaw = ev.date?.end || ev.rawEndDate || ev.endDate || '';
-  const parsedEnd = parseDateIST(endRaw, ev.time);
-  if (parsedEnd) return parsedEnd;
+  // 4. Fallback for legacy events that had no deadline or endDate at all
+  const startRaw = ev.rawEventDate || ev.rawStartDate || ev.date?.start || ev.startDate || '';
+  if (startRaw) {
+    const parsedStart = parseDateIST(startRaw, ev.time);
+    if (parsedStart) return parsedStart;
+  }
 
   return null;
 }
@@ -695,7 +693,7 @@ function useCountdown(ev) {
 
     const timerId = setInterval(tick, 1000);
     return () => clearInterval(timerId);
-  }, [ev?.slug, ev?.id, ev?.startDate, ev?.date?.start, ev?.deadlineDays, ev?.time]);
+  }, [ev?.slug, ev?.id, ev?.registrationDeadline, ev?.rawRegistrationDeadline, ev?.eventDate, ev?.rawEventDate, ev?.deadlineDays, ev?.time]);
 
   return remaining;
 }
@@ -748,7 +746,7 @@ function TicketCountdownCard({
         <div className="text-[11px] text-center min-h-[16px]">
           {isExpired ? (
             <span className="text-rose-300 font-semibold flex items-center justify-center gap-1.5">
-              <Clock size={13} /> Registration has ended
+              <Clock size={13} /> Registrations for this event are now closed.
             </span>
           ) : countdown && !countdown.isExpired ? (
             <span className="text-white/60">
@@ -773,7 +771,7 @@ function TicketCountdownCard({
         <div className="space-y-2.5 pt-2 border-t border-border text-[13px] text-text-2">
           <div className="flex items-start gap-2.5">
             <CalendarDays size={15} className="text-primary flex-shrink-0 mt-0.5" />
-            <span>{ev.startDate || 'TBA'} {ev.endDate ? `to ${ev.endDate}` : ''}</span>
+            <span>{ev.eventDate || ev.startDate || 'TBA'}</span>
           </div>
           <div className="flex items-start gap-2.5">
             <MapPin size={15} className="text-primary flex-shrink-0 mt-0.5" />
@@ -1412,8 +1410,7 @@ export default function EventDetails() {
             <CalendarDays size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Date</div>
-              <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.startDate || 'TBA'}</div>
-              {ev.endDate && <div className="text-[12px] text-text-3 mt-0.5">to {ev.endDate}</div>}
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.eventDate || ev.startDate || 'TBA'}</div>
             </div>
           </div>
 
@@ -2063,7 +2060,7 @@ export default function EventDetails() {
                   {sidebarFeaturedEvent.college || sidebarFeaturedEvent.city}
                 </div>
                 <div className="text-[11px] text-white/40 mt-1 tabular-nums">
-                  {sidebarFeaturedEvent.startDate || 'Upcoming'}
+                  {sidebarFeaturedEvent.eventDate || sidebarFeaturedEvent.startDate || 'Upcoming'}
                 </div>
 
                 <button
@@ -2104,7 +2101,7 @@ export default function EventDetails() {
                         {sEv.college || sEv.city}
                       </div>
                       <div className="text-[10px] text-text-4 mt-0.5 tabular-nums">
-                        {sEv.startDate || 'Upcoming'}
+                        {sEv.eventDate || sEv.startDate || 'Upcoming'}
                       </div>
                     </div>
                     <ChevronRight size={15} className="text-text-4 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />

@@ -312,7 +312,7 @@ export default function EventsTab({
                   <div className="grid grid-cols-2 gap-2 text-[12px] bg-surface-1 p-3 rounded-xl border border-border mb-4">
                     <div className="flex items-center gap-1.5 text-text-3 truncate">
                       <Calendar size={12} className="text-text-4 flex-shrink-0" />
-                      <span className="truncate">{ev.startDate || 'TBA'}</span>
+                      <span className="truncate">{ev.eventDate || ev.startDate || 'TBA'}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-text-3 truncate">
                       <MapPin size={12} className="text-text-4 flex-shrink-0" />
@@ -469,7 +469,7 @@ export default function EventsTab({
                         {ev.eventType || 'Event'}
                       </td>
                       <td className="py-3 px-3 font-mono text-text-3 whitespace-nowrap">
-                        {ev.startDate || 'TBA'}
+                        {ev.eventDate || ev.startDate || 'TBA'}
                       </td>
                       {SHOW_ENGAGEMENT_ANALYTICS && (
                         <>

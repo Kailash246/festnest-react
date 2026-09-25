@@ -11,13 +11,25 @@ function fmtDate(raw) {
 export function normaliseEvent(ev) {
   if (!ev) return null;
 
+  const rawEventDate = ev.eventDate || ev.date?.eventDate || ev.date?.start || ev.startDate || '';
+  const rawRegistrationDeadline = ev.registrationDeadline || ev.date?.registrationDeadline || ev.date?.end || ev.endDate || rawEventDate;
+
+  const eventDate = fmtDate(rawEventDate);
+  const registrationDeadline = fmtDate(rawRegistrationDeadline);
+
   // Already normalised (has flat fields) — but re-apply to pick up new fields
-  const base = ev.startDate !== undefined ? ev : null;
+  const base = ev.startDate !== undefined || ev.eventDate !== undefined ? ev : null;
 
   if (base) {
     // Was previously normalised — just bolt on any missing extended fields
     return {
       ...base,
+      eventDate:   base.eventDate || eventDate,
+      registrationDeadline: base.registrationDeadline || registrationDeadline,
+      rawEventDate: base.rawEventDate || rawEventDate,
+      rawRegistrationDeadline: base.rawRegistrationDeadline || rawRegistrationDeadline,
+      startDate:   base.eventDate || base.startDate || eventDate,
+      endDate:     base.registrationDeadline || base.endDate || registrationDeadline,
       brochureUrl: base.brochureUrl  ?? ev.brochure?.url ?? ev.brochureUrl ?? '',
       prize1:      base.prize1      ?? ev.prize1      ?? '',
       prize2:      base.prize2      ?? ev.prize2      ?? '',
@@ -29,14 +41,12 @@ export function normaliseEvent(ev) {
       website:     base.website     ?? ev.website      ?? '',
       eligibility: base.eligibility ?? ev.eligibility  ?? '',
       rules:       base.rules       ?? ev.rules        ?? '',
-      perks:       base.perks       ?? ev.perks        ?? '',
       perks:       base.perks       ?? ev.perks        ?? ev.additionalPerks ?? ev.otherPerks ?? '',
       mode:        base.mode        ?? ev.mode         ?? '',
       competitions: base.competitions ?? ev.competitions ?? [],
       hostedBy:    base.hostedBy    ?? ev.hostedBy    ?? '',
       isActive:    base.isActive    ?? ev.isActive    ?? true,
       isApproved:  base.isApproved  ?? ev.isApproved  ?? true,
-      endDate:     base.endDate     ?? ev.date?.end    ?? ev.endDate ?? '',
       registrationUrl: base.registrationUrl ?? ev.registrationUrl ?? '#',
     };
   }
@@ -69,11 +79,15 @@ export function normaliseEvent(ev) {
     teamSize: ev.teamSize || '',
 
     // ── Date (nested → flat) ───────────────────────────────────────────
-    startDate:    fmtDate(ev.date?.start    || ev.startDate  || ''),
-    endDate:      fmtDate(ev.date?.end      || ev.endDate    || ''),
-    time:         ev.date?.time        || ev.time       || '',
-    deadlineDays: ev.date?.deadlineDays ?? ev.deadlineDays ?? 0,
-    endingSoonDays: ev.endingSoonDays,
+    eventDate:            eventDate,
+    registrationDeadline: registrationDeadline,
+    rawEventDate:         rawEventDate,
+    rawRegistrationDeadline: rawRegistrationDeadline,
+    startDate:            eventDate,
+    endDate:              registrationDeadline,
+    time:                 ev.date?.time        || ev.time       || '',
+    deadlineDays:         ev.date?.deadlineDays ?? ev.deadlineDays ?? 0,
+    endingSoonDays:       ev.endingSoonDays,
 
     // ── Badge (nested → flat) ──────────────────────────────────────────
     badgeText:  ev.badge?.text  || ev.badgeText  || '',

@@ -150,11 +150,18 @@ export function parseEventEndDate(endDate, startDate) {
 
 export function isEventExpired(event, now = new Date()) {
   if (!event) return false;
-  const endDate = event.endDate || event.date?.end || '';
-  const startDate = event.startDate || event.date?.start || (typeof event.date === 'string' ? event.date : '');
-  const end = parseEventEndDate(endDate, startDate);
-  if (!end) return false;
-  return end.getTime() < now.getTime();
+  const rawDate = event.eventDate || event.date?.eventDate || event.date?.start || event.startDate || (typeof event.date === 'string' ? event.date : '');
+  const dt = parseEventEndDate(rawDate, rawDate);
+  if (!dt) return false;
+  return dt.getTime() < now.getTime();
+}
+
+export function isRegistrationClosed(event, now = new Date()) {
+  if (!event) return false;
+  const rawDeadline = event.registrationDeadline || event.date?.registrationDeadline || event.date?.end || event.endDate || event.eventDate || event.startDate || '';
+  const dt = parseEventEndDate(rawDeadline, rawDeadline);
+  if (!dt) return false;
+  return dt.getTime() < now.getTime();
 }
 
 export function isEventFeatured(ev) {
@@ -434,7 +441,7 @@ export default function EventCard({ event, onDelete, featured }) {
             <span style={{ color: isFeaturedCard ? '#f59e0b' : 'inherit', display: 'flex', flexShrink: 0 }}>
               <CalIcon />
             </span>
-            <span style={{ color: isFeaturedCard ? '#b45309' : '#4B4B47', fontWeight: 500, fontFamily: 'var(--f-mono)' }}>{event.startDate}</span>
+            <span style={{ color: isFeaturedCard ? '#b45309' : '#4B4B47', fontWeight: 500, fontFamily: 'var(--f-mono)' }}>{event.eventDate || event.startDate}</span>
             {event.deadlineDays > 0 && event.deadlineDays <= 6 && (
               <>
                 <span style={{ color: isFeaturedCard ? 'rgba(180,83,9,0.40)' : '#CBCBC6' }}>·</span>

@@ -17,8 +17,9 @@ import { normaliseEvent, normaliseEvents } from '../services/normalise';
    HELPERS
 ══════════════════════════════════════════════════ */
 function isUpcoming(ev) {
-  if (!ev?.startDate) return true;
-  const d = new Date(ev.startDate);
+  const dateVal = ev?.eventDate || ev?.startDate;
+  if (!dateVal) return true;
+  const d = new Date(dateVal);
   return isNaN(d.getTime()) ? true : d >= new Date();
 }
 
@@ -444,7 +445,7 @@ function EventMiniCard({ ev, status, onClick }) {
         <div className="text-[10px] text-text-3 truncate">{ev.college}</div>
         <div className="text-[10px] text-text-4 mt-1.5 flex items-center gap-1">
           <CalendarDays size={9} strokeWidth={2} className="flex-shrink-0" />
-          {ev.startDate}
+          {ev.eventDate || ev.startDate}
         </div>
       </div>
     </motion.div>
@@ -766,7 +767,7 @@ function HostedEventCard({ ev, navigate }) {
         </div>
         <div className="text-[10px] text-text-3 truncate">{ev.college}</div>
         <div className="text-[10px] text-text-4 mt-1.5 flex items-center gap-1">
-          <CalendarDays size={9} strokeWidth={2} /> {ev.startDate}
+          <CalendarDays size={9} strokeWidth={2} /> {ev.eventDate || ev.startDate}
         </div>
       </div>
     </motion.div>

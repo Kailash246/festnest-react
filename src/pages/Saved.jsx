@@ -121,7 +121,7 @@ export default function Saved() {
                   <div className="p-4 flex-1 min-w-0">
                     <div className="text-[10px] font-bold tracking-wider uppercase text-primary mb-1">{ev.category}</div>
                     <div className="font-sans font-bold text-[15px] text-text-1 tracking-snug mb-1 leading-snug">{ev.name}</div>
-                    <div className="text-[12px] text-text-3 mb-3">{ev.college} · {ev.startDate}</div>
+                    <div className="text-[12px] text-text-3 mb-3">{ev.college} · {ev.eventDate || ev.startDate}</div>
                     <div className="flex gap-2">
                       <button onClick={e => { e.stopPropagation(); navigate(`/event/${ev.id}`); }}
                         className="px-3 py-[5px] bg-primary text-white rounded text-[12px] font-semibold

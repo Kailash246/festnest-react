@@ -19,7 +19,8 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, showToast
     college: '',
     city: '',
     venue: '',
-    startDate: '',
+    eventDate: '',
+    registrationDeadline: '',
     time: '',
     teamSize: '1',
     registrationUrl: '',
@@ -48,7 +49,11 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, showToast
     if (!formData.name.trim()) return setError('Event name is required');
     if (!formData.college.trim()) return setError('College is required');
     if (!formData.city.trim()) return setError('City is required');
-    if (!formData.startDate.trim()) return setError('Start date is required');
+    if (!formData.eventDate?.trim()) return setError('Event date is required');
+    if (!formData.registrationDeadline?.trim()) return setError('Registration deadline is required');
+    if (formData.registrationDeadline > formData.eventDate) {
+      return setError('Registration deadline cannot be after the event date.');
+    }
 
     setLoading(true);
     try {
@@ -58,7 +63,10 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, showToast
         entryType: formData.entryType,
         college: formData.college.trim(),
         city: formData.city.trim(),
-        startDate: formData.startDate,
+        eventDate: formData.eventDate,
+        registrationDeadline: formData.registrationDeadline,
+        startDate: formData.eventDate,
+        endDate: formData.registrationDeadline,
         time: formData.time.trim() || undefined,
         venue: formData.venue.trim() || undefined,
         teamSize: formData.teamSize.trim() || undefined,
@@ -268,22 +276,41 @@ export default function EventCreateModal({ isOpen, onClose, onSuccess, showToast
               </div>
             </div>
 
-            {/* Date, Time & Venue */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Event Date & Registration Deadline */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                  Start Date <span className="text-red-500">*</span>
+                  Event Date <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
-                  name="startDate"
-                  value={formData.startDate}
+                  name="eventDate"
+                  value={formData.eventDate}
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
                   required
                 />
+                <p className="text-[11px] text-neutral-400 mt-1">When is the event happening?</p>
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                  Registration Deadline <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="registrationDeadline"
+                  value={formData.registrationDeadline}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  required
+                />
+                <p className="text-[11px] text-neutral-400 mt-1">When does event registration close?</p>
+              </div>
+            </div>
+
+            {/* Time & Team Size */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
                   Time / Schedule

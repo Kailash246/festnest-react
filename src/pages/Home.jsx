@@ -127,15 +127,15 @@ function applyFilters(events, chipCategory, sheetFilters, searchVal) {
   switch (sheetFilters.sort) {
     case 'Latest':
       sortFn = (a, b) => {
-        const tA = new Date(a.startDate || a.date?.start || a.date || a.createdAt || 0).getTime() || 0;
-        const tB = new Date(b.startDate || b.date?.start || b.date || b.createdAt || 0).getTime() || 0;
+        const tA = new Date(a.eventDate || a.startDate || a.date?.eventDate || a.date?.start || a.date || a.createdAt || 0).getTime() || 0;
+        const tB = new Date(b.eventDate || b.startDate || b.date?.eventDate || b.date?.start || b.date || b.createdAt || 0).getTime() || 0;
         return tB - tA;
       };
       break;
     case 'Oldest':
       sortFn = (a, b) => {
-        const tA = new Date(a.startDate || a.date?.start || a.date || a.createdAt || 0).getTime() || 0;
-        const tB = new Date(b.startDate || b.date?.start || b.date || b.createdAt || 0).getTime() || 0;
+        const tA = new Date(a.eventDate || a.startDate || a.date?.eventDate || a.date?.start || a.date || a.createdAt || 0).getTime() || 0;
+        const tB = new Date(b.eventDate || b.startDate || b.date?.eventDate || b.date?.start || b.date || b.createdAt || 0).getTime() || 0;
         return tA - tB;
       };
       break;

@@ -127,10 +127,12 @@ export default function SubmissionPreviewModal({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3 rounded-xl bg-surface-2 border border-border">
                 <div className="flex items-center gap-1.5 text-text-3 text-[11px] font-bold uppercase tracking-wider mb-1">
-                  <Calendar size={13} className="text-primary" /> Start Date
+                  <Calendar size={13} className="text-primary" /> Event Date
                 </div>
-                <div className="font-bold text-text-1 text-[13px]">{sub.startDate || 'TBA'}</div>
-                {sub.endDate && <div className="text-[11px] text-text-3">to {sub.endDate}</div>}
+                <div className="font-bold text-text-1 text-[13px]">{sub.eventDate || sub.startDate || 'TBA'}</div>
+                {(sub.registrationDeadline || sub.endDate) && (
+                  <div className="text-[11px] text-text-3">Deadline: {sub.registrationDeadline || sub.endDate}</div>
+                )}
               </div>
 
               <div className="p-3 rounded-xl bg-surface-2 border border-border">

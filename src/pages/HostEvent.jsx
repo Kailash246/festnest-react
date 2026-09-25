@@ -259,7 +259,7 @@ const DRAFT_TTL = 60 * 60 * 1000; // 60 minutes
 
 function persistDraft(step, f) {
   try {
-    const empty = !f.title && !f.description && !f.category && !f.college && !f.startDate;
+    const empty = !f.title && !f.description && !f.category && !f.college && !f.eventDate && !f.startDate;
     if (empty) return;
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), step, f }));
   } catch {}
@@ -332,7 +332,7 @@ export default function HostEvent() {
     // Basic
     title: '', description: '', category: '', mode: 'Offline',
     // Date & venue
-    startDate: '', endDate: '', college: '', cityState: '', venue: '',
+    eventDate: '', registrationDeadline: '', college: '', cityState: '', venue: '',
     // Prizes & registration
     prize1: '', prize2: '', prize3: '', totalPrize: '',
     regFee: '', regLink: '', perks: '',
@@ -380,7 +380,9 @@ export default function HostEvent() {
         const hasExistingPrize = event.entryType === 'prize' || Boolean(event.totalPrize);
         setF({
           title: event.name || '', description: event.about || '', category: event.category || '', mode: event.mode || 'Offline',
-          startDate: asDateInput(event.date?.start), endDate: asDateInput(event.date?.end), college: event.college || '', cityState: event.city || '', venue: event.venue || '',
+          eventDate: asDateInput(event.eventDate || event.date?.eventDate || event.date?.start || event.startDate),
+          registrationDeadline: asDateInput(event.registrationDeadline || event.date?.registrationDeadline || event.date?.end || event.endDate || event.eventDate || event.date?.start || event.startDate),
+          college: event.college || '', cityState: event.city || '', venue: event.venue || '',
           prize1: event.prize1 || '', prize2: event.prize2 || '', prize3: event.prize3 || '', totalPrize: event.totalPrize || '',
           regFee: isPaid ? price.replace(/[^0-9.]/g, '') : 'Free', regLink: event.registrationUrl || '', perks: event.perks || '',
           eligibility: event.eligibility || '', rules: event.rules || '', pocName: event.pocName || '', phone: event.pocPhone || '', email: event.pocEmail || '', website: event.website || '',
@@ -560,23 +562,23 @@ export default function HostEvent() {
         }
       }
 
-      // 5. startDate -> startDate
-      const rawStart = cleanStr(raw.startDate);
-      if (rawStart) {
-        const normStart = /^\d{4}-\d{2}-\d{2}$/.test(rawStart) ? rawStart : (!isNaN(new Date(rawStart).getTime()) ? new Date(rawStart).toISOString().slice(0, 10) : null);
-        if (normStart) {
-          updates.startDate = normStart;
-          newFilled.add('startDate');
+      // 5. eventDate -> eventDate
+      const rawDate = cleanStr(raw.eventDate || raw.startDate);
+      if (rawDate) {
+        const normDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : (!isNaN(new Date(rawDate).getTime()) ? new Date(rawDate).toISOString().slice(0, 10) : null);
+        if (normDate) {
+          updates.eventDate = normDate;
+          newFilled.add('eventDate');
         }
       }
 
-      // 6. endDate -> endDate
-      const rawEnd = cleanStr(raw.endDate);
-      if (rawEnd) {
-        const normEnd = /^\d{4}-\d{2}-\d{2}$/.test(rawEnd) ? rawEnd : (!isNaN(new Date(rawEnd).getTime()) ? new Date(rawEnd).toISOString().slice(0, 10) : null);
-        if (normEnd) {
-          updates.endDate = normEnd;
-          newFilled.add('endDate');
+      // 6. registrationDeadline -> registrationDeadline
+      const rawDeadline = cleanStr(raw.registrationDeadline || raw.endDate);
+      if (rawDeadline) {
+        const normDeadline = /^\d{4}-\d{2}-\d{2}$/.test(rawDeadline) ? rawDeadline : (!isNaN(new Date(rawDeadline).getTime()) ? new Date(rawDeadline).toISOString().slice(0, 10) : null);
+        if (normDeadline) {
+          updates.registrationDeadline = normDeadline;
+          newFilled.add('registrationDeadline');
         }
       }
 
@@ -768,7 +770,7 @@ export default function HostEvent() {
   // Which step each field lives on — drives "jump to the first invalid field".
   const FIELD_STEP = {
     category: 1, title: 1, description: 1,
-    startDate: 2, college: 2, cityState: 2,
+    eventDate: 2, registrationDeadline: 2, college: 2, cityState: 2,
     totalPrize: 3, regFee: 3, regLink: 3,
     pocName: 4, phone: 4, email: 4, website: 4,
     poster: 5, brochure: 5,
@@ -786,9 +788,10 @@ export default function HostEvent() {
       else if (f.description.trim().length > 5000) errs.description = 'Description cannot exceed 5000 characters';
     }
     if (s === 2) {
-      if (!f.startDate)                            errs.startDate = 'Start date is required';
-      if (f.endDate && f.startDate && f.endDate < f.startDate)
-        errs.endDate = 'End date cannot be before the start date';
+      if (!f.eventDate)                            errs.eventDate = 'Event date is required';
+      if (!f.registrationDeadline)                 errs.registrationDeadline = 'Registration deadline is required';
+      if (f.eventDate && f.registrationDeadline && f.registrationDeadline > f.eventDate)
+        errs.registrationDeadline = 'Registration deadline cannot be after the event date.';
       if (!f.college.trim())                       errs.college   = 'College / Organization is required';
       else if (f.college.trim().length > 100)      errs.college   = 'Organizer name cannot exceed 100 characters';
       if (!f.cityState.trim())                     errs.cityState = 'City / State is required';
@@ -893,7 +896,10 @@ export default function HostEvent() {
       fd.append('eventName',       f.title);
       fd.append('college',         f.college);
       fd.append('eventType',       f.category || 'Other');
-      fd.append('startDate',       f.startDate);
+      fd.append('eventDate',            f.eventDate);
+      fd.append('registrationDeadline', f.registrationDeadline);
+      fd.append('startDate',            f.eventDate);
+      fd.append('endDate',              f.registrationDeadline);
       fd.append('city',            f.cityState);
       fd.append('venue',           f.venue);
       fd.append('about',           f.description);
@@ -975,7 +981,7 @@ export default function HostEvent() {
             className="px-8 py-3.5 bg-primary text-white rounded-md text-[14px] font-bold hover:bg-primary-dark hover:shadow-[0_4px_14px_rgba(79,70,229,0.3)] transition-all">
             Back to Home
           </button>
-          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setTermsAccepted(false); setF({ title:'',description:'',category:'',mode:'Offline',startDate:'',endDate:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
+          <button onClick={() => { purgeDraft(); setDone(false); setStep(1); setHasPrize(false); setTermsAccepted(false); setF({ title:'',description:'',category:'',mode:'Offline',eventDate:'',registrationDeadline:'',college:'',cityState:'',venue:'',prize1:'',prize2:'',prize3:'',totalPrize:'',regFee:'',regLink:'',perks:'',eligibility:'',rules:'',pocName:'',phone:'',email:'',website:'' }); setPosterFile(null); setBrochureFile(null); }}
             className="px-8 py-3.5 border-[1.5px] border-[#CBCBC6] rounded-md text-[14px] font-semibold text-text-2 hover:border-primary hover:text-primary transition-all">
             Post Another Event
           </button>
@@ -1220,15 +1226,17 @@ export default function HostEvent() {
               className="space-y-4">
 
               <SectionCard icon={<CalendarDays size={16} strokeWidth={1.8} className="text-primary" />} title="Date and Location" sub="When and where is it happening?">
-                <div className="grid grid-cols-2 gap-3">
-                  <Input id="host-startDate" label="Start Date" required type="date"
-                    badge={aiFilledFields.has('startDate') ? <AiFilledBadge /> : null}
-                    value={f.startDate} onChange={e => upd('startDate', e.target.value)}
-                    error={errors.startDate} />
-                  <Input id="host-endDate" label="End Date" type="date"
-                    badge={aiFilledFields.has('endDate') ? <AiFilledBadge /> : null}
-                    value={f.endDate} onChange={e => upd('endDate', e.target.value)}
-                    error={errors.endDate} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Input id="host-eventDate" label="Event Date" required type="date"
+                    hint="When is the event happening?"
+                    badge={aiFilledFields.has('eventDate') ? <AiFilledBadge /> : null}
+                    value={f.eventDate} onChange={e => upd('eventDate', e.target.value)}
+                    error={errors.eventDate} />
+                  <Input id="host-registrationDeadline" label="Registration Deadline" required type="date"
+                    hint="When does event registration close?"
+                    badge={aiFilledFields.has('registrationDeadline') ? <AiFilledBadge /> : null}
+                    value={f.registrationDeadline} onChange={e => upd('registrationDeadline', e.target.value)}
+                    error={errors.registrationDeadline} />
                 </div>
 
                 <Input id="host-college" label="College / Organization" required
@@ -1474,7 +1482,14 @@ export default function HostEvent() {
                   <div className="flex-1 min-w-0">
                     <div className="font-sans font-bold text-[15px] text-text-1 truncate">{f.title || 'Your Event'}</div>
                     <div className="text-[12px] text-text-3">{f.college || 'Your College'} · {f.cityState || 'Location TBD'}</div>
-                    {f.startDate && <div className="text-[12px] text-primary font-medium mt-0.5 flex items-center gap-1"><CalendarDays size={12} strokeWidth={1.8} /> {f.startDate}{f.endDate && ` → ${f.endDate}`}</div>}
+                    {(f.eventDate || f.startDate) && (
+                      <div className="text-[12px] text-primary font-medium mt-0.5 flex flex-wrap items-center gap-1.5">
+                        <span className="flex items-center gap-1"><CalendarDays size={12} strokeWidth={1.8} /> {f.eventDate || f.startDate}</span>
+                        {(f.registrationDeadline || f.endDate) && (
+                          <span className="text-text-3 font-normal">· Deadline: {f.registrationDeadline || f.endDate}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

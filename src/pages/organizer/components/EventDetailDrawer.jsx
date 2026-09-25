@@ -171,14 +171,14 @@ export default function EventDetailDrawer({
                   <div className="grid grid-cols-2 gap-2.5 bg-surface-1 p-3.5 rounded-xl border border-border">
                     <div className="flex items-center gap-2 text-[12px]">
                       <Calendar size={13} className="text-text-4 flex-shrink-0" />
-                      <span className="text-text-3">Date:</span>
-                      <span className="font-mono font-medium text-text-1 truncate">{ev.startDate || 'TBA'}</span>
+                      <span className="text-text-3">Event Date:</span>
+                      <span className="font-mono font-medium text-text-1 truncate">{ev.eventDate || ev.startDate || 'TBA'}</span>
                     </div>
-                    {ev.endDate && (
+                    {(ev.registrationDeadline || ev.endDate) && (
                       <div className="flex items-center gap-2 text-[12px]">
                         <Calendar size={13} className="text-text-4 flex-shrink-0" />
-                        <span className="text-text-3">End:</span>
-                        <span className="font-mono font-medium text-text-1 truncate">{ev.endDate}</span>
+                        <span className="text-text-3">Deadline:</span>
+                        <span className="font-mono font-medium text-text-1 truncate">{ev.registrationDeadline || ev.endDate}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-[12px]">

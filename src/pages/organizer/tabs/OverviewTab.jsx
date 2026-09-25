@@ -610,7 +610,7 @@ export default function OverviewTab({
                       <div className="flex items-center gap-3 text-[11px] text-text-3 mt-1 flex-wrap">
                         <span>{ev.college}</span>
                         <span>•</span>
-                        <span className="font-mono">{ev.startDate || 'TBA'}</span>
+                        <span className="font-mono">{ev.eventDate || ev.startDate || 'TBA'}</span>
                         <span>•</span>
                         <span className="font-semibold text-primary">{ev.eventType || 'Event'}</span>
                       </div>

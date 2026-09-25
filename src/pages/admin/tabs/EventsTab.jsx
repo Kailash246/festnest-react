@@ -358,7 +358,7 @@ export default function EventsTab({ showToast, onOpenCreate }) {
 
                       {/* Date */}
                       <td className="py-3 px-4 whitespace-nowrap text-neutral-600">
-                        {ev.date?.start || ev.startDate || '—'}
+                        {ev.eventDate || ev.date?.eventDate || ev.date?.start || ev.startDate || '—'}
                       </td>
 
                       {/* Stats */}
@@ -783,8 +783,8 @@ export default function EventsTab({ showToast, onOpenCreate }) {
                     <div>
                       <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-wider block">Date & Timing</span>
                       <p className="font-semibold text-neutral-800 mt-0.5">
-                        {selectedMobileEvent.date?.start || selectedMobileEvent.startDate || 'TBA'}
-                        {selectedMobileEvent.date?.end ? ` – ${selectedMobileEvent.date.end}` : ''}
+                        {selectedMobileEvent.eventDate || selectedMobileEvent.date?.eventDate || selectedMobileEvent.date?.start || selectedMobileEvent.startDate || 'TBA'}
+                        {(selectedMobileEvent.registrationDeadline || selectedMobileEvent.date?.registrationDeadline) ? ` (Deadline: ${selectedMobileEvent.registrationDeadline || selectedMobileEvent.date?.registrationDeadline})` : ''}
                       </p>
                       {selectedMobileEvent.date?.time && (
                         <p className="text-neutral-500 text-[11px] mt-0.5">{selectedMobileEvent.date.time}</p>

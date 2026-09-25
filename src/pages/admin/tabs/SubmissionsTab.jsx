@@ -190,10 +190,10 @@ export default function SubmissionsTab({ showToast, onPreviewSubmission }) {
                           <MapPin className="w-3.5 h-3.5 text-neutral-400" />
                           {item.college}{item.city ? `, ${item.city}` : ''}
                         </span>
-                        {item.startDate && (
+                        {(item.eventDate || item.startDate) && (
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3.5 h-3.5 text-neutral-400" />
-                            {item.startDate}
+                            {item.eventDate || item.startDate}
                           </span>
                         )}
                         <span className="text-neutral-400">·</span>
