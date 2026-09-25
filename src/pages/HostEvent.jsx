@@ -372,8 +372,11 @@ export default function HostEvent() {
         if (cancelled) return;
         const asDateInput = value => {
           if (!value) return '';
-          const date = new Date(value);
-          return Number.isNaN(date.getTime()) ? String(value).slice(0, 10) : date.toISOString().slice(0, 10);
+          const s = String(value).trim();
+          const match = s.match(/^(\d{4}-\d{2}-\d{2})/);
+          if (match) return match[1];
+          const date = new Date(s);
+          return Number.isNaN(date.getTime()) ? s.slice(0, 10) : date.toISOString().slice(0, 10);
         };
         const price = String(event.price?.display || '');
         const isPaid = event.entryType === 'paid';
@@ -381,7 +384,7 @@ export default function HostEvent() {
         setF({
           title: event.name || '', description: event.about || '', category: event.category || '', mode: event.mode || 'Offline',
           eventDate: asDateInput(event.eventDate || event.date?.eventDate || event.date?.start || event.startDate),
-          registrationDeadline: asDateInput(event.registrationDeadline || event.date?.registrationDeadline || event.date?.end || event.endDate || event.eventDate || event.date?.start || event.startDate),
+          registrationDeadline: asDateInput(event.registrationDeadline || event.date?.registrationDeadline || event.date?.end || event.endDate),
           college: event.college || '', cityState: event.city || '', venue: event.venue || '',
           prize1: event.prize1 || '', prize2: event.prize2 || '', prize3: event.prize3 || '', totalPrize: event.totalPrize || '',
           regFee: isPaid ? price.replace(/[^0-9.]/g, '') : 'Free', regLink: event.registrationUrl || '', perks: event.perks || '',
@@ -563,9 +566,11 @@ export default function HostEvent() {
       }
 
       // 5. eventDate -> eventDate
-      const rawDate = cleanStr(raw.eventDate || raw.startDate);
-      if (rawDate) {
-        const normDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : (!isNaN(new Date(rawDate).getTime()) ? new Date(rawDate).toISOString().slice(0, 10) : null);
+      const rawEventDate = cleanStr(raw?.eventDate);
+      if (rawEventDate) {
+        const normDate = /^\d{4}-\d{2}-\d{2}$/.test(rawEventDate)
+          ? rawEventDate
+          : (!isNaN(new Date(rawEventDate).getTime()) ? new Date(rawEventDate).toISOString().slice(0, 10) : null);
         if (normDate) {
           updates.eventDate = normDate;
           newFilled.add('eventDate');
@@ -573,9 +578,11 @@ export default function HostEvent() {
       }
 
       // 6. registrationDeadline -> registrationDeadline
-      const rawDeadline = cleanStr(raw.registrationDeadline || raw.endDate);
-      if (rawDeadline) {
-        const normDeadline = /^\d{4}-\d{2}-\d{2}$/.test(rawDeadline) ? rawDeadline : (!isNaN(new Date(rawDeadline).getTime()) ? new Date(rawDeadline).toISOString().slice(0, 10) : null);
+      const rawRegistrationDeadline = cleanStr(raw?.registrationDeadline);
+      if (rawRegistrationDeadline) {
+        const normDeadline = /^\d{4}-\d{2}-\d{2}$/.test(rawRegistrationDeadline)
+          ? rawRegistrationDeadline
+          : (!isNaN(new Date(rawRegistrationDeadline).getTime()) ? new Date(rawRegistrationDeadline).toISOString().slice(0, 10) : null);
         if (normDeadline) {
           updates.registrationDeadline = normDeadline;
           newFilled.add('registrationDeadline');
@@ -728,7 +735,8 @@ export default function HostEvent() {
       const missing = [];
       if (categoryNeedsReview) missing.push('category');
       if (!rawTitle) missing.push('event title');
-      if (!rawStart) missing.push('dates');
+      if (!rawEventDate) missing.push('event date');
+      if (!rawRegistrationDeadline) missing.push('registration deadline');
       if (!rawLink) missing.push('registration link');
       if (!rawPoc || (!rawPhone && !rawEmail)) missing.push('contact info');
 
@@ -741,6 +749,7 @@ export default function HostEvent() {
 
       showToast('Event details extracted with AI ✓', 'success');
     } catch (err) {
+      console.error('[PDF Extraction] Failed:', err);
       // If this request was aborted by a subsequent upload or reset, silently ignore
       if (controller.signal.aborted) {
         console.log(`[AI Poster Upload][${reqId}] Request was aborted; ignoring error`);
@@ -790,8 +799,13 @@ export default function HostEvent() {
     if (s === 2) {
       if (!f.eventDate)                            errs.eventDate = 'Event date is required';
       if (!f.registrationDeadline)                 errs.registrationDeadline = 'Registration deadline is required';
-      if (f.eventDate && f.registrationDeadline && f.registrationDeadline > f.eventDate)
-        errs.registrationDeadline = 'Registration deadline cannot be after the event date.';
+      if (f.eventDate && f.registrationDeadline) {
+        const calEvent = f.eventDate.slice(0, 10);
+        const calDeadline = f.registrationDeadline.slice(0, 10);
+        if (calDeadline > calEvent) {
+          errs.registrationDeadline = 'Registration deadline cannot be after the event date.';
+        }
+      }
       if (!f.college.trim())                       errs.college   = 'College / Organization is required';
       else if (f.college.trim().length > 100)      errs.college   = 'Organizer name cannot exceed 100 characters';
       if (!f.cityState.trim())                     errs.cityState = 'City / State is required';
@@ -898,8 +912,7 @@ export default function HostEvent() {
       fd.append('eventType',       f.category || 'Other');
       fd.append('eventDate',            f.eventDate);
       fd.append('registrationDeadline', f.registrationDeadline);
-      fd.append('startDate',            f.eventDate);
-      fd.append('endDate',              f.registrationDeadline);
+      fd.append('startDate',            f.eventDate);   // backward-compat alias
       fd.append('city',            f.cityState);
       fd.append('venue',           f.venue);
       fd.append('about',           f.description);
@@ -1233,7 +1246,7 @@ export default function HostEvent() {
                     value={f.eventDate} onChange={e => upd('eventDate', e.target.value)}
                     error={errors.eventDate} />
                   <Input id="host-registrationDeadline" label="Registration Deadline" required type="date"
-                    hint="When does event registration close?"
+                    hint="When does registration close?"
                     badge={aiFilledFields.has('registrationDeadline') ? <AiFilledBadge /> : null}
                     value={f.registrationDeadline} onChange={e => upd('registrationDeadline', e.target.value)}
                     error={errors.registrationDeadline} />
@@ -1521,7 +1534,7 @@ export default function HostEvent() {
                     I confirm that I am authorized to represent this institution/organization and agree to FestNest's{' '}
                     <Link to="/terms#organizer" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
                       Terms of Service
-                    </Link>{' '}and{' '}
+                    </Link>{' '}(including institution brand &amp; logo usage for platform discovery and marketing) and{' '}
                     <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
                       Privacy Policy
                     </Link>.
