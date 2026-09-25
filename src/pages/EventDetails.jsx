@@ -158,11 +158,20 @@ const ENTRY_CONFIG = {
 const DetailSkeleton = () => {
   return (
     <div className="min-h-screen bg-white pb-16">
-      {/* Hero Skeleton (Light Theme) */}
-      <div className="w-full bg-[#FAFAF9] border-b border-border pt-6 pb-12 md:pb-16 px-4 sm:px-6 md:px-8">
-        <div className="mx-auto max-w-[1280px]">
+      {/* Hero Skeleton (Dark Navy Theme to match real hero) */}
+      <div className="relative w-full bg-[#0B0819] text-white pt-6 pb-12 md:pb-16 px-4 sm:px-6 md:px-8 overflow-hidden">
+        {/* Subtle purple radial background glow */}
+        <div
+          aria-hidden="true"
+          className="absolute -top-24 right-1/4 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-3xl pointer-events-none"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"
+        />
+        <div className="relative mx-auto max-w-[1280px]">
           {/* Breadcrumb Skeleton */}
-          <div className="skeleton h-4 w-44 mb-6 rounded" />
+          <div className="h-4 w-44 mb-6 rounded bg-white/10 animate-pulse" />
 
           {/* Two-Column Hero Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] items-center gap-8 lg:gap-12">
@@ -170,37 +179,37 @@ const DetailSkeleton = () => {
             <div className="flex flex-col items-start min-w-0 space-y-4">
               {/* Badges */}
               <div className="flex flex-wrap gap-2.5 mb-1">
-                <div className="skeleton h-6 w-28 rounded-full" />
-                <div className="skeleton h-6 w-20 rounded-full" />
+                <div className="h-6 w-28 rounded-full bg-white/10 animate-pulse" />
+                <div className="h-6 w-20 rounded-full bg-white/10 animate-pulse" />
               </div>
 
               {/* Title */}
               <div className="space-y-2.5 w-full">
-                <div className="skeleton h-9 sm:h-11 w-3/4 rounded-lg" />
-                <div className="skeleton h-9 sm:h-11 w-1/2 rounded-lg" />
+                <div className="h-9 sm:h-11 w-3/4 rounded-lg bg-white/15 animate-pulse" />
+                <div className="h-9 sm:h-11 w-1/2 rounded-lg bg-white/15 animate-pulse" />
               </div>
 
               {/* Subtitle / Host */}
-              <div className="skeleton h-4 w-60 rounded" />
+              <div className="h-4 w-60 rounded bg-white/10 animate-pulse" />
 
               {/* Description */}
               <div className="space-y-2 w-full max-w-xl pt-1">
-                <div className="skeleton h-4 w-full rounded" />
-                <div className="skeleton h-4 w-5/6 rounded" />
-                <div className="skeleton h-4 w-4/6 rounded" />
+                <div className="h-4 w-full rounded bg-white/10 animate-pulse" />
+                <div className="h-4 w-5/6 rounded bg-white/10 animate-pulse" />
+                <div className="h-4 w-4/6 rounded bg-white/10 animate-pulse" />
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-2">
-                <div className="skeleton h-12 w-36 rounded-lg" />
-                <div className="skeleton h-12 w-24 rounded-lg" />
-                <div className="skeleton h-12 w-24 rounded-lg" />
+                <div className="h-12 w-36 rounded-lg bg-white/15 animate-pulse" />
+                <div className="h-12 w-24 rounded-lg bg-white/10 animate-pulse" />
+                <div className="h-12 w-24 rounded-lg bg-white/10 animate-pulse" />
               </div>
             </div>
 
             {/* Right Column: Poster */}
             <div className="w-full">
-              <div className="skeleton aspect-[16/10] w-full rounded-2xl border border-border" />
+              <div className="aspect-[16/10] w-full rounded-2xl border border-white/10 bg-white/5 animate-pulse" />
             </div>
           </div>
         </div>
@@ -1213,9 +1222,7 @@ export default function EventDetails() {
   const sidebarFeaturedEvent = featuredEvs[0] || related[0] || null;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      transition={{ duration: 0.22 }}
-      className="min-h-screen bg-white w-full overflow-x-visible md:overflow-x-clip pb-16">
+    <div className="min-h-screen bg-white w-full overflow-x-visible md:overflow-x-clip pb-16">
 
       <Seo
         rawTitle={`${ev.name} — ${ev.college} | FestNest`}
@@ -2214,6 +2221,6 @@ export default function EventDetails() {
         )}
       </AnimatePresence>
 
-    </motion.div>
+    </div>
   );
 }
