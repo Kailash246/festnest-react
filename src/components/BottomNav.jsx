@@ -141,10 +141,10 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-neutral-200/80 rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] pt-1 pb-[max(8px,env(safe-area-inset-bottom,8px))]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E4E4E0] shadow-[0_-1px_3px_rgba(0,0,0,0.03)] pb-[env(safe-area-inset-bottom,0px)]"
       aria-label="Bottom navigation"
     >
-      <div className="w-full max-w-lg mx-auto flex items-center justify-around px-1 h-[52px]">
+      <div className="w-full max-w-lg mx-auto flex items-center justify-around px-1 h-[56px]">
         {navItems.map((item) => {
           const IconComponent = item.icon;
 
@@ -156,7 +156,7 @@ export default function BottomNav() {
                 onClick={() => handleNav(item.href, item.protected)}
                 aria-label={item.label}
                 aria-current={item.active ? 'page' : undefined}
-                className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group focus:outline-none select-none relative -translate-y-3.5"
+                className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group focus:outline-none select-none relative -translate-y-3"
               >
                 <div
                   className={`
