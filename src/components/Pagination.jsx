@@ -44,7 +44,7 @@ export default function Pagination({
   page,
   totalPages,
   totalEvents,
-  limit = 16,
+  limit = 15,
   onPageChange,
   className = '',
 }) {

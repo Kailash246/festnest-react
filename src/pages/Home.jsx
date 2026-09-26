@@ -12,7 +12,7 @@ import { normaliseEvents } from '../services/normalise';
 import { PRIORITY_CATEGORIES } from '../data/categories';
 import { FilterSheet, SortDropdown, ActivePill } from '../components/EventFilters';
 
-const EVENTS_PER_PAGE = 16;
+const EVENTS_PER_PAGE = 15;
 
 /* Organization + WebSite structured data for the homepage. */
 const HOME_JSON_LD = [
