@@ -6,7 +6,7 @@ import {
   Monitor, Globe, Building2, Trophy, IndianRupee, Gift, Phone,
   FileText, Download, Bookmark, Share2, CheckCircle2,
   ChevronLeft, ChevronRight, X, ExternalLink, Mail, UserRound, Sparkles,
-  ArrowRight, Award, Briefcase,
+  ArrowRight, Award, Briefcase, Calendar,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { events as eventsApi } from '../services/api';
@@ -14,6 +14,13 @@ import { normaliseEvent, normaliseEvents } from '../services/normalise';
 import { CompetitionManager } from './organizer/OrganizerDashboard';
 import Seo, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/Seo';
 import { sanitizeText } from '../utils/sanitize';
+
+const formatDisplayDate = (raw) => {
+  if (!raw) return 'TBA';
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return raw;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+};
 
 const toIsoDate = (raw) => {
   if (!raw) return undefined;
@@ -788,8 +795,20 @@ function TicketCountdownCard({
         <div className="space-y-2.5 pt-2 border-t border-border text-[13px] text-text-2">
           <div className="flex items-start gap-2.5">
             <CalendarDays size={15} className="text-primary flex-shrink-0 mt-0.5" />
-            <span>{ev.eventDate || ev.startDate || 'TBA'}</span>
+            <div>
+              <span className="font-semibold text-text-1">Event Date: </span>
+              <span>{formatDisplayDate(ev.eventDate || ev.startDate)}</span>
+            </div>
           </div>
+          {(ev.registrationDeadline || ev.endDate) && (
+            <div className="flex items-start gap-2.5">
+              <Calendar size={15} className="text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-text-1">Registration Deadline: </span>
+                <span>{formatDisplayDate(ev.registrationDeadline || ev.endDate)}</span>
+              </div>
+            </div>
+          )}
           <div className="flex items-start gap-2.5">
             <MapPin size={15} className="text-primary flex-shrink-0 mt-0.5" />
             <span className="leading-snug">{ev.venue || ev.college}, {ev.city}</span>
@@ -1048,8 +1067,16 @@ export default function EventDetails() {
   const canEditEvent = isEventOwner && isLiveEvent;
   const canManageCompetitions = canEditEvent;
 
+  const displayEligibility = (() => {
+    if (ev?.eligibility) {
+      const firstLine = String(ev.eligibility).split('\n')[0].replace(/^[-*• ]\s*/, '').trim();
+      if (firstLine) return firstLine;
+    }
+    return 'Open to all';
+  })();
+
   const registrationStatus = isExpired
-    ? 'Event ended'
+    ? 'Registration closed'
     : (countdown && !countdown.isExpired && countdown.d <= 3) || (ev?.deadlineDays > 0 && ev?.deadlineDays <= 3)
     ? 'Closing soon'
     : 'Registration open';
@@ -1267,12 +1294,16 @@ export default function EventDetails() {
                 <span className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-[11px] font-bold tracking-wider uppercase border shadow-sm ${
                   registrationStatus === 'Closing soon'
                     ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                    : registrationStatus === 'Event ended'
+                    : registrationStatus === 'Registration closed' || registrationStatus === 'Event ended'
                     ? 'bg-white/10 text-white/60 border-white/20'
                     : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${
-                    registrationStatus === 'Closing soon' ? 'bg-amber-400 animate-pulse' : registrationStatus === 'Event ended' ? 'bg-white/40' : 'bg-emerald-400'
+                    registrationStatus === 'Closing soon'
+                      ? 'bg-amber-400 animate-pulse'
+                      : registrationStatus === 'Registration closed' || registrationStatus === 'Event ended'
+                      ? 'bg-white/40'
+                      : 'bg-emerald-400'
                   }`} />
                   {registrationStatus}
                 </span>
@@ -1419,16 +1450,25 @@ export default function EventDetails() {
         </div>
       </div>
 
-      {/* ══ SECTION B: EVENT INFORMATION STRIP (7-Column Bar) ══ */}
+      {/* ══ SECTION B: EVENT INFORMATION STRIP (8-Column Bar) ══ */}
       <div className="w-full border-y border-border bg-white overflow-x-auto no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
         <div className="mx-auto max-w-[1280px] flex divide-x divide-border min-w-max">
 
-          {/* DATE */}
-          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+          {/* EVENT DATE */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[135px]">
             <CalendarDays size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
-              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Date</div>
-              <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.eventDate || ev.startDate || 'TBA'}</div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Event Date</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{formatDisplayDate(ev.eventDate || ev.startDate)}</div>
+            </div>
+          </div>
+
+          {/* REGISTRATION DEADLINE */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[155px]">
+            <Calendar size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
+            <div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Registration Deadline</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug">{formatDisplayDate(ev.registrationDeadline || ev.endDate)}</div>
             </div>
           </div>
 
@@ -1450,7 +1490,6 @@ export default function EventDetails() {
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Mode</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">{mode}</div>
-              <div className="text-[12px] text-text-3 mt-0.5">{mode === 'Online' ? 'Virtual' : 'Offline'}</div>
             </div>
           </div>
 
@@ -1465,20 +1504,21 @@ export default function EventDetails() {
           </div>
 
           {/* ELIGIBILITY */}
-          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[135px]">
             <Users size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Eligibility</div>
-              <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.teamSize || 'Open to all'}</div>
-              <div className="text-[12px] text-text-3 mt-0.5">per team</div>
+              <div className="text-[14px] font-bold text-text-1 leading-snug truncate max-w-[150px]">{displayEligibility}</div>
             </div>
           </div>
 
-          {/* DEADLINE */}
-          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+          {/* REGISTRATION CLOSES */}
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[155px]">
             <Clock size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
-              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Deadline</div>
+              <div className={`text-[10px] font-bold tracking-[0.12em] uppercase mb-0.5 ${isExpired ? 'text-rose-500' : 'text-primary'}`}>
+                {isExpired ? 'Registration Closed' : 'Registration Closes'}
+              </div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">
                 {isExpired
                   ? 'Closed'
@@ -1489,9 +1529,6 @@ export default function EventDetails() {
                   : ev.deadlineDays > 0
                   ? `${ev.deadlineDays} days left`
                   : 'Closing soon'}
-              </div>
-              <div className="text-[12px] text-text-3 mt-0.5">
-                {isExpired ? 'Registration ended' : 'Registration closes'}
               </div>
             </div>
           </div>
