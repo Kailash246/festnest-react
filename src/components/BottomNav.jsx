@@ -1,5 +1,4 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   Compass,
   Shield,
@@ -48,7 +47,7 @@ export default function BottomNav() {
       href: '/admin',
       label: 'Admin',
       protected: true,
-      icon: <Shield size={20} strokeWidth={2.2} />,
+      icon: Shield,
       active: path.startsWith('/admin'),
     };
     fourthTab = {
@@ -56,7 +55,7 @@ export default function BottomNav() {
       href: '/host',
       label: 'Host',
       protected: false,
-      icon: <PlusCircle size={19} strokeWidth={1.8} />,
+      icon: PlusCircle,
       active: path === '/host',
     };
   } else if (isOrganizer) {
@@ -65,7 +64,7 @@ export default function BottomNav() {
       href: '/host',
       label: 'Host',
       protected: false,
-      icon: <Plus size={22} strokeWidth={2.5} />,
+      icon: Plus,
       active: path === '/host',
     };
     fourthTab = {
@@ -73,7 +72,7 @@ export default function BottomNav() {
       href: '/organizer',
       label: 'Organizer',
       protected: true,
-      icon: <LayoutDashboard size={19} strokeWidth={1.8} />,
+      icon: LayoutDashboard,
       active: path.startsWith('/organizer'),
     };
   } else {
@@ -84,7 +83,7 @@ export default function BottomNav() {
       label: 'Saved',
       protected: true,
       badge: savedCount > 0 ? savedCount : null,
-      icon: <Bookmark size={20} strokeWidth={2.2} fill={path === '/saved' ? 'currentColor' : 'none'} />,
+      icon: Bookmark,
       active: path === '/saved',
     };
     fourthTab = {
@@ -93,7 +92,7 @@ export default function BottomNav() {
       label: 'Alerts',
       protected: false,
       badge: unreadNotifCount > 0 ? unreadNotifCount : null,
-      icon: <Bell size={19} strokeWidth={1.8} />,
+      icon: Bell,
       active: path === '/notifications',
     };
   }
@@ -102,172 +101,179 @@ export default function BottomNav() {
   const isExploreActive = path === '/explore';
   const isProfileActive = path === '/profile' || path.startsWith('/profile/');
 
+  const navItems = [
+    {
+      id: 'home',
+      href: '/home',
+      label: 'Home',
+      protected: false,
+      active: isHomeActive,
+      icon: Home,
+      fillOnActive: true,
+    },
+    {
+      id: 'explore',
+      href: '/explore',
+      label: 'Explore',
+      protected: false,
+      active: isExploreActive,
+      icon: Compass,
+    },
+    {
+      ...centerTab,
+      isCenter: true,
+    },
+    {
+      ...fourthTab,
+      isCenter: false,
+    },
+    {
+      id: 'profile',
+      href: '/profile',
+      label: 'Profile',
+      protected: true,
+      active: isProfileActive,
+      icon: User,
+      isProfile: true,
+      isCenter: false,
+    },
+  ];
+
   return (
     <nav
-      className="md:hidden fixed bottom-3 inset-x-0 z-40 flex justify-center px-4 pointer-events-none pb-[env(safe-area-inset-bottom,0px)]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-neutral-200/80 rounded-t-[20px] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] pt-1 pb-[max(8px,env(safe-area-inset-bottom,8px))]"
       aria-label="Bottom navigation"
     >
-      <div className="w-full max-w-[390px] h-[60px] bg-white/95 backdrop-blur-xl border border-neutral-200/90 rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.03)] px-2 flex items-center justify-between pointer-events-auto">
-        
-        {/* 1. Home Tab */}
-        <button
-          type="button"
-          onClick={() => handleNav('/home', false)}
-          aria-label="Home"
-          aria-current={isHomeActive ? 'page' : undefined}
-          className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group"
-        >
-          <div className="relative flex items-center justify-center">
-            {isHomeActive ? (
-              <motion.div
-                layoutId="navIconPill"
-                className="w-12 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary"
-                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-              >
-                <Home size={19} strokeWidth={2.3} className="fill-primary/20" />
-              </motion.div>
-            ) : (
-              <div className="w-12 h-7 flex items-center justify-center text-neutral-400 group-hover:text-neutral-700 transition-colors">
-                <Home size={19} strokeWidth={1.8} />
-              </div>
-            )}
-          </div>
-          <span className={`text-[10px] tracking-tight mt-1 leading-none transition-colors ${isHomeActive ? 'font-semibold text-primary' : 'font-medium text-neutral-500 group-hover:text-neutral-700'}`}>
-            Home
-          </span>
-        </button>
+      <div className="w-full max-w-lg mx-auto flex items-center justify-around px-1 h-[52px]">
+        {navItems.map((item) => {
+          const IconComponent = item.icon;
 
-        {/* 2. Explore Tab */}
-        <button
-          type="button"
-          onClick={() => handleNav('/explore', false)}
-          aria-label="Explore"
-          aria-current={isExploreActive ? 'page' : undefined}
-          className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group"
-        >
-          <div className="relative flex items-center justify-center">
-            {isExploreActive ? (
-              <motion.div
-                layoutId="navIconPill"
-                className="w-12 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary"
-                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+          if (item.isCenter) {
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleNav(item.href, item.protected)}
+                aria-label={item.label}
+                aria-current={item.active ? 'page' : undefined}
+                className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group focus:outline-none select-none relative -translate-y-3.5"
               >
-                <Compass size={19} strokeWidth={2.3} />
-              </motion.div>
-            ) : (
-              <div className="w-12 h-7 flex items-center justify-center text-neutral-400 group-hover:text-neutral-700 transition-colors">
-                <Compass size={19} strokeWidth={1.8} />
-              </div>
-            )}
-          </div>
-          <span className={`text-[10px] tracking-tight mt-1 leading-none transition-colors ${isExploreActive ? 'font-semibold text-primary' : 'font-medium text-neutral-500 group-hover:text-neutral-700'}`}>
-            Explore
-          </span>
-        </button>
+                <div
+                  className={`
+                    relative w-12 h-12 rounded-full text-white flex items-center justify-center
+                    ring-[3.5px] ring-white
+                    shadow-[0_4px_14px_rgba(79,70,229,0.35)]
+                    group-hover:shadow-[0_6px_20px_rgba(79,70,229,0.45)]
+                    active:scale-95 group-hover:scale-105 transition-all duration-150
+                    ${
+                      item.active
+                        ? 'bg-primary ring-primary/20 shadow-[0_6px_18px_rgba(79,70,229,0.5)]'
+                        : 'bg-gradient-to-tr from-[#4338CA] to-[#6366F1]'
+                    }
+                  `}
+                >
+                  <IconComponent
+                    size={21}
+                    strokeWidth={2.3}
+                    className={`${item.id === 'saved' && item.active ? 'fill-white' : ''}`}
+                  />
+                  {item.badge && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
 
-        {/* 3. Center Hero Action Button */}
-        <button
-          type="button"
-          onClick={() => handleNav(centerTab.href, centerTab.protected)}
-          aria-label={centerTab.label}
-          aria-current={centerTab.active ? 'page' : undefined}
-          className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group relative -translate-y-2.5"
-        >
-          <div
-            className={`
-              relative w-11 h-11 rounded-full text-white flex items-center justify-center
-              ring-[3px] ring-white shadow-[0_4px_14px_rgba(79,70,229,0.35)]
-              active:scale-95 group-hover:scale-105 transition-all duration-150
-              ${centerTab.active
-                ? 'bg-primary ring-primary/20 shadow-[0_6px_18px_rgba(79,70,229,0.45)]'
-                : 'bg-gradient-to-tr from-[#4338CA] to-[#6366F1] hover:shadow-[0_6px_18px_rgba(79,70,229,0.4)]'}
-            `}
-          >
-            {centerTab.icon}
-            {centerTab.badge && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
-                {centerTab.badge}
-              </span>
-            )}
-          </div>
-          <span className={`text-[10px] tracking-tight mt-1 leading-none transition-colors ${centerTab.active ? 'font-bold text-primary' : 'font-semibold text-neutral-600 group-hover:text-primary'}`}>
-            {centerTab.label}
-          </span>
-        </button>
+                <span
+                  className={`text-[10px] tracking-tight mt-0.5 leading-none transition-colors duration-150 ${
+                    item.active
+                      ? 'font-bold text-primary'
+                      : 'font-semibold text-neutral-600 group-hover:text-primary'
+                  }`}
+                >
+                  {item.label}
+                </span>
 
-        {/* 4. Role-Specific 4th Tab */}
-        <button
-          type="button"
-          onClick={() => handleNav(fourthTab.href, fourthTab.protected)}
-          aria-label={fourthTab.label}
-          aria-current={fourthTab.active ? 'page' : undefined}
-          className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group relative"
-        >
-          <div className="relative flex items-center justify-center">
-            {fourthTab.active ? (
-              <motion.div
-                layoutId="navIconPill"
-                className="w-12 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary"
-                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-              >
-                {fourthTab.icon}
-              </motion.div>
-            ) : (
-              <div className="w-12 h-7 flex items-center justify-center text-neutral-400 group-hover:text-neutral-700 transition-colors">
-                {fourthTab.icon}
-              </div>
-            )}
-            {fourthTab.badge && (
-              <span className="absolute top-0 right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center shadow-xs">
-                {fourthTab.badge}
-              </span>
-            )}
-          </div>
-          <span className={`text-[10px] tracking-tight mt-1 leading-none transition-colors ${fourthTab.active ? 'font-semibold text-primary' : 'font-medium text-neutral-500 group-hover:text-neutral-700'}`}>
-            {fourthTab.label}
-          </span>
-        </button>
+                {/* Subtle active dot indicator */}
+                <span
+                  className={`w-1 h-1 rounded-full mt-0.5 transition-all duration-150 ${
+                    item.active
+                      ? 'bg-primary scale-100 opacity-100'
+                      : 'bg-transparent scale-0 opacity-0'
+                  }`}
+                />
+              </button>
+            );
+          }
 
-        {/* 5. Profile Tab */}
-        <button
-          type="button"
-          onClick={() => handleNav('/profile', true)}
-          aria-label="Profile"
-          aria-current={isProfileActive ? 'page' : undefined}
-          className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group"
-        >
-          <div className="relative flex items-center justify-center">
-            {isProfileActive ? (
-              <motion.div
-                layoutId="navIconPill"
-                className="w-12 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary"
-                transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-              >
-                <User size={19} strokeWidth={2.3} />
-              </motion.div>
-            ) : (
-              <div className="w-12 h-7 flex items-center justify-center text-neutral-400 group-hover:text-neutral-700 transition-colors">
-                {currentUser?.avatar?.url ? (
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => handleNav(item.href, item.protected)}
+              aria-label={item.label}
+              aria-current={item.active ? 'page' : undefined}
+              className="flex-1 flex flex-col items-center justify-center py-1 cursor-pointer group focus:outline-none select-none relative"
+            >
+              <div className="relative flex items-center justify-center">
+                {item.isProfile && currentUser?.avatar?.url ? (
                   <img
                     src={currentUser.avatar.url}
                     alt=""
-                    className="w-[20px] h-[20px] rounded-full object-cover ring-1 ring-neutral-300"
+                    className={`w-[22px] h-[22px] rounded-full object-cover transition-all duration-150 ${
+                      item.active
+                        ? 'ring-2 ring-primary ring-offset-1'
+                        : 'ring-1 ring-neutral-300 group-hover:ring-neutral-400'
+                    }`}
                   />
                 ) : (
-                  <User size={19} strokeWidth={1.8} />
+                  <IconComponent
+                    size={20}
+                    strokeWidth={item.active ? 2.3 : 1.8}
+                    className={`transition-colors duration-150 ${
+                      item.active
+                        ? 'text-primary'
+                        : 'text-neutral-400 group-hover:text-neutral-700'
+                    } ${item.fillOnActive && item.active ? 'fill-primary/20' : ''}`}
+                  />
                 )}
-              </div>
-            )}
-            {/* Subtle indicator dot if unread notifications or unauthenticated */}
-            {(!currentUser || (unreadNotifCount > 0 && (isAdmin || isOrganizer))) && (
-              <span className="w-2 h-2 rounded-full bg-primary ring-2 ring-white absolute top-0.5 right-3" />
-            )}
-          </div>
-          <span className={`text-[10px] tracking-tight mt-1 leading-none transition-colors ${isProfileActive ? 'font-semibold text-primary' : 'font-medium text-neutral-500 group-hover:text-neutral-700'}`}>
-            Profile
-          </span>
-        </button>
 
+                {/* Badges */}
+                {item.badge && (
+                  <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
+                    {item.badge}
+                  </span>
+                )}
+
+                {/* Profile unread / attention dot */}
+                {item.isProfile &&
+                  (!currentUser ||
+                    (unreadNotifCount > 0 && (isAdmin || isOrganizer))) && (
+                    <span className="w-2 h-2 rounded-full bg-primary ring-2 ring-white absolute -top-0.5 -right-0.5" />
+                  )}
+              </div>
+
+              <span
+                className={`text-[10px] tracking-tight mt-1 leading-none transition-colors duration-150 ${
+                  item.active
+                    ? 'font-semibold text-primary'
+                    : 'font-medium text-neutral-500 group-hover:text-neutral-700'
+                }`}
+              >
+                {item.label}
+              </span>
+
+              {/* Subtle active dot indicator */}
+              <span
+                className={`w-1 h-1 rounded-full mt-0.5 transition-all duration-150 ${
+                  item.active
+                    ? 'bg-primary scale-100 opacity-100'
+                    : 'bg-transparent scale-0 opacity-0'
+                }`}
+              />
+            </button>
+          );
+        })}
       </div>
     </nav>
   );

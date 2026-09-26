@@ -804,7 +804,7 @@ function TicketCountdownCard({
             <div className="flex items-start gap-2.5">
               <Calendar size={15} className="text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-text-1">Register By: </span>
+                <span className="font-semibold text-text-1">Registration Deadline: </span>
                 <span>{formatDisplayDate(ev.registrationDeadline || ev.endDate)}</span>
               </div>
             </div>
@@ -1460,17 +1460,15 @@ export default function EventDetails() {
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Event Date</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">{formatDisplayDate(ev.eventDate || ev.startDate)}</div>
-              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">Actual event date</div>
             </div>
           </div>
 
-          {/* REGISTER BY */}
+          {/* REGISTRATION DEADLINE */}
           <div className="flex items-start gap-2.5 px-5 py-4 min-w-[155px]">
             <Calendar size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
-              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Register By</div>
+              <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Registration Deadline</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">{formatDisplayDate(ev.registrationDeadline || ev.endDate)}</div>
-              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">Last date to register</div>
             </div>
           </div>
 
@@ -1485,14 +1483,13 @@ export default function EventDetails() {
           </div>
 
           {/* MODE */}
-          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[130px]">
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[110px]">
             {mode === 'Online'
               ? <Monitor size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
               : <Building2 size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />}
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Mode</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">{mode}</div>
-              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">{mode === 'Online' ? 'Virtual event' : mode === 'Hybrid' ? 'Online + In-person' : 'In-person event'}</div>
             </div>
           </div>
 
@@ -1502,22 +1499,21 @@ export default function EventDetails() {
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Entry Fee</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">{ev.price || 'Free'}</div>
-              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">{ev.priceNote || 'per team'}</div>
+              <div className="text-[12px] text-text-3 mt-0.5">{ev.priceNote || 'per team'}</div>
             </div>
           </div>
 
           {/* ELIGIBILITY */}
-          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[145px]">
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[135px]">
             <Users size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Eligibility</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug truncate max-w-[150px]">{displayEligibility}</div>
-              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">Who can participate</div>
             </div>
           </div>
 
           {/* REGISTRATION CLOSES */}
-          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[160px]">
+          <div className="flex items-start gap-2.5 px-5 py-4 min-w-[155px]">
             <Clock size={16} strokeWidth={1.8} className="flex-shrink-0 text-primary mt-0.5" />
             <div>
               <div className={`text-[10px] font-bold tracking-[0.12em] uppercase mb-0.5 ${isExpired ? 'text-rose-500' : 'text-primary'}`}>
@@ -1534,7 +1530,6 @@ export default function EventDetails() {
                   ? `${ev.deadlineDays} days left`
                   : 'Closing soon'}
               </div>
-              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">{isExpired ? 'Registration closed' : 'Countdown to deadline'}</div>
             </div>
           </div>
 
@@ -1544,7 +1539,7 @@ export default function EventDetails() {
             <div>
               <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-primary mb-0.5">Prize Pool</div>
               <div className="text-[14px] font-bold text-text-1 leading-snug">{displayTotalPrize ? `₹${displayTotalPrize}` : 'Exciting Prizes'}</div>
-              <div className="text-[12px] text-text-3 mt-0.5 truncate max-w-[150px]">Total winnings</div>
+              <div className="text-[12px] text-text-3 mt-0.5">Total winnings</div>
             </div>
           </div>
 
