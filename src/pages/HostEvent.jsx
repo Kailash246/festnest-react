@@ -1534,7 +1534,7 @@ export default function HostEvent() {
                     I confirm that I am authorized to represent this institution/organization and agree to FestNest's{' '}
                     <Link to="/terms#organizer" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
                       Terms of Service
-                    </Link>{' '}(including institution brand &amp; logo usage for platform discovery and marketing) and{' '}
+                    </Link>{' '}and{' '}
                     <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm">
                       Privacy Policy
                     </Link>.
