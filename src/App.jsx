@@ -193,7 +193,7 @@ export default function App() {
         </aside>
 
         <main className="
-          w-full min-w-0 pb-[96px] md:pb-0
+          w-full min-w-0 pb-[calc(76px+env(safe-area-inset-bottom,0px))] md:pb-0
           md:col-start-2 md:row-start-2
           md:border-l md:border-[#E4E4E0]
           min-h-[calc(100dvh-56px)] md:min-h-0
@@ -249,7 +249,7 @@ export default function App() {
           to="/feedback"
           aria-label="Help us improve FestNest"
           style={{ borderRadius: 9999 }}
-          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-30
+          className="fixed bottom-[calc(70px+env(safe-area-inset-bottom,0px))] md:bottom-6 right-4 md:right-6 z-30
                      flex items-center gap-2 p-2.5 sm:px-4 sm:py-2.5
                      bg-white text-text-1 hover:text-primary
                      border border-[#E4E4E0] hover:border-primary/40
