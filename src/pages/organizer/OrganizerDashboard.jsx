@@ -326,6 +326,8 @@ function OrganizerDashboardContent() {
                 )
               )}
 
+
+
               {activeTab === 'analytics' && (
                 eventsLoading ? (
                   <div className="space-y-5">
