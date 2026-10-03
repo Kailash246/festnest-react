@@ -6,7 +6,6 @@ import { Menu, RotateCw, Plus, ArrowLeft } from 'lucide-react';
 const TAB_TITLES = {
   overview:     'Dashboard Overview',
   events:       'Manage Events',
-  participants: 'Event Participants',
   analytics:    'Performance Analytics',
   tips:         'Organizer Growth Playbook',
 };

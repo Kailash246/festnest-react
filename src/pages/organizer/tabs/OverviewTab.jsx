@@ -332,7 +332,7 @@ export default function OverviewTab({
                 label="Registrations"
                 value={totalRegs}
                 color="purple"
-                onClick={() => onSelectTab('participants')}
+                onClick={() => onSelectTab('analytics')}
               />
               <OrganizerStatCard
                 icon={Eye}
@@ -427,15 +427,15 @@ export default function OverviewTab({
               </button>
 
               <button
-                onClick={() => onSelectTab('participants')}
+                onClick={() => onSelectTab('analytics')}
                 className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-1 hover:border-primary/40 hover:bg-primary-light/40 transition-all text-left"
               >
                 <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0 border border-purple-200">
-                  <FileSpreadsheet size={18} strokeWidth={2} />
+                  <BarChart2 size={18} strokeWidth={2} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[13px] font-bold text-text-1">Export Participants</div>
-                  <div className="text-[11px] text-text-3 truncate">Download attendee list to CSV</div>
+                  <div className="text-[13px] font-bold text-text-1">Performance Analytics</div>
+                  <div className="text-[11px] text-text-3 truncate">Track views and engagement metrics</div>
                 </div>
               </button>
 

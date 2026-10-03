@@ -19,10 +19,9 @@ import {
 } from 'lucide-react';
 
 export const ORGANIZER_NAV_ITEMS = [
-  { id: 'overview',     label: 'Overview',      icon: LayoutDashboard },
-  { id: 'events',       label: 'My Events',     icon: CalendarDays,   badgeKey: 'totalEvents' },
-  { id: 'participants', label: 'Participants',  icon: Users,          badgeKey: 'totalRegistrations' },
-  { id: 'analytics',    label: 'Analytics',     icon: BarChart3 },
+  { id: 'overview',     label: 'Overview',        icon: LayoutDashboard },
+  { id: 'events',       label: 'My Events',       icon: CalendarDays,   badgeKey: 'totalEvents' },
+  { id: 'analytics',    label: 'Analytics',       icon: BarChart3 },
   { id: 'tips',         label: 'Growth Playbook', icon: Lightbulb },
 ];
 

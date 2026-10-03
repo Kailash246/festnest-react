@@ -22,7 +22,6 @@ import EventDetailDrawer from './components/EventDetailDrawer';
 // Organizer Tabs
 import OverviewTab from './tabs/OverviewTab';
 import EventsTab from './tabs/EventsTab';
-import ParticipantsTab from './tabs/ParticipantsTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import TipsTab from './tabs/TipsTab';
 import { SHOW_ENGAGEMENT_ANALYTICS } from './config';
@@ -105,7 +104,7 @@ function OrganizerDashboardContent() {
 
   // Active Tab synchronized with ?tab=
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam || 'overview');
+  const [activeTab, setActiveTab] = useState(() => (tabParam === 'participants' ? 'overview' : (tabParam || 'overview')));
 
   // Sync tab state to URL
   const handleSelectTab = useCallback(
@@ -126,12 +125,14 @@ function OrganizerDashboardContent() {
 
   // Sync back from URL on navigation
   useEffect(() => {
-    if (tabParam && tabParam !== activeTab) {
+    if (tabParam === 'participants') {
+      handleSelectTab('overview');
+    } else if (tabParam && tabParam !== activeTab) {
       setActiveTab(tabParam);
     } else if (!tabParam && activeTab !== 'overview') {
       setActiveTab('overview');
     }
-  }, [tabParam]);
+  }, [tabParam, activeTab, handleSelectTab]);
 
   // Collapsible Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -320,29 +321,6 @@ function OrganizerDashboardContent() {
                     navigate={navigate}
                     onInspectEvent={ev => setInspectedEvent(ev)}
                     onOpenCompetitions={ev => setCompetitionEvent(ev)}
-                    showToast={showToast}
-                  />
-                )
-              )}
-
-              {activeTab === 'participants' && (
-                eventsLoading ? (
-                  <div className="space-y-5">
-                    <LongWaitNotice isLongWait={isEventsLongWait} />
-                    <div className="bg-white border border-border rounded-2xl p-6 shadow-xs space-y-4">
-                      <div className="skeleton h-6 w-48 rounded" />
-                      <div className="skeleton h-4 w-72 rounded" />
-                      <div className="space-y-2.5 pt-2">
-                        {[1, 2, 3, 4, 5].map(i => (
-                          <div key={i} className="skeleton h-12 w-full rounded-xl" />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <ParticipantsTab
-                    events={events}
-                    registrations={registrations}
                     showToast={showToast}
                   />
                 )
